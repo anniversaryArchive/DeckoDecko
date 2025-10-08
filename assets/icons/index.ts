@@ -12,6 +12,7 @@ import ChevronRight from "./chevronRight.svg";
 import NewFolder from "./newFolder.svg";
 import Plus from "./plus.svg";
 import Image from "./image.svg";
+import BigHeadSearch from "./big_head_search.svg";
 
 export {
   Folder,
@@ -28,4 +29,5 @@ export {
   FolderFill,
   Plus,
   Image,
+  BigHeadSearch,
 };
