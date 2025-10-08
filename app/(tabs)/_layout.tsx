@@ -6,11 +6,9 @@ import Icon from "@/components/Icon";
 import { colors } from "@/utils/tailwind-colors";
 
 const TABS = [
+  { name: "Home", title: "홈", icon: "star" },
   { name: "MyBookmark", title: "내 굿즈", icon: "folder" },
   { name: "Search", title: "검색", icon: "search" },
-  { name: "Home", title: "홈", icon: "star" },
-  { name: "Alarm", title: "알림", icon: "bell" },
-  { name: "Mypage", title: "MY", icon: "user" },
 ];
 
 export default function TabLayout() {
@@ -21,7 +19,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarLabelStyle: { fontFamily: "DunggeunmisoB" },
+        tabBarLabelStyle: { fontFamily: "DunggeunmisoB", fontSize: 12 },
         tabBarActiveTintColor: colors.primary.DEFAULT,
         tabBarStyle: {
           height: 60 + paddingBottom,
@@ -38,7 +36,7 @@ export default function TabLayout() {
             headerShown: false,
             title: tab.title,
             tabBarIcon: ({ color }) => (
-              <Icon name={tab.icon} size={20.0} fill={color} stroke={color} />
+              <Icon name={tab.icon} size={28.0} fill={color} stroke={color} />
             ),
             tabBarIconStyle: { marginBottom: 4 },
             sceneStyle: { paddingTop: insets.top, backgroundColor: "white" },
