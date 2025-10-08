@@ -1,21 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { Dimensions, View, Text, Image, StyleSheet, Platform, TouchableOpacity } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
-import Carousel from 'react-native-reanimated-carousel';
+import React, { useState, useEffect } from "react";
+import {
+  Dimensions,
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
+import { useSharedValue } from "react-native-reanimated";
+import Carousel from "react-native-reanimated-carousel";
+
+import { WiggleBorder } from "@/components";
 
 interface SlideItem {
-  id: string;
+  id: number;
   imageUrl?: string;
 }
 
 interface FeaturedSwiperProps {
   data: SlideItem[];
   title: string;
+  loop?: boolean;
+  width?: number;
+  offset?: number;
   onSlidePress?: (item: SlideItem, index: number) => void;
 }
 
-export default function FeaturedSwiper({ data, title, onSlidePress }: FeaturedSwiperProps) {
-  const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+export default function FeaturedSwiper({
+  data,
+  title,
+  loop = false,
+  width,
+  offset,
+  onSlidePress,
+}: FeaturedSwiperProps) {
+  const [screenWidth, setScreenWidth] = useState(Dimensions.get("window").width);
 
   useEffect(() => {
     const onChange = ({ window }: { window: { width: number } }) => {
@@ -39,7 +59,10 @@ export default function FeaturedSwiper({ data, title, onSlidePress }: FeaturedSw
     parallaxOffset = 40;
   }
 
-  const slideHeight = 200;
+  if (width) slideWidth = width;
+  if (offset) parallaxOffset = offset;
+
+  const slideHeight = 250;
   const progress = useSharedValue<number>(0);
 
   const renderItem = ({ item, index }: { item: SlideItem; index: number }) => (
@@ -52,11 +75,13 @@ export default function FeaturedSwiper({ data, title, onSlidePress }: FeaturedSw
       }}
       style={[styles.slide, { width: slideWidth, height: slideHeight }]}
     >
-      {item.imageUrl ? (
-        <Image source={{ uri: item.imageUrl }} style={styles.image} resizeMode="cover" />
-      ) : (
-        <View style={styles.empty} />
-      )}
+      <WiggleBorder height={slideHeight} borderZIndex={3}>
+        {item.imageUrl ? (
+          <Image source={{ uri: item.imageUrl }} style={styles.image} resizeMode="contain" />
+        ) : (
+          <View style={styles.empty} />
+        )}
+      </WiggleBorder>
     </TouchableOpacity>
   );
 
@@ -64,7 +89,7 @@ export default function FeaturedSwiper({ data, title, onSlidePress }: FeaturedSw
     <View style={[styles.container, { overflow: 'visible' }]}>
       <Text style={styles.headerTitle}>{title}</Text>
       <Carousel
-        loop={false}
+        loop={loop}
         width={slideWidth}
         height={slideHeight}
         autoPlay={false}
@@ -106,14 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontFamily: 'DunggeunmisoB',
   },
-  slide: {
-    borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: '#FFF',
-    justifyContent: 'flex-end',
-    borderWidth: 1,
-    borderColor: '#FFBBC1',
-  },
+  slide: { overflow: "hidden", justifyContent: "flex-end" },
   image: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 10,

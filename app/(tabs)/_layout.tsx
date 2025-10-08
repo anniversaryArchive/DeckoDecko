@@ -41,7 +41,7 @@ export default function TabLayout() {
               <Icon name={tab.icon} size={20.0} fill={color} stroke={color} />
             ),
             tabBarIconStyle: { marginBottom: 4 },
-            sceneStyle: { paddingTop: insets.top },
+            sceneStyle: { paddingTop: insets.top, backgroundColor: "white" },
           }}
         />
       ))}

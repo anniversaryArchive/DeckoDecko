@@ -25,6 +25,7 @@ const iconMap: { [key: string]: React.FC<any> } = {
   newFolder: Icons.NewFolder,
   folderFill: Icons.FolderFill,
   plus: Icons.Plus,
+  bigHeadSearch: Icons.BigHeadSearch,
 };
 
 export default function Icon(props: IIconProps) {
