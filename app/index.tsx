@@ -31,6 +31,11 @@ export default function Index() {
           <Text className="font-dunggeunmiso text-secondary-dark text-2xl">북마크 테스트 화면</Text>
         </Pressable>
       </Link>
+      <Link href="/image-test" asChild>
+        <Pressable>
+          <Text className="font-dunggeunmiso text-secondary-dark text-2xl">이미지 테스트 화면</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 }

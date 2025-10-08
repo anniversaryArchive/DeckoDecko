@@ -44,6 +44,7 @@ const typographyTheme = {
     "secondary-light": "text-secondary-light",
     "secondary-dark": "text-secondary-dark",
     black: "text-black",
+    "gray-05": "text-gray-05",
   },
 };
 
@@ -87,10 +88,7 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
         <>{getTwotoneTypography(twotone)}</>
       ) : (
         <Text
-          className={`${typographyTheme.variant[variant]} ${
-            typographyTheme.color[color as keyof typeof typographyTheme.color] ??
-            typographyTheme.color["secondary-dark"]
-          } ${className}`}
+          className={`${typographyTheme.variant[variant]} ${typographyTheme.color[color as keyof typeof typographyTheme.color]} ${className}`}
           numberOfLines={1}
           ellipsizeMode="tail"
           style={{ flexShrink: 1, overflow: "hidden" }}

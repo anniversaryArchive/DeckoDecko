@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ImagePickerAsset } from "expo-image-picker";
 
 import { colors } from "@utils/tailwind-colors";
-import { saveImage, selectImage } from "@utils/saveImage";
+import { selectImage, saveImage } from "@utils/mediaLibraryService";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import useDefaultFolder from "@/hooks/useDefaultFolder";
@@ -58,7 +58,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps) => {
   const handleSubmit = async () => {
     if (!validate()) return;
 
-    const saveImg = image ? await saveImage(image) : null;
+    const assetId = image ? await saveImage(image) : null;
 
     // DB 양식 정한게 없는거같아서 필요한 것 같은것만 대강 모아놨습니당
     const data: TCreateItemDTO = {
@@ -66,7 +66,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps) => {
       folder_id: selectedFolder.id,
       type,
       name: itemName,
-      thumbnail: saveImg?.path ?? null,
+      thumbnail: assetId ?? null,
       memo: (memo?.trim() && memo) ?? null,
     };
 
