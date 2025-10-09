@@ -16,6 +16,7 @@ import BookmarkSheet from "./BookmarkSheet";
 import Divider from "./Divider";
 import LocalImage from "./LocalImage";
 import NoImage from "./NoImage";
+import NoticeItem from "./Notice/NoticeItem";
 
 export {
   Typography,
@@ -39,4 +40,5 @@ export {
   Divider,
   LocalImage,
   NoImage,
+  NoticeItem,
 };
