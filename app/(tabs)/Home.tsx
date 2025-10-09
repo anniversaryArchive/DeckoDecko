@@ -18,15 +18,15 @@ import { formatYmdHm } from "@/utils/format";
 
 const LIMIT_COUNT = 5;
 
-interface PreviewGacha {
+interface IPreviewGacha {
   id: number;
-  image_link: string;
-  anime_id: number;
+  imageLink: string;
+  animeId: number;
 }
 
 export default function Home() {
-  const [newGachaList, setNewGachaList] = useState<PreviewGacha[]>([]);
-  const [popularGachaList, setPopularGachaList] = useState<PreviewGacha[]>([]);
+  const [newGachaList, setNewGachaList] = useState<IPreviewGacha[]>([]);
+  const [popularGachaList, setPopularGachaList] = useState<IPreviewGacha[]>([]);
   const [noticeList, setNoticeList] = useState<TNotice[]>([]);
   const [possessionRate, setPossessionRate] = useState<number>(0);
 
@@ -36,11 +36,11 @@ export default function Home() {
       try {
         const { data } = await supabase
           .from("gacha")
-          .select("*")
+          .select("id, imageLink:image_link, animeId:anime_id")
           .order("created_at", { ascending: false })
           .limit(LIMIT_COUNT);
         if (!data?.length) throw new Error("No data");
-        setNewGachaList(data);
+        setNewGachaList(data as unknown as IPreviewGacha[]);
       } catch (error) {
         console.error("❌ 새로 나왔어요! 가챠 데이터 조회 실패 : ", error);
       }
@@ -59,8 +59,8 @@ export default function Home() {
             gacha_id,
             gacha!inner (
               id,
-              image_link,
-              anime_id
+              imageLink:image_link,
+              animeId:anime_id
             )
           `
           )
@@ -70,9 +70,9 @@ export default function Home() {
         if (!data?.length) return;
 
         const gachaData = data.reduce(
-          (acc: Record<number, { count: number; gacha: PreviewGacha }>, item: any) => {
+          (acc: Record<number, { count: number; gacha: IPreviewGacha }>, item: any) => {
             const { gacha_id, gacha } = item;
-            if (!acc[gacha_id]) acc[gacha_id] = { count: 0, gacha: gacha as PreviewGacha };
+            if (!acc[gacha_id]) acc[gacha_id] = { count: 0, gacha: gacha as IPreviewGacha };
             acc[gacha_id].count += 1;
             return acc;
           },
@@ -151,7 +151,7 @@ export default function Home() {
         {/* 새로 나온 가챠! */}
         <FeaturedSwiper
           title="새로 나왔어요!"
-          data={newGachaList.map((gacha) => ({ ...gacha, imageUrl: gacha.image_link }))}
+          data={newGachaList.map((gacha) => ({ ...gacha, imageUrl: gacha.imageLink }))}
           width={225}
           offset={20}
           loop={true}
@@ -163,7 +163,7 @@ export default function Home() {
         {/* 인기 가챠 */}
         <FeaturedSwiper
           title="지금 이게 인기에요!"
-          data={popularGachaList.map((gacha) => ({ ...gacha, imageUrl: gacha.image_link }))}
+          data={popularGachaList.map((gacha) => ({ ...gacha, imageUrl: gacha.imageLink }))}
           width={225}
           offset={20}
           loop={true}
