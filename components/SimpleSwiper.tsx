@@ -54,7 +54,7 @@ export default function SimpleSwiper({
         }}
         className="rounded-lg"
       >
-        <GoodsThumbnail name_kr={item.name_kr} anime_kr_title={item.anime_kr_title} image_link={item.image_link} />
+        <GoodsThumbnail nameKr={item.name_kr} animeTitle={item.anime_kr_title} imageLink={item.image_link} />
       </TouchableOpacity>
     );
   };

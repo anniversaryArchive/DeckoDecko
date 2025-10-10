@@ -7,22 +7,18 @@ import GoodsThumbnail from "@/components/GoodsThumbnail";
 import * as searchHistory from "@utils/searchHistory";
 import type { IGachaItem } from "@/types/search";
 
+const LIMIT = 10;
+
 export default function SearchResults() {
   const { searchTerm } = useLocalSearchParams<{ searchTerm?: string }>();
-  const [searchValue, setSearchValue] = useState<string>(searchTerm as string ?? "");
+  const [searchValue, setSearchValue] = useState<string>(searchTerm ?? "");
   const [data, setData] = useState<IGachaItem[]>([]);
   const [offset, setOffset] = useState(0);
-  const limit = 10;
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
 
   const numColumns = 2; // 필요한 컬럼 수 설정
-
-  const loadSearches = useCallback(async () => {
-    const searches = await searchHistory.getRecentSearches();
-    // 필요 시 상태 저장 가능
-  }, []);
 
   const loadMore = async () => {
     if (loadingMore || !hasMore) return;
@@ -31,29 +27,24 @@ export default function SearchResults() {
     try {
       const result = await searchHistory.searchGachaAndAnimeByName(
         searchValue,
-        limit,
+        LIMIT,
         offset
       );
 
       const newItems = result?.items ?? [];
 
-      if (newItems.length === 0 && offset > 0) {
-        Alert.alert("알림", "더 이상 데이터가 없습니다.");
+      // hasMore 판단과 알림을 setData 바깥에서 처리
+      if (newItems.length < LIMIT) {
         setHasMore(false);
-        setLoadingMore(false);
-        return;
+        if (newItems.length === 0 && offset > 0) {
+          Alert.alert("알림", "더 이상 데이터가 없습니다.");
+        }
       }
 
       setData((prev) => {
         const prevIds = new Set(prev?.map((item) => item.id) ?? []);
         const filteredNewItems = newItems.filter((item) => !prevIds.has(item.id));
-        const updatedData = [...(prev ?? []), ...filteredNewItems];
-
-        const currentTotal = updatedData.length;
-        const isEnd = result?.totalCount != null && currentTotal >= result.totalCount;
-        if (isEnd || filteredNewItems.length < limit) setHasMore(false);
-
-        return updatedData;
+        return [...(prev ?? []), ...filteredNewItems];
       });
 
       setOffset((prev) => prev + newItems.length);
@@ -70,15 +61,14 @@ export default function SearchResults() {
     setOffset(0);
 
     try {
-      const result = await searchHistory.searchGachaAndAnimeByName(value, limit, 0);
+      const result = await searchHistory.searchGachaAndAnimeByName(value, LIMIT, 0);
       const items = result?.items ?? [];
       setData(items);
       setOffset(items.length);
       setTotalCount(result?.totalCount ?? 0);
-      setHasMore((result?.totalCount ?? 0) > limit);
+      setHasMore((result?.totalCount ?? 0) > LIMIT);
 
       await searchHistory.addRecentSearch(value);
-      await loadSearches();
     } catch (e) {
       console.error("Search error:", e);
       setData([]);
@@ -96,9 +86,9 @@ export default function SearchResults() {
 
   const renderItem = ({ item }: { item: IGachaItem }) => (
     <GoodsThumbnail
-      name_kr={item.name_kr}
-      anime_kr_title={item.anime_kr_title}
-      image_link={item.image_link}
+      nameKr={item.name_kr}
+      animeTitle={item.anime_kr_title}
+      imageLink={item.image_link}
     />
   );
 
@@ -114,7 +104,6 @@ export default function SearchResults() {
       </View>
 
       <FlatList<IGachaItem>
-        key={`numColumns-${numColumns}`}
         numColumns={numColumns}
         data={data}
         keyExtractor={(item, index) => `${item.id}_${index}`}
@@ -122,7 +111,7 @@ export default function SearchResults() {
           numColumns > 1
             ? {
               justifyContent: "space-between",
-              paddingHorizontal: 16,
+              paddingHorizontal: 30,
               marginTop: 10,
               marginBottom: 10,
             }
@@ -158,7 +147,7 @@ export default function SearchResults() {
         }
         ListEmptyComponent={() =>
           !loadingMore ? (
-            <View className="items-center justify-center h-11 ml-4 mr-4">
+            <View className="items-center justify-center h-11 mx-4">
               <Typography variant="Body2" color="secondary-dark">
                 검색 결과가 없습니다.
               </Typography>
