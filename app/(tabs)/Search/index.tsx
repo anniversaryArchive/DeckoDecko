@@ -7,6 +7,7 @@ import SimpleSwiper from "@components/SimpleSwiper";
 import * as searchHistory from "@utils/searchHistory";
 import * as supaBase from "@utils/supabase";
 import { IGachaItem } from "@/types/search";
+import {supabase} from "@utils/supabase";
 
 export default function Index() {
   const router = useRouter();
@@ -26,8 +27,45 @@ export default function Index() {
   }, []);
 
   const loadPopularGoods = useCallback(async () => {
-    const goods = await supaBase.getPopularGoods();
-    setPopularGoods(goods);
+    /**
+     * 인기 굿즈 불러오기
+     */
+    try {
+      const { data, error } = await supabase
+        .from("popular_goods")
+        .select(`
+        *,
+        gacha (
+          id,
+          name,
+          name_kr,
+          image_link,
+          anime_id,
+          price,
+          anime:anime_id (
+            kr_title
+          )
+        )
+      `)
+        .order("viewed_at", { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error("Supabase popular goods load error", error);
+        setPopularGoods([]);
+        return;
+      }
+
+      const goods = (data ?? []).map(item => ({
+        ...item.gacha,
+        anime_kr_title: item.gacha?.anime?.kr_title ?? "",
+      }));
+
+      setPopularGoods(goods);
+    } catch (e) {
+      console.error("Error loading popular goods", e);
+      setPopularGoods([]);
+    }
   }, []);
 
   const handleSearch = async (value: string) => {

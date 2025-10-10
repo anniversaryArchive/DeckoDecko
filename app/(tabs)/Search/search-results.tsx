@@ -25,7 +25,6 @@ export default function SearchResults() {
   }, []);
 
   const loadMore = async () => {
-    console.log("loadMore 호출, loadingMore:", loadingMore, "hasMore:", hasMore);
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
 
