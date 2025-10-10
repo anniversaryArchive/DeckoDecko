@@ -1,9 +1,15 @@
 import { View, Image } from "react-native";
 import Typography from "./Typography";
 import WiggleBorder from "./WiggleBorder";
-import {Button} from "@components/index";
+import Button from "./Button";
 
-const GoodsThumbnail = ({ nameKr, animeTitle, imageLink }) => {
+type GoodsThumbnailProps = {
+  nameKr: string;
+  animeTitle?: string;
+  imageLink?: string;
+};
+
+const GoodsThumbnail = ({ nameKr, animeTitle, imageLink }: GoodsThumbnailProps) => {
   return (
     <View className="flex gap-[10px] relative">
       <View className="w-[155px] h-[155px]">
