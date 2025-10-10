@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { View, Alert, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+
 import { Button, Typography, SearchBox, Chip } from "@components/index";
+import SimpleSwiper from "@components/SimpleSwiper";
 import * as searchHistory from "@utils/searchHistory";
 import * as supaBase from "@utils/supabase";
-import SimpleSwiper from "@components/SimpleSwiper";
-import { useRouter } from "expo-router";
-import {IGachaItem} from '@/types/search';
+import { IGachaItem } from "@/types/search";
 
 export default function Index() {
   const router = useRouter();

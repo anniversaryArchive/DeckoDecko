@@ -1,10 +1,10 @@
+import React, { useCallback, useState, useEffect } from "react";
+import { View, FlatList, Alert } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+
 import { SearchBox, Typography } from "@/components";
 import GoodsThumbnail from "@/components/GoodsThumbnail";
 import * as searchHistory from "@utils/searchHistory";
-import { useCallback, useState, useEffect } from "react";
-import { View, FlatList, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import React from "react";
 import type { IGachaItem } from "@/types/search";
 
 export default function SearchResults() {
