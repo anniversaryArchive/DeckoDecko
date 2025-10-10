@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { View, LayoutChangeEvent, DimensionValue } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
@@ -36,6 +36,7 @@ const WiggleBorder: React.FC<IWiggleBorderProps> = ({
   const [path, setPath] = useState<string>("");
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [childrenSize, setChildrenSize] = useState({ width: 0, height: 0 });
+  const childrenRef = useRef<View>(null);
 
   // seed : 랜덤 함수의 시드값 (일관된 결과를 생성하기 위한 값!)
   const memoizedPath = useMemo(() => {
@@ -167,17 +168,23 @@ const WiggleBorder: React.FC<IWiggleBorderProps> = ({
   };
 
   // children 크기 업데이트
-  const updateChildrenSize = (width: number, height: number) => {
-    // children 크기가 변경된 경우에만, 사이즈를 업데이트 해줌
-    if (Math.abs(childrenSize.width - width) > 0.5 || Math.abs(childrenSize.height - height) > 0.5)
-      setChildrenSize({ width: width, height: height });
-  };
+  const updateChildrenSize = useCallback(
+    (width: number, height: number) => {
+      // children 크기가 변경된 경우에만, 사이즈를 업데이트
+      if (
+        Math.abs(childrenSize.width - width) > 0.5 ||
+        Math.abs(childrenSize.height - height) > 0.5
+      )
+        setChildrenSize({ width: width, height: height });
+    },
+    [childrenSize.width, childrenSize.height]
+  );
 
-  // children 내용이 변경될 때마다 레이아웃 재계산을 위한 effect
+  // children 내용이 변경될 때마다 레이아웃 재계산
   useEffect(() => {
-    // children이 변경되면 childrenSize를 초기화하여 다시 측정하도록 함
-    setChildrenSize({ width: 0, height: 0 });
-  }, [children]);
+    // children이 변경되면 childrenRef로 다시 사이즈 측정
+    childrenRef.current?.measure((_, __, width, height) => updateChildrenSize(width, height));
+  }, [children, updateChildrenSize]);
 
   // 실제 렌더링에 사용할 크기 계산 (여백을 뺀 실제 border 영역)
   const actualWidth =
@@ -269,7 +276,7 @@ const WiggleBorder: React.FC<IWiggleBorderProps> = ({
       >
         {/* height가 고정되지 않은 경우, children 변화 감지를 위한 래퍼로 감싸줌 */}
         {height === undefined ? (
-          <View className="w-full" onLayout={handleChildrenLayout}>
+          <View className="w-full" onLayout={handleChildrenLayout} ref={childrenRef}>
             {children}
           </View>
         ) : (

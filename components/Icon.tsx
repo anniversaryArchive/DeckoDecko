@@ -9,6 +9,7 @@ interface IIconProps {
   size: number;
   fill?: string;
   stroke?: string;
+  strokeWidth?: number;
 }
 
 const iconMap: { [key: string]: React.FC<any> } = {
@@ -26,16 +27,24 @@ const iconMap: { [key: string]: React.FC<any> } = {
   newFolder: Icons.NewFolder,
   folderFill: Icons.FolderFill,
   plus: Icons.Plus,
+  image: Icons.Image,
+  bigHeadSearch: Icons.BigHeadSearch,
 };
 
 export default function Icon(props: IIconProps) {
-  const { name, size, fill = "currentColor", stroke = "none" } = props;
+  const { name, size, fill = "currentColor", stroke = "none", strokeWidth = 1 } = props;
 
   const IconComponent = iconMap[name];
 
   if (!IconComponent) return <></>;
 
   return (
-    <IconComponent width={size} height={size} fill={getColor(fill)} stroke={getColor(stroke)} />
+    <IconComponent
+      width={size}
+      height={size}
+      fill={getColor(fill)}
+      stroke={getColor(stroke)}
+      strokeWidth={strokeWidth}
+    />
   );
 }

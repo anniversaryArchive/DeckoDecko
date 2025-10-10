@@ -37,6 +37,8 @@ export default function RootLayout() {
           <Stack.Screen name="index" options={{ title: "HOME" }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="detail/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="notice" options={{ headerShown: false }} />
+          <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
         </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>

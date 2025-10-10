@@ -14,6 +14,8 @@ import Icon from "./Icon";
 import FolderPicker from "./FolderPicker";
 import BookmarkSheet from "./BookmarkSheet";
 import Divider from "./Divider";
+import LocalImage from "./LocalImage";
+import NoImage from "./NoImage";
 
 export {
   Typography,
@@ -35,4 +37,6 @@ export {
   FolderPicker,
   BookmarkSheet,
   Divider,
+  LocalImage,
+  NoImage,
 };

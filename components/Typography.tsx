@@ -8,7 +8,7 @@ interface ITypography {
   twotone?: never;
   className?: string;
   children: React.ReactNode;
-  numberOfLines?: number;            // 추가: 한 줄 제한
+  numberOfLines?: number; // 추가: 한 줄 제한
   ellipsizeMode?: "head" | "middle" | "tail" | "clip"; // 추가: 말줄임표 위치
 }
 
@@ -18,7 +18,7 @@ interface ITwoToneTypography {
   twotone?: keyof typeof twotoneColorMap;
   className?: never;
   children: React.ReactNode;
-  numberOfLines?: number;            // 추가: 한 줄 제한
+  numberOfLines?: number;
 }
 
 const typographyTheme = {
@@ -45,6 +45,7 @@ const typographyTheme = {
     "secondary-light": "text-secondary-light",
     "secondary-dark": "text-secondary-dark",
     black: "text-black",
+    "gray-05": "text-gray-05",
   },
 };
 
@@ -56,16 +57,21 @@ const twotoneColorMap = {
 };
 
 const Typography = (props: ITypography | ITwoToneTypography) => {
-  const { variant = "Body1", color = "secondary-dark", twotone, children, className = "" } = props;
+  const {
+    variant = "Body1",
+    color = "secondary-dark",
+    twotone,
+    children,
+    className = "",
+    numberOfLines = 1,
+  } = props;
 
   const getTwotoneTypography = (twotone: keyof typeof twotoneColorMap) => {
     const _variant = typographyTheme.variant[variant];
     const sizeRegex = /text-\[(\d+)px\]/;
     const sizeMatch = _variant.match(sizeRegex);
-
     const fontSize = parseInt(sizeMatch?.[1] ?? "0");
     const strokeWidth: number = variant === "Header1" ? 2 : 1.5;
-
     return (
       <Svg height={fontSize + strokeWidth} width="100%">
         <SvgText
@@ -90,10 +96,8 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
         <>{getTwotoneTypography(twotone)}</>
       ) : (
         <Text
-          className={`${typographyTheme.variant[variant]} ${
-            typographyTheme.color[color as keyof typeof typographyTheme.color] ?? typographyTheme.color["secondary-dark"]
-          } ${className}`}
-          numberOfLines={1}
+          className={`${typographyTheme.variant[variant]} ${typographyTheme.color[color as keyof typeof typographyTheme.color]} ${className}`}
+          numberOfLines={numberOfLines === 0 ? undefined : (numberOfLines ?? 1)}
           ellipsizeMode="tail"
           style={{ flexShrink: 1, overflow: "hidden" }}
         >
