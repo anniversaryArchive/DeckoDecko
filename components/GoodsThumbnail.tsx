@@ -35,7 +35,7 @@ const GoodsThumbnail = ({ nameKr, animeTitle, imageLink }: GoodsThumbnailProps) 
           color="primary"
           numberOfLines={1}
           ellipsizeMode="tail"
-          style={{ flex: 1, minWidth: 0 }}
+          style={{ flexShrink: 1, minHeight: 16 }}
         >
           {nameKr}
         </Typography>
