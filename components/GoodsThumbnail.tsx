@@ -24,14 +24,12 @@ const GoodsThumbnail = ({ nameKr, animeTitle, imageLink }: GoodsThumbnailProps) 
       </View>
       {/* 텍스트 영역 */}
       <View className="max-w-[150px] overflow-hidden flex gap-1 pl-1">
-        {animeTitle && (
-          <Button
-            layout="flex"
-            rounded
-            onPress={() => {}}>
-            {animeTitle}
-          </Button>
-        )}
+        <Button
+          layout="flex"
+          rounded
+          onPress={() => {}}>
+          {animeTitle ? animeTitle : '기타'}
+        </Button>
         <View className="flex flex-row items-center gap-2 max-w-[150px] overflow-hidden">
           <Typography
             variant="Body4"
