@@ -11,6 +11,7 @@ import Back from "./back.svg";
 import ChevronRight from "./chevronRight.svg";
 import NewFolder from "./newFolder.svg";
 import Plus from "./plus.svg";
+import ChevronDown from "./chevronDown.svg";
 import Image from "./image.svg";
 import BigHeadSearch from "./big_head_search.svg";
 
@@ -23,6 +24,7 @@ export {
   Close,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Plus2,
   Back,
   NewFolder,

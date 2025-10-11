@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "@/utils/supabase";
+import type {IGachaItem, IGoodsItem} from '@/types/search';
+
 
 const MAX_RECENT_SEARCHES = 10;
 const MAX_RECENT_GOODS = 10;
@@ -7,22 +9,21 @@ const MAX_RECENT_GOODS = 10;
 const SEARCH_STORAGE_KEY = "@recent_searches";
 const GOODS_STORAGE_KEY = "@recent_goods";
 
-export interface IGoodsItem {
-  id: string;
-  title: string;
-  subtitle: string;
-}
-
 /**
  * 최근 검색어 저장
  */
 export const addRecentSearch = async (searchItem: string) => {
   try {
+    // 1. 기존 검색어 목록 불러오기
     let searches = await getRecentSearches();
 
+    // 2. 중복된 검색어 제거 (기존에 있었다면 추가하지않고 맨 위로 올리기 위함)
     searches = searches.filter((item: string) => item !== searchItem);
+
+    // 3. 새로운 검색어를 배열 맨 앞에 추가
     searches.unshift(searchItem);
 
+    // 4. 최대 10개까지만 유지
     const newSearches = searches.slice(0, MAX_RECENT_SEARCHES);
     await AsyncStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(newSearches));
   } catch (e) {
@@ -87,7 +88,7 @@ export const addRecentGood = async (item: IGoodsItem) => {
 /**
  * 최근 본 굿즈 불러오기
  */
-export const getRecentGoods = async (): Promise<IGoodsItem[]> => {
+export const getRecentGoods = async (): Promise<IGachaItem[]> => {
   try {
     const goodsJSON = await AsyncStorage.getItem(GOODS_STORAGE_KEY);
     return goodsJSON ? JSON.parse(goodsJSON) : [];
@@ -108,47 +109,36 @@ export const clearRecentGoods = async () => {
   }
 };
 
+
 /**
- * 인기 굿즈 불러오기
+ * gacha 테이블에서 name_kr과 일치하는 데이터 검색 (offset + limit 지원),
+ * 각 아이템마다 전체 결과 수 total_count 포함
  */
-export const getPopularGoods = async (
-  limit: number = 10
-): Promise<IGoodsItem[]> => {
+export const searchGachaAndAnimeByName = async (
+  keyword: string,
+  limit = 10,
+  offset = 0
+): Promise<{ items: IGachaItem[]; totalCount: number }> => {
   try {
-    const { data, error } = await supabase
-      .from("popular_goods")
-      .select(`
-        *,
-        gacha (
-          id,
-          name,
-          name_kr,
-          image_link,
-          anime_id,
-          price
-        )
-      `)
-      .order("viewed_at", { ascending: false })
-      .limit(limit);
+    const { data, error } = await supabase.rpc("search_gacha_with_anime", {
+      keyword,
+      limit_count: limit,
+      offset_count: offset,
+    });
 
     if (error) {
-      console.error("Supabase popular goods load error", error);
-      return [];
+      console.error("Supabase RPC search error:", error);
+      return { items: [], totalCount: 0 };
     }
 
-    return (
-      data?.map((item) => ({
-        id: item.gacha.id,
-        title: item.gacha.name_kr,
-        subtitle: item.gacha.name,
-        imageLink: item.gacha.image_link,
-        animeId: item.gacha.anime_id,
-        price: item.gacha.price,
-        viewedAt: item.viewed_at,
-      })) || []
-    );
+    const items = (data as IGachaItem[]) || [];
+
+    // total_count는 결과 배열의 첫 요소에서 읽음, 없으면 0 처리
+    const totalCount = items.length > 0 ? items[0].total_count || 0 : 0;
+
+    return { items, totalCount };
   } catch (e) {
-    console.error("Error loading popular goods", e);
-    return [];
+    console.error("Unexpected error in searchGachaAndAnimeByName:", e);
+    return { items: [], totalCount: 0 };
   }
 };

@@ -1,59 +1,96 @@
 import { useCallback, useEffect, useState } from "react";
 import { View, Alert, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+
 import { Button, Typography, SearchBox, Chip } from "@components/index";
-import * as searchHistory from "@utils/searchHistory";
 import SimpleSwiper from "@components/SimpleSwiper";
+import * as searchHistory from "@utils/searchHistory";
+import * as supaBase from "@utils/supabase";
+import { IGachaItem } from "@/types/search";
+import {supabase} from "@utils/supabase";
 
-interface IGoodsItem {
-  id: string;
-  title: string;
-  subtitle: string;
-}
-
-export default function Search() {
+export default function Index() {
+  const router = useRouter();
+  const [searchValue, setSearchValue] = useState(""); // 검색어 상태 추가
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [recentGoods, setRecentGoods] = useState<IGoodsItem[]>([]);
-  const [popularGoods, setPopularGoods] = useState<IGoodsItem[]>([]);
-
-  // 로그인 여부 관련 코드 삭제
-  // userId도 삭제
+  const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
+  const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
 
   const loadSearches = useCallback(async () => {
-    // 항상 로컬 DB 사용
-    const searches = await searchHistory.getRecentSearches(false);
+    const searches = await searchHistory.getRecentSearches();
     setRecentSearches(searches);
   }, []);
 
   const loadRecentGoods = useCallback(async () => {
-    // 항상 로컬 DB 사용
-    const goods = await searchHistory.getRecentGoods(false);
+    const goods = await searchHistory.getRecentGoods();
     setRecentGoods(goods);
   }, []);
 
   const loadPopularGoods = useCallback(async () => {
-    const goods = await searchHistory.getPopularGoods();
-    setPopularGoods(goods);
+    /**
+     * 인기 굿즈 불러오기
+     */
+    try {
+      const { data, error } = await supabase
+        .from("gacha_view_log")
+        .select(`
+        *,
+        gacha (
+          id,
+          name,
+          name_kr,
+          image_link,
+          anime_id,
+          price,
+          anime:anime_id (
+            kr_title
+          )
+        )
+      `)
+        // .order("viewed_at", { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error("Supabase popular goods load error", error);
+        setPopularGoods([]);
+        return;
+      }
+
+      const goods = (data ?? []).map(item => ({
+        ...item.gacha,
+        anime_kr_title: item.gacha?.anime?.kr_title ?? "",
+      }));
+
+      setPopularGoods(goods);
+    } catch (e) {
+      console.error("Error loading popular goods", e);
+      setPopularGoods([]);
+    }
   }, []);
 
   const handleSearch = async (value: string) => {
-    // 로그인 여부 전달 제거, 항상 로컬 DB 사용
-    await searchHistory.addRecentSearch(value, false);
+    await searchHistory.addRecentSearch(value);
     await loadSearches();
+
+    router.push({
+      pathname: "/Search/search-results",
+      params: { searchTerm: value }
+    });
   };
 
   const handleRemoveSearches = async (value: string) => {
-    await searchHistory.removeRecentSearch(value, false);
+    await searchHistory.removeRecentSearch(value);
     await loadSearches();
   };
 
   const handleClearRecentGoods = () => {
-    Alert.alert("최근 본 굿즈를 전체 삭제하시겠습니까?", undefined, [
+    Alert.alert("최근 본 굿즈를 전체 삭제하시겠습니까?", '', [
       { text: "취소", style: "cancel" },
       {
         text: "삭제",
         onPress: async () => {
           try {
-            await searchHistory.clearRecentGoods(false);
+            await searchHistory.clearRecentGoods();
             setRecentGoods([]);
           } catch (error) {
             console.error("Error clearing recent goods", error);
@@ -64,12 +101,12 @@ export default function Search() {
   };
 
   const handleClearRecentSearches = () => {
-    Alert.alert("최근 검색어를 전체 삭제하시겠습니까?", undefined, [
+    Alert.alert("최근 검색어를 전체 삭제하시겠습니까?", '', [
       { text: "취소", style: "cancel" },
       {
         text: "삭제",
         onPress: async () => {
-          await searchHistory.clearRecentSearches(false);
+          await searchHistory.clearRecentSearches();
           setRecentSearches([]);
         },
       },
@@ -83,10 +120,16 @@ export default function Search() {
   }, [loadSearches, loadRecentGoods, loadPopularGoods]);
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-white">
       <View className="ml-2 mr-2">
-        <SearchBox className="h-16" onSubmit={handleSearch} />
+        <SearchBox
+          className="h-16"
+          value={searchValue}
+          onChangeText={setSearchValue}
+          onSubmit={handleSearch}
+        />
       </View>
+
       {/* 최근 검색어 */}
       <View className="mt-4 mb-4">
         <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
