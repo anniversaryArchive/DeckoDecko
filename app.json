@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "DeckoDecko",
-    "slug": "DeckoDecko",
+    "slug": "decko-decko",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "DeckoDecko",
+    "scheme": "deckodecko",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
