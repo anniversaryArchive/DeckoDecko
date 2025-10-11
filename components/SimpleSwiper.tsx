@@ -66,7 +66,7 @@ export default function SimpleSwiper({
         horizontal
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}_${index}`}
         showsHorizontalScrollIndicator={false}
         snapToInterval={itemWidth + itemSpacing / 2}
         decelerationRate="fast"
