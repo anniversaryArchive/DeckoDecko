@@ -10,8 +10,7 @@ import {
 } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
-
-import { WiggleBorder } from "@/components";
+import WiggleBorder from "@components/WiggleBorder";
 
 interface SlideItem {
   id: number;
@@ -41,7 +40,7 @@ export default function FeaturedSwiper({
     const onChange = ({ window }: { window: { width: number } }) => {
       setScreenWidth(window.width);
     };
-    const subscription = Dimensions.addEventListener('change', onChange);
+    const subscription = Dimensions.addEventListener("change", onChange);
     return () => {
       subscription.remove();
     };
@@ -86,7 +85,7 @@ export default function FeaturedSwiper({
   );
 
   return (
-    <View style={[styles.container, { overflow: 'visible' }]}>
+    <View style={[styles.container, { overflow: "visible" }]}>
       <Text style={styles.headerTitle}>{title}</Text>
       <Carousel
         loop={loop}
@@ -105,9 +104,9 @@ export default function FeaturedSwiper({
         pagingEnabled={true}
         snapEnabled={true}
         style={[
-          Platform.OS === 'web'
-            ? { alignSelf: 'center', marginHorizontal: 0, overflow: 'visible' }
-            : { marginHorizontal: 0, overflow: 'visible' },
+          Platform.OS === "web"
+            ? { alignSelf: "center", marginHorizontal: 0, overflow: "visible" }
+            : { marginHorizontal: 0, overflow: "visible" },
         ]}
       />
     </View>
@@ -116,20 +115,20 @@ export default function FeaturedSwiper({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     margin: 0,
     padding: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#998372',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#998372",
+    textAlign: "center",
     marginTop: 30,
     marginBottom: 15,
-    fontFamily: 'DunggeunmisoB',
+    fontFamily: "DunggeunmisoB",
   },
   slide: { overflow: "hidden", justifyContent: "flex-end" },
   image: {
@@ -138,6 +137,6 @@ const styles = StyleSheet.create({
   },
   empty: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
 });

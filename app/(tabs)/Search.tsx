@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { View, Alert, ScrollView } from "react-native";
-import { Button, Typography, SearchBox, Chip } from "@components/index";
+import { Button, Typography, SearchBox, Chip, SimpleSwiper } from "@components/index";
 import * as searchHistory from "@utils/searchHistory";
-import SimpleSwiper from "@components/SimpleSwiper";
 
 interface IGoodsItem {
   id: string;
@@ -89,7 +88,7 @@ export default function Search() {
       </View>
       {/* 최근 검색어 */}
       <View className="mt-4 mb-4">
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
+        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="Header4">최근 검색어</Typography>
           {recentSearches.length > 0 && (
             <Button
@@ -124,7 +123,7 @@ export default function Search() {
             })}
           </ScrollView>
         ) : (
-          <View className="items-center justify-center h-11">
+          <View className="h-11 items-center justify-center">
             <Typography variant="Body2" color="secondary-dark">
               최근 검색어가 없습니다.
             </Typography>
@@ -134,7 +133,7 @@ export default function Search() {
 
       {/* 최근 본 굿즈 */}
       <View className="mt-4 mb-4">
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
+        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="Header4">최근 본 굿즈</Typography>
           {recentGoods.length > 0 && (
             <Button
@@ -155,7 +154,7 @@ export default function Search() {
             onSlidePress={(item) => console.log("선택한 굿즈:", item)}
           />
         ) : (
-          <View className="items-center justify-center h-11 ml-4 mr-4">
+          <View className="h-11 items-center justify-center ml-4 mr-4">
             <Typography variant="Body2" color="secondary-dark">
               최근 본 굿즈가 없습니다.
             </Typography>
@@ -165,7 +164,7 @@ export default function Search() {
 
       {/* 인기 굿즈 */}
       <View className="mt-4 mb-4">
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
+        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="Header4">인기 굿즈</Typography>
         </View>
         {popularGoods.length > 0 ? (
@@ -176,7 +175,7 @@ export default function Search() {
             onSlidePress={(item) => console.log("선택한 인기 굿즈:", item)}
           />
         ) : (
-          <View className="items-center justify-center h-11 ml-4 mr-4">
+          <View className="h-11 items-center justify-center ml-4 mr-4">
             <Typography variant="Body2" color="secondary-dark">
               인기 굿즈가 없습니다.
             </Typography>

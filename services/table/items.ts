@@ -2,7 +2,7 @@ import * as SQLite from "expo-sqlite";
 
 import CommonTabledbInstance from "@/utils/sqlite";
 import { TCreateItemDTO, TItem, TUpdateItemDTO } from "@/types/item";
-import { TFolder } from "@/types/folder";
+import type { TFolder } from "@/types/folder";
 
 class TbItems {
   #dbInstance: Promise<SQLite.SQLiteDatabase | null>;
