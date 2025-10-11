@@ -120,7 +120,7 @@ export default function Index() {
   }, [loadSearches, loadRecentGoods, loadPopularGoods]);
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-white">
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
