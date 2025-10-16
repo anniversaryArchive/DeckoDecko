@@ -110,7 +110,7 @@ export default function MyBookmark() {
   }, [bookmarkType]);
 
   return (
-    <View className="flex-1 gap-4 px- pt-1">
+    <View className="flex-1 gap-4 px-6 pt-1">
       {/* Header */}
       <View className="flex flex-row items-center justify-between">
         <Typography variant="header1" color="primary">
