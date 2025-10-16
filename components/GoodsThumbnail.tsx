@@ -24,17 +24,12 @@ const GoodsThumbnail = ({ title, subtitle, imgUrl }: GoodsThumbnailProps) => {
       {/* 텍스트 영역 */}
       <View className="max-w-[150px] overflow-hidden flex gap-1">
         <View className="flex flex-row items-center gap-2">
-          <Typography
-            variant="Body4"
-            color="primary"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
+          <Typography variant="body3" color="primary" numberOfLines={1} ellipsizeMode="tail">
             {title}
           </Typography>
         </View>
         <View className="max-w-[150px] overflow-hidden">
-          <Typography variant="Body4" numberOfLines={1} ellipsizeMode="tail">
+          <Typography variant="body3" numberOfLines={1} ellipsizeMode="tail">
             {subtitle}
           </Typography>
         </View>

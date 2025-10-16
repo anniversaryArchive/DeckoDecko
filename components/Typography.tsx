@@ -1,10 +1,11 @@
-import { Text, View } from "react-native";
+import { PixelRatio, Text, View } from "react-native";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { colors } from "@utils/tailwind-colors";
+import { fontSize } from "@utils/tailwind-fontSize";
 
 interface ITypography {
   variant?: keyof typeof typographyTheme.variant;
-  color?: string;
+  color?: keyof typeof typographyTheme.color;
   twotone?: never;
   className?: string;
   children: React.ReactNode;
@@ -21,22 +22,24 @@ interface ITwoToneTypography {
   numberOfLines?: number;
 }
 
+const BASE_FONT_SIZE = 16 * PixelRatio.getFontScale();
+
 const typographyTheme = {
   variant: {
-    Header1: "text-[36px] font-DunggeunmisoB",
-    Header2: "text-[24px] font-DunggeunmisoB",
-    Header3: "text-[20px] font-DunggeunmisoB",
-    Header4: "text-[20px] font-Dunggeunmiso",
-    Header5: "text-[16px] font-DunggeunmisoB",
-    Title1: "text-[17px] font-Dunggeunmiso",
-    Body1: "text-[16px] font-Dunggeunmiso",
-    Body2: "text-[15px] font-Dunggeunmiso",
-    Body3: "text-[14px] font-Dunggeunmiso",
-    Body4: "text-[14px] font-DunggeunmisoB",
-    Footnote: "text-[13px] font-Dunggeunmiso",
-    Caption: "text-[12px] font-Dunggeunmiso",
-    Tag: "text-[14px] font-DunggeunmisoB",
-    Caption2: "text-[12px] font-DunggeunmisoB",
+    header1: "text-header1 font-DunggeunmisoB",
+    header2: "text-header2 font-DunggeunmisoB",
+    header3: "text-header3 font-DunggeunmisoB",
+    header4: "text-header4 font-Dunggeunmiso",
+    header5: "text-header5 font-DunggeunmisoB",
+    title1: "text-title1 font-Dunggeunmiso",
+    body1: "text-body1 font-Dunggeunmiso",
+    body2: "text-body2 font-Dunggeunmiso",
+    body3: "text-body3 font-DunggeunmisoB",
+    body4: "text-body4 font-Dunggeunmiso",
+    footnote: "text-footnote font-Dunggeunmiso",
+    caption1: "text-caption1 font-Dunggeunmiso",
+    caption2: "text-caption2 font-DunggeunmisoB",
+    tag: "text-tag font-DunggeunmisoB",
   },
   color: {
     primary: "text-primary",
@@ -58,7 +61,7 @@ const twotoneColorMap = {
 
 const Typography = (props: ITypography | ITwoToneTypography) => {
   const {
-    variant = "Body1",
+    variant = "body1",
     color = "secondary-dark",
     twotone,
     children,
@@ -67,20 +70,23 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
   } = props;
 
   const getTwotoneTypography = (twotone: keyof typeof twotoneColorMap) => {
-    const _variant = typographyTheme.variant[variant];
-    const sizeRegex = /text-\[(\d+)px\]/;
-    const sizeMatch = _variant.match(sizeRegex);
-    const fontSize = parseInt(sizeMatch?.[1] ?? "0");
-    const strokeWidth: number = variant === "Header1" ? 2 : 1.5;
+    const regex = /\d+(\.\d+)?/g;
+
+    const [scale, _] = fontSize[variant];
+    const remValue = scale.match(regex);
+
+    const responsiveFontSize = BASE_FONT_SIZE * Number(remValue);
+
+    const strokeWidth: number = variant === "header1" ? 2 : 1.5;
     return (
-      <Svg height={fontSize + strokeWidth} width="100%">
+      <Svg height={responsiveFontSize + strokeWidth} width="100%">
         <SvgText
           fill={twotoneColorMap[twotone].fill} // 텍스트 내부 색상
           stroke={twotoneColorMap[twotone].stroke} // 외곽선 색상
           strokeWidth={strokeWidth} // 외곽선 두께
-          fontSize={fontSize} // 폰트 크기
+          fontSize={responsiveFontSize} // 폰트 크기
           x={0}
-          y={fontSize / 2 + strokeWidth}
+          y={responsiveFontSize / 2 + strokeWidth}
           fontFamily={"DunggeunmisoB"}
           alignmentBaseline="middle"
         >
@@ -96,8 +102,9 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
         <>{getTwotoneTypography(twotone)}</>
       ) : (
         <Text
-          className={`${typographyTheme.variant[variant]} ${typographyTheme.color[color as keyof typeof typographyTheme.color]} ${className}`}
+          className={`${typographyTheme.variant[variant]} ${typographyTheme.color[color]} ${className}`}
           numberOfLines={numberOfLines === 0 ? undefined : (numberOfLines ?? 1)}
+          maxFontSizeMultiplier={1.5}
           ellipsizeMode="tail"
           style={{ flexShrink: 1, overflow: "hidden" }}
         >
