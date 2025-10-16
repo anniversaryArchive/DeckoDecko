@@ -82,7 +82,7 @@ const FolderPicker = (props: IFolderPickerProps) => {
               </Pressable>
             )}
           </View>
-          <Typography variant="Header3" className="-z-10 absolute left-0 right-0 text-center">
+          <Typography variant="header3" className="-z-10 absolute left-0 right-0 text-center">
             {mode === "select" ? "폴더 선택" : "폴더 추가"}
           </Typography>
           <View className="right-4 absolute z-10 w-8">

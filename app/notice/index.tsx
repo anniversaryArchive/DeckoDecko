@@ -4,7 +4,7 @@ import { Typography } from "@/components";
 export default function Notice() {
   return (
     <View>
-      <Typography variant="Header1">Notice</Typography>
+      <Typography variant="header1">Notice</Typography>
     </View>
   );
 }

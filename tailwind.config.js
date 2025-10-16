@@ -1,4 +1,5 @@
 const { colors } = require("./utils/tailwind-colors");
+const { fontSize } = require("./utils/tailwind-fontSize");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -13,6 +14,9 @@ module.exports = {
       fontFamily: {
         Dunggeunmiso: ["Dunggeunmiso"],
         DunggeunmisoB: ["DunggeunmisoB"],
+      },
+      fontSize: {
+        ...fontSize
       },
     },
   },

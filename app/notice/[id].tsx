@@ -49,16 +49,16 @@ export default function NoticeDetail() {
           contentInsetAdjustmentBehavior="automatic"
           showsVerticalScrollIndicator={true}
         >
-          <Typography variant="Body3" className="text-right">
+          <Typography variant="body4" className="text-right">
             {formatYmdHm(notice.created_at)}
           </Typography>
-          <Typography variant="Body1" color="black" className="mt-6" numberOfLines={0}>
+          <Typography variant="body1" color="black" className="mt-6" numberOfLines={0}>
             {notice.content}
           </Typography>
         </ScrollView>
       ) : (
         <View className="p-6">
-          <Typography variant="Body1" color="black" className="mt-6" numberOfLines={0}>
+          <Typography variant="body1" color="black" className="mt-6" numberOfLines={0}>
             {isLoading ? "Loading..." : "해당 공지사항을 찾을 수 없습니다!"}
           </Typography>
         </View>

@@ -41,66 +41,70 @@ export default function StyleGuide() {
       <ScrollView className="flex-1 p-4" contentContainerClassName="flex gap-6">
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >
             Typography
           </Typography>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               variant
             </Typography>
             <View className=" flex gap-2">
-              <Typography variant="Header1">Header1 </Typography>
-              <Typography variant="Header2">Header2</Typography>
-              <Typography variant="Header3">Header3</Typography>
-              <Typography variant="Header4">Header4</Typography>
-              <Typography variant="Title1">Title1</Typography>
-              <Typography variant="Body1">Body1</Typography>
-              <Typography variant="Body2">Body2</Typography>
-              <Typography variant="Body3">Body3</Typography>
-              <Typography variant="Footnote">Footnote</Typography>
-              <Typography variant="Caption">Caption</Typography>
+              <Typography variant="header1">Header1 </Typography>
+              <Typography variant="header2">Header2</Typography>
+              <Typography variant="header3">Header3</Typography>
+              <Typography variant="header4">Header4</Typography>
+              <Typography variant="header5">Header5</Typography>
+              <Typography variant="title1">Title1</Typography>
+              <Typography variant="body1">Body1</Typography>
+              <Typography variant="body2">Body2</Typography>
+              <Typography variant="body3">Body3</Typography>
+              <Typography variant="body4">Body4</Typography>
+              <Typography variant="footnote">Footnote</Typography>
+              <Typography variant="caption1">Caption1</Typography>
+              <Typography variant="caption2">Caption2</Typography>
+              <Typography variant="tag">Tag</Typography>
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               color
             </Typography>
             <View className="flex gap-2 p-1 bg-black">
-              <Typography variant="Header4" color="primary">
+              <Typography variant="header4" color="primary">
                 primary
               </Typography>
-              <Typography variant="Header4" color="primary-light">
+              <Typography variant="header4" color="primary-light">
                 primary-light
               </Typography>
-              <Typography variant="Header4" color="secondary">
+              <Typography variant="header4" color="secondary">
                 secondary
               </Typography>
-              <Typography variant="Header4" color="secondary-light">
+              <Typography variant="header4" color="secondary-light">
                 secondary-light
               </Typography>
-              <Typography variant="Header4" color="secondary-dark">
+              <Typography variant="header4" color="secondary-dark">
                 secondary-dark (default)
               </Typography>
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               twotone
             </Typography>
             <View className="flex w-full gap-2">
-              <Typography variant="Header1" twotone="primary">
+              <Typography variant="header1" twotone="primary">
                 H1) 하이큐!!
               </Typography>
-              <Typography variant="Header1" twotone="primary">
+              <Typography variant="header1" twotone="primary">
                 H1) Haikyu!!
               </Typography>
-              <Typography variant="Header2" twotone="primary">
+              <Typography variant="header2" twotone="primary">
                 H2) 하이큐!! Haikyu!!
               </Typography>
-              <Typography variant="Header3" twotone="primary">
+              <Typography variant="header3" twotone="primary">
                 H3) 하이큐!! Haikyu!!
               </Typography>
             </View>
@@ -108,7 +112,7 @@ export default function StyleGuide() {
         </View>
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >
@@ -116,7 +120,7 @@ export default function StyleGuide() {
           </Typography>
           <View className="flex w-full gap-4">
             <View className="flex flex-row gap-5">
-              <Typography variant="Header3" color="secondary" className="w-[100px]">
+              <Typography variant="header3" color="secondary" className="w-[100px]">
                 size
               </Typography>
               <View className="flex flex-row items-start gap-2">
@@ -133,7 +137,7 @@ export default function StyleGuide() {
               </View>
             </View>
             <View className="flex flex-row gap-5">
-              <Typography variant="Header3" color="secondary" className="w-[100px]">
+              <Typography variant="header3" color="secondary" className="w-[100px]">
                 variant / disabled
               </Typography>
               <View className=" flex gap-2">
@@ -177,7 +181,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               rounded
             </Typography>
             <View className=" flex flex-row gap-2">
@@ -190,7 +194,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               width
             </Typography>
             <View className="grow flex flex-row gap-2">
@@ -203,7 +207,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               bold
             </Typography>
             <View className="grow flex flex-row gap-2">
@@ -216,7 +220,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px] break-words">
+            <Typography variant="header3" color="secondary" className="w-[100px] break-words">
               textAlign (w-full)
             </Typography>
             <View className="grow flex gap-2">
@@ -234,14 +238,14 @@ export default function StyleGuide() {
         </View>
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >
             InputBox
           </Typography>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               size
             </Typography>
             <View className="grow flex gap-2">
@@ -251,7 +255,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               variant
             </Typography>
             <View className="grow flex gap-2">
@@ -261,7 +265,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               optional
             </Typography>
             <View className="grow flex gap-2">
@@ -272,14 +276,14 @@ export default function StyleGuide() {
         </View>
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >
             TextBox
           </Typography>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               variant
             </Typography>
             <View className="grow flex gap-2">
@@ -289,7 +293,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               optional
             </Typography>
             <View className="grow flex gap-2">
@@ -298,14 +302,14 @@ export default function StyleGuide() {
           </View>
           <View className="flex gap-4">
             <Typography
-              variant="Header2"
+              variant="header2"
               color="primary"
               className="bg-primary-light border-primary-light p-1 border"
             >
               SearchBox
             </Typography>
             <View className="flex gap-5">
-              <Typography variant="Header3" color="secondary" className="w-[100px]">
+              <Typography variant="header3" color="secondary" className="w-[100px]">
                 color
               </Typography>
               <View className="grow flex gap-2">
@@ -321,20 +325,20 @@ export default function StyleGuide() {
           </View>
           <View className="flex gap-4">
             <Typography
-              variant="Header2"
+              variant="header2"
               color="primary"
               className="bg-primary-light border-primary-light p-1 border"
             >
               WiggleBorder
             </Typography>
             <View className="flex flex-row gap-5">
-              <Typography variant="Header3" color="secondary" className="w-[100px]">
+              <Typography variant="header3" color="secondary" className="w-[100px]">
                 Default
               </Typography>
               <View className="flex-1">
                 <WiggleBorder>
                   <View className="p-2">
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       Default Wiggle Border
                     </Typography>
                   </View>
@@ -342,13 +346,13 @@ export default function StyleGuide() {
               </View>
             </View>
             <View className="flex flex-row gap-5">
-              <Typography variant="Header3" color="secondary" className="w-[100px]">
+              <Typography variant="header3" color="secondary" className="w-[100px]">
                 Colors
               </Typography>
               <View className="flex-1">
                 <WiggleBorder strokeColor="secondary">
                   <View className="p-2">
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       Secondary Wiggle Border
                     </Typography>
                   </View>
@@ -356,10 +360,10 @@ export default function StyleGuide() {
 
                 <WiggleBorder strokeColor="secondary.dark">
                   <View className="p-2">
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       Secondary Dark Wiggle Border
                     </Typography>
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       Tailwind 에 명시한 컬러 모두 가능 ~
                     </Typography>
                   </View>
@@ -367,7 +371,7 @@ export default function StyleGuide() {
 
                 <WiggleBorder strokeColor="#ccaaaa">
                   <View className="p-2">
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       Hex 컬러도 당연히 가능함둥
                     </Typography>
                   </View>
@@ -375,23 +379,23 @@ export default function StyleGuide() {
               </View>
             </View>
             <View className="flex flex-row gap-5">
-              <Typography variant="Header3" color="secondary" className="w-[100px]">
+              <Typography variant="header3" color="secondary" className="w-[100px]">
                 Wiggle
               </Typography>
               <View className="flex-1">
                 <WiggleBorder wiggle={100}>
                   <View className="p-2">
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       Wiggle 100
                     </Typography>
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       Tailwind 에 명시한 컬러 모두 가능 ~
                     </Typography>
                   </View>
                 </WiggleBorder>
                 <WiggleBorder smoothen={100}>
                   <View className="p-2">
-                    <Typography variant="Body2" className="text-center">
+                    <Typography variant="body2" className="text-center">
                       smoothen 100
                     </Typography>
                   </View>
@@ -411,7 +415,7 @@ export default function StyleGuide() {
           </View>
           <View className="flex gap-4">
             <Typography
-              variant="Header2"
+              variant="header2"
               color="primary"
               className="bg-primary-light border-primary-light p-1 border"
             >
@@ -419,13 +423,13 @@ export default function StyleGuide() {
             </Typography>
             <View className="flex flex-row justify-around">
               <Button onPress={() => setProgress(progress < 10 ? 0 : progress - 10)}>-10</Button>
-              <Typography variant="Body2" className="my-auto">
+              <Typography variant="body2" className="my-auto">
                 {progress}
               </Typography>
               <Button onPress={() => setProgress(progress > 90 ? 100 : progress + 10)}>+10</Button>
             </View>
             <View className="flex flex-row gap-5">
-              <Typography variant="Header3" color="secondary" className="w-[100px]">
+              <Typography variant="header3" color="secondary" className="w-[100px]">
                 Default
               </Typography>
               <View className="flex flex-col justify-center flex-1 gap-2">
@@ -442,14 +446,14 @@ export default function StyleGuide() {
         </View>
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >
             Swiper
           </Typography>
           <View className="flex gap-2">
-            <Typography variant="Header3" color="secondary">
+            <Typography variant="header3" color="secondary">
               Basic Swiper
             </Typography>
             <View className="-mx-4">
@@ -462,12 +466,12 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex gap-2">
-            <Typography variant="Header3" color="secondary">
+            <Typography variant="header3" color="secondary">
               Featured Swiper
             </Typography>
             <FeaturedSwiper
               title="새로 나왔어요!"
-              data={[{ id: "1", imageUrl: "" }, { id: "2", imageUrl: "" }, { id: "3" }]}
+              data={[{ id: 1, imageUrl: "" }, { id: 2, imageUrl: "" }, { id: 3 }]}
               onSlidePress={(item, index) => {
                 // console.log('슬라이드 클릭됨:', index, item);
               }}
@@ -476,7 +480,7 @@ export default function StyleGuide() {
         </View>
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >
@@ -502,14 +506,14 @@ export default function StyleGuide() {
         </View>
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >
             Chip
           </Typography>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               color
             </Typography>
             <View className="flex flex-row items-start gap-2">
@@ -518,7 +522,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               size
             </Typography>
             <View className=" flex flex-row gap-2">
@@ -528,7 +532,7 @@ export default function StyleGuide() {
             </View>
           </View>
           <View className="flex flex-row gap-5">
-            <Typography variant="Header3" color="secondary" className="w-[100px]">
+            <Typography variant="header3" color="secondary" className="w-[100px]">
               optional
             </Typography>
             <View className="flex items-start gap-2">
@@ -547,13 +551,13 @@ export default function StyleGuide() {
                   console.log("onDelete", value);
                 }}
               />
-              <Typography variant="Footnote">* onClick&onDelete 동시 사용 가능</Typography>
+              <Typography variant="footnote">* onClick&onDelete 동시 사용 가능</Typography>
             </View>
           </View>
         </View>
         <View className="flex gap-4">
           <Typography
-            variant="Header2"
+            variant="header2"
             color="primary"
             className="bg-primary-light border-primary-light p-1 border"
           >

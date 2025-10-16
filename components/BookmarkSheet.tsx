@@ -90,7 +90,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps) => {
     <>
       <BottomSheet open={isOpen} onClose={handleClose}>
         <SafeAreaView edges={["bottom"]} className="flex justify-center gap-3">
-          <Typography variant="Header3" className="text-center">
+          <Typography variant="header3" className="text-center">
             추가
           </Typography>
           <Segment segments={BOOKMARK_TYPE} selectedKey={type} onSelect={setType} />

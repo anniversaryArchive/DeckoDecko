@@ -98,7 +98,7 @@ export default function DetailPagef() {
           <Chip label={gachaData?.anime?.kr_title || "기타"} />
         </View>
         {/* 가챠 이름 */}
-        <Typography variant="Header2" twotone="primary">
+        <Typography variant="header2" twotone="primary">
           {gachaData?.name_kr}
         </Typography>
         <View className="py-2">
@@ -118,7 +118,7 @@ export default function DetailPagef() {
                 />
               </View>
               <View className="my-auto flex-1">
-                <Typography variant="Header5" color="secondary.dark">
+                <Typography variant="header5" color="secondary.dark">
                   {item.name}
                 </Typography>
               </View>
@@ -126,7 +126,7 @@ export default function DetailPagef() {
               <View
                 className={`rounded my-auto bg-${item.type === "wish" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
               >
-                <Typography variant="Tag" color="secondary-light">
+                <Typography variant="tag" color="secondary-light">
                   {item.type.toUpperCase()}
                 </Typography>
               </View>
