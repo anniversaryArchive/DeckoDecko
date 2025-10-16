@@ -6,13 +6,13 @@ import folder from "@table/folders";
 import { colors } from "@utils/tailwind-colors";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 
-import Icon from "./Icon";
-import Button from "./Button";
-import Typography from "./Typography";
+import Icon from "@components/Icon";
+import { InputBox } from "@components/Input";
+import Typography from "@components/Typography";
+import Button from "@components/Button";
 import BottomSheet from "./BottomSheet";
-import { InputBox } from "./Input";
 
-import { TFolder } from "@/types/folder";
+import type { TFolder } from "@/types/folder";
 
 interface IFolderPickerProps {
   onSelectFolder: (folder: TFolder) => void;

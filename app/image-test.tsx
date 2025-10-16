@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Text, View, Pressable } from "react-native";
 
-import LocalImage from "@components/LocalImage";
 import images from "@/services/table/images";
 import { saveImage } from "@utils/mediaLibraryService";
+import { LocalImage } from "@components/index";
 
 export default function Index() {
   const [image, setImage] = useState<string>();

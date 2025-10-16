@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Pressable, Text } from "react-native";
 import cn from "@utils/cn";
-import { TButtonVariant, TButtonStyleSet, TButtonProps } from "@/types/button";
+import type { TButtonVariant, TButtonStyleSet, TButtonProps } from "@/types/button";
 
 export const buttonTheme = {
   color: {

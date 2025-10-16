@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from 'react-native';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from "react-native";
 
 type DropDownProps<T> = {
   data: T[];
@@ -11,13 +11,13 @@ type DropDownProps<T> = {
 };
 
 function DropDown<T>({
-                       data,
-                       selectedValue,
-                       onValueChange,
-                       labelExtractor,
-                       placeholder = "Select",
-                       disabled = false,
-                     }: DropDownProps<T>) {
+  data,
+  selectedValue,
+  onValueChange,
+  labelExtractor,
+  placeholder = "Select",
+  disabled = false,
+}: DropDownProps<T>) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleSelect = (item: T) => {
@@ -62,44 +62,44 @@ function DropDown<T>({
 const styles = StyleSheet.create({
   button: {
     padding: 12,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#FFBBC1',
+    borderColor: "#FFBBC1",
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   buttonText: {
     fontSize: 14,
-    color: '#998372',
-    textAlign: 'center',
-    fontFamily: 'DunggeunmisoB',
+    color: "#998372",
+    textAlign: "center",
+    fontFamily: "DunggeunmisoB",
   },
   textDisabled: {
-    color: '#ccc',
+    color: "#ccc",
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
     paddingHorizontal: 40,
   },
   dropdown: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 4,
     maxHeight: 250,
   },
   item: {
     padding: 12,
     borderBottomWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
   },
   itemText: {
     fontSize: 14,
-    color: '#998372',
-    textAlign: 'center',
-    fontFamily: 'DunggeunmisoB',
+    color: "#998372",
+    textAlign: "center",
+    fontFamily: "DunggeunmisoB",
   },
 });
 
