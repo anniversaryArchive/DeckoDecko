@@ -111,7 +111,6 @@ export default function Home() {
         const myItems = await items.getAll();
         const getCount = myItems.filter(({ type }) => type === "GET").length;
         const allCount = myItems.length;
-        console.log("heidi test -- ", getCount, allCount);
         setPossessionRate(Math.floor((getCount / allCount) * 100));
       } catch (error) {
         console.error("❌ Wish/Get 아이템 조회 실패 : ", error);
