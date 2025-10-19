@@ -114,7 +114,7 @@ export default function Home() {
   };
 
   const goToSearch = () => {
-    router.push("/(tabs)/Search");
+    router.push("/(tabs)/search");
   };
 
   const goToNoticeDetail = (id: number) => {
