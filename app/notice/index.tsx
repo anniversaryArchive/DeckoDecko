@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import { View, ScrollView, TouchableOpacity, Pressable } from "react-native";
 import { Stack, router } from "expo-router";
 
+import { Icon, Typography, WiggleDivider } from "@/components";
+
 import { supabase } from "@/utils/supabase";
-import { Icon, NoticeItem } from "@/components";
 import { getColor } from "@/utils/color";
+import { formatYmdHm } from "@/utils/format";
 
 import type { TNotice } from "@/types/notice";
 
@@ -53,9 +55,23 @@ export default function Notice() {
         }}
       />
       <ScrollView>
-        <View className="flex flex-col gap-3 p-4">
-          {noticeList.map((notice) => (
-            <NoticeItem key={`notice-${notice.id}`} notice={notice} onClick={goToNoticeDetail} />
+        <View className="flex flex-col gap-3 px-3 py-4">
+          {noticeList.map((notice, idx) => (
+            <Pressable key={`notice-item-${idx}`} onPress={() => goToNoticeDetail(notice.id)}>
+              <View className="mr-auto w-full">
+                <View className="px-2 pb-1">
+                  <View className="mb-1">
+                    <Typography variant="Header5" color="primary">
+                      {notice.title}
+                    </Typography>
+                  </View>
+                  <Typography variant="Caption" className="text-gray-04">
+                    {formatYmdHm(notice.created_at)}
+                  </Typography>
+                </View>
+                <WiggleDivider />
+              </View>
+            </Pressable>
           ))}
         </View>
       </ScrollView>
