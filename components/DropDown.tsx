@@ -1,13 +1,22 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from 'react-native';
+import { View, TouchableOpacity, FlatList, Modal } from 'react-native';
+import Icon from '@components/Icon';
+import Typography from '@components/Typography';
 
 type DropDownProps<T> = {
   data: T[];
   selectedValue: T | null;
   onValueChange: (value: T) => void;
-  labelExtractor: (item: T) => string; // 데이터 항목에서 보여줄 텍스트를 추출
+  labelExtractor: (item: T) => string;
   placeholder?: string;
-  disabled?: boolean; // 비활성화 여부
+  disabled?: boolean;
+  color?: "primary" | "secondary" | "secondary-dark";
+};
+
+const dropBoxTheme = {
+  primary: "primary",
+  secondary: "secondary",
+  "secondary-dark": "secondary-dark",
 };
 
 function DropDown<T>({
@@ -17,8 +26,11 @@ function DropDown<T>({
                        labelExtractor,
                        placeholder = "Select",
                        disabled = false,
+                       color = "primary",
                      }: DropDownProps<T>) {
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const iconColor = dropBoxTheme[color];
 
   const handleSelect = (item: T) => {
     onValueChange(item);
@@ -28,26 +40,48 @@ function DropDown<T>({
   return (
     <View>
       <TouchableOpacity
-        style={[styles.button, disabled && styles.buttonDisabled]}
+        className={`py-3 px-4 bg-background-primary rounded-md border border-${color} ${
+          disabled ? "opacity-50" : ""
+        }`}
         onPress={() => {
           if (!disabled) setIsOpen(!isOpen);
         }}
         activeOpacity={disabled ? 1 : 0.7}
       >
-        <Text style={[styles.buttonText, disabled && styles.textDisabled]}>
-          {selectedValue ? labelExtractor(selectedValue) : placeholder}
-        </Text>
+        <View className="flex-row justify-between items-center">
+          <Typography
+            variant="Body4"
+            className={disabled ? "text-gray-04" : ""}
+          >
+            {selectedValue ? labelExtractor(selectedValue) : placeholder}
+          </Typography>
+          <Icon
+            name="chevronDown"
+            size={24}
+            fill={iconColor}
+            stroke={iconColor}
+          />
+        </View>
       </TouchableOpacity>
 
       <Modal visible={isOpen} transparent animationType="fade">
-        <TouchableOpacity style={styles.overlay} onPress={() => setIsOpen(false)}>
-          <View style={styles.dropdown}>
+        <TouchableOpacity
+          className="flex-1 bg-black/30 justify-center px-10"
+          onPress={() => setIsOpen(false)}
+          activeOpacity={1}
+        >
+          <View className="bg-background-primary rounded max-h-[250px]">
             <FlatList
               data={data}
               keyExtractor={(_, index) => index.toString()}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.item} onPress={() => handleSelect(item)}>
-                  <Text style={styles.itemText}>{labelExtractor(item)}</Text>
+                <TouchableOpacity
+                  className="p-3 border-b border-gray-03"
+                  onPress={() => handleSelect(item)}
+                >
+                  <Typography variant="Body4">
+                    {labelExtractor(item)}
+                  </Typography>
                 </TouchableOpacity>
               )}
               style={{ maxHeight: 250 }}
@@ -58,49 +92,5 @@ function DropDown<T>({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    padding: 12,
-    backgroundColor: '#fff',
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#FFBBC1',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    fontSize: 14,
-    color: '#998372',
-    textAlign: 'center',
-    fontFamily: 'DunggeunmisoB',
-  },
-  textDisabled: {
-    color: '#ccc',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-  },
-  dropdown: {
-    backgroundColor: '#fff',
-    borderRadius: 4,
-    maxHeight: 250,
-  },
-  item: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-  },
-  itemText: {
-    fontSize: 14,
-    color: '#998372',
-    textAlign: 'center',
-    fontFamily: 'DunggeunmisoB',
-  },
-});
 
 export default DropDown;

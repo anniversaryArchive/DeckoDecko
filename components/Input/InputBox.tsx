@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { TextInput, TextInputProps } from "react-native";
 import { getColor } from "@utils/color";
 import { colors } from "@utils/tailwind-colors";
@@ -12,6 +12,7 @@ interface IInputBoxProps extends TextInputProps {
   size?: keyof typeof inputTheme.size;
   color?: keyof typeof inputTheme.color;
   wiggleBorder?: boolean;
+  value?: string; // 추가됨
 }
 
 export interface InputBoxHandle {
@@ -33,10 +34,10 @@ export const inputTheme = {
 };
 
 const BorderComponent = ({
-                           wiggleBorder,
-                           borderColor,
-                           children,
-                         }: {
+wiggleBorder,
+borderColor,
+children,
+}: {
   wiggleBorder: boolean;
   borderColor: keyof typeof inputTheme.color;
   children: React.ReactNode;
@@ -60,11 +61,12 @@ const InputBox = forwardRef<InputBoxHandle, IInputBoxProps>((props, ref) => {
     wiggleBorder = false,
     readOnly,
     onChangeText,
+    value, // 추가됨
     ...options
   } = props;
 
   const inputRef = useRef<TextInput>(null);
-  const textRef = useRef(""); // 텍스트 값을 ref로 저장
+  const textRef = useRef(value ?? ""); // 초기값 설정
 
   useImperativeHandle(ref, () => ({
     getValue: () => textRef.current,
@@ -90,7 +92,7 @@ const InputBox = forwardRef<InputBoxHandle, IInputBoxProps>((props, ref) => {
     <BorderComponent wiggleBorder={wiggleBorder} borderColor={color}>
       <TextInput
         ref={inputRef}
-        defaultValue={""} // uncontrolled input 시작 값
+        value={value} // controlled input 으로 수정
         onChangeText={handleChangeText}
         onSubmitEditing={(e) => {
           if (onSubmit) {

@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, View, StyleProp, TextStyle } from "react-native";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { colors } from "@utils/tailwind-colors";
 
@@ -10,6 +10,7 @@ interface ITypography {
   children: React.ReactNode;
   numberOfLines?: number; // 추가: 한 줄 제한
   ellipsizeMode?: "head" | "middle" | "tail" | "clip"; // 추가: 말줄임표 위치
+  style?: StyleProp<TextStyle>; // 새로 추가된 style prop
 }
 
 interface ITwoToneTypography {
@@ -19,6 +20,7 @@ interface ITwoToneTypography {
   className?: never;
   children: React.ReactNode;
   numberOfLines?: number;
+  style?: StyleProp<TextStyle>; // 새로 추가된 style prop
 }
 
 const typographyTheme = {
@@ -64,6 +66,7 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
     children,
     className = "",
     numberOfLines = 1,
+    style,  // 새로 추가된 style prop 받기
   } = props;
 
   const getTwotoneTypography = (twotone: keyof typeof twotoneColorMap) => {
@@ -97,9 +100,9 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
       ) : (
         <Text
           className={`${typographyTheme.variant[variant]} ${typographyTheme.color[color as keyof typeof typographyTheme.color]} ${className}`}
-          numberOfLines={numberOfLines === 0 ? undefined : (numberOfLines ?? 1)}
+          numberOfLines={numberOfLines === 0 ? undefined : numberOfLines}
           ellipsizeMode="tail"
-          style={{ flexShrink: 1, overflow: "hidden" }}
+          style={[{ flexShrink: 1, overflow: "hidden" }, style]}  // 새로 추가된 style 병합 적용
         >
           {children}
         </Text>
