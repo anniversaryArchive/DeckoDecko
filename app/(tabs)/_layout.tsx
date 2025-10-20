@@ -7,7 +7,7 @@ import { colors } from "@/utils/tailwind-colors";
 
 const TABS = [
   { name: "Home", title: "홈", icon: "star" },
-  { name: "MyBookmark", title: "내 굿즈", icon: "folder" },
+  { name: "(bookmark)", title: "내 굿즈", icon: "folder" },
   { name: "Search", title: "검색", icon: "search" },
 ];
 

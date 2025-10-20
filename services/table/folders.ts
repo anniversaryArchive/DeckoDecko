@@ -74,7 +74,7 @@ class TbFolders {
     }
   }
 
-  async update(id: string, newname: string): Promise<boolean> {
+  async update(id: number, newname: string): Promise<boolean> {
     const db = await this.#dbInstance;
     if (!db) return false;
 
@@ -87,7 +87,7 @@ class TbFolders {
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     const db = await this.#dbInstance;
     if (!db) return false;
 

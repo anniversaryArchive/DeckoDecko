@@ -29,6 +29,7 @@ const iconMap: { [key: string]: React.FC<any> } = {
   plus: Icons.Plus,
   image: Icons.Image,
   bigHeadSearch: Icons.BigHeadSearch,
+  minus: Icons.Minus,
 };
 
 export default function Icon(props: IIconProps) {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -12,19 +12,53 @@ import Typography from "./Typography";
 import BottomSheet from "./BottomSheet";
 import { InputBox } from "./Input";
 
-import { TFolder } from "@/types/folder";
+import type { TFolder, TFolderPickerMode } from "@/types/folder";
+import type { InputBoxHandle } from "./Input/InputBox";
 
-interface IFolderPickerProps {
-  onSelectFolder: (folder: TFolder) => void;
+interface IFolderPickerBaseProps {
+  initialMode: TFolderPickerMode;
+  originalFolder?: TFolder;
+  onSelectFolder?: (folder: TFolder) => void;
+  handleClose?: () => void;
 }
+
+type TFolderPickerSelectProps = IFolderPickerBaseProps & {
+  initialMode: "select";
+  onSelectFolder: (folder: TFolder) => void;
+};
+
+type TFolderPickerAddProps = IFolderPickerBaseProps & {
+  initialMode: "add";
+};
+
+type TFolderPickerEditProps = IFolderPickerBaseProps & {
+  initialMode: "edit";
+  originalFolder: TFolder;
+};
+
+type TFolderPickerProps = TFolderPickerSelectProps | TFolderPickerAddProps | TFolderPickerEditProps;
 
 const SHEET_NAME = "FOLDER";
 
-const FolderPicker = (props: IFolderPickerProps) => {
-  const { onSelectFolder } = props;
-  const [mode, setMode] = useState<"select" | "add">("select");
+const modeList: Record<TFolderPickerMode, string> = {
+  "select": "선택",
+  "add": "추가",
+  "edit": "이름 변경",
+};
+
+const FolderPicker = (props: TFolderPickerProps) => {
+  const {
+    onSelectFolder,
+    originalFolder,
+    initialMode = "select",
+    handleClose: parentHandleClose,
+  } = props;
+
+  const [mode, setMode] = useState<TFolderPickerMode>(initialMode);
   const [folderList, setFolderList] = useState<TFolder[]>([]);
-  const [folderName, setFolderName] = useState("");
+  const [folderName, setFolderName] = useState<string>(originalFolder ? originalFolder.name : "");
+
+  const inputRef = useRef<InputBoxHandle>(null);
 
   const { sheetStack, closeSheet } = activeBottomSheet();
   const isOpen = sheetStack[sheetStack.length - 1] === SHEET_NAME;
@@ -34,39 +68,70 @@ const FolderPicker = (props: IFolderPickerProps) => {
     setFolderList(folderList);
   }, []);
 
-  const handleAddFolder = useCallback(
-    async (value: string) => {
-      if (!value.trim()) return;
+  const validateFolderName = (value: string) => {
+    if (!value.trim()) return;
 
-      const isExist = folderList.some(({ name }) => name == value);
-      if (isExist) {
-        return Alert.alert("같은 폴더는 둘이 될 수 없어요!", undefined, [
-          {
-            text: "확인",
-          },
-        ]);
-      }
+    const isExist = folderList.some(({ name }) => name == value);
+    if (isExist) {
+      return Alert.alert("같은 폴더는 둘이 될 수 없어요!", undefined, [
+        {
+          text: "확인",
+        },
+      ]);
+    }
 
+    return true;
+  };
+
+  const handleAddFolder = async (value: string) => {
+    if (validateFolderName(value)) {
       const res = await folder.create(value);
+
       if (res) {
-        await loadFolderList();
-        setMode("select");
+        console.log("passsss");
+
         setFolderName("");
+        inputRef.current?.clear();
+        handleClose();
       }
-    },
-    [folderList, loadFolderList]
-  );
+    }
+  };
+
+  const handleEditFolder = async (value: string) => {
+    if (validateFolderName(value) && originalFolder) {
+      const res = await folder.update(originalFolder.id, value);
+      if (res) {
+        handleClose();
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    const value = inputRef.current?.getValue();
+
+    if (value) {
+      if (mode === "add") await handleAddFolder(value);
+      else await handleEditFolder(value);
+    }
+  };
+
+  const handleClose = useCallback(() => {
+    if (parentHandleClose) {
+      parentHandleClose();
+    }
+    closeSheet();
+  }, [closeSheet, parentHandleClose]);
 
   useEffect(() => {
-    isOpen && loadFolderList();
-  }, [isOpen]);
+    if (isOpen) loadFolderList();
+  }, [isOpen, loadFolderList]);
 
   return (
     <BottomSheet open={isOpen} onClose={closeSheet}>
       <SafeAreaView edges={["bottom"]} className="flex gap-2">
         <View className="relative h-8">
           <View className="left-4 absolute z-10 w-8">
-            {mode === "add" && (
+            {initialMode === "select" && mode === "add" && (
               <Pressable
                 onPress={() => {
                   setMode("select");
@@ -83,7 +148,7 @@ const FolderPicker = (props: IFolderPickerProps) => {
             )}
           </View>
           <Typography variant="Header3" className="-z-10 absolute left-0 right-0 text-center">
-            {mode === "select" ? "폴더 선택" : "폴더 추가"}
+            폴더 {modeList[mode]}
           </Typography>
           <View className="right-4 absolute z-10 w-8">
             {mode === "select" && (
@@ -115,9 +180,9 @@ const FolderPicker = (props: IFolderPickerProps) => {
                   textAlign="left"
                   bold={isDefaultFolder}
                   color={isDefaultFolder ? "secondary" : "secondary-dark"}
-                  className="border-b-hairline border-gray-400" // 추후 Divider component로 변경
+                  className="border-b-hairline border-gray-400"
                   onPress={() => {
-                    onSelectFolder(item);
+                    onSelectFolder && onSelectFolder(item);
                     closeSheet();
                   }}
                 >
@@ -127,24 +192,16 @@ const FolderPicker = (props: IFolderPickerProps) => {
             }}
           />
         ) : (
-          <View className="flex justify-between gap-20">
+          <View className="flex justify-between gap-12">
             <InputBox
               size="lg"
-              value={folderName}
-              onChangeText={setFolderName}
-              onSubmit={handleAddFolder}
+              ref={inputRef}
+              defaultValue={folderName}
+              onSubmit={handleSubmit}
               placeholder="폴더명을 입력해주세요."
             />
-            <Button
-              size="xl"
-              width="full"
-              bold
-              rounded
-              onPress={() => {
-                handleAddFolder(folderName);
-              }}
-            >
-              생성
+            <Button size="xl" width="full" bold rounded onPress={handleSubmit}>
+              {"확인"}
             </Button>
           </View>
         )}

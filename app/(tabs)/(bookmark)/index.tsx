@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FlatList, Image, Pressable, ScrollView, View } from "react-native";
+import { Link } from "expo-router";
 
 import { Button, Chip, Icon, InputBox, Segment, Typography, WiggleBorder } from "@components/index";
 import { supabase } from "@utils/supabase";
@@ -55,6 +56,18 @@ export default function MyBookmark() {
     Array<TItem & { folderName: string; gachaInfo: TGacha }>
   >([]);
 
+  const loadFolderList = async () => {
+    const folderList = await folder.getAll();
+    setFolderList(
+      new Map(
+        [{ id: 0, name: "전체", created_at: new Date() }, ...folderList].map((folder) => [
+          folder.id,
+          folder,
+        ])
+      )
+    );
+  };
+
   const loadBookmarkItems = async () => {
     const itemList =
       selectedFolder === 0 ? await items.getAll() : await items.getAllByFolderId(selectedFolder);
@@ -84,18 +97,6 @@ export default function MyBookmark() {
   };
 
   useEffect(() => {
-    const loadFolderList = async () => {
-      const folderList = await folder.getAll();
-      setFolderList(
-        new Map(
-          [{ id: 0, name: "전체", created_at: new Date() }, ...folderList].map((folder) => [
-            folder.id,
-            folder,
-          ])
-        )
-      );
-    };
-
     loadFolderList();
   }, []);
 
@@ -123,31 +124,38 @@ export default function MyBookmark() {
 
       <Segment segments={BOOKMARK_TYPE} selectedKey={bookmarkType} onSelect={setBookmarkType} />
       <View className="flex-1 gap-4">
-        {/* 폴더 리스트 */}
-        <ScrollView
-          horizontal
-          className="min-h-8 flex-none -mx-6"
-          contentContainerClassName="flex gap-3 flex-row pl-6"
-          showsHorizontalScrollIndicator={false}
-        >
-          {folderList &&
-            Array.from(folderList).map(([id, { name }]) => {
-              const isSelected = id === selectedFolder;
+        <View className="flex-row items-center justify-between gap-2">
+          {/* 폴더 리스트 */}
+          <ScrollView
+            horizontal
+            className="min-h-8 flex-grow -ml-6"
+            contentContainerClassName="flex gap-3 flex-row ml-6"
+            showsHorizontalScrollIndicator={false}
+          >
+            {folderList &&
+              Array.from(folderList).map(([id, { name }]) => {
+                const isSelected = id === selectedFolder;
 
-              return (
-                <Button
-                  key={`folder_` + id}
-                  bold
-                  variant={isSelected ? "contained" : "outlined"}
-                  onPress={() => {
-                    setSelectedFolder(id);
-                  }}
-                >
-                  {name}
-                </Button>
-              );
-            })}
-        </ScrollView>
+                return (
+                  <Button
+                    key={`folder_` + id}
+                    bold
+                    variant={isSelected ? "contained" : "outlined"}
+                    onPress={() => {
+                      setSelectedFolder(id);
+                    }}
+                  >
+                    {name}
+                  </Button>
+                );
+              })}
+          </ScrollView>
+          <Link href="/folder-manage" asChild>
+            <Pressable className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full">
+              <Icon name="folderFill" size={20} />
+            </Pressable>
+          </Link>
+        </View>
         <InputBox size="md" color="secondary" value={searchTerm} onChangeText={setSearchTerm} />
 
         {/* WISH | GET */}

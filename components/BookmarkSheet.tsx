@@ -159,7 +159,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps) => {
           </Button>
         </SafeAreaView>
       </BottomSheet>
-      <FolderPicker onSelectFolder={setSelectFolder} />
+      <FolderPicker initialMode="select" onSelectFolder={setSelectFolder} />
     </>
   );
 };

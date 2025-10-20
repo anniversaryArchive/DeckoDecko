@@ -5,9 +5,11 @@ import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { PortalProvider } from "@/PortalContext";
 import folder from "@table/folders";
-import { TFolder } from "@/types/folder";
 import { defaultFolderState } from "@/stores/defaultFolderState";
+
+import type { TFolder } from "@/types/folder";
 
 export default function RootLayout() {
   const [fontLoaded] = useFonts({
@@ -31,16 +33,19 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView className="flex-1">
-      <SafeAreaProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ title: "HOME" }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="detail/[id]" options={{ headerShown: false }} />
-          <Stack.Screen name="notice" options={{ headerShown: false }} />
-          <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
-        </Stack>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView className="flex-1">
+        <PortalProvider>
+          <Stack screenOptions={{ contentStyle: { backgroundColor: "white" } }}>
+            <Stack.Screen name="index" options={{ title: "HOME" }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)/(bookmark)" options={{ headerShown: false }} />
+            <Stack.Screen name="detail/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="notice" options={{ headerShown: false }} />
+            <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
+          </Stack>
+        </PortalProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }

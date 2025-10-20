@@ -34,9 +34,9 @@ export const inputTheme = {
 };
 
 const BorderComponent = ({
-wiggleBorder,
-borderColor,
-children,
+  wiggleBorder,
+  borderColor,
+  children,
 }: {
   wiggleBorder: boolean;
   borderColor: keyof typeof inputTheme.color;
