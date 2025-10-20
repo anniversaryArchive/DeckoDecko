@@ -1,6 +1,7 @@
 import uuid from "react-native-uuid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Stack } from "expo-router";
 
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
@@ -9,7 +10,6 @@ import { getColor } from "@utils/color";
 import folder from "@table/folders";
 
 import type { TFolder } from "@/types/folder";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const FolderManage = () => {
   const [pickerState, setPickerState] = useState<
