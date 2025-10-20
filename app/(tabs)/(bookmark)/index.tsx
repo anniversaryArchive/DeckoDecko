@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { FlatList, Image, Pressable, ScrollView, View } from "react-native";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { Link } from "expo-router";
 
-import { Button, Chip, Icon, InputBox, Segment, Typography, WiggleBorder } from "@components/index";
+import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography } from "@components/index";
 import { supabase } from "@utils/supabase";
 import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
@@ -12,39 +12,7 @@ import items from "@table/items";
 import { TFolder } from "@/types/folder";
 import { TBookmarkType } from "@/types/bookmark";
 import { TItem } from "@/types/item";
-
-// 임의로 선언한 타입입니다
-type TGacha = {
-  id: number;
-  created_at: Date;
-  updated_at: Date;
-  name: string;
-  name_kr: string;
-  image_link: string;
-  anime_id?: number;
-  price: number;
-};
-
-// conflict 날 것 같아서 임의로 선언한 컴포넌트입니당
-// 추후 소정씨가 작업한 걸로 대체할 예정입니당
-const GoodsThumbnail = ({ image, folderName, name, gachaName }: any) => {
-  return (
-    <View className="flex gap-[10px] w-44">
-      <WiggleBorder width={155} height={155}>
-        <Image source={{ uri: image }} className="w-full h-full" />
-      </WiggleBorder>
-      <View className="flex gap-2">
-        <View className="flex flex-row items-center gap-2">
-          <Chip size="sm" label={folderName} />
-          <Typography variant="Body4" color="primary">
-            {name}
-          </Typography>
-        </View>
-        <Typography variant="Caption2">{gachaName}</Typography>
-      </View>
-    </View>
-  );
-};
+import type { TGacha } from "@/types/gacha";
 
 export default function MyBookmark() {
   const [bookmarkType, setBookmarkType] = useState<TBookmarkType>("WISH");
@@ -98,7 +66,7 @@ export default function MyBookmark() {
 
   useEffect(() => {
     loadFolderList();
-  }, []);
+  }, [loadFolderList]);
 
   useEffect(() => {
     if (folderList) loadBookmarkItems();
@@ -197,10 +165,9 @@ export default function MyBookmark() {
 
               return (
                 <GoodsThumbnail
-                  name={item.name}
-                  folderName={item.folderName}
-                  gachaName={gachaInfo.name_kr}
-                  image={item.thumbnail || gachaInfo.image_link}
+                  nameKr={item.name}
+                  animeTitle={gachaInfo.name_kr}
+                  imageLink={item.thumbnail || gachaInfo.image_link}
                 />
               );
             }}
