@@ -5,7 +5,7 @@ import Button from "./Button";
 
 type GoodsThumbnailProps = {
   nameKr: string;
-  animeTitle?: string;
+  animeTitle?: string | null | undefined;
   imageLink?: string;
 };
 
@@ -24,25 +24,21 @@ const GoodsThumbnail = ({ nameKr, animeTitle, imageLink }: GoodsThumbnailProps) 
       </View>
       {/* 텍스트 영역 */}
       <View className="max-w-[150px] overflow-hidden flex gap-1 pl-1">
-        {animeTitle && (
-          <Button
-            layout="flex"
-            rounded
-            onPress={() => {}}>
-            {animeTitle}
-          </Button>
-        )}
-        <View className="flex flex-row items-center gap-2 max-w-[150px] overflow-hidden">
-          <Typography
-            variant="Body4"
-            color="primary"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={{ flex: 1, minWidth: 0 }} // 핵심: minWidth:0
-          >
-            {nameKr}
-          </Typography>
-        </View>
+        <Button
+          layout="flex"
+          rounded
+          onPress={() => {}}>
+          {animeTitle ? animeTitle : '기타'}
+        </Button>
+        <Typography
+          variant="Body4"
+          color="primary"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={{ flexShrink: 1, minHeight: 16 }}
+        >
+          {nameKr}
+        </Typography>
       </View>
     </View>
   );

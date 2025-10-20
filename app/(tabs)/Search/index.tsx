@@ -32,7 +32,7 @@ export default function Index() {
      */
     try {
       const { data, error } = await supabase
-        .from("popular_goods")
+        .from("gacha_view_log")
         .select(`
         *,
         gacha (
@@ -47,7 +47,7 @@ export default function Index() {
           )
         )
       `)
-        .order("viewed_at", { ascending: false })
+        // .order("viewed_at", { ascending: false })
         .limit(10);
 
       if (error) {
@@ -120,7 +120,7 @@ export default function Index() {
   }, [loadSearches, loadRecentGoods, loadPopularGoods]);
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-white">
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
