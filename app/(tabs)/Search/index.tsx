@@ -113,6 +113,11 @@ export default function Index() {
     ]);
   };
 
+  const handleNavigateToDetail = (id: number) => {
+    console.log('handleNavigateToDetail')
+    router.push(`/detail/${id}`);
+  };
+
   useEffect(() => {
     loadSearches();
     loadRecentGoods();
@@ -195,7 +200,7 @@ export default function Index() {
             data={recentGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            onSlidePress={(item) => console.log("선택한 굿즈:", item)}
+            onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
           <View className="items-center justify-center h-11 ml-4 mr-4">
@@ -216,7 +221,7 @@ export default function Index() {
             data={popularGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            onSlidePress={(item) => console.log("선택한 인기 굿즈:", item)}
+            onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
           <View className="items-center justify-center h-11 ml-4 mr-4">
