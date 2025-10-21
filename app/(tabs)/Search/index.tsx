@@ -114,6 +114,7 @@ export default function Index() {
   };
 
   const handleNavigateToDetail = (id: number) => {
+    console.log('handleNavigateToDetail')
     router.push(`/detail/${id}`);
   };
 
