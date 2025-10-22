@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { TFolder } from "@/types/folder";
+import type { TFolder } from "@/types/folder";
 
 interface IDefaultFolderState {
   // 예시: 사용자의 테마 설정을 저장한다고 가정

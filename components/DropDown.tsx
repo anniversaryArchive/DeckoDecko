@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, TouchableOpacity, FlatList, Modal } from 'react-native';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from "react-native";
 import Icon from '@components/Icon';
 import Typography from '@components/Typography';
 
@@ -20,14 +20,14 @@ const dropBoxTheme = {
 };
 
 function DropDown<T>({
-                       data,
-                       selectedValue,
-                       onValueChange,
-                       labelExtractor,
-                       placeholder = "Select",
-                       disabled = false,
-                       color = "primary",
-                     }: DropDownProps<T>) {
+  data,
+  selectedValue,
+  onValueChange,
+  labelExtractor,
+  placeholder = "Select",
+  disabled = false,
+  color = "primary",
+}: DropDownProps<T>) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const iconColor = dropBoxTheme[color];
