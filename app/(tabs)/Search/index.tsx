@@ -32,7 +32,8 @@ export default function Index() {
     try {
       const { data, error } = await supabase
         .from("gacha_view_log")
-        .select(`
+        .select(
+          `
         *,
         gacha (
           id,
@@ -45,7 +46,8 @@ export default function Index() {
             kr_title
           )
         )
-      `)
+      `
+        )
         // .order("viewed_at", { ascending: false })
         .limit(10);
 
@@ -55,7 +57,7 @@ export default function Index() {
         return;
       }
 
-      const goods = (data ?? []).map(item => ({
+      const goods = (data ?? []).map((item) => ({
         ...item.gacha,
         anime_kr_title: item.gacha?.anime?.kr_title ?? "",
       }));
@@ -72,8 +74,8 @@ export default function Index() {
     await loadSearches();
 
     router.push({
-      pathname: "/Search/search-results",
-      params: { searchTerm: value }
+      pathname: "/search/search-results",
+      params: { searchTerm: value },
     });
   };
 
@@ -83,7 +85,7 @@ export default function Index() {
   };
 
   const handleClearRecentGoods = () => {
-    Alert.alert("최근 본 굿즈를 전체 삭제하시겠습니까?", '', [
+    Alert.alert("최근 본 굿즈를 전체 삭제하시겠습니까?", "", [
       { text: "취소", style: "cancel" },
       {
         text: "삭제",
@@ -100,7 +102,7 @@ export default function Index() {
   };
 
   const handleClearRecentSearches = () => {
-    Alert.alert("최근 검색어를 전체 삭제하시겠습니까?", '', [
+    Alert.alert("최근 검색어를 전체 삭제하시겠습니까?", "", [
       { text: "취소", style: "cancel" },
       {
         text: "삭제",
