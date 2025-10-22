@@ -6,8 +6,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import folder from "@table/folders";
-import { TFolder } from "@/types/folder";
 import { defaultFolderState } from "@/stores/defaultFolderState";
+
+import type { TFolder } from "@/types/folder";
 
 export default function RootLayout() {
   const [fontLoaded] = useFonts({

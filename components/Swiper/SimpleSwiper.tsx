@@ -1,33 +1,21 @@
 import React, { useRef, useState, useEffect } from "react";
-import {
-  View,
-  Dimensions,
-  TouchableOpacity,
-  FlatList,
-  ListRenderItemInfo,
-} from "react-native";
-import GoodsThumbnail from "./GoodsThumbnail";
-
-interface SlideItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  imageUrl?: string;
-}
+import { View, Dimensions, TouchableOpacity, FlatList, ListRenderItemInfo } from "react-native";
+import GoodsThumbnail from "@components/GoodsThumbnail";
+import {IGachaItem} from '@/types/search';
 
 interface SimpleSwiperProps {
-  data: SlideItem[];
-  onSlidePress?: (item: SlideItem, index: number) => void;
+  data: IGachaItem[];
+  onSlidePress?: (item: IGachaItem, index: number) => void;
   slidesPerView?: number; // 한 화면에 보여질 아이템 수
   itemSpacing?: number; // 카드 간 간격
 }
 
 export default function SimpleSwiper({
-                                       data,
-                                       onSlidePress,
-                                       slidesPerView = 2.5,
-                                       itemSpacing = 10,
-                                     }: SimpleSwiperProps) {
+  data,
+  onSlidePress,
+  slidesPerView = 2.5,
+  itemSpacing = 10,
+}: SimpleSwiperProps) {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get("window").width
   );
@@ -45,7 +33,7 @@ export default function SimpleSwiper({
 
   const itemWidth = screenWidth / slidesPerView;
 
-  const renderItem = ({ item, index }: ListRenderItemInfo<SlideItem>) => {
+  const renderItem = ({ item, index }: ListRenderItemInfo<IGachaItem>) => {
     const isFirst = index === 0;
     const isLast = index === data.length - 1;
 
@@ -55,12 +43,12 @@ export default function SimpleSwiper({
         onPress={() => onSlidePress?.(item, index)}
         style={{
           width: itemWidth,
-          marginLeft: isFirst ? 16 : itemSpacing / 2,  // 첫 슬라이드 왼쪽 margin 16
-          marginRight: isLast ? 16 : itemSpacing / 2,   // 마지막 슬라이드 오른쪽 margin 16
+          marginLeft: isFirst ? 16 : itemSpacing / 2, // 첫 슬라이드 왼쪽 margin 16
+          marginRight: isLast ? 16 : itemSpacing / 2, // 마지막 슬라이드 오른쪽 margin 16
         }}
         className="rounded-lg"
       >
-        <GoodsThumbnail title={item.title} subtitle={item.subtitle} imgUrl={item.imageLink} />
+        <GoodsThumbnail nameKr={item.name_kr} animeTitle={item.anime_kr_title} imageLink={item.image_link} />
       </TouchableOpacity>
     );
   };
@@ -72,7 +60,7 @@ export default function SimpleSwiper({
         horizontal
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}_${index}`}
         showsHorizontalScrollIndicator={false}
         snapToInterval={itemWidth + itemSpacing / 2}
         decelerationRate="fast"

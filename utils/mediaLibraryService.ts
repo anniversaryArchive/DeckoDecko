@@ -47,10 +47,11 @@ const grantedPermission = async () => {
 
 const selectImage = async () => {
   const isGranted = await grantedPermission();
+  let selectedAsset = null;
 
   if (!isGranted) {
     console.error("Canntot access to mediaLibray");
-    return null;
+    return selectedAsset;
   }
 
   try {
@@ -58,12 +59,12 @@ const selectImage = async () => {
       mediaTypes: "images",
     });
 
-    if (!selectImg.canceled) return selectImg.assets[0];
-
-    return null;
+    if (!selectImg.canceled) selectedAsset = selectImg.assets[0];
   } catch (e) {
     console.error("selectImage Error : ", e);
   }
+
+  return selectedAsset;
 };
 
 const saveImage = async (img?: ImagePicker.ImagePickerAsset) => {

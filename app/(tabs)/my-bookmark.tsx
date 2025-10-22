@@ -8,9 +8,9 @@ import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
 
-import { TFolder } from "@/types/folder";
-import { TBookmarkType } from "@/types/bookmark";
-import { TItem } from "@/types/item";
+import type { TFolder } from "@/types/folder";
+import type { TBookmarkType } from "@/types/bookmark";
+import type { TItem } from "@/types/item";
 
 // 임의로 선언한 타입입니다
 type TGacha = {
