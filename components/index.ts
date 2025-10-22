@@ -10,6 +10,7 @@ import { BasicSwiper, FeaturedSwiper, SimpleSwiper } from "./Swiper";
 import Segment from "./Segment";
 import DropDown from "./DropDown";
 import Icon from "./Icon";
+import NoticeItem from "./Notice/NoticeItem";
 import { LocalImage, NoImage } from "./Image";
 import { Divider, WiggleDivider } from "./Divider";
 
@@ -36,4 +37,5 @@ export {
   Divider,
   LocalImage,
   NoImage,
+  NoticeItem,
 };

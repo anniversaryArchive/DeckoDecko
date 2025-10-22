@@ -9,12 +9,11 @@ import {
   Button,
   Typography,
   FeaturedSwiper,
-  WiggleBorder,
   BasicSwiper,
   Icon,
   ProgressBar,
+  NoticeItem,
 } from "@/components";
-import { formatYmdHm } from "@/utils/format";
 import items from "@table/items";
 
 const LIMIT_COUNT = 5;
@@ -98,7 +97,6 @@ export default function Home() {
           .order("is_fixed", { ascending: false })
           .order("created_at", { ascending: false })
           .limit(2);
-        console.log("🚀 공지사항 데이터:", data);
         setNoticeList(data || []);
       } catch (error) {
         console.error("❌ 공지사항 데이터 조회 실패:", error);
@@ -129,6 +127,10 @@ export default function Home() {
 
   const goToSearch = () => {
     router.push("/(tabs)/search");
+  };
+
+  const goToNotice = () => {
+    router.push("/notice");
   };
 
   const goToNoticeDetail = (id: number) => {
@@ -186,12 +188,12 @@ export default function Home() {
 
         {/* 공지사항 */}
         <View className="bg-primary-light py-7 px-4 mt-16">
-          <View className="flex justify-between flex-row mb-2">
+          <View className="flex justify-between flex-row mb-4">
             <Typography variant="Header2" color="secondary-dark">
               공지사항
             </Typography>
 
-            <Button variant="text" size="sm">
+            <Button variant="text" size="sm" onPress={goToNotice}>
               <Typography variant="Tag" className="text-gray-04">
                 전체보기 &gt;
               </Typography>
@@ -200,20 +202,7 @@ export default function Home() {
 
           <View className="flex flex-col gap-3">
             {noticeList.map((notice) => (
-              <Pressable key={`notice-${notice.id}`} onPress={() => goToNoticeDetail(notice.id)}>
-                <WiggleBorder backgroundColor="#FFF" borderZIndex={2} height={60}>
-                  <View className="p-3 mr-auto">
-                    <View className="mb-1">
-                      <Typography variant="Header5" color="primary">
-                        {notice.title}
-                      </Typography>
-                    </View>
-                    <Typography variant="Caption" className="text-gray-04">
-                      {formatYmdHm(notice.created_at)}
-                    </Typography>
-                  </View>
-                </WiggleBorder>
-              </Pressable>
+              <NoticeItem key={`notice-${notice.id}`} notice={notice} onClick={goToNoticeDetail} />
             ))}
           </View>
         </View>
