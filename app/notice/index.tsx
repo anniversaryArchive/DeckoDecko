@@ -55,11 +55,11 @@ export default function Notice() {
         }}
       />
       <ScrollView>
-        <View className="flex flex-col gap-3 px-3 py-4">
+        <View className="flex flex-col gap-2 px-3 py-4">
           {noticeList.map((notice, idx) => (
             <Pressable key={`notice-item-${idx}`} onPress={() => goToNoticeDetail(notice.id)}>
               <View className="mr-auto w-full">
-                <View className="px-2 pb-1">
+                <View className="px-2 pb-2">
                   <View className="mb-1">
                     <Typography variant="Header5" color="primary">
                       {notice.title}
