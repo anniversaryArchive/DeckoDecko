@@ -3,10 +3,10 @@ import { View, ScrollView, Image, Pressable } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
-
-import { WiggleBorder, WiggleDivider, Chip, Typography, Icon } from "@/components";
+import { activeBottomSheet } from "@/stores/activeBottomSheet";
 
 import type { TGacha } from "@/types/gacha";
 
@@ -25,6 +25,8 @@ export default function DetailPagef() {
 
   const [gachaData, setGachaData] = React.useState<TGacha | null>(null);
   const [list, setList] = React.useState<IGachaItem[]>([]);
+
+  const openSheet = activeBottomSheet((state) => state.openSheet);
 
   React.useEffect(() => {
     const fetchGachaData = async () => {
@@ -70,8 +72,7 @@ export default function DetailPagef() {
   }, [navigation, id]);
 
   const handleAddGacha = () => {
-    // TODO:
-    console.log("🚀 추가 Bottom Sheet 열기");
+    openSheet("BOOKMARK");
   };
 
   const handleBack = () => {
@@ -144,6 +145,8 @@ export default function DetailPagef() {
       >
         <Icon name="plus2" size={36} fill="#fff" />
       </Pressable>
+
+      <BookmarkSheet gachaId={Number(id)} />
     </SafeAreaView>
   );
 }

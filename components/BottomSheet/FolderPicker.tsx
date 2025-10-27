@@ -165,7 +165,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
         </View>
         {mode === "select" ? (
           <FlatList
-            data={folderList.filter((f) => f.id !== 1)}
+            data={folderList}
             className="min-h-72 max-h-96"
             contentContainerClassName="flex gap-1"
             keyExtractor={(forder) => `${forder.id}`}

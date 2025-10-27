@@ -65,7 +65,7 @@ export default function MyBookmark() {
 
   useEffect(() => {
     loadFolderList();
-  }, [loadFolderList]);
+  }, []);
 
   useEffect(() => {
     if (folderList) loadBookmarkItems();
@@ -164,9 +164,12 @@ export default function MyBookmark() {
 
               return (
                 <GoodsThumbnail
-                  nameKr={item.name}
-                  animeTitle={gachaInfo.name_kr}
-                  imageLink={item.thumbnail || gachaInfo.image_link}
+                  redirectId={gachaInfo.id}
+                  name={item.name}
+                  category={item.folderName}
+                  itemName={gachaInfo.name_kr}
+                  isLocalImage={!!item.thumbnail}
+                  image={item.thumbnail || gachaInfo.image_link}
                 />
               );
             }}
