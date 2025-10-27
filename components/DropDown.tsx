@@ -49,7 +49,7 @@ function DropDown<T>({
         activeOpacity={disabled ? 1 : 0.7}
       >
         <View className="flex-row items-center justify-between">
-          <Typography variant="Body4" className={disabled ? "text-gray-04" : ""}>
+          <Typography variant="body4" className={disabled ? "text-gray-04" : ""}>
             {selectedValue ? labelExtractor(selectedValue) : placeholder}
           </Typography>
           <Icon name="chevronDown" size={24} fill={iconColor} stroke={iconColor} />
@@ -71,7 +71,7 @@ function DropDown<T>({
                   className="border-gray-03 p-3 border-b"
                   onPress={() => handleSelect(item)}
                 >
-                  <Typography variant="Body4">{labelExtractor(item)}</Typography>
+                  <Typography variant="body4">{labelExtractor(item)}</Typography>
                 </TouchableOpacity>
               )}
               style={{ maxHeight: 250 }}

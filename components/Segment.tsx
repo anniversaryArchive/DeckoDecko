@@ -33,7 +33,7 @@ export default function Segment<T>({ segments, selectedKey, onSelect }: TSegment
               !isLast ? "border-r-2 border-r-primary" : ""
             }`}
           >
-            <Typography variant="Header3" color={typoColor}>
+            <Typography variant="header3" color={typoColor}>
               {label}
             </Typography>
           </Pressable>

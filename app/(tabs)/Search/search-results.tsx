@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View, FlatList, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
@@ -25,11 +25,7 @@ export default function SearchResults() {
     setLoadingMore(true);
 
     try {
-      const result = await searchHistory.searchGachaAndAnimeByName(
-        searchValue,
-        LIMIT,
-        offset
-      );
+      const result = await searchHistory.searchGachaAndAnimeByName(searchValue, LIMIT, offset);
 
       const newItems = result?.items ?? [];
 
@@ -110,11 +106,11 @@ export default function SearchResults() {
         columnWrapperStyle={
           numColumns > 1
             ? {
-              justifyContent: "space-between",
-              paddingHorizontal: 30,
-              marginTop: 10,
-              marginBottom: 10,
-            }
+                justifyContent: "space-between",
+                paddingHorizontal: 30,
+                marginTop: 10,
+                marginBottom: 10,
+              }
             : undefined
         }
         renderItem={renderItem}
@@ -122,14 +118,14 @@ export default function SearchResults() {
         onEndReachedThreshold={0.3}
         ListHeaderComponent={() => (
           <View>
-            <View className="ml-4 mt-2 mb-1 flex-row items-center">
-              <Typography variant="Header4" color="secondary-dark" className="mr-1">
+            <View className="flex-row items-center mt-2 mb-1 ml-4">
+              <Typography variant="header4" color="secondary-dark" className="mr-1">
                 검색 결과
               </Typography>
-              <Typography variant="Header4" color="primary">
+              <Typography variant="header4" color="primary">
                 {totalCount}
               </Typography>
-              <Typography variant="Header4" color="secondary-dark" className="ml-1">
+              <Typography variant="header4" color="secondary-dark" className="ml-1">
                 개
               </Typography>
             </View>
@@ -138,8 +134,8 @@ export default function SearchResults() {
         )}
         ListFooterComponent={() =>
           loadingMore ? (
-            <View className="items-center py-4 px-5">
-              <Typography variant="Body2" color="secondary-dark">
+            <View className="items-center px-5 py-4">
+              <Typography variant="body2" color="secondary-dark">
                 불러오는 중...
               </Typography>
             </View>
@@ -147,8 +143,8 @@ export default function SearchResults() {
         }
         ListEmptyComponent={() =>
           !loadingMore ? (
-            <View className="items-center justify-center h-11 mx-4">
-              <Typography variant="Body2" color="secondary-dark">
+            <View className="h-11 items-center justify-center mx-4">
+              <Typography variant="body2" color="secondary-dark">
                 검색 결과가 없습니다.
               </Typography>
             </View>

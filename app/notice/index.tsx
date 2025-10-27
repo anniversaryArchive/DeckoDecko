@@ -58,10 +58,10 @@ export default function Notice() {
         <View className="flex flex-col gap-2 px-3 py-4">
           {noticeList.map((notice, idx) => (
             <Pressable key={`notice-item-${idx}`} onPress={() => goToNoticeDetail(notice.id)}>
-              <View className="mr-auto w-full">
+              <View className="w-full mr-auto">
                 <View className="px-2 pb-2">
                   <View className="mb-1">
-                    <Typography variant="Header5" color="primary">
+                    <Typography variant="header5" color="primary">
                       {notice.title}
                     </Typography>
                   </View>

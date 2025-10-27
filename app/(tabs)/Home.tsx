@@ -139,8 +139,8 @@ export default function Home() {
 
   return (
     <View className="flex-1">
-      <View className="w-full bg-white flex justify-between flex-row py-2 px-4">
-        <Typography variant="Header1" color="primary">
+      <View className="flex flex-row justify-between w-full px-4 py-2 bg-white">
+        <Typography variant="header1" color="primary">
           LOGO
         </Typography>
         <View className="my-auto">
@@ -154,8 +154,8 @@ export default function Home() {
         <BasicSwiper data={[1, 2, 3]} />
 
         {/* 내 굿즈 소장률 */}
-        <View className="px-4 py-14">
-          <Typography variant="Header2" color="primary">
+        <View className="py-14 px-4">
+          <Typography variant="header2" color="primary">
             내 굿즈 소장률
           </Typography>
 
@@ -188,13 +188,13 @@ export default function Home() {
 
         {/* 공지사항 */}
         <View className="bg-primary-light py-7 px-4 mt-16">
-          <View className="flex justify-between flex-row mb-4">
-            <Typography variant="Header2" color="secondary-dark">
+          <View className="flex flex-row justify-between mb-4">
+            <Typography variant="header2" color="secondary-dark">
               공지사항
             </Typography>
 
             <Button variant="text" size="sm" onPress={goToNotice}>
-              <Typography variant="Tag" className="text-gray-04">
+              <Typography variant="tag" className="text-gray-04">
                 전체보기 &gt;
               </Typography>
             </Button>
