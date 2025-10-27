@@ -119,7 +119,7 @@ export default function DetailPagef() {
                 />
               </View>
               <View className="flex-1 my-auto">
-                <Typography variant="header5" color="secondary.dark">
+                <Typography variant="header5" color="secondary-dark">
                   {item.name}
                 </Typography>
               </View>

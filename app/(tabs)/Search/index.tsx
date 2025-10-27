@@ -133,13 +133,8 @@ export default function Index() {
 
       {/* 최근 검색어 */}
       <View className="mt-4 mb-4">
-<<<<<<< HEAD:app/(tabs)/Search.tsx
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
-          <Typography variant="header4">최근 검색어</Typography>
-=======
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
-          <Typography variant="Header4">최근 검색어</Typography>
->>>>>>> 105ffdd795b3e07d2d3fdba88ac5302986d84324:app/(tabs)/Search/index.tsx
+          <Typography variant="header4">최근 검색어</Typography>
           {recentSearches.length > 0 && (
             <Button
               variant="text"
@@ -173,13 +168,8 @@ export default function Index() {
             })}
           </ScrollView>
         ) : (
-<<<<<<< HEAD:app/(tabs)/Search.tsx
-          <View className="items-center justify-center h-11">
-            <Typography variant="body2" color="secondary-dark">
-=======
           <View className="h-11 items-center justify-center">
-            <Typography variant="Body2" color="secondary-dark">
->>>>>>> 105ffdd795b3e07d2d3fdba88ac5302986d84324:app/(tabs)/Search/index.tsx
+            <Typography variant="body2" color="secondary-dark">
               최근 검색어가 없습니다.
             </Typography>
           </View>
@@ -188,13 +178,8 @@ export default function Index() {
 
       {/* 최근 본 굿즈 */}
       <View className="mt-4 mb-4">
-<<<<<<< HEAD:app/(tabs)/Search.tsx
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
-          <Typography variant="header4">최근 본 굿즈</Typography>
-=======
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
-          <Typography variant="Header4">최근 본 굿즈</Typography>
->>>>>>> 105ffdd795b3e07d2d3fdba88ac5302986d84324:app/(tabs)/Search/index.tsx
+          <Typography variant="header4">최근 본 굿즈</Typography>
           {recentGoods.length > 0 && (
             <Button
               variant="text"
@@ -214,13 +199,8 @@ export default function Index() {
             onSlidePress={(item) => console.log("선택한 굿즈:", item)}
           />
         ) : (
-<<<<<<< HEAD:app/(tabs)/Search.tsx
-          <View className="items-center justify-center h-11 ml-4 mr-4">
-            <Typography variant="body2" color="secondary-dark">
-=======
           <View className="h-11 items-center justify-center ml-4 mr-4">
-            <Typography variant="Body2" color="secondary-dark">
->>>>>>> 105ffdd795b3e07d2d3fdba88ac5302986d84324:app/(tabs)/Search/index.tsx
+            <Typography variant="body2" color="secondary-dark">
               최근 본 굿즈가 없습니다.
             </Typography>
           </View>
@@ -229,13 +209,8 @@ export default function Index() {
 
       {/* 인기 굿즈 */}
       <View className="mt-4 mb-4">
-<<<<<<< HEAD:app/(tabs)/Search.tsx
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
-          <Typography variant="header4">인기 굿즈</Typography>
-=======
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
-          <Typography variant="Header4">인기 굿즈</Typography>
->>>>>>> 105ffdd795b3e07d2d3fdba88ac5302986d84324:app/(tabs)/Search/index.tsx
+          <Typography variant="header4">인기 굿즈</Typography>
         </View>
         {popularGoods.length > 0 ? (
           <SimpleSwiper
@@ -245,13 +220,8 @@ export default function Index() {
             onSlidePress={(item) => console.log("선택한 인기 굿즈:", item)}
           />
         ) : (
-<<<<<<< HEAD:app/(tabs)/Search.tsx
-          <View className="items-center justify-center h-11 ml-4 mr-4">
-            <Typography variant="body2" color="secondary-dark">
-=======
           <View className="h-11 items-center justify-center ml-4 mr-4">
-            <Typography variant="Body2" color="secondary-dark">
->>>>>>> 105ffdd795b3e07d2d3fdba88ac5302986d84324:app/(tabs)/Search/index.tsx
+            <Typography variant="body2" color="secondary-dark">
               인기 굿즈가 없습니다.
             </Typography>
           </View>

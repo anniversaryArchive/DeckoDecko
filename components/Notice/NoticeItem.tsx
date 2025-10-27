@@ -19,11 +19,11 @@ export default function NoticeItem(props: INoticeItem) {
       <WiggleBorder backgroundColor="#FFF" borderZIndex={2} height={60}>
         <View className="p-3 mr-auto">
           <View className="mb-1">
-            <Typography variant="Header5" color="primary">
+            <Typography variant="header5" color="primary">
               {notice.title}
             </Typography>
           </View>
-          <Typography variant="Caption" className="text-gray-04">
+          <Typography variant="caption1" className="text-gray-04">
             {formatYmdHm(notice.created_at)}
           </Typography>
         </View>
