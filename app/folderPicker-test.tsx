@@ -27,7 +27,7 @@ export default function BottomTest() {
       >
         {`DB 초기화 (reload 필수!!)`}
       </Button>
-      <FolderPicker onSelectFolder={(folder) => {}} />
+      <FolderPicker initialMode="select" onSelectFolder={(folder) => {}} />
     </SafeAreaView>
   );
 }

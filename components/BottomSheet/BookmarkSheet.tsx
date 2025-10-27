@@ -10,7 +10,7 @@ import { BOOKMARK_TYPE } from "@/constants/global";
 import useDefaultFolder from "@/hooks/useDefaultFolder";
 import items from "@table/items";
 
-import Divider from "@components/Divider";
+import { Divider } from "@components/Divider";
 import Icon from "@components/Icon";
 import { InputBox, TextBox } from "@components/Input";
 import Segment from "@components/Segment";
@@ -159,7 +159,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps) => {
           </Button>
         </SafeAreaView>
       </BottomSheet>
-      <FolderPicker onSelectFolder={setSelectFolder} />
+      <FolderPicker initialMode="select" onSelectFolder={setSelectFolder} />
     </>
   );
 };

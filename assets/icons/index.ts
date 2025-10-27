@@ -14,6 +14,8 @@ import Plus from "./plus.svg";
 import ChevronDown from "./chevronDown.svg";
 import Image from "./image.svg";
 import BigHeadSearch from "./big_head_search.svg";
+import Minus from "./minus.svg";
+import Menu from "./menu.svg";
 
 export {
   Folder,
@@ -32,4 +34,6 @@ export {
   Plus,
   Image,
   BigHeadSearch,
+  Minus,
+  Menu,
 };
