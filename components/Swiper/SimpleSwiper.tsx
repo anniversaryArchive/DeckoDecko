@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, Dimensions, TouchableOpacity, FlatList, ListRenderItemInfo } from "react-native";
 import GoodsThumbnail from "@components/GoodsThumbnail";
-import {IGachaItem} from '@/types/search';
+import type { IGachaItem } from "@/types/search";
 
 interface SimpleSwiperProps {
   data: IGachaItem[];
@@ -16,9 +16,7 @@ export default function SimpleSwiper({
   slidesPerView = 2.5,
   itemSpacing = 10,
 }: SimpleSwiperProps) {
-  const [screenWidth, setScreenWidth] = useState(
-    Dimensions.get("window").width
-  );
+  const [screenWidth, setScreenWidth] = useState(Dimensions.get("window").width);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -48,7 +46,11 @@ export default function SimpleSwiper({
         }}
         className="rounded-lg"
       >
-        <GoodsThumbnail nameKr={item.name_kr} animeTitle={item.anime_kr_title} imageLink={item.image_link} />
+        <GoodsThumbnail
+          nameKr={item.name_kr}
+          animeTitle={item.anime_kr_title}
+          imageLink={item.image_link}
+        />
       </TouchableOpacity>
     );
   };

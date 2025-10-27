@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from "react-native";
-import Icon from '@components/Icon';
-import Typography from '@components/Typography';
+import { View, TouchableOpacity, FlatList, Modal } from "react-native";
+import Icon from "@components/Icon";
+import Typography from "@components/Typography";
 
 type DropDownProps<T> = {
   data: T[];
@@ -48,25 +48,17 @@ function DropDown<T>({
         }}
         activeOpacity={disabled ? 1 : 0.7}
       >
-        <View className="flex-row justify-between items-center">
-          <Typography
-            variant="Body4"
-            className={disabled ? "text-gray-04" : ""}
-          >
+        <View className="flex-row items-center justify-between">
+          <Typography variant="Body4" className={disabled ? "text-gray-04" : ""}>
             {selectedValue ? labelExtractor(selectedValue) : placeholder}
           </Typography>
-          <Icon
-            name="chevronDown"
-            size={24}
-            fill={iconColor}
-            stroke={iconColor}
-          />
+          <Icon name="chevronDown" size={24} fill={iconColor} stroke={iconColor} />
         </View>
       </TouchableOpacity>
 
       <Modal visible={isOpen} transparent animationType="fade">
         <TouchableOpacity
-          className="flex-1 bg-black/30 justify-center px-10"
+          className="bg-black/30 justify-center flex-1 px-10"
           onPress={() => setIsOpen(false)}
           activeOpacity={1}
         >
@@ -76,12 +68,10 @@ function DropDown<T>({
               keyExtractor={(_, index) => index.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  className="p-3 border-b border-gray-03"
+                  className="border-gray-03 p-3 border-b"
                   onPress={() => handleSelect(item)}
                 >
-                  <Typography variant="Body4">
-                    {labelExtractor(item)}
-                  </Typography>
+                  <Typography variant="Body4">{labelExtractor(item)}</Typography>
                 </TouchableOpacity>
               )}
               style={{ maxHeight: 250 }}

@@ -1,6 +1,7 @@
 import { Pressable, View } from "react-native";
 
-import { WiggleBorder, Typography } from "@/components";
+import WiggleBorder from "@components/WiggleBorder";
+import Typography from "@components/Typography";
 import { formatYmdHm } from "@/utils/format";
 
 import type { TNotice } from "@/types/notice";
