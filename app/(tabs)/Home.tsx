@@ -9,12 +9,12 @@ import {
   Button,
   Typography,
   FeaturedSwiper,
-  WiggleBorder,
   BasicSwiper,
   Icon,
   ProgressBar,
+  NoticeItem,
 } from "@/components";
-import { formatYmdHm } from "@/utils/format";
+import items from "@table/items";
 
 const LIMIT_COUNT = 5;
 
@@ -97,16 +97,28 @@ export default function Home() {
           .order("is_fixed", { ascending: false })
           .order("created_at", { ascending: false })
           .limit(2);
-        console.log("🚀 공지사항 데이터:", data);
         setNoticeList(data || []);
       } catch (error) {
         console.error("❌ 공지사항 데이터 조회 실패:", error);
       }
     };
 
+    // Wish/Get 아이템 조회 - 소장률 계산
+    const getAllMyItems = async () => {
+      try {
+        const myItems = await items.getAll();
+        const getCount = myItems.filter(({ type }) => type === "GET").length;
+        const allCount = myItems.length;
+        setPossessionRate(Math.floor((getCount / allCount) * 100));
+      } catch (error) {
+        console.error("❌ Wish/Get 아이템 조회 실패 : ", error);
+      }
+    };
+
     fetchNewGachaData();
     fetchPopularGachaData();
     fetchNoticeData();
+    getAllMyItems();
   }, []);
 
   const handleNavigateToDetail = (id: number) => {
@@ -114,7 +126,11 @@ export default function Home() {
   };
 
   const goToSearch = () => {
-    router.push("/(tabs)/Search");
+    router.push("/(tabs)/search");
+  };
+
+  const goToNotice = () => {
+    router.push("/notice");
   };
 
   const goToNoticeDetail = (id: number) => {
@@ -123,7 +139,7 @@ export default function Home() {
 
   return (
     <View className="flex-1">
-      <View className="w-full bg-white flex justify-between flex-row py-2 px-4">
+      <View className="flex flex-row justify-between w-full px-4 py-2 bg-white">
         <Typography variant="header1" color="primary">
           LOGO
         </Typography>
@@ -138,7 +154,7 @@ export default function Home() {
         <BasicSwiper data={[1, 2, 3]} />
 
         {/* 내 굿즈 소장률 */}
-        <View className="px-4 py-14">
+        <View className="py-14 px-4">
           <Typography variant="header2" color="primary">
             내 굿즈 소장률
           </Typography>
@@ -172,12 +188,12 @@ export default function Home() {
 
         {/* 공지사항 */}
         <View className="bg-primary-light py-7 px-4 mt-16">
-          <View className="flex justify-between flex-row mb-2">
+          <View className="flex flex-row justify-between mb-4">
             <Typography variant="header2" color="secondary-dark">
               공지사항
             </Typography>
 
-            <Button variant="text" size="sm">
+            <Button variant="text" size="sm" onPress={goToNotice}>
               <Typography variant="tag" className="text-gray-04">
                 전체보기 &gt;
               </Typography>
@@ -186,20 +202,7 @@ export default function Home() {
 
           <View className="flex flex-col gap-3">
             {noticeList.map((notice) => (
-              <Pressable key={`notice-${notice.id}`} onPress={() => goToNoticeDetail(notice.id)}>
-                <WiggleBorder backgroundColor="#FFF" borderZIndex={2} height={60}>
-                  <View className="p-3 mr-auto">
-                    <View className="mb-1">
-                      <Typography variant="header5" color="primary">
-                        {notice.title}
-                      </Typography>
-                    </View>
-                    <Typography variant="caption" className="text-gray-04">
-                      {formatYmdHm(notice.created_at)}
-                    </Typography>
-                  </View>
-                </WiggleBorder>
-              </Pressable>
+              <NoticeItem key={`notice-${notice.id}`} notice={notice} onClick={goToNoticeDetail} />
             ))}
           </View>
         </View>
