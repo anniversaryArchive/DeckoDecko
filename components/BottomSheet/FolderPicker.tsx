@@ -6,14 +6,14 @@ import folder from "@table/folders";
 import { colors } from "@utils/tailwind-colors";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 
-import Icon from "./Icon";
-import Button from "./Button";
-import Typography from "./Typography";
+import Icon from "@components/Icon";
+import { InputBox } from "@components/Input";
+import Typography from "@components/Typography";
+import Button from "@components/Button";
 import BottomSheet from "./BottomSheet";
-import { InputBox } from "./Input";
 
 import type { TFolder, TFolderPickerMode } from "@/types/folder";
-import type { InputBoxHandle } from "./Input/InputBox";
+import type { InputBoxHandle } from "../Input/InputBox";
 
 interface IFolderPickerBaseProps {
   initialMode: TFolderPickerMode;

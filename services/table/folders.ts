@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 import CommonTabledbInstance from "@/utils/sqlite";
-import { TFolder } from "@/types/folder";
+import type { TFolder } from "@/types/folder";
 
 class TbFolders {
   #dbInstance: Promise<SQLite.SQLiteDatabase | null>;

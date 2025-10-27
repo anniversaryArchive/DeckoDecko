@@ -2,12 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { View, Alert, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 
-import { Button, Typography, SearchBox, Chip } from "@components/index";
-import SimpleSwiper from "@components/SimpleSwiper";
+import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
-import * as supaBase from "@utils/supabase";
+
 import { IGachaItem } from "@/types/search";
-import {supabase} from "@utils/supabase";
+import { Button, Typography, SearchBox, Chip, SimpleSwiper } from "@components/index";
 
 export default function Index() {
   const router = useRouter();
@@ -33,7 +32,8 @@ export default function Index() {
     try {
       const { data, error } = await supabase
         .from("gacha_view_log")
-        .select(`
+        .select(
+          `
         *,
         gacha (
           id,
@@ -46,7 +46,8 @@ export default function Index() {
             kr_title
           )
         )
-      `)
+      `
+        )
         // .order("viewed_at", { ascending: false })
         .limit(10);
 
@@ -56,7 +57,7 @@ export default function Index() {
         return;
       }
 
-      const goods = (data ?? []).map(item => ({
+      const goods = (data ?? []).map((item) => ({
         ...item.gacha,
         anime_kr_title: item.gacha?.anime?.kr_title ?? "",
       }));
@@ -73,8 +74,8 @@ export default function Index() {
     await loadSearches();
 
     router.push({
-      pathname: "/Search/search-results",
-      params: { searchTerm: value }
+      pathname: "/search/search-results",
+      params: { searchTerm: value },
     });
   };
 
@@ -84,7 +85,7 @@ export default function Index() {
   };
 
   const handleClearRecentGoods = () => {
-    Alert.alert("최근 본 굿즈를 전체 삭제하시겠습니까?", '', [
+    Alert.alert("최근 본 굿즈를 전체 삭제하시겠습니까?", "", [
       { text: "취소", style: "cancel" },
       {
         text: "삭제",
@@ -101,7 +102,7 @@ export default function Index() {
   };
 
   const handleClearRecentSearches = () => {
-    Alert.alert("최근 검색어를 전체 삭제하시겠습니까?", '', [
+    Alert.alert("최근 검색어를 전체 삭제하시겠습니까?", "", [
       { text: "취소", style: "cancel" },
       {
         text: "삭제",
@@ -132,7 +133,7 @@ export default function Index() {
 
       {/* 최근 검색어 */}
       <View className="mt-4 mb-4">
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
+        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="Header4">최근 검색어</Typography>
           {recentSearches.length > 0 && (
             <Button
@@ -167,7 +168,7 @@ export default function Index() {
             })}
           </ScrollView>
         ) : (
-          <View className="items-center justify-center h-11">
+          <View className="h-11 items-center justify-center">
             <Typography variant="Body2" color="secondary-dark">
               최근 검색어가 없습니다.
             </Typography>
@@ -177,7 +178,7 @@ export default function Index() {
 
       {/* 최근 본 굿즈 */}
       <View className="mt-4 mb-4">
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
+        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="Header4">최근 본 굿즈</Typography>
           {recentGoods.length > 0 && (
             <Button
@@ -198,7 +199,7 @@ export default function Index() {
             onSlidePress={(item) => console.log("선택한 굿즈:", item)}
           />
         ) : (
-          <View className="items-center justify-center h-11 ml-4 mr-4">
+          <View className="h-11 items-center justify-center ml-4 mr-4">
             <Typography variant="Body2" color="secondary-dark">
               최근 본 굿즈가 없습니다.
             </Typography>
@@ -208,7 +209,7 @@ export default function Index() {
 
       {/* 인기 굿즈 */}
       <View className="mt-4 mb-4">
-        <View className="flex flex-row justify-between items-center mb-2 ml-4 mr-4">
+        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="Header4">인기 굿즈</Typography>
         </View>
         {popularGoods.length > 0 ? (
@@ -219,7 +220,7 @@ export default function Index() {
             onSlidePress={(item) => console.log("선택한 인기 굿즈:", item)}
           />
         ) : (
-          <View className="items-center justify-center h-11 ml-4 mr-4">
+          <View className="h-11 items-center justify-center ml-4 mr-4">
             <Typography variant="Body2" color="secondary-dark">
               인기 굿즈가 없습니다.
             </Typography>

@@ -1,12 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import {
-  View,
-  Dimensions,
-  TouchableOpacity,
-  FlatList,
-  ListRenderItemInfo,
-} from "react-native";
-import GoodsThumbnail from "./GoodsThumbnail";
+import { View, Dimensions, TouchableOpacity, FlatList, ListRenderItemInfo } from "react-native";
+import GoodsThumbnail from "@components/GoodsThumbnail";
 import {IGachaItem} from '@/types/search';
 
 interface SimpleSwiperProps {
@@ -49,8 +43,8 @@ export default function SimpleSwiper({
         onPress={() => onSlidePress?.(item, index)}
         style={{
           width: itemWidth,
-          marginLeft: isFirst ? 16 : itemSpacing / 2,  // 첫 슬라이드 왼쪽 margin 16
-          marginRight: isLast ? 16 : itemSpacing / 2,   // 마지막 슬라이드 오른쪽 margin 16
+          marginLeft: isFirst ? 16 : itemSpacing / 2, // 첫 슬라이드 왼쪽 margin 16
+          marginRight: isLast ? 16 : itemSpacing / 2, // 마지막 슬라이드 오른쪽 margin 16
         }}
         className="rounded-lg"
       >

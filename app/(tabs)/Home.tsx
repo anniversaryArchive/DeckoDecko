@@ -15,6 +15,7 @@ import {
   ProgressBar,
 } from "@/components";
 import { formatYmdHm } from "@/utils/format";
+import items from "@table/items";
 
 const LIMIT_COUNT = 5;
 
@@ -104,9 +105,22 @@ export default function Home() {
       }
     };
 
+    // Wish/Get 아이템 조회 - 소장률 계산
+    const getAllMyItems = async () => {
+      try {
+        const myItems = await items.getAll();
+        const getCount = myItems.filter(({ type }) => type === "GET").length;
+        const allCount = myItems.length;
+        setPossessionRate(Math.floor((getCount / allCount) * 100));
+      } catch (error) {
+        console.error("❌ Wish/Get 아이템 조회 실패 : ", error);
+      }
+    };
+
     fetchNewGachaData();
     fetchPopularGachaData();
     fetchNoticeData();
+    getAllMyItems();
   }, []);
 
   const handleNavigateToDetail = (id: number) => {
@@ -114,7 +128,7 @@ export default function Home() {
   };
 
   const goToSearch = () => {
-    router.push("/(tabs)/Search");
+    router.push("/(tabs)/search");
   };
 
   const goToNoticeDetail = (id: number) => {
