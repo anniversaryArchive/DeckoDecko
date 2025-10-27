@@ -81,7 +81,7 @@ export default function MyBookmark() {
     <View className="flex-1 gap-4 px-6 pt-1">
       {/* Header */}
       <View className="flex flex-row items-center justify-between">
-        <Typography variant="Header1" color="primary">
+        <Typography variant="header1" color="primary">
           LOGO
         </Typography>
         <Pressable>
@@ -117,7 +117,7 @@ export default function MyBookmark() {
                 );
               })}
           </ScrollView>
-          <Link href="/folder-manage" asChild>
+          <Link href="/(bookmark)/folder-manage" asChild>
             <Pressable className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full">
               <Icon name="folderFill" size={20} />
             </Pressable>

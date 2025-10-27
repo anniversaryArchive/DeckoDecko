@@ -147,7 +147,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
               </Pressable>
             )}
           </View>
-          <Typography variant="Header3" className="-z-10 absolute left-0 right-0 text-center">
+          <Typography variant="header3" className="-z-10 absolute left-0 right-0 text-center">
             폴더 {modeList[mode]}
           </Typography>
           <View className="right-4 absolute z-10 w-8">
