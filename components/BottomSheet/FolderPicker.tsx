@@ -165,31 +165,26 @@ const FolderPicker = (props: TFolderPickerProps) => {
         </View>
         {mode === "select" ? (
           <FlatList
-            data={folderList}
+            data={folderList.filter((f) => f.id !== 1)}
             className="min-h-72 max-h-96"
             contentContainerClassName="flex gap-1"
             keyExtractor={(forder) => `${forder.id}`}
-            renderItem={({ item }) => {
-              const isDefaultFolder = item.id === 1;
-
-              return (
-                <Button
-                  size="xl"
-                  width="full"
-                  variant="text"
-                  textAlign="left"
-                  bold={isDefaultFolder}
-                  color={isDefaultFolder ? "secondary" : "secondary-dark"}
-                  className="border-b-hairline border-gray-400"
-                  onPress={() => {
-                    onSelectFolder && onSelectFolder(item);
-                    closeSheet();
-                  }}
-                >
-                  {item.name}
-                </Button>
-              );
-            }}
+            renderItem={({ item }) => (
+              <Button
+                size="xl"
+                width="full"
+                variant="text"
+                textAlign="left"
+                color={"secondary-dark"}
+                className="border-b-hairline border-gray-400"
+                onPress={() => {
+                  onSelectFolder && onSelectFolder(item);
+                  closeSheet();
+                }}
+              >
+                {item.name}
+              </Button>
+            )}
           />
         ) : (
           <View className="flex justify-between gap-12">

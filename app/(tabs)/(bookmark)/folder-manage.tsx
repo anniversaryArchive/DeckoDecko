@@ -64,7 +64,6 @@ const FolderManage = () => {
   );
 
   const renderItem = ({ item, drag, isActive }: RenderItemParams<TFolder>) => {
-    const isDefaultFolder = item.id === 1;
     const isLastFolder = item.sequence === folderList.length;
 
     return (
@@ -73,31 +72,23 @@ const FolderManage = () => {
           className={`flex-row items-center justify-between gap-3 ${isLastFolder ? "mb-3" : ""}`}
         >
           <TouchableOpacity
-            disabled={isDefaultFolder}
             onPress={() => {
               setDeleteFolder(item);
               setIsDelete(true);
             }}
           >
-            <Icon
-              name="minus"
-              size={24}
-              fill={"none"}
-              stroke={isDefaultFolder ? "gray-04" : "#ff000080"}
-              strokeWidth={4}
-            />
+            <Icon name="minus" size={24} fill={"none"} stroke={"#ff000080"} strokeWidth={4} />
           </TouchableOpacity>
           <InputBox
             size="md"
             className="grow"
             value={item.name}
             editable={false}
-            readOnly={isDefaultFolder}
             onPress={() => {
-              if (!isDefaultFolder) handleOpenEditMode(item);
+              handleOpenEditMode(item);
             }}
           />
-          <TouchableOpacity disabled={isDefaultFolder || isActive} onLongPress={drag}>
+          <TouchableOpacity disabled={isActive} onLongPress={drag}>
             <Icon name="menu" size={24} fill={"none"} stroke={"gray-04"} strokeWidth={4} />
           </TouchableOpacity>
         </View>
@@ -135,7 +126,7 @@ const FolderManage = () => {
         }}
       />
       <DraggableFlatList
-        data={folderList}
+        data={folderList.filter((f) => f.id !== 1)}
         keyExtractor={(forder) => `${forder.id}`}
         className="h-full px-6 py-4"
         contentContainerClassName="gap-3"
@@ -162,12 +153,15 @@ const FolderManage = () => {
       />
       <BottomSheet open={isDelete} onClose={() => setIsDelete(false)}>
         <SafeAreaView edges={["bottom"]} className="flex justify-between gap-12">
-          <View className="items-center justify-center gap-3">
+          <View className="items-center justify-center gap-6">
             <Typography variant="Header2">폴더 삭제</Typography>
-            <Typography>
-              {deleteFolder ? `"${deleteFolder.name}"` : ""} 폴더 내 모든 아이템도 함께 삭제됩니다.
-            </Typography>
-            <Typography>정말 삭제하시겠습니까?</Typography>
+            <View className="items-center justify-center gap-3">
+              <Typography>
+                {deleteFolder ? `"${deleteFolder.name}"` : ""} 폴더 내 모든 아이템도 함께
+                삭제됩니다.
+              </Typography>
+              <Typography>정말 삭제하시겠습니까?</Typography>
+            </View>
           </View>
           <View className="flex-row items-center justify-between gap-2">
             <Button

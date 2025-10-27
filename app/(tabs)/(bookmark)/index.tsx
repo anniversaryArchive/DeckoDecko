@@ -9,49 +9,10 @@ import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
 
-<<<<<<<< HEAD:app/(tabs)/(bookmark)/index.tsx
-import { TFolder } from "@/types/folder";
-import { TBookmarkType } from "@/types/bookmark";
-import { TItem } from "@/types/item";
 import type { TGacha } from "@/types/gacha";
-========
 import type { TFolder } from "@/types/folder";
 import type { TBookmarkType } from "@/types/bookmark";
 import type { TItem } from "@/types/item";
-
-// 임의로 선언한 타입입니다
-type TGacha = {
-  id: number;
-  created_at: Date;
-  updated_at: Date;
-  name: string;
-  name_kr: string;
-  image_link: string;
-  anime_id?: number;
-  price: number;
-};
-
-// conflict 날 것 같아서 임의로 선언한 컴포넌트입니당
-// 추후 소정씨가 작업한 걸로 대체할 예정입니당
-const GoodsThumbnail = ({ image, folderName, name, gachaName }: any) => {
-  return (
-    <View className="flex gap-[10px] w-44">
-      <WiggleBorder width={155} height={155}>
-        <Image source={{ uri: image }} className="w-full h-full" />
-      </WiggleBorder>
-      <View className="flex gap-2">
-        <View className="flex flex-row items-center gap-2">
-          <Chip size="sm" label={folderName} />
-          <Typography variant="Body4" color="primary">
-            {name}
-          </Typography>
-        </View>
-        <Typography variant="Caption2">{gachaName}</Typography>
-      </View>
-    </View>
-  );
-};
->>>>>>>> a038485dd0fbe00582f391d328087ff73acbfca1:app/(tabs)/my-bookmark.tsx
 
 export default function MyBookmark() {
   const [bookmarkType, setBookmarkType] = useState<TBookmarkType>("WISH");
@@ -67,10 +28,9 @@ export default function MyBookmark() {
     const folderList = await folder.getAll();
     setFolderList(
       new Map(
-        [{ id: 0, name: "전체", created_at: new Date() }, ...folderList].map((folder) => [
-          folder.id,
-          folder,
-        ])
+        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderList].map(
+          (folder) => [folder.id, folder]
+        )
       )
     );
   };
