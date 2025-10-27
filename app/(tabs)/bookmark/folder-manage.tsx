@@ -154,7 +154,7 @@ const FolderManage = () => {
       <BottomSheet open={isDelete} onClose={() => setIsDelete(false)}>
         <SafeAreaView edges={["bottom"]} className="flex justify-between gap-12">
           <View className="items-center justify-center gap-6">
-            <Typography variant="Header2">폴더 삭제</Typography>
+            <Typography variant="header2">폴더 삭제</Typography>
             <View className="items-center justify-center gap-3">
               <Typography>
                 {deleteFolder ? `"${deleteFolder.name}"` : ""} 폴더 내 모든 아이템도 함께

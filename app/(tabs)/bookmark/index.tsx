@@ -117,7 +117,7 @@ export default function MyBookmark() {
                 );
               })}
           </ScrollView>
-          <Link href="/(bookmark)/folder-manage" asChild>
+          <Link href="/bookmark/folder-manage" asChild>
             <Pressable className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full">
               <Icon name="folderFill" size={20} />
             </Pressable>

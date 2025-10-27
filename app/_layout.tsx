@@ -39,7 +39,6 @@ export default function RootLayout() {
           <Stack screenOptions={{ contentStyle: { backgroundColor: "white" } }}>
             <Stack.Screen name="index" options={{ title: "HOME" }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)/(bookmark)" options={{ headerShown: false }} />
             <Stack.Screen name="detail/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="notice" options={{ headerShown: false }} />
             <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
