@@ -1,8 +1,12 @@
 import uuid from "react-native-uuid";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Pressable, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Stack } from "expo-router";
+import DraggableFlatList, {
+  RenderItemParams,
+  ScaleDecorator,
+} from "react-native-draggable-flatlist";
 
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import { BottomSheet, Button, FolderPicker, Icon, InputBox, Typography } from "@components/index";
@@ -59,6 +63,48 @@ const FolderManage = () => {
     [openSheet]
   );
 
+  const renderItem = ({ item, drag, isActive }: RenderItemParams<TFolder>) => {
+    const isDefaultFolder = item.id === 1;
+    const isLastFolder = item.sequence === folderList.length;
+
+    return (
+      <ScaleDecorator>
+        <View
+          className={`flex-row items-center justify-between gap-3 ${isLastFolder ? "mb-3" : ""}`}
+        >
+          <TouchableOpacity
+            disabled={isDefaultFolder}
+            onPress={() => {
+              setDeleteFolder(item);
+              setIsDelete(true);
+            }}
+          >
+            <Icon
+              name="minus"
+              size={24}
+              fill={"none"}
+              stroke={isDefaultFolder ? "gray-04" : "#ff000080"}
+              strokeWidth={4}
+            />
+          </TouchableOpacity>
+          <InputBox
+            size="md"
+            className="grow"
+            value={item.name}
+            editable={false}
+            readOnly={isDefaultFolder}
+            onPress={() => {
+              if (!isDefaultFolder) handleOpenEditMode(item);
+            }}
+          />
+          <TouchableOpacity disabled={isDefaultFolder || isActive} onLongPress={drag}>
+            <Icon name="menu" size={24} fill={"none"} stroke={"gray-04"} strokeWidth={4} />
+          </TouchableOpacity>
+        </View>
+      </ScaleDecorator>
+    );
+  };
+
   useEffect(() => {
     loadFolderList();
   }, [loadFolderList]);
@@ -88,47 +134,21 @@ const FolderManage = () => {
           ),
         }}
       />
-      <View className="p-6">
-        <FlatList
-          data={folderList}
-          className="min-h-72"
-          contentContainerClassName="flex gap-3 flex-grow"
-          keyExtractor={(forder) => `${forder.id}`}
-          renderItem={({ item }) => {
-            const isDefaultFolder = item.id === 1;
+      <DraggableFlatList
+        data={folderList}
+        keyExtractor={(forder) => `${forder.id}`}
+        className="h-full px-6 py-4"
+        contentContainerClassName="gap-3"
+        onDragEnd={async ({ data }) => {
+          const newFolderList = data.map((v, index) => {
+            return { ...v, sequence: index + 1 };
+          });
 
-            return (
-              <View className="flex-row items-center justify-between gap-3">
-                <TouchableOpacity
-                  disabled={isDefaultFolder}
-                  onPress={() => {
-                    setDeleteFolder(item);
-                    setIsDelete(true);
-                  }}
-                >
-                  <Icon
-                    name="minus"
-                    size={24}
-                    fill={"none"}
-                    stroke={isDefaultFolder ? "gray-04" : "#ff000080"}
-                    strokeWidth={4}
-                  />
-                </TouchableOpacity>
-                <InputBox
-                  size="md"
-                  className="grow"
-                  value={item.name}
-                  editable={false}
-                  readOnly={isDefaultFolder}
-                  onPress={() => {
-                    if (!isDefaultFolder) handleOpenEditMode(item);
-                  }}
-                />
-              </View>
-            );
-          }}
-        />
-      </View>
+          await folder.updateSequence(newFolderList);
+          setFolderList(newFolderList);
+        }}
+        renderItem={renderItem}
+      />
       <FolderPicker
         key={
           pickerState.initialMode === "edit"

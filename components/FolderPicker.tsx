@@ -83,9 +83,9 @@ const FolderPicker = (props: TFolderPickerProps) => {
     return true;
   };
 
-  const handleAddFolder = async (value: string) => {
+  const handleAddFolder = async (value: string, sequence: number) => {
     if (validateFolderName(value)) {
-      const res = await folder.create(value);
+      const res = await folder.create(value, sequence);
 
       if (res) {
         console.log("passsss");
@@ -110,7 +110,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
     const value = inputRef.current?.getValue();
 
     if (value) {
-      if (mode === "add") await handleAddFolder(value);
+      if (mode === "add") await handleAddFolder(value, folderList.length);
       else await handleEditFolder(value);
     }
   };
