@@ -37,7 +37,7 @@ export default function MyBookmark() {
 
   const loadBookmarkItems = async () => {
     const itemList =
-      selectedFolder === 0 ? await items.getAll() : await items.getAllByFolderId(selectedFolder);
+      selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
     const filteredItemList = itemList.filter((i) => i.type === bookmarkType);
 
     const ids = filteredItemList.map((i) => i.gacha_id);

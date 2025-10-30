@@ -7,16 +7,10 @@ import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet } fr
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
+import items from "@table/items";
 
 import type { TGacha } from "@/types/gacha";
-
-const MOCKUP_LIST = [{ id: 1, name: "히나타", type: "wish" }] as const;
-interface IGachaItem {
-  id: number;
-  name: string;
-  type: "wish" | "get";
-  image_link?: string;
-}
+import type { TItem } from "@/types/item";
 
 export default function DetailPagef() {
   const navigation = useNavigation();
@@ -24,7 +18,7 @@ export default function DetailPagef() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const [gachaData, setGachaData] = React.useState<TGacha | null>(null);
-  const [list, setList] = React.useState<IGachaItem[]>([]);
+  const [list, setList] = React.useState<TItem[]>([]);
 
   const openSheet = activeBottomSheet((state) => state.openSheet);
 
@@ -48,8 +42,9 @@ export default function DetailPagef() {
 
         if (error || !data) throw error;
         setGachaData(data);
-        // TODO: 가챠 내 아이템 목록은 임시로 mockup 데이터, 추후에 치환
-        setList([...MOCKUP_LIST]);
+
+        const itemList = await items.getItemsByGachaId(Number(id));
+        setList(itemList);
       } catch (err) {
         console.error("🚨 Catch block error:", err);
         navigation.goBack();
@@ -115,7 +110,7 @@ export default function DetailPagef() {
             <View className="flex flex-row gap-2 p-2">
               <View className="w-11 h-11 rounded">
                 <Image
-                  source={{ uri: item.image_link || gachaData?.image_link }}
+                  source={{ uri: item.thumbnail || gachaData?.image_link }}
                   className="w-full h-full"
                 />
               </View>
@@ -126,7 +121,7 @@ export default function DetailPagef() {
               </View>
 
               <View
-                className={`rounded my-auto bg-${item.type === "wish" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
+                className={`rounded my-auto bg-${item.type === "WISH" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
               >
                 <Typography variant="tag" color="secondary-light">
                   {item.type.toUpperCase()}

@@ -68,7 +68,7 @@ class TbItems {
     }
   }
 
-  async getAllByFolderId(folder_id: TFolder["id"]): Promise<TItem[]> {
+  async getItemsByFolderId(folder_id: TFolder["id"]): Promise<TItem[]> {
     try {
       const db = await this.#dbInstance;
       if (!db) return [];
@@ -81,6 +81,24 @@ class TbItems {
       return itemList;
     } catch (error) {
       console.error("TbItems getItemsByFolderId Error : ", error);
+
+      return [];
+    }
+  }
+
+  async getItemsByGachaId(gacha_id: TItem["gacha_id"]): Promise<TItem[]> {
+    try {
+      const db = await this.#dbInstance;
+      if (!db) return [];
+
+      const itemList = (await db.getAllAsync(
+        "SELECT * FROM items WHERE gacha_id = ? ORDER BY created_at DESC;",
+        [gacha_id]
+      )) as TItem[];
+
+      return itemList;
+    } catch (error) {
+      console.error("TbItems getItemsByGachaId Error : ", error);
 
       return [];
     }
