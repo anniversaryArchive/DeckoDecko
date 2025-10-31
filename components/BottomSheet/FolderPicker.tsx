@@ -88,11 +88,13 @@ const FolderPicker = (props: TFolderPickerProps) => {
       const res = await folder.create(value, sequence);
 
       if (res) {
-        console.log("passsss");
-
         setFolderName("");
         inputRef.current?.clear();
-        handleClose();
+        if (initialMode === "add") handleClose();
+        else {
+          await loadFolderList();
+          setMode(initialMode);
+        }
       }
     }
   };
@@ -112,6 +114,8 @@ const FolderPicker = (props: TFolderPickerProps) => {
     if (value) {
       if (mode === "add") await handleAddFolder(value, folderList.length);
       else await handleEditFolder(value);
+
+      setMode("select");
     }
   };
 
@@ -179,7 +183,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
                 className="border-b-hairline border-gray-400"
                 onPress={() => {
                   onSelectFolder && onSelectFolder(item);
-                  closeSheet();
+                  handleClose();
                 }}
               >
                 {item.name}
