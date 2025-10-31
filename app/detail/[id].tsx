@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ScrollView, Image, Pressable } from "react-native";
+import { View, ScrollView, Image, Pressable, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -19,6 +19,7 @@ export default function DetailPagef() {
 
   const [gachaData, setGachaData] = React.useState<TGacha | null>(null);
   const [list, setList] = React.useState<TItem[]>([]);
+  const [itemInfo, setItemInfo] = React.useState<TItem>();
 
   const openSheet = activeBottomSheet((state) => state.openSheet);
 
@@ -42,9 +43,7 @@ export default function DetailPagef() {
 
         if (error || !data) throw error;
         setGachaData(data);
-
-        const itemList = await items.getItemsByGachaId(Number(id));
-        setList(itemList);
+        fetchBookmarkList();
       } catch (err) {
         console.error("🚨 Catch block error:", err);
         navigation.goBack();
@@ -65,6 +64,11 @@ export default function DetailPagef() {
     fetchGachaData();
     logGachaView();
   }, [navigation, id]);
+
+  const fetchBookmarkList = async () => {
+    const itemList = await items.getItemsByGachaId(Number(id));
+    setList(itemList);
+  };
 
   const handleAddGacha = () => {
     openSheet("BOOKMARK");
@@ -120,13 +124,21 @@ export default function DetailPagef() {
                 </Typography>
               </View>
 
-              <View
-                className={`rounded my-auto bg-${item.type === "WISH" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() => {
+                  setItemInfo(item);
+                  handleAddGacha();
+                }}
               >
-                <Typography variant="tag" color="secondary-light">
-                  {item.type.toUpperCase()}
-                </Typography>
-              </View>
+                <View
+                  className={`rounded my-auto bg-${item.type === "WISH" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
+                >
+                  <Typography variant="tag" color="secondary-light">
+                    {item.type}
+                  </Typography>
+                </View>
+              </TouchableOpacity>
             </View>
           </WiggleBorder>
         ))}
@@ -136,12 +148,15 @@ export default function DetailPagef() {
       <Pressable
         className="bg-primary right-6 absolute p-2 rounded-full"
         style={{ bottom: 8 + insets.bottom }}
-        onPress={handleAddGacha}
+        onPress={() => {
+          setItemInfo(undefined);
+          handleAddGacha();
+        }}
       >
         <Icon name="plus2" size={36} fill="#fff" />
       </Pressable>
 
-      <BookmarkSheet gachaId={Number(id)} />
+      <BookmarkSheet gachaId={Number(id)} onClose={fetchBookmarkList} itemInfo={itemInfo} />
     </SafeAreaView>
   );
 }
