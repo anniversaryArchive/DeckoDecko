@@ -104,6 +104,24 @@ class TbItems {
     }
   }
 
+  async getItemByName(name: TItem["name"]): Promise<TItem | null> {
+    try {
+      const db = await this.#dbInstance;
+      if (!db) return null;
+
+      const firstRow: TItem | null = await db.getFirstAsync(
+        "SELECT * FROM items WHERE name = ?;",
+        name
+      );
+
+      return firstRow;
+    } catch (error) {
+      console.error("TbItems getItemByName Error : ", error);
+
+      return null;
+    }
+  }
+
   async getAll(): Promise<TItem[]> {
     try {
       const db = await this.#dbInstance;
@@ -129,7 +147,7 @@ class TbItems {
       const values = Object.values(updates);
 
       // 업데이트할 내용이 없으면 종료
-      if (!!fields.length) {
+      if (!fields.length) {
         return false;
       }
 
@@ -147,6 +165,56 @@ class TbItems {
       return !!result.changes;
     } catch (error) {
       console.error("TbItems update Error : ", error);
+      return false;
+    }
+  }
+
+  async clear() {
+    try {
+      const db = await this.#dbInstance;
+      if (!db) return false;
+
+      const res = await db.runAsync("DELETE FROM items;");
+      return !!res.changes;
+    } catch (error) {
+      console.error("테이블 마이그레이션 실패:", error);
+
+      return false;
+    }
+  }
+
+  async migration() {
+    try {
+      const db = await this.#dbInstance;
+      if (!db) return false;
+
+      await db.runAsync(` 
+          CREATE TABLE items_new (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              folder_id INTEGER NOT NULL,
+              gacha_id INTEGER NOT NULL,
+              type TEXT NOT NULL CHECK(type IN ('WISH', 'GET')),
+              name TEXT NOT NULL,
+              thumbnail TEXT,
+              memo TEXT,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+              FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
+          );
+      `);
+
+      await db.runAsync(`
+        INSERT INTO items_new (id, folder_id, gacha_id, type, name, thumbnail, memo, created_at, updated_at)
+        SELECT id, folder_id, gacha_id, type, name, thumbnail, memo, created_at, updated_at
+        FROM items;`);
+
+      await db.runAsync(`DROP TABLE items;`);
+      const result = await db.runAsync(`ALTER TABLE items_new RENAME TO items;`);
+
+      return !!result.changes;
+    } catch (error) {
+      console.error("테이블 마이그레이션 실패:", error);
+
       return false;
     }
   }
