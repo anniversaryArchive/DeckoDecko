@@ -65,7 +65,7 @@ export default function Notice() {
                       {notice.title}
                     </Typography>
                   </View>
-                  <Typography variant="Caption" className="text-gray-04">
+                  <Typography variant="caption1" className="text-gray-04">
                     {formatYmdHm(notice.created_at)}
                   </Typography>
                 </View>

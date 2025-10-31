@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 
 import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography } from "@components/index";
 import { supabase } from "@utils/supabase";
@@ -37,7 +37,7 @@ export default function MyBookmark() {
 
   const loadBookmarkItems = async () => {
     const itemList =
-      selectedFolder === 0 ? await items.getAll() : await items.getAllByFolderId(selectedFolder);
+      selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
     const filteredItemList = itemList.filter((i) => i.type === bookmarkType);
 
     const ids = filteredItemList.map((i) => i.gacha_id);
@@ -63,19 +63,25 @@ export default function MyBookmark() {
     setItemList(mergedList);
   };
 
-  useEffect(() => {
-    loadFolderList();
-  }, [loadFolderList]);
+  useFocusEffect(
+    useCallback(() => {
+      loadFolderList();
+    }, [])
+  );
 
-  useEffect(() => {
-    if (folderList) loadBookmarkItems();
-  }, [selectedFolder, bookmarkType, folderList]);
+  useFocusEffect(
+    useCallback(() => {
+      if (folderList) loadBookmarkItems();
+    }, [selectedFolder, bookmarkType, folderList])
+  );
 
-  useEffect(() => {
-    setSearchTerm("");
-    setViewMode("item");
-    setSelectedFolder(0);
-  }, [bookmarkType]);
+  useFocusEffect(
+    useCallback(() => {
+      setSearchTerm("");
+      setViewMode("item");
+      setSelectedFolder(0);
+    }, [bookmarkType])
+  );
 
   return (
     <View className="flex-1 gap-4 px-6 pt-1">
@@ -164,9 +170,12 @@ export default function MyBookmark() {
 
               return (
                 <GoodsThumbnail
-                  nameKr={item.name}
-                  animeTitle={gachaInfo.name_kr}
-                  imageLink={item.thumbnail || gachaInfo.image_link}
+                  redirectId={gachaInfo.id}
+                  name={item.name}
+                  category={item.folderName}
+                  itemName={gachaInfo.name_kr}
+                  isLocalImage={!!item.thumbnail}
+                  image={item.thumbnail || gachaInfo.image_link}
                 />
               );
             }}

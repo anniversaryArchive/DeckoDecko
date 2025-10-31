@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, Dimensions, TouchableOpacity, FlatList, ListRenderItemInfo } from "react-native";
+import { View, Dimensions, FlatList, ListRenderItemInfo, Pressable } from "react-native";
 import GoodsThumbnail from "@components/GoodsThumbnail";
 import type { IGachaItem } from "@/types/search";
 
@@ -36,8 +36,7 @@ export default function SimpleSwiper({
     const isLast = index === data.length - 1;
 
     return (
-      <TouchableOpacity
-        activeOpacity={0.8}
+      <Pressable
         onPress={() => onSlidePress?.(item, index)}
         style={{
           width: itemWidth,
@@ -47,11 +46,13 @@ export default function SimpleSwiper({
         className="rounded-lg"
       >
         <GoodsThumbnail
-          nameKr={item.name_kr}
-          animeTitle={item.anime_kr_title}
-          imageLink={item.image_link}
+          redirectId={item.id}
+          name={item.name_kr}
+          itemName={item.name_kr}
+          category={item.anime_kr_title}
+          image={item.image_link}
         />
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 

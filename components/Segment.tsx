@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import Typography from "@components/Typography";
+import Typography, { typographyTheme } from "@components/Typography";
 
 type TSegmentItem<T> = {
   key: T;
@@ -21,7 +21,7 @@ export default function Segment<T>({ segments, selectedKey, onSelect }: TSegment
         const isLast = index === segments.length - 1;
 
         // 스타일 변수 분리
-        const [pressableBg, typoColor] = isSelected
+        const [pressableBg, typoColor]: [string, keyof typeof typographyTheme.color] = isSelected
           ? ["bg-primary", "primary-light"]
           : ["bg-primary-light", "primary"];
 

@@ -10,6 +10,8 @@ interface IChip {
   onClick?: (value?: string) => void;
   onDelete?: (value?: string) => void;
   className?: string;
+  rounded?: boolean;
+  bold?: boolean;
 }
 
 const chipTheme = {
@@ -18,9 +20,9 @@ const chipTheme = {
     "secondary-light": { bg: "bg-secondary-light", text: "text-secondary-dark" },
   },
   size: {
-    sm: { bg: "h-[21px] px-1 py-[5px] rounded-xl", text: "text-[10px] font-DunggeunmisoB" },
-    md: { bg: "h-[27px] px-2 py-[6px] rounded-xl", text: "text-[14px] font-DunggeunmisoB" },
-    lg: { bg: "h-[30px] px-3 py-2 rounded-full", text: "text-[14px] font-Dunggeunmiso" },
+    sm: { bg: "px-1.5 py-1", text: "text-tag" },
+    md: { bg: "px-2 py-1.5", text: "text-body2" },
+    lg: { bg: "px-3 py-2", text: "text-body1" },
   },
 };
 
@@ -33,6 +35,8 @@ const Chip = (props: IChip) => {
     onClick,
     onDelete,
     className = "",
+    rounded = false,
+    bold = true,
   } = props;
 
   const handleClick = useCallback(() => {
@@ -45,10 +49,13 @@ const Chip = (props: IChip) => {
 
   return (
     <View
-      className={`w-fit flex justify-center items-center ${chipTheme.color[color].bg} ${chipTheme.size[size].bg} ${onDelete ? "flex-row gap-2" : ""} ${className}`}
+      className={`w-fit flex justify-center items-center ${rounded ? "rounded-full" : "rounded-2xl"} ${chipTheme.color[color].bg} ${chipTheme.size[size].bg} ${onDelete ? "flex-row gap-2" : ""} ${className}`}
     >
       <Pressable onPress={handleClick} disabled={!onClick}>
-        <Text className={`${chipTheme.size[size].text} ${chipTheme.color[color].text}`}>
+        <Text
+          className={`${chipTheme.size[size].text} ${chipTheme.color[color].text} ${bold ? "font-DunggeunmisoB" : "font-Dunggeunmiso"} `}
+          numberOfLines={1}
+        >
           {label}
         </Text>
       </Pressable>
