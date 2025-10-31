@@ -25,7 +25,7 @@ interface ITwoToneTypographyProps extends IBaseTypographyProps {
   className?: never;
 }
 
-const typographyTheme = {
+export const typographyTheme = {
   variant: {
     header1: "text-header1 font-DunggeunmisoB",
     header2: "text-header2 font-DunggeunmisoB",
@@ -49,6 +49,7 @@ const typographyTheme = {
     "secondary-light": "text-secondary-light",
     "secondary-dark": "text-secondary-dark",
     black: "text-black",
+    "gray-04": "text-gray-03",
     "gray-05": "text-gray-05",
   },
 };
