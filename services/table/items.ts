@@ -132,6 +132,18 @@ class TbItems {
       return false;
     }
   }
+
+  async clear() {
+    try {
+      const db = await this.#dbInstance;
+      if (!db) return false;
+
+      await db.runAsync(`DELETE FROM items;`);
+    } catch (error) {
+      console.error("TbItems update Error : ", error);
+      return false;
+    }
+  }
 }
 
 export default new TbItems();
