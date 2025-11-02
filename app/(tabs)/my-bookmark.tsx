@@ -20,7 +20,7 @@ type TGacha = {
   name: string;
   name_kr: string;
   image_link: string;
-  anime_id?: number;
+  media_id?: number;
   price: number;
 };
 

@@ -1,4 +1,4 @@
-import { TAnime } from "./anime";
+import { TMedia } from "./media";
 
 export type TGacha = {
   id: number;
@@ -7,7 +7,7 @@ export type TGacha = {
   name: string;
   name_kr: string;
   image_link: string;
-  anime_id?: number;
+  media_id?: number;
   price: number;
-  anime?: TAnime;
+  media?: TMedia;
 };
