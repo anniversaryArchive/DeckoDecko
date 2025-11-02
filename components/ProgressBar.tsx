@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { useAnimatedStyle, withTiming, useSharedValue } from "react-native-reanimated";
 
+import { Typography } from "@/components";
 import { getColor } from "@/utils/color";
 
 interface IProgressBarProps {
@@ -40,6 +41,11 @@ export default function ProgressBar(props: IProgressBarProps) {
           animatedStyle,
         ]}
       />
+      <View className="flex justify-center flex-row my-auto">
+        <Typography variant="body3" color="secondary-dark">
+          {value}%
+        </Typography>
+      </View>
     </View>
   );
 }
