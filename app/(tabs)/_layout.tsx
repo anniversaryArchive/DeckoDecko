@@ -7,9 +7,9 @@ import Icon from "@/components/Icon";
 import { colors } from "@/utils/tailwind-colors";
 
 const TABS = [
-  { name: "home", title: "홈", icon: "star" },
+  { name: "Home", title: "홈", icon: "star" },
   { name: "my-bookmark", title: "내 굿즈", icon: "folder" },
-  { name: "search", title: "검색", icon: "search" },
+  { name: "Search", title: "검색", icon: "search" },
 ];
 
 export default function TabLayout() {
