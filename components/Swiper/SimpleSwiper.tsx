@@ -1,13 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
-import {
-  View,
-  Dimensions,
-  TouchableOpacity,
-  FlatList,
-  ListRenderItemInfo,
-} from "react-native";
-import GoodsThumbnail from "./GoodsThumbnail";
-import {IGachaItem} from '@/types/search';
+import { View, Dimensions, TouchableOpacity, FlatList, ListRenderItemInfo } from "react-native";
+import GoodsThumbnail from "@components/GoodsThumbnail";
+import type { IGachaItem } from "@/types/search";
 
 interface SimpleSwiperProps {
   data: IGachaItem[];
@@ -22,9 +16,7 @@ export default function SimpleSwiper({
   slidesPerView = 2.5,
   itemSpacing = 10,
 }: SimpleSwiperProps) {
-  const [screenWidth, setScreenWidth] = useState(
-    Dimensions.get("window").width
-  );
+  const [screenWidth, setScreenWidth] = useState(Dimensions.get("window").width);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -48,13 +40,17 @@ export default function SimpleSwiper({
         activeOpacity={0.8}
         style={{
           width: itemWidth,
-          marginLeft: isFirst ? 16 : itemSpacing / 2,  // 첫 슬라이드 왼쪽 margin 16
-          marginRight: isLast ? 16 : itemSpacing / 2,   // 마지막 슬라이드 오른쪽 margin 16
+          marginLeft: isFirst ? 16 : itemSpacing / 2, // 첫 슬라이드 왼쪽 margin 16
+          marginRight: isLast ? 16 : itemSpacing / 2, // 마지막 슬라이드 오른쪽 margin 16
         }}
         className="rounded-lg"
       >
-        <GoodsThumbnail nameKr={item.name_kr} animeTitle={item.anime_kr_title} imageLink={item.image_link}
-                        onPress={() => onSlidePress?.(item, index)} />
+        <GoodsThumbnail
+          nameKr={item.name_kr}
+          animeTitle={item.anime_kr_title}
+          imageLink={item.image_link}
+          onPress={() => onSlidePress?.(item, index)}
+        />
       </TouchableOpacity>
     );
   };

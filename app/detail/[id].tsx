@@ -7,7 +7,8 @@ import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
 
 import { WiggleBorder, WiggleDivider, Chip, Typography, Icon } from "@/components";
-import { TGacha } from "@/types/gacha";
+
+import type { TGacha } from "@/types/gacha";
 
 const MOCKUP_LIST = [{ id: 1, name: "히나타", type: "wish" }] as const;
 interface IGachaItem {
@@ -80,7 +81,7 @@ export default function DetailPagef() {
   return (
     <SafeAreaView className="relative flex-1 bg-white">
       {/* Header */}
-      <View className="flex flex-row items-center justify-between px-6 h-12">
+      <View className="flex flex-row items-center justify-between h-12 px-6">
         <Pressable onPress={handleBack}>
           <Icon name="back" size={24} fill="secondary.dark" stroke="secondary.dark" />
         </Pressable>
@@ -89,16 +90,16 @@ export default function DetailPagef() {
       <View className="px-6">
         {/* 가챠 이미지 */}
         <WiggleBorder height={350} backgroundColor="#fff" borderZIndex={2}>
-          <View className="p-2 w-full h-full">
+          <View className="w-full h-full p-2">
             <Image source={{ uri: gachaData?.image_link }} className="w-full h-full" />
           </View>
         </WiggleBorder>
         {/* 가챠 에니메이션 제목 (없는 경우, 기타) */}
-        <View className="py-2 flex items-start">
+        <View className="flex items-start py-2">
           <Chip label={gachaData?.anime?.kr_title || "기타"} />
         </View>
         {/* 가챠 이름 */}
-        <Typography variant="Header2" twotone="primary">
+        <Typography variant="header2" twotone="primary">
           {gachaData?.name_kr}
         </Typography>
         <View className="py-2">
@@ -111,14 +112,14 @@ export default function DetailPagef() {
         {list.map((item) => (
           <WiggleBorder key={`gacha-item-${item.id}`} strokeColor="secondary.dark">
             <View className="flex flex-row gap-2 p-2">
-              <View className="rounded w-11 h-11">
+              <View className="w-11 h-11 rounded">
                 <Image
                   source={{ uri: item.image_link || gachaData?.image_link }}
                   className="w-full h-full"
                 />
               </View>
-              <View className="my-auto flex-1">
-                <Typography variant="Header5" color="secondary.dark">
+              <View className="flex-1 my-auto">
+                <Typography variant="header5" color="secondary-dark">
                   {item.name}
                 </Typography>
               </View>
@@ -126,7 +127,7 @@ export default function DetailPagef() {
               <View
                 className={`rounded my-auto bg-${item.type === "wish" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
               >
-                <Typography variant="Tag" color="secondary-light">
+                <Typography variant="tag" color="secondary-light">
                   {item.type.toUpperCase()}
                 </Typography>
               </View>
@@ -137,7 +138,7 @@ export default function DetailPagef() {
 
       {/* Add Gacha Floating Button */}
       <Pressable
-        className="bg-primary rounded-full p-2 absolute right-6"
+        className="bg-primary right-6 absolute p-2 rounded-full"
         style={{ bottom: 8 + insets.bottom }}
         onPress={handleAddGacha}
       >

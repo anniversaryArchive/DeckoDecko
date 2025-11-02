@@ -6,13 +6,13 @@ import folder from "@table/folders";
 import { colors } from "@utils/tailwind-colors";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 
-import Icon from "./Icon";
-import Button from "./Button";
-import Typography from "./Typography";
+import Icon from "@components/Icon";
+import { InputBox } from "@components/Input";
+import Typography from "@components/Typography";
+import Button from "@components/Button";
 import BottomSheet from "./BottomSheet";
-import { InputBox } from "./Input";
 
-import { TFolder } from "@/types/folder";
+import type { TFolder } from "@/types/folder";
 
 interface IFolderPickerProps {
   onSelectFolder: (folder: TFolder) => void;
@@ -82,7 +82,7 @@ const FolderPicker = (props: IFolderPickerProps) => {
               </Pressable>
             )}
           </View>
-          <Typography variant="Header3" className="-z-10 absolute left-0 right-0 text-center">
+          <Typography variant="header3" className="-z-10 absolute left-0 right-0 text-center">
             {mode === "select" ? "폴더 선택" : "폴더 추가"}
           </Typography>
           <View className="right-4 absolute z-10 w-8">

@@ -10,18 +10,18 @@ import { BOOKMARK_TYPE } from "@/constants/global";
 import useDefaultFolder from "@/hooks/useDefaultFolder";
 import items from "@table/items";
 
-import Icon from "./Icon";
-import Button from "./Button";
+import Divider from "@components/Divider";
+import Icon from "@components/Icon";
+import { InputBox, TextBox } from "@components/Input";
+import Segment from "@components/Segment";
+import Typography from "@components/Typography";
+import Button from "@components/Button";
 import BottomSheet from "./BottomSheet";
-import Divider from "./Divider";
 import FolderPicker from "./FolderPicker";
-import { InputBox, TextBox } from "./Input";
-import Segment from "./Segment";
-import Typography from "./Typography";
 
-import { TCreateItemDTO } from "@/types/item";
-import { TBookmarkType } from "@/types/bookmark";
-import { TFolder } from "@/types/folder";
+import type { TCreateItemDTO } from "@/types/item";
+import type { TBookmarkType } from "@/types/bookmark";
+import type { TFolder } from "@/types/folder";
 
 interface IBookmarkSheetProps {
   gachaId: number;
@@ -90,7 +90,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps) => {
     <>
       <BottomSheet open={isOpen} onClose={handleClose}>
         <SafeAreaView edges={["bottom"]} className="flex justify-center gap-3">
-          <Typography variant="Header3" className="text-center">
+          <Typography variant="header3" className="text-center">
             추가
           </Typography>
           <Segment segments={BOOKMARK_TYPE} selectedKey={type} onSelect={setType} />

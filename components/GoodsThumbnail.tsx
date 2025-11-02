@@ -35,13 +35,13 @@ const GoodsThumbnail = ({ nameKr, animeTitle, imageLink, onPress }: GoodsThumbna
           layout="flex"
           rounded
           onPress={() => {}}
-          pointerEvents="none" // ✅ 부모 Pressable이 클릭을 받도록
+          pointerEvents="none" // 부모 Pressable이 클릭을 받도록
         >
           {animeTitle ? animeTitle : "기타"}
         </Button>
 
         <Typography
-          variant="Body4"
+          variant="body4"
           color="primary"
           numberOfLines={2}
           ellipsizeMode="tail"

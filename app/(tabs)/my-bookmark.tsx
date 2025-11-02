@@ -8,9 +8,9 @@ import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
 
-import { TFolder } from "@/types/folder";
-import { TBookmarkType } from "@/types/bookmark";
-import { TItem } from "@/types/item";
+import type { TFolder } from "@/types/folder";
+import type { TBookmarkType } from "@/types/bookmark";
+import type { TItem } from "@/types/item";
 
 // 임의로 선언한 타입입니다
 type TGacha = {
@@ -35,11 +35,11 @@ const GoodsThumbnail = ({ image, folderName, name, gachaName }: any) => {
       <View className="flex gap-2">
         <View className="flex flex-row items-center gap-2">
           <Chip size="sm" label={folderName} />
-          <Typography variant="Body4" color="primary">
+          <Typography variant="body4" color="primary">
             {name}
           </Typography>
         </View>
-        <Typography variant="Caption2">{gachaName}</Typography>
+        <Typography variant="caption2">{gachaName}</Typography>
       </View>
     </View>
   );
@@ -113,7 +113,7 @@ export default function MyBookmark() {
     <View className="flex-1 gap-4 px-6 pt-1">
       {/* Header */}
       <View className="flex flex-row items-center justify-between">
-        <Typography variant="Header1" color="primary">
+        <Typography variant="header1" color="primary">
           LOGO
         </Typography>
         <Pressable>

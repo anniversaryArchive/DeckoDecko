@@ -33,7 +33,6 @@ const Chip = (props: IChip) => {
     onClick,
     onDelete,
     className = "",
-    style,
   } = props;
 
   const handleClick = useCallback(() => {
@@ -47,7 +46,6 @@ const Chip = (props: IChip) => {
   return (
     <View
       className={`w-fit flex justify-center items-center ${chipTheme.color[color].bg} ${chipTheme.size[size].bg} ${onDelete ? "flex-row gap-2" : ""} ${className}`}
-      style={style}
     >
       <Pressable onPress={handleClick} disabled={!onClick}>
         <Text className={`${chipTheme.size[size].text} ${chipTheme.color[color].text}`}>
