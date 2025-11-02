@@ -35,7 +35,7 @@ const GoodsThumbnail = ({ nameKr, animeTitle, imageLink, onPress }: GoodsThumbna
           layout="flex"
           rounded
           onPress={() => {}}
-          pointerEvents="none" // 부모 Pressable이 클릭을 받도록
+          style={{ pointerEvents: 'none' }}
         >
           {animeTitle ? animeTitle : "기타"}
         </Button>
