@@ -6,14 +6,15 @@ import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
 
 import { IGachaItem } from "@/types/search";
-import { Button, Typography, SearchBox, Chip, SimpleSwiper } from "@components/index";
+import { Button, Typography, SearchBox, Chip, SimpleSwiper, Spinner } from "@components/index";
 
 export default function Index() {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState(""); // 검색어 상태 추가
+  const [searchValue, setSearchValue] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
   const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const loadSearches = useCallback(async () => {
     const searches = await searchHistory.getRecentSearches();
@@ -34,21 +35,20 @@ export default function Index() {
         .from("gacha_view_log")
         .select(
           `
-        *,
-        gacha (
-          id,
-          name,
-          name_kr,
-          image_link,
-          anime_id,
-          price,
-          anime:anime_id (
-            kr_title
-          )
+            *,
+            gacha (
+              id,
+              name,
+              name_kr,
+              image_link,
+              anime_id,
+              price,
+              anime:anime_id (
+                kr_title
+              )
+            )
+          `
         )
-      `
-        )
-        // .order("viewed_at", { ascending: false })
         .limit(10);
 
       if (error) {
@@ -68,6 +68,16 @@ export default function Index() {
       setPopularGoods([]);
     }
   }, []);
+
+  const loadAllData = useCallback(async () => {
+    setLoading(true);
+    await Promise.all([loadSearches(), loadRecentGoods(), loadPopularGoods()]);
+    setLoading(false);
+  }, [loadSearches, loadRecentGoods, loadPopularGoods]);
+
+  useEffect(() => {
+    loadAllData();
+  }, [loadAllData]);
 
   const handleSearch = async (value: string) => {
     await searchHistory.addRecentSearch(value);
@@ -122,6 +132,7 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-white">
+      <Spinner visible={loading} />
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
