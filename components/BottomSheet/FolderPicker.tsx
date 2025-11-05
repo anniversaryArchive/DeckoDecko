@@ -88,8 +88,6 @@ const FolderPicker = (props: TFolderPickerProps) => {
       const res = await folder.create(value, sequence);
 
       if (res) {
-        console.log("passsss");
-
         setFolderName("");
         inputRef.current?.clear();
         handleClose();
