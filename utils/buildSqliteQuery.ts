@@ -1,3 +1,5 @@
+import { SQLiteVariadicBindParams } from "expo-sqlite";
+
 export function buildSelectQuery<T>(tableName: TTable, options?: TQueryOptions<T>): string {
   let sql = `SELECT * FROM ${tableName}`;
 
@@ -18,7 +20,10 @@ export function buildDeleteQuery<T>(tableName: TTable, options: TQueryOptions<T>
   return sql;
 }
 
-export function buildInsertQuery<T extends object>(tableName: TTable, data: Partial<T>): string {
+export function buildInsertQuery<T extends object>(
+  tableName: TTable,
+  data: Partial<T>
+): [string, ...SQLiteVariadicBindParams] {
   // 데이터 객체에서 키(컬럼명) 배열을 추출합니다.
   const columns = Object.keys(data);
 
@@ -29,8 +34,16 @@ export function buildInsertQuery<T extends object>(tableName: TTable, data: Part
   // 'INSERT INTO 테이블명 (컬럼1, 컬럼2) VALUES (?, ?)' 형태의 문자열 생성
   const columnNames = columns.join(", ");
   const placeholders = columns.map(() => "?").join(", ");
+  const values = Object.values(data);
 
-  return `INSERT INTO ${tableName} (${columnNames}) VALUES (${placeholders})`;
+  console.log(...values);
+
+  console.log(`INSERT INTO ${tableName} (${columnNames}) VALUES (${placeholders})`);
+
+  return [
+    `INSERT INTO ${tableName} (${columnNames}) VALUES (${placeholders})`,
+    ...(values as SQLiteVariadicBindParams),
+  ];
 }
 
 function buildOptionQuery<T>(options: TQueryOptions<T>, isDelete = false): string {

@@ -29,7 +29,7 @@ import type { TFolder } from "@/types/folder";
 
 interface IBookmarkSheetCommonProps {
   gachaId: number;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 interface IBookmarkSheetProps extends IBookmarkSheetCommonProps {
@@ -70,7 +70,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
     setIsValid(true);
     setType("WISH");
     !inputRef.current?.getValue() && inputRef.current?.clear();
-    onClose();
+    onClose && onClose();
     closeSheet();
   };
 
@@ -79,6 +79,8 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
       // 수정
       const itemName = inputRef.current?.getValue() ?? itemInfo?.name;
       if (!validate(itemName)) return;
+
+      console.log("handleSubmit image:", image);
 
       const assetId = image ? await saveImage(image) : null;
 
@@ -91,6 +93,8 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
       };
 
       const updateData = getChangedValues(itemInfo, data);
+
+      console.log(updateData);
 
       await items.update(itemInfo.id, updateData);
       handleClose();
