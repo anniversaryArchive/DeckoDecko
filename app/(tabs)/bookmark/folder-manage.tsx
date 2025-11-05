@@ -72,6 +72,7 @@ const FolderManage = () => {
           className={`flex-row items-center justify-between gap-3 ${isLastFolder ? "mb-3" : ""}`}
         >
           <TouchableOpacity
+            className="items-center justify-center"
             onPress={() => {
               setDeleteFolder(item);
               setIsDelete(true);
@@ -88,7 +89,11 @@ const FolderManage = () => {
               handleOpenEditMode(item);
             }}
           />
-          <TouchableOpacity disabled={isActive} onLongPress={drag}>
+          <TouchableOpacity
+            className="items-center justify-center"
+            disabled={isActive}
+            onLongPress={drag}
+          >
             <Icon name="menu" size={24} fill={"none"} stroke={"gray-04"} strokeWidth={4} />
           </TouchableOpacity>
         </View>
