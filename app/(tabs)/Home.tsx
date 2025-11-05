@@ -109,7 +109,7 @@ export default function Home() {
         const myItems = await items.getAll();
         const getCount = myItems.filter(({ type }) => type === "GET").length;
         const allCount = myItems.length;
-        setPossessionRate(Math.floor((getCount / allCount) * 100));
+        setPossessionRate(getCount === 0 ? 0 : Math.floor((getCount / allCount) * 100));
       } catch (error) {
         console.error("❌ Wish/Get 아이템 조회 실패 : ", error);
       }
@@ -160,7 +160,7 @@ export default function Home() {
           </Typography>
 
           <View className="mt-4">
-            <ProgressBar value={possessionRate} />
+            <ProgressBar value={possessionRate} height={18} />
           </View>
         </View>
 
