@@ -28,6 +28,7 @@ const FolderManage = () => {
     initialMode: "add",
   });
   const [folderList, setFolderList] = useState<TFolder[]>([]);
+  const [listResetKey, setListResetKey] = useState(0); // 리스트 강제 리셋하기 위한 값
   const [isDelete, setIsDelete] = useState(false);
   const [deleteFolder, setDeleteFolder] = useState<TFolder>();
 
@@ -35,7 +36,8 @@ const FolderManage = () => {
 
   const loadFolderList = useCallback(async () => {
     const folderList = await folder.getAll();
-    setFolderList(folderList);
+    const exceptInitialFolder = folderList.filter((f) => f.id !== 1);
+    setFolderList(exceptInitialFolder);
   }, []);
 
   const folderPickerProps = useMemo(() => {
@@ -72,6 +74,7 @@ const FolderManage = () => {
           className={`flex-row items-center justify-between gap-3 ${isLastFolder ? "mb-3" : ""}`}
         >
           <TouchableOpacity
+            className="items-center justify-center"
             onPress={() => {
               setDeleteFolder(item);
               setIsDelete(true);
@@ -88,7 +91,11 @@ const FolderManage = () => {
               handleOpenEditMode(item);
             }}
           />
-          <TouchableOpacity disabled={isActive} onLongPress={drag}>
+          <TouchableOpacity
+            className="items-center justify-center"
+            disabled={isActive}
+            onLongPress={drag}
+          >
             <Icon name="menu" size={24} fill={"none"} stroke={"gray-04"} strokeWidth={4} />
           </TouchableOpacity>
         </View>
@@ -126,17 +133,23 @@ const FolderManage = () => {
         }}
       />
       <DraggableFlatList
-        data={folderList.filter((f) => f.id !== 1)}
+        key={listResetKey}
+        data={folderList}
         keyExtractor={(forder) => `${forder.id}`}
         className="h-full px-6 py-4"
         contentContainerClassName="gap-3"
-        onDragEnd={async ({ data }) => {
+        onDragEnd={async ({ data, from, to }) => {
           const newFolderList = data.map((v, index) => {
             return { ...v, sequence: index + 1 };
           });
-
-          await folder.updateSequence(newFolderList);
           setFolderList(newFolderList);
+
+          if (from !== to) {
+            // 순서가 변경되었을 경우만 DB 업데이트
+            await folder.updateSequence(newFolderList);
+          } else {
+            setListResetKey((prevKey) => prevKey + 1);
+          }
         }}
         renderItem={renderItem}
       />
@@ -187,6 +200,7 @@ const FolderManage = () => {
                 if (deleteFolder) {
                   await folder.delete(deleteFolder.id);
                   await loadFolderList();
+                  setListResetKey((prevKey) => prevKey + 1);
                   setIsDelete(false);
                 }
               }}

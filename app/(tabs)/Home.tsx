@@ -21,7 +21,7 @@ const LIMIT_COUNT = 5;
 interface IPreviewGacha {
   id: number;
   imageLink: string;
-  animeId: number;
+  mediaId: number;
 }
 
 export default function Home() {
@@ -36,7 +36,7 @@ export default function Home() {
       try {
         const { data } = await supabase
           .from("gacha")
-          .select("id, imageLink:image_link, animeId:anime_id")
+          .select("id, imageLink:image_link, mediaId:media_id")
           .order("created_at", { ascending: false })
           .limit(LIMIT_COUNT);
         if (!data?.length) throw new Error("No data");
@@ -60,7 +60,7 @@ export default function Home() {
             gacha!inner (
               id,
               imageLink:image_link,
-              animeId:anime_id
+              mediaId:media_id
             )
           `
           )
@@ -109,7 +109,7 @@ export default function Home() {
         const myItems = await items.getAll();
         const getCount = myItems.filter(({ type }) => type === "GET").length;
         const allCount = myItems.length;
-        setPossessionRate(Math.floor((getCount / allCount) * 100));
+        setPossessionRate(getCount === 0 ? 0 : Math.floor((getCount / allCount) * 100));
       } catch (error) {
         console.error("❌ Wish/Get 아이템 조회 실패 : ", error);
       }
@@ -160,7 +160,7 @@ export default function Home() {
           </Typography>
 
           <View className="mt-4">
-            <ProgressBar value={possessionRate} />
+            <ProgressBar value={possessionRate} height={18} />
           </View>
         </View>
 

@@ -85,7 +85,7 @@ export default function SearchResults() {
       redirectId={item.id}
       name={item.name_kr}
       itemName={item.name_kr}
-      category={item.anime_kr_title}
+      category={item.media_kr_title}
       image={item.image_link}
     />
   );
