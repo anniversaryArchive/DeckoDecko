@@ -40,9 +40,9 @@ export default function Index() {
           name,
           name_kr,
           image_link,
-          anime_id,
+          media_id,
           price,
-          anime:anime_id (
+          media:media_id (
             kr_title
           )
         )
@@ -59,7 +59,7 @@ export default function Index() {
 
       const goods = (data ?? []).map((item) => ({
         ...item.gacha,
-        anime_kr_title: item.gacha?.anime?.kr_title ?? "",
+        media_kr_title: item.gacha?.media?.kr_title ?? "",
       }));
 
       setPopularGoods(goods);

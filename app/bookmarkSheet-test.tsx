@@ -13,13 +13,13 @@ export default function BottomTest() {
   useEffect(() => {
     const fetchGachaData = async () => {
       try {
-        // id로 가챠 데이터 조회, anime_id가 있으면 anime 테이블을 join해서 가져오기
+        // id로 가챠 데이터 조회, media_id가 있으면 media 테이블을 join해서 가져오기
         const { data, error } = await supabase
           .from("gacha")
           .select(
             `
             *,
-            anime:anime_id (
+            media:media_id (
               id,
               kr_title
             )
