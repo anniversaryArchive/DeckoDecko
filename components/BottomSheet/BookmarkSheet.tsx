@@ -49,7 +49,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
   const [type, setType] = useState<TBookmarkType>("WISH");
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
   const [selectedFolder, setSelectFolder] = useState<TFolder>(defaultFolder);
-  const [memo, setMemo] = useState<string | null>(null);
+  const [memo, setMemo] = useState<string>("");
   const [isValid, setIsValid] = useState(true);
 
   const inputRef = useRef<InputBoxHandle>(null);
@@ -66,7 +66,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
   const handleClose = () => {
     setImage(null);
     setSelectFolder(defaultFolder);
-    setMemo(null);
+    setMemo("");
     setIsValid(true);
     setType("WISH");
     !inputRef.current?.getValue() && inputRef.current?.clear();
@@ -143,7 +143,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
   useEffect(() => {
     const setEditInfo = async (itemInfo: TItem) => {
       setType(itemInfo.type);
-      setMemo(itemInfo.memo);
+      itemInfo.memo && setMemo(itemInfo.memo);
       const originalFolder = await folders.getFolderById(itemInfo.folder_id);
       if (originalFolder) setSelectFolder(originalFolder);
     };
@@ -225,8 +225,10 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
           </Button>
           <Divider />
           <TextBox
-            value={memo}
-            onChangeText={setMemo}
+            defaultValue={memo}
+            onChange={(e) => {
+              setMemo(e.nativeEvent.text);
+            }}
             bold
             placeholder="메모"
             className="min-h-28"

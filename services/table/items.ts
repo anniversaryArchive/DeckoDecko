@@ -1,7 +1,9 @@
 import * as SQLite from "expo-sqlite";
 
 import CommonTabledbInstance from "@/utils/sqlite";
-import { TCreateItemDTO, TItem, TUpdateItemDTO } from "@/types/item";
+import { buildInsertQuery } from "@utils/buildSqliteQuery";
+
+import type { TCreateItemDTO, TItem, TUpdateItemDTO } from "@/types/item";
 import type { TFolder } from "@/types/folder";
 
 class TbItems {
@@ -39,29 +41,14 @@ class TbItems {
     }
   }
 
-  async create({
-    name,
-    gacha_id,
-    folder_id,
-    type,
-    thumbnail,
-    memo,
-  }: TCreateItemDTO): Promise<boolean> {
+  async create(data: TCreateItemDTO): Promise<boolean> {
     try {
       const db = await this.#dbInstance;
       if (!db) return false;
 
-      const result = await db.runAsync(
-        "INSERT OR IGNORE INTO items (gacha_id, folder_id, type, name, thumbnail, memo) VALUES (?, ?, ?, ?, ?, ?)",
-        gacha_id,
-        folder_id,
-        type,
-        name,
-        thumbnail,
-        memo
-      );
+      const res = await db.runAsync(...buildInsertQuery<TCreateItemDTO>("items", data));
 
-      return !!result.changes;
+      return !!res.changes;
     } catch (error) {
       console.error("TbItems create Error : ", error);
       return false;
@@ -188,7 +175,7 @@ class TbItems {
       const db = await this.#dbInstance;
       if (!db) return false;
 
-      await db.runAsync(` 
+      await db.runAsync(`
           CREATE TABLE items_new (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               folder_id INTEGER NOT NULL,
