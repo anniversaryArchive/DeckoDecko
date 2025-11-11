@@ -90,7 +90,7 @@ export default function SearchResults() {
   const renderItem = ({ item }: { item: IGachaItem }) => (
     <GoodsThumbnail
       nameKr={item.name_kr}
-      animeTitle={item.anime_kr_title}
+      animeTitle={item.media_kr_title}
       imageLink={item.image_link}
       onPress={() => handleNavigateToDetail(item.id)} // 클릭 시 호출
     />
