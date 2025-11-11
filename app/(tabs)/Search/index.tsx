@@ -26,41 +26,30 @@ export default function Index() {
   }, []);
 
   const loadPopularGoods = useCallback(async () => {
-    /**
-     * 인기 굿즈 불러오기
-     */
     try {
+      const { data: topGachaIds, error: countError } = await supabase.rpc("get_top_gacha_views");
+      if (countError) throw countError;
+
+      const gachaIds = topGachaIds.map((d) => d.gacha_id);
+
       const { data, error } = await supabase
-        .from("gacha_view_log")
-        .select(
-          `
-        *,
-        gacha (
-          id,
-          name,
-          name_kr,
-          image_link,
-          anime_id,
-          price,
-          anime:anime_id (
-            kr_title
-          )
+        .from("gacha")
+        .select(`
+        id,
+        name,
+        name_kr,
+        image_link,
+        anime_id,
+        price,
+        anime:anime_id (
+          kr_title
         )
-      `
-        )
-        // .order("viewed_at", { ascending: false })
-        .limit(10);
+      `)
+        .in("id", gachaIds);
 
-      if (error) {
-        console.error("Supabase popular goods load error", error);
-        setPopularGoods([]);
-        return;
-      }
+      if (error) throw error;
 
-      const goods = (data ?? []).map((item) => ({
-        ...item.gacha,
-        anime_kr_title: item.gacha?.anime?.kr_title ?? "",
-      }));
+      const goods = gachaIds.map((id) => data.find((item) => item.id === id));
 
       setPopularGoods(goods);
     } catch (e) {
