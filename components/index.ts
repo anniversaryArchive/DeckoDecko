@@ -13,7 +13,7 @@ import Icon from "./Icon";
 import NoticeItem from "./Notice/NoticeItem";
 import { LocalImage, NoImage } from "./Image";
 import { Divider, WiggleDivider } from "./Divider";
-import Spinner from "./Common/Spinner";
+import Spinner from "./Spinner";
 
 export {
   Typography,

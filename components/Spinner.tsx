@@ -1,9 +1,8 @@
-import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { colors } from "@utils/tailwind-colors";
 
 type SpinnerProps = {
-  visible?: boolean;
+  visible: boolean;
   size?: 'small' | 'large';
   color?: string;
 };
@@ -11,7 +10,7 @@ type SpinnerProps = {
 export function Spinner({ visible = true, size = 'large', color = colors.primary.DEFAULT }: SpinnerProps) {
   if (!visible) return null;
   return (
-    <View className="absolute inset-0 bg-white bg-opacity-50 items-center justify-center z-50">
+    <View className="absolute inset-0 bg-[#FFFFFF80] items-center justify-center z-50">
       <ActivityIndicator size={size} color={color} />
     </View>
   );
