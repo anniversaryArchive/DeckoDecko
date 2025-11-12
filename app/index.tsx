@@ -12,7 +12,7 @@ export default function Index() {
         </Pressable>
       </Link>
 
-      <Link href="/(tabs)/home" asChild>
+      <Link href="/(tabs)/Home" asChild>
         <Pressable>
           <Text className="font-dunggeunmiso text-secondary-dark text-2xl">
             BOTTOM NAVIGATION BAR (TABS) TEST

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Alert, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
@@ -10,57 +10,49 @@ import { Button, Typography, SearchBox, Chip, SimpleSwiper } from "@components/i
 
 export default function Index() {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState(""); // 검색어 상태 추가
+  const [searchValue, setSearchValue] = useState(""); // 검색어 상태
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
   const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
 
+  const swiperRef = useRef<any>(null);
+
+  // 최근 검색어 불러오기
   const loadSearches = useCallback(async () => {
     const searches = await searchHistory.getRecentSearches();
     setRecentSearches(searches);
   }, []);
 
+  // 최근 본 굿즈 불러오기
   const loadRecentGoods = useCallback(async () => {
     const goods = await searchHistory.getRecentGoods();
     setRecentGoods(goods);
   }, []);
 
+  // 인기 굿즈 불러오기
   const loadPopularGoods = useCallback(async () => {
-    /**
-     * 인기 굿즈 불러오기
-     */
     try {
+      const { data: topGachaIds, error: countError } = await supabase.rpc("get_top_gacha_views");
+      if (countError) throw countError;
+
+      const gachaIds = topGachaIds.map((d) => d.gacha_id);
+
       const { data, error } = await supabase
-        .from("gacha_view_log")
-        .select(
-          `
-        *,
-        gacha (
+        .from("gacha")
+        .select(`
           id,
           name,
           name_kr,
           image_link,
-          media_id,
+          anime_id,
           price,
-          media:media_id (
-            kr_title
-          )
-        )
-      `
-        )
-        // .order("viewed_at", { ascending: false })
-        .limit(10);
+          anime:anime_id (kr_title)
+        `)
+        .in("id", gachaIds);
 
-      if (error) {
-        console.error("Supabase popular goods load error", error);
-        setPopularGoods([]);
-        return;
-      }
+      if (error) throw error;
 
-      const goods = (data ?? []).map((item) => ({
-        ...item.gacha,
-        media_kr_title: item.gacha?.media?.kr_title ?? "",
-      }));
+      const goods = gachaIds.map((id) => data.find((item) => item.id === id));
 
       setPopularGoods(goods);
     } catch (e) {
@@ -69,6 +61,7 @@ export default function Index() {
     }
   }, []);
 
+  // 검색 실행
   const handleSearch = async (value: string) => {
     await searchHistory.addRecentSearch(value);
     await loadSearches();
@@ -114,14 +107,29 @@ export default function Index() {
     ]);
   };
 
+  const handleNavigateToDetail = (id: number) => {
+    router.push(`/detail/${id}`);
+  };
+
+  // 최초 마운트 시 인기 굿즈만 로딩
   useEffect(() => {
-    loadSearches();
-    loadRecentGoods();
     loadPopularGoods();
-  }, [loadSearches, loadRecentGoods, loadPopularGoods]);
+  }, [loadPopularGoods]);
+
+  // 화면이 focus될 때마다 최근 검색어/굿즈 갱신 + 슬라이드 초기화
+  useFocusEffect(
+    useCallback(() => {
+      loadSearches();
+      loadRecentGoods();
+      if (swiperRef.current?.slideTo) {
+        swiperRef.current.slideTo(0, false);
+      }
+    }, [])
+  );
 
   return (
     <View className="flex-1 bg-white">
+      {/* 검색창 */}
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
@@ -193,10 +201,11 @@ export default function Index() {
         </View>
         {recentGoods.length > 0 ? (
           <SimpleSwiper
+            ref={swiperRef} // ← ref 연결
             data={recentGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            onSlidePress={(item) => console.log("선택한 굿즈:", item)}
+            onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
           <View className="h-11 items-center justify-center ml-4 mr-4">
@@ -217,7 +226,7 @@ export default function Index() {
             data={popularGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            onSlidePress={(item) => console.log("선택한 인기 굿즈:", item)}
+            onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
           <View className="h-11 items-center justify-center ml-4 mr-4">
