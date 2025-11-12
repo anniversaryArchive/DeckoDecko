@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BookmarkSheet, Button } from "@components/index";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import { supabase } from "@utils/supabase";
+import items from "@table/items";
 
 export default function BottomTest() {
   const [gachaList, setGachaList] = useState<any>([]);
@@ -13,13 +14,13 @@ export default function BottomTest() {
   useEffect(() => {
     const fetchGachaData = async () => {
       try {
-        // id로 가챠 데이터 조회, anime_id가 있으면 anime 테이블을 join해서 가져오기
+        // id로 가챠 데이터 조회, media_id가 있으면 media 테이블을 join해서 가져오기
         const { data, error } = await supabase
           .from("gacha")
           .select(
             `
             *,
-            anime:anime_id (
+            media:media_id (
               id,
               kr_title
             )
@@ -38,26 +39,39 @@ export default function BottomTest() {
   }, []);
 
   return (
-    <SafeAreaView className="gap-14 items-center justify-center flex-1 px-6">
-      <View className="flex gap-4">
-        {gachaList.map((gacha: any) => {
-          return (
-            <Button
-              key={gacha.id}
-              size="md"
-              color="secondary-dark"
-              bold
-              onPress={() => {
-                setGachaId(gacha.id);
-                openSheet("BOOKMARK");
-              }}
-            >
-              {gacha.name_kr}
-            </Button>
-          );
-        })}
-      </View>
+    <>
+      <SafeAreaView className="gap-14 items-center justify-center flex-1 px-6">
+        <Button
+          size="xl"
+          width="full"
+          bold
+          rounded
+          onPress={async () => {
+            await items.clear();
+          }}
+        >
+          북마크 초기화
+        </Button>
+        <View className="flex gap-4">
+          {gachaList.map((gacha: any) => {
+            return (
+              <Button
+                key={gacha.id}
+                size="md"
+                color="secondary-dark"
+                bold
+                onPress={() => {
+                  setGachaId(gacha.id);
+                  openSheet("BOOKMARK");
+                }}
+              >
+                {gacha.name_kr}
+              </Button>
+            );
+          })}
+        </View>
+      </SafeAreaView>
       {gachaId && <BookmarkSheet gachaId={gachaId} />}
-    </SafeAreaView>
+    </>
   );
 }
