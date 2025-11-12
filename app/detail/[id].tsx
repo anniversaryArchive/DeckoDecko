@@ -2,9 +2,9 @@ import React from "react";
 import { View, ScrollView, Image, Pressable } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
+import * as searchHistory from "@utils/searchHistory";
 
 import { WiggleBorder, WiggleDivider, Chip, Typography, Icon } from "@/components";
 
@@ -67,6 +67,8 @@ export default function DetailPagef() {
 
     fetchGachaData();
     logGachaView();
+    // 최근 본 굿즈 로컬 디비 저장
+    searchHistory.addRecentGoodId(Number(id));
   }, [navigation, id]);
 
   const handleAddGacha = () => {
