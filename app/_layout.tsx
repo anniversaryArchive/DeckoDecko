@@ -29,21 +29,6 @@ export default function RootLayout() {
     loadFolder();
   }, [initializeFolder]);
 
-  useEffect(() => {
-    // 모두 한번씩 실행된 후에는 삭제될 예정입니다~
-    const migrationItemDB = async () => {
-      const isDone = await AsyncStorage.getItem("MIGRATION_ITEM_TABLE");
-
-      if (isDone === "false" || !!isDone) {
-        const migrate = await items.migration();
-        await AsyncStorage.setItem("MIGRATION_ITEM_TABLE", `${migrate}`);
-        console.log(migrate);
-      }
-    };
-
-    migrationItemDB();
-  }, []);
-
   if (!fontLoaded) {
     // Async font loading only occurs in development.
     return null;
