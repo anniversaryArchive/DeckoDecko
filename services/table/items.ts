@@ -156,6 +156,20 @@ class TbItems {
     }
   }
 
+  async delete(id: TItem["id"]) {
+    try {
+      const db = await this.#dbInstance;
+      if (!db) return false;
+
+      const result = await db.runAsync("DELETE FROM items WHERE id = ?", id);
+
+      return !!result.changes;
+    } catch (error) {
+      console.error("TbItems delete Error : ", error);
+      return false;
+    }
+  }
+
   async clear() {
     try {
       const db = await this.#dbInstance;
