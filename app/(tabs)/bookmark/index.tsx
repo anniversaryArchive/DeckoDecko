@@ -171,19 +171,33 @@ export default function MyBookmark() {
                 renderItem={({ item }) => {
                   const { gachaInfo } = item;
 
-              return (
-                <GoodsThumbnail
-                  redirectId={gachaInfo.id}
-                  name={item.name}
-                  category={item.folderName}
-                  itemName={gachaInfo.name_kr}
-                  isLocalImage={!!item.thumbnail}
-                  image={item.thumbnail || gachaInfo.image_link}
-                />
-              );
-            }}
-          />
-        </View>
+                  return (
+                    <GoodsThumbnail
+                      redirectId={gachaInfo.id}
+                      name={item.name}
+                      category={item.folderName}
+                      itemName={gachaInfo.name_kr}
+                      isLocalImage={!!item.thumbnail}
+                      image={item.thumbnail || gachaInfo.image_link}
+                    />
+                  );
+                }}
+              />
+            </View>
+          </>
+        ) : (
+          <SafeAreaView edges={["bottom"]} className="items-center justify-center flex-1 gap-5">
+            <Icon name="gachaCapsule" size={80} fill={"gray-06"} />
+            <View className="items-center justify-center gap-1">
+              <Typography variant="header5" color="gray-05">
+                저장된 가챠가 없어요
+              </Typography>
+              <Typography variant="title1" color="gray-05">
+                갖고싶거나, 소장 중인 가챠를 저장해보세요.
+              </Typography>
+            </View>
+          </SafeAreaView>
+        )}
       </View>
     </View>
   );

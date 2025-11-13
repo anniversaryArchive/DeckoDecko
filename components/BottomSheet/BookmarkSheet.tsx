@@ -80,8 +80,6 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
       const itemName = inputRef.current?.getValue() ?? itemInfo?.name;
       if (!validate(itemName)) return;
 
-      console.log("handleSubmit image:", image);
-
       const assetId = image ? await saveImage(image) : null;
 
       const data: TUpdateItemDTO = {
@@ -93,8 +91,6 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
       };
 
       const updateData = getChangedValues(itemInfo, data);
-
-      console.log(updateData);
 
       await items.update(itemInfo.id, updateData);
       handleClose();
