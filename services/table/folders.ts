@@ -136,6 +136,8 @@ class TbFolders {
         DROP TABLE folders;
         UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'folders';`);
 
+      await this.init();
+
       return true;
     } catch (error) {
       console.error(`TbFolders clear Error : ${error}`);
