@@ -69,7 +69,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
     setMemo("");
     setIsValid(true);
     setType("WISH");
-    !inputRef.current?.getValue() && inputRef.current?.clear();
+    inputRef.current?.getValue() && inputRef.current?.clear();
     onClose && onClose();
     closeSheet();
   };
