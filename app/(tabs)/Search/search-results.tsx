@@ -82,9 +82,11 @@ export default function SearchResults() {
 
   const renderItem = ({ item }: { item: IGachaItem }) => (
     <GoodsThumbnail
-      nameKr={item.name_kr}
-      animeTitle={item.media_kr_title}
-      imageLink={item.image_link}
+      redirectId={item.id}
+      name={item.name_kr}
+      itemName={item.name_kr}
+      category={item.media_kr_title}
+      image={item.image_link}
     />
   );
 

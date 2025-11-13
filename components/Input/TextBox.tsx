@@ -1,8 +1,8 @@
-import { TextInput } from "react-native";
+import { TextInput, TextInputProps } from "react-native";
 import { colors } from "@utils/tailwind-colors";
 import { inputTheme } from "./InputBox";
 
-export interface ITextBoxProps {
+export interface ITextBoxProps extends TextInputProps {
   placeholder?: string;
   className?: string;
   onSubmit?: (value: string) => void;

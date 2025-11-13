@@ -33,7 +33,7 @@ class TbImages {
       const db = await this.#dbInstance;
       if (!db) return false;
 
-      const res = await db.runAsync(buildInsertQuery<TImage>("images", { assetId }));
+      const res = await db.runAsync(...buildInsertQuery<TImage>("images", { assetId }));
 
       return !!res.changes;
     } catch (error) {
