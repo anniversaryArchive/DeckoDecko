@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 
 import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography } from "@components/index";
@@ -125,53 +126,70 @@ export default function MyBookmark() {
         </View>
         <InputBox size="md" color="secondary" value={searchTerm} onChangeText={setSearchTerm} />
 
-        {/* WISH | GET */}
-        <View className="flex-1 gap-1">
-          <View className="flex-row items-center justify-end gap-1">
-            <Button
-              bold
-              variant="text"
-              color={viewMode === "folder" ? "primary" : "secondary-dark"}
-              contentClassName={viewMode === "folder" ? "" : "text-secondary-dark-80"}
-              onPress={() => {
-                setViewMode("folder");
-              }}
-            >
-              폴더 보기
-            </Button>
-            <Button
-              variant="text"
-              bold
-              color={viewMode === "item" ? "primary" : "secondary-dark"}
-              contentClassName={viewMode === "item" ? "" : "text-secondary-dark-80"}
-              onPress={() => {
-                setViewMode("item");
-              }}
-            >
-              아이템 보기
-            </Button>
-          </View>
-          <FlatList
-            data={itemList}
-            extraData={selectedFolder}
-            contentContainerClassName="pb-4 flex gap-2 justify-center"
-            columnWrapperClassName="flex flex-row items-center justify-between p-2"
-            numColumns={2}
-            keyExtractor={(item) => `${item.id}`}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => {
-              const { gachaInfo } = item;
+        {itemList.length ? (
+          <>
+            {/* WISH | GET */}
+            <View className="flex-1 gap-1">
+              <View className="flex-row items-center justify-end gap-1">
+                <Button
+                  bold
+                  variant="text"
+                  color={viewMode === "folder" ? "primary" : "secondary-dark"}
+                  contentClassName={viewMode === "folder" ? "" : "text-secondary-dark-80"}
+                  onPress={() => {
+                    setViewMode("folder");
+                  }}
+                >
+                  폴더 보기
+                </Button>
+                <Button
+                  variant="text"
+                  bold
+                  color={viewMode === "item" ? "primary" : "secondary-dark"}
+                  contentClassName={viewMode === "item" ? "" : "text-secondary-dark-80"}
+                  onPress={() => {
+                    setViewMode("item");
+                  }}
+                >
+                  아이템 보기
+                </Button>
+              </View>
+              <FlatList
+                data={itemList}
+                extraData={selectedFolder}
+                contentContainerClassName="pb-4 flex gap-2 justify-center"
+                columnWrapperClassName="flex flex-row items-center justify-between p-2"
+                numColumns={2}
+                keyExtractor={(item) => `${item.id}`}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  const { gachaInfo } = item;
 
-              return (
-                <GoodsThumbnail
-                  nameKr={item.name}
-                  animeTitle={gachaInfo.name_kr}
-                  imageLink={item.thumbnail || gachaInfo.image_link}
-                />
-              );
-            }}
-          />
-        </View>
+                  return (
+                    <GoodsThumbnail
+                      name={item.name}
+                      folderName={item.folderName}
+                      gachaName={gachaInfo.name_kr}
+                      image={item.thumbnail || gachaInfo.image_link}
+                    />
+                  );
+                }}
+              />
+            </View>
+          </>
+        ) : (
+          <SafeAreaView edges={["bottom"]} className="items-center justify-center flex-1 gap-5">
+            <Icon name="gachaCapsule" size={80} fill={"gray-06"} />
+            <View className="items-center justify-center gap-1">
+              <Typography variant="header5" color="gray-05">
+                저장된 가챠가 없어요
+              </Typography>
+              <Typography variant="title1" color="gray-05">
+                갖고싶거나, 소장 중인 가챠를 저장해보세요.
+              </Typography>
+            </View>
+          </SafeAreaView>
+        )}
       </View>
     </View>
   );
