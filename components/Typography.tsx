@@ -24,7 +24,7 @@ interface ITwoToneTypography {
   style?: StyleProp<TextStyle>; // 새로 추가된 style prop
 }
 
-const BASE_FONT_SIZE = 16 * PixelRatio.getFontScale();
+const BASE_FONT_SIZE = 16 * Math.max(PixelRatio.getFontScale(), 0.9);
 
 const typographyTheme = {
   variant: {
