@@ -15,6 +15,8 @@ import ChevronDown from "./chevronDown.svg";
 import Image from "./image.svg";
 import BigHeadSearch from "./big_head_search.svg";
 import GachaCapsule from "./gacha_capsule.svg";
+import Minus from "./minus.svg";
+import Menu from "./menu.svg";
 
 export {
   Folder,
@@ -34,4 +36,6 @@ export {
   Image,
   BigHeadSearch,
   GachaCapsule,
+  Minus,
+  Menu,
 };
