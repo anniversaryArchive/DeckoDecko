@@ -71,7 +71,7 @@ export const clearRecentSearches = async () => {
 /**
  * 최근 본 굿즈 추가
  */
-export const addRecentGoodId = async (id: number) => {
+export const addRecentGoodsId = async (id: number) => {
   try {
     let ids: number[] = JSON.parse(await AsyncStorage.getItem(GOODS_ID_KEY) || "[]");
 

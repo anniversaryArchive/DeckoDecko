@@ -68,7 +68,7 @@ export default function DetailPagef() {
     fetchGachaData();
     logGachaView();
     // 최근 본 굿즈 로컬 디비 저장
-    searchHistory.addRecentGoodId(Number(id));
+    searchHistory.addRecentGoodsId(Number(id));
   }, [navigation, id]);
 
   const handleAddGacha = () => {
