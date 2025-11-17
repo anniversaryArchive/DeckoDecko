@@ -6,14 +6,15 @@ import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
 
 import { IGachaItem } from "@/types/search";
-import { Button, Typography, SearchBox, Chip, SimpleSwiper } from "@components/index";
+import { Button, Typography, SearchBox, Chip, SimpleSwiper, Spinner } from "@components/index";
 
 export default function Index() {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState(""); // 검색어 상태 추가
+  const [searchValue, setSearchValue] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
   const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const loadSearches = useCallback(async () => {
     const searches = await searchHistory.getRecentSearches();
@@ -57,6 +58,16 @@ export default function Index() {
       setPopularGoods([]);
     }
   }, []);
+
+  const loadAllData = useCallback(async () => {
+    setLoading(true);
+    await Promise.all([loadSearches(), loadRecentGoods(), loadPopularGoods()]);
+    setLoading(false);
+  }, [loadSearches, loadRecentGoods, loadPopularGoods]);
+
+  useEffect(() => {
+    loadAllData();
+  }, [loadAllData]);
 
   const handleSearch = async (value: string) => {
     await searchHistory.addRecentSearch(value);
