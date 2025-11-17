@@ -36,7 +36,6 @@ export default function TabLayout() {
           options={{
             headerShown: false,
             title: tab.title,
-            unmountOnBlur: true,
             tabBarIcon: ({ color }) => (
               <Icon name={tab.icon} size={28.0} fill={color} stroke={color} />
             ),
@@ -53,6 +52,7 @@ export default function TabLayout() {
           }}
         />
       ))}
+
     </Tabs>
   );
 }
