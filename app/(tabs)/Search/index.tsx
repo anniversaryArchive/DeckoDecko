@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { View, Alert, ScrollView } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
@@ -31,6 +31,9 @@ export default function Index() {
   }, []);
 
   const loadPopularGoods = useCallback(async () => {
+    /**
+     * 인기 굿즈 불러오기
+     */
     try {
       const { data: topGachaIds, error: countError } = await supabase.rpc("get_top_gacha_views");
       if (countError) throw countError;
@@ -38,24 +41,19 @@ export default function Index() {
       const gachaIds = topGachaIds.map((d) => d.gacha_id);
 
       const { data, error } = await supabase
-        .from("gacha_view_log")
-        .select(
-          `
-            *,
-            gacha (
-              id,
-              name,
-              name_kr,
-              image_link,
-              media_id,
-              price,
-              media:media_id (
-                kr_title
-              )
-            )
-          `
+        .from("gacha")
+        .select(`
+        id,
+        name,
+        name_kr,
+        image_link,
+        anime_id,
+        price,
+        anime:anime_id (
+          kr_title
         )
-        .limit(10);
+      `)
+        .in("id", gachaIds);
 
       if (error) throw error;
 
@@ -125,10 +123,10 @@ export default function Index() {
   };
 
   const handleNavigateToDetail = (id: number) => {
+    console.log('handleNavigateToDetail')
     router.push(`/detail/${id}`);
   };
 
-  // 최초 마운트 시 인기 굿즈만 로딩
   useEffect(() => {
     loadPopularGoods();
   }, [loadPopularGoods]);
