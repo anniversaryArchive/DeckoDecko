@@ -40,7 +40,7 @@ export default function BottomTest() {
 
   return (
     <>
-      <SafeAreaView className="gap-14 items-center justify-center flex-1 px-6">
+      <SafeAreaView className="items-center justify-center flex-1 gap-8 px-6">
         <Button
           size="xl"
           width="full"
@@ -51,6 +51,18 @@ export default function BottomTest() {
           }}
         >
           북마크 초기화
+        </Button>
+        <Button
+          size="xl"
+          width="full"
+          color="secondary"
+          bold
+          rounded
+          onPress={async () => {
+            await items.migration();
+          }}
+        >
+          북마크 테이블 마이그레이션
         </Button>
         <View className="flex gap-4">
           {gachaList.map((gacha: any) => {

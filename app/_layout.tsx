@@ -4,9 +4,11 @@ import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { PortalProvider } from "@/PortalContext";
 import folder from "@table/folders";
+import items from "@table/items";
 import { defaultFolderState } from "@/stores/defaultFolderState";
 
 import type { TFolder } from "@/types/folder";
