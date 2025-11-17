@@ -1,18 +1,20 @@
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import type { TabPressEvent } from "@react-navigation/native"; // 타입 임포트
 
 import Icon from "@/components/Icon";
-
 import { colors } from "@/utils/tailwind-colors";
 
 const TABS = [
-  { name: "home", title: "홈", icon: "star" },
+  { name: "Home", title: "홈", icon: "star" },
   { name: "my-bookmark", title: "내 굿즈", icon: "folder" },
-  { name: "search", title: "검색", icon: "search" },
+  { name: "Search", title: "검색", icon: "search" },
 ];
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   let paddingBottom = insets.bottom;
   if (!paddingBottom) paddingBottom = 10;
 
@@ -35,11 +37,20 @@ export default function TabLayout() {
           options={{
             headerShown: false,
             title: tab.title,
+            unmountOnBlur: true,
             tabBarIcon: ({ color }) => (
               <Icon name={tab.icon} size={28.0} fill={color} stroke={color} />
             ),
             tabBarIconStyle: { marginBottom: 4 },
             sceneStyle: { paddingTop: insets.top, backgroundColor: "white" },
+          }}
+          listeners={{
+            tabPress: (e: TabPressEvent) => {
+              if (tab.name === "Search") {
+                e.preventDefault();
+                router.replace("/Search");
+              }
+            },
           }}
         />
       ))}

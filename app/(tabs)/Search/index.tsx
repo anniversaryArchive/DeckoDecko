@@ -27,40 +27,30 @@ export default function Index() {
   }, []);
 
   const loadPopularGoods = useCallback(async () => {
-    /**
-     * 인기 굿즈 불러오기
-     */
     try {
+      const { data: topGachaIds, error: countError } = await supabase.rpc("get_top_gacha_views");
+      if (countError) throw countError;
+
+      const gachaIds = topGachaIds.map((d) => d.gacha_id);
+
       const { data, error } = await supabase
-        .from("gacha_view_log")
-        .select(
-          `
-            *,
-            gacha (
-              id,
-              name,
-              name_kr,
-              image_link,
-              media_id,
-              price,
-              media:media_id (
-                kr_title
-              )
-            )
-          `
+        .from("gacha")
+        .select(`
+        id,
+        name,
+        name_kr,
+        image_link,
+        anime_id,
+        price,
+        anime:anime_id (
+          kr_title
         )
-        .limit(10);
+      `)
+        .in("id", gachaIds);
 
-      if (error) {
-        console.error("Supabase popular goods load error", error);
-        setPopularGoods([]);
-        return;
-      }
+      if (error) throw error;
 
-      const goods = (data ?? []).map((item) => ({
-        ...item.gacha,
-        media_kr_title: item.gacha?.media?.kr_title ?? "",
-      }));
+      const goods = gachaIds.map((id) => data.find((item) => item.id === id));
 
       setPopularGoods(goods);
     } catch (e) {
@@ -124,6 +114,11 @@ export default function Index() {
     ]);
   };
 
+  const handleNavigateToDetail = (id: number) => {
+    console.log('handleNavigateToDetail')
+    router.push(`/detail/${id}`);
+  };
+
   useEffect(() => {
     loadSearches();
     loadRecentGoods();
@@ -132,7 +127,6 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-white">
-      <Spinner visible={loading} />
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
@@ -207,7 +201,7 @@ export default function Index() {
             data={recentGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            onSlidePress={(item) => console.log("선택한 굿즈:", item)}
+            onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
           <View className="h-11 items-center justify-center ml-4 mr-4">
@@ -228,7 +222,7 @@ export default function Index() {
             data={popularGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            onSlidePress={(item) => console.log("선택한 인기 굿즈:", item)}
+            onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
           <View className="h-11 items-center justify-center ml-4 mr-4">

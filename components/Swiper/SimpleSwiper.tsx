@@ -38,7 +38,6 @@ export default function SimpleSwiper({
     return (
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => onSlidePress?.(item, index)}
         style={{
           width: itemWidth,
           marginLeft: isFirst ? 16 : itemSpacing / 2, // 첫 슬라이드 왼쪽 margin 16
@@ -50,6 +49,7 @@ export default function SimpleSwiper({
           nameKr={item.name_kr}
           animeTitle={item.media_kr_title}
           imageLink={item.image_link}
+          onPress={() => onSlidePress?.(item, index)}
         />
       </TouchableOpacity>
     );
