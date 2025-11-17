@@ -6,7 +6,7 @@ import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
 
 import { IGachaItem } from "@/types/search";
-import { Button, Typography, SearchBox, Chip, SimpleSwiper } from "@components/index";
+import { Button, Typography, SearchBox, Chip, SimpleSwiper, Spinner } from "@components/index";
 
 export default function Index() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function Index() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
   const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const swiperRef = useRef<any>(null);
 
@@ -29,7 +30,6 @@ export default function Index() {
     setRecentGoods(goods);
   }, []);
 
-  // 인기 굿즈 불러오기
   const loadPopularGoods = useCallback(async () => {
     try {
       const { data: topGachaIds, error: countError } = await supabase.rpc("get_top_gacha_views");
@@ -38,17 +38,24 @@ export default function Index() {
       const gachaIds = topGachaIds.map((d) => d.gacha_id);
 
       const { data, error } = await supabase
-        .from("gacha")
-        .select(`
-          id,
-          name,
-          name_kr,
-          image_link,
-          anime_id,
-          price,
-          anime:anime_id (kr_title)
-        `)
-        .in("id", gachaIds);
+        .from("gacha_view_log")
+        .select(
+          `
+            *,
+            gacha (
+              id,
+              name,
+              name_kr,
+              image_link,
+              media_id,
+              price,
+              media:media_id (
+                kr_title
+              )
+            )
+          `
+        )
+        .limit(10);
 
       if (error) throw error;
 
@@ -60,6 +67,16 @@ export default function Index() {
       setPopularGoods([]);
     }
   }, []);
+
+  const loadAllData = useCallback(async () => {
+    setLoading(true);
+    await Promise.all([loadSearches(), loadRecentGoods(), loadPopularGoods()]);
+    setLoading(false);
+  }, [loadSearches, loadRecentGoods, loadPopularGoods]);
+
+  useEffect(() => {
+    loadAllData();
+  }, [loadAllData]);
 
   // 검색 실행
   const handleSearch = async (value: string) => {
@@ -129,6 +146,7 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-white">
+      <Spinner visible={loading} />
       {/* 검색창 */}
       <View className="ml-2 mr-2">
         <SearchBox
