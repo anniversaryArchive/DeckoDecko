@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pressable, Image, Alert } from "react-native";
+import { View, Pressable, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImagePickerAsset } from "expo-image-picker";
 
@@ -116,6 +116,21 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
     }
   };
 
+  const deleteBookmark = () => {
+    if (!itemInfo) return;
+
+    Alert.alert("북마크를 삭제하시겠습니까?", "", [
+      { text: "취소", style: "cancel" },
+      {
+        text: "삭제",
+        onPress: async () => {
+          await items.delete(itemInfo.id);
+          handleClose();
+        },
+      },
+    ]);
+  };
+
   const validate = (itemName?: string) => {
     if (!itemName?.trim()) {
       return Alert.alert("이름은 필수 입력입니다", undefined, [
@@ -229,17 +244,32 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             placeholder="메모"
             className="min-h-28"
           />
-          <Button
-            size="xl"
-            className="mt-20"
-            width="full"
-            bold
-            rounded
-            onPress={handleSubmit}
-            disabled={!isValid}
-          >
-            {label}
-          </Button>
+          <View className="flex flex-row mt-20 gap-2">
+            <View className="flex-1">
+              <Button
+                size="xl"
+                width="full"
+                bold
+                rounded
+                variant="outlined"
+                onPress={deleteBookmark}
+              >
+                삭제
+              </Button>
+            </View>
+            <View className="flex-1">
+              <Button
+                size="xl"
+                width="full"
+                bold
+                rounded
+                onPress={handleSubmit}
+                disabled={!isValid}
+              >
+                {label}
+              </Button>
+            </View>
+          </View>
         </SafeAreaView>
       </BottomSheet>
       <FolderPicker initialMode="select" onSelectFolder={setSelectFolder} />
