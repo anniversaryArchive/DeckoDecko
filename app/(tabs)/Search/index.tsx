@@ -35,7 +35,8 @@ export default function Index() {
 
       const { data, error } = await supabase
         .from("gacha")
-        .select(`
+        .select(
+          `
         id,
         name,
         name_kr,
@@ -45,7 +46,8 @@ export default function Index() {
         anime:anime_id (
           kr_title
         )
-      `)
+      `
+        )
         .in("id", gachaIds);
 
       if (error) throw error;
@@ -115,7 +117,7 @@ export default function Index() {
   };
 
   const handleNavigateToDetail = (id: number) => {
-    console.log('handleNavigateToDetail')
+    console.log("handleNavigateToDetail");
     router.push(`/detail/${id}`);
   };
 
@@ -127,6 +129,7 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-white">
+      <Spinner visible={loading} />
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
@@ -165,6 +168,8 @@ export default function Index() {
                   size="lg"
                   color="secondary-light"
                   label={term}
+                  rounded
+                  bold={false}
                   onClick={() => handleSearch(term)}
                   onDelete={() => handleRemoveSearches(term)}
                   className={isLast ? "mr-4" : ""}

@@ -1,8 +1,10 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
-import { TextInput, TextInputProps } from "react-native";
+import { TextInput, TextInputProps, View } from "react-native";
 import { getColor } from "@utils/color";
 import { colors } from "@utils/tailwind-colors";
 import WiggleBorder from "@components/WiggleBorder";
+import Typography from "@components/Typography";
+import Icon from "@components/Icon";
 
 interface IInputBoxProps extends TextInputProps {
   placeholder?: string;
@@ -13,6 +15,8 @@ interface IInputBoxProps extends TextInputProps {
   color?: keyof typeof inputTheme.color;
   wiggleBorder?: boolean;
   value?: string; // 추가됨
+  errorMsg?: string;
+  status?: "error";
 }
 
 export interface InputBoxHandle {
@@ -34,9 +38,9 @@ export const inputTheme = {
 };
 
 const BorderComponent = ({
-wiggleBorder,
-borderColor,
-children,
+  wiggleBorder,
+  borderColor,
+  children,
 }: {
   wiggleBorder: boolean;
   borderColor: keyof typeof inputTheme.color;
@@ -62,11 +66,14 @@ const InputBox = forwardRef<InputBoxHandle, IInputBoxProps>((props, ref) => {
     readOnly,
     onChangeText,
     value, // 추가됨
+    status,
+    errorMsg,
+    defaultValue,
     ...options
   } = props;
 
   const inputRef = useRef<TextInput>(null);
-  const textRef = useRef(value ?? ""); // 초기값 설정
+  const textRef = useRef((value || defaultValue) ?? ""); // 초기값 설정
 
   useImperativeHandle(ref, () => ({
     getValue: () => textRef.current,
@@ -92,6 +99,7 @@ const InputBox = forwardRef<InputBoxHandle, IInputBoxProps>((props, ref) => {
     <BorderComponent wiggleBorder={wiggleBorder} borderColor={color}>
       <TextInput
         ref={inputRef}
+        defaultValue={defaultValue}
         value={value} // controlled input 으로 수정
         onChangeText={handleChangeText}
         onSubmitEditing={(e) => {
@@ -107,6 +115,14 @@ const InputBox = forwardRef<InputBoxHandle, IInputBoxProps>((props, ref) => {
         editable={!readOnly}
         {...options}
       />
+      {status === "error" && (
+        <View className="flex-row gap-2">
+          <Icon name="bell" size={14} />
+          <Typography variant="caption2" color="primary">
+            {errorMsg}
+          </Typography>
+        </View>
+      )}
     </BorderComponent>
   );
 });

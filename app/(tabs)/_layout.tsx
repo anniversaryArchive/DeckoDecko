@@ -1,15 +1,14 @@
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import type { TabPressEvent } from "@react-navigation/native"; // 타입 임포트
-
 import Icon from "@/components/Icon";
 import { colors } from "@/utils/tailwind-colors";
+import type { TabPressEvent } from "@react-navigation/native"; // 타입 임포트
 
 const TABS = [
-  { name: "Home", title: "홈", icon: "star" },
-  { name: "my-bookmark", title: "내 굿즈", icon: "folder" },
-  { name: "Search", title: "검색", icon: "search" },
+  { name: "home", title: "홈", icon: "star" },
+  { name: "bookmark", title: "내 굿즈", icon: "folder" },
+  { name: "search", title: "검색", icon: "search" },
 ];
 
 export default function TabLayout() {
@@ -46,9 +45,9 @@ export default function TabLayout() {
           }}
           listeners={{
             tabPress: (e: TabPressEvent) => {
-              if (tab.name === "Search") {
+              if (tab.name === "search") {
                 e.preventDefault();
-                router.replace("/Search");
+                router.replace("/search");
               }
             },
           }}

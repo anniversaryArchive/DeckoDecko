@@ -1,22 +1,16 @@
 import React from "react";
-import { View, ScrollView, Image, Pressable } from "react-native";
+import { View, ScrollView, Image, Pressable, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
-
-import { WiggleBorder, WiggleDivider, Chip, Typography, Icon } from "@/components";
+import { activeBottomSheet } from "@/stores/activeBottomSheet";
+import items from "@table/items";
 
 import type { TGacha } from "@/types/gacha";
-
-const MOCKUP_LIST = [{ id: 1, name: "히나타", type: "wish" }] as const;
-interface IGachaItem {
-  id: number;
-  name: string;
-  type: "wish" | "get";
-  image_link?: string;
-}
+import type { TItem } from "@/types/item";
 
 export default function DetailPagef() {
   const navigation = useNavigation();
@@ -24,7 +18,10 @@ export default function DetailPagef() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const [gachaData, setGachaData] = React.useState<TGacha | null>(null);
-  const [list, setList] = React.useState<IGachaItem[]>([]);
+  const [list, setList] = React.useState<TItem[]>([]);
+  const [itemInfo, setItemInfo] = React.useState<TItem>();
+
+  const openSheet = activeBottomSheet((state) => state.openSheet);
 
   React.useEffect(() => {
     const fetchGachaData = async () => {
@@ -46,8 +43,7 @@ export default function DetailPagef() {
 
         if (error || !data) throw error;
         setGachaData(data);
-        // TODO: 가챠 내 아이템 목록은 임시로 mockup 데이터, 추후에 치환
-        setList([...MOCKUP_LIST]);
+        fetchBookmarkList();
       } catch (err) {
         console.error("🚨 Catch block error:", err);
         navigation.goBack();
@@ -69,9 +65,13 @@ export default function DetailPagef() {
     logGachaView();
   }, [navigation, id]);
 
+  const fetchBookmarkList = async () => {
+    const itemList = await items.getItemsByGachaId(Number(id));
+    setList(itemList);
+  };
+
   const handleAddGacha = () => {
-    // TODO:
-    console.log("🚀 추가 Bottom Sheet 열기");
+    openSheet("BOOKMARK");
   };
 
   const handleBack = () => {
@@ -114,7 +114,7 @@ export default function DetailPagef() {
             <View className="flex flex-row gap-2 p-2">
               <View className="w-11 h-11 rounded">
                 <Image
-                  source={{ uri: item.image_link || gachaData?.image_link }}
+                  source={{ uri: item.thumbnail || gachaData?.image_link }}
                   className="w-full h-full"
                 />
               </View>
@@ -124,13 +124,21 @@ export default function DetailPagef() {
                 </Typography>
               </View>
 
-              <View
-                className={`rounded my-auto bg-${item.type === "wish" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() => {
+                  setItemInfo(item);
+                  handleAddGacha();
+                }}
               >
-                <Typography variant="tag" color="secondary-light">
-                  {item.type.toUpperCase()}
-                </Typography>
-              </View>
+                <View
+                  className={`rounded my-auto bg-${item.type === "WISH" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
+                >
+                  <Typography variant="tag" color="secondary-light">
+                    {item.type}
+                  </Typography>
+                </View>
+              </TouchableOpacity>
             </View>
           </WiggleBorder>
         ))}
@@ -140,10 +148,15 @@ export default function DetailPagef() {
       <Pressable
         className="bg-primary right-6 absolute p-2 rounded-full"
         style={{ bottom: 8 + insets.bottom }}
-        onPress={handleAddGacha}
+        onPress={() => {
+          setItemInfo(undefined);
+          handleAddGacha();
+        }}
       >
         <Icon name="plus2" size={36} fill="#fff" />
       </Pressable>
+
+      <BookmarkSheet gachaId={Number(id)} onClose={fetchBookmarkList} itemInfo={itemInfo} />
     </SafeAreaView>
   );
 }

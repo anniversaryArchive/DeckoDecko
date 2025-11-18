@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, FlatList, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { useRouter } from "expo-router";
 
 import { SearchBox, Typography } from "@/components";
 import GoodsThumbnail from "@/components/GoodsThumbnail";
@@ -11,7 +10,6 @@ import type { IGachaItem } from "@/types/search";
 const LIMIT = 10;
 
 export default function SearchResults() {
-  const router = useRouter();
   const { searchTerm } = useLocalSearchParams<{ searchTerm?: string }>();
   const [searchValue, setSearchValue] = useState<string>(searchTerm ?? "");
   const [data, setData] = useState<IGachaItem[]>([]);
@@ -76,11 +74,6 @@ export default function SearchResults() {
     }
   };
 
-  const handleNavigateToDetail = (id: number) => {
-    console.log('handleNavigateToDetail : ', id)
-    router.push(`/detail/${id}`);
-  };
-
   useEffect(() => {
     if (searchTerm) {
       handleSearch(searchTerm);
@@ -89,13 +82,13 @@ export default function SearchResults() {
 
   const renderItem = ({ item }: { item: IGachaItem }) => (
     <GoodsThumbnail
-      nameKr={item.name_kr}
-      animeTitle={item.media_kr_title}
-      imageLink={item.image_link}
-      onPress={() => handleNavigateToDetail(item.id)} // 클릭 시 호출
+      redirectId={item.id}
+      name={item.name_kr}
+      itemName={item.name_kr}
+      category={item.media_kr_title}
+      image={item.image_link}
     />
   );
-
 
   return (
     <View className="flex-1 bg-white">
@@ -115,11 +108,11 @@ export default function SearchResults() {
         columnWrapperStyle={
           numColumns > 1
             ? {
-              justifyContent: "space-between",
-              paddingHorizontal: 25,
-              marginTop: 10,
-              marginBottom: 10,
-            }
+                justifyContent: "space-between",
+                paddingHorizontal: 25,
+                marginTop: 10,
+                marginBottom: 10,
+              }
             : undefined
         }
         renderItem={renderItem}
