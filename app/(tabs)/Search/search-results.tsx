@@ -109,7 +109,7 @@ export default function SearchResults() {
           numColumns > 1
             ? {
                 justifyContent: "space-between",
-                paddingHorizontal: 30,
+                paddingHorizontal: 25,
                 marginTop: 10,
                 marginBottom: 10,
               }

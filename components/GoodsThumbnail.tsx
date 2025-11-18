@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from "react-native";
+import { View, Pressable } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 
@@ -25,8 +25,7 @@ const GoodsThumbnail = ({
   name,
 }: GoodsThumbnailProps) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
       disabled={!redirectId}
       onPress={() => redirectId && router.push(`/detail/${redirectId}`)}
       className="flex gap-[10px] relative"
@@ -40,6 +39,7 @@ const GoodsThumbnail = ({
           )}
         </WiggleBorder>
       </View>
+
       {/* 텍스트 영역 */}
       <View className="max-w-[150px] pl-1 flex gap-2">
         <View className="overflow-clip flex-row items-center gap-1">
@@ -57,7 +57,7 @@ const GoodsThumbnail = ({
           {itemName}
         </Typography>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

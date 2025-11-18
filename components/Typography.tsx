@@ -25,6 +25,8 @@ interface ITwoToneTypographyProps extends IBaseTypographyProps {
   className?: never;
 }
 
+const BASE_FONT_SIZE = 16 * Math.max(PixelRatio.getFontScale(), 0.9);
+
 export const typographyTheme = {
   variant: {
     header1: "text-header1 font-DunggeunmisoB",
@@ -80,10 +82,7 @@ const Typography = (props: IStandardTypographyProps | ITwoToneTypographyProps) =
 
     const [scale, _] = fontSize[variant];
     const remValue = scale.match(/\d+(\.\d+)?/g);
-
-    const deviceFontSize = 16 * PixelRatio.getFontScale();
-    const responsiveFontSize = deviceFontSize * Number(remValue);
-
+    const responsiveFontSize = BASE_FONT_SIZE * Number(remValue);
     const lines = splitTextIntoLines(text, width, responsiveFontSize);
     const lineHeight = responsiveFontSize * 1.2;
 
