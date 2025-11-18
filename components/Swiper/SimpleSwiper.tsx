@@ -46,7 +46,6 @@ export default function SimpleSwiper({
         className="rounded-lg"
       >
         <GoodsThumbnail
-          redirectId={item.id}
           name={item.name_kr}
           itemName={item.name_kr}
           category={item.media_kr_title}

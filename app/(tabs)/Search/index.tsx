@@ -129,6 +129,7 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-white">
+      <Spinner visible={loading} />
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
