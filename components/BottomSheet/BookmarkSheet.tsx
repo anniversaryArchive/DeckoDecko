@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pressable, Image, Alert, View } from "react-native";
+import { Pressable, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImagePickerAsset } from "expo-image-picker";
 
@@ -69,7 +69,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
     setMemo("");
     setIsValid(true);
     setType("WISH");
-    !inputRef.current?.getValue() && inputRef.current?.clear();
+    inputRef.current?.getValue() && inputRef.current?.clear();
     onClose && onClose();
     closeSheet();
   };
@@ -79,8 +79,6 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
       // 수정
       const itemName = inputRef.current?.getValue() ?? itemInfo?.name;
       if (!validate(itemName)) return;
-
-      console.log("handleSubmit image:", image);
 
       const assetId = image ? await saveImage(image) : null;
 
@@ -93,8 +91,6 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
       };
 
       const updateData = getChangedValues(itemInfo, data);
-
-      console.log(updateData);
 
       await items.update(itemInfo.id, updateData);
       handleClose();
@@ -248,35 +244,17 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             placeholder="메모"
             className="min-h-28"
           />
-          <View className="flex gap-2 flex-row">
-            {itemInfo && (
-              <View className="flex-1">
-                <Button
-                  size="xl"
-                  className="mt-20"
-                  bold
-                  rounded
-                  variant="outlined"
-                  onPress={deleteBookmark}
-                  disabled={!isValid}
-                >
-                  삭제
-                </Button>
-              </View>
-            )}
-
-            <Button
-              size="xl"
-              className="mt-20 flex-1"
-              width={itemInfo ? "auto" : "full"}
-              bold
-              rounded
-              onPress={handleSubmit}
-              disabled={!isValid}
-            >
-              {label}
-            </Button>
-          </View>
+          <Button
+            size="xl"
+            className="mt-20"
+            width="full"
+            bold
+            rounded
+            onPress={handleSubmit}
+            disabled={!isValid}
+          >
+            {label}
+          </Button>
         </SafeAreaView>
       </BottomSheet>
       <FolderPicker initialMode="select" onSelectFolder={setSelectFolder} />
