@@ -21,10 +21,9 @@ export default function MyBookmark() {
   const [folderList, setFolderList] = useState<Map<number, TFolder>>();
   const [selectedFolder, setSelectedFolder] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [itemList, setItemList] = useState<
-    Array<TItem & { folderName: string; gachaInfo: TGacha }>
-  >([]);
+  const [itemList, setItemList] = useState<Array<TItem & { folderName: string; gachaInfo: TGacha }>>([]);
 
+  // 폴더 리스트 불러오기
   const loadFolderList = async () => {
     const folderList = await folder.getAll();
     setFolderList(
@@ -36,52 +35,58 @@ export default function MyBookmark() {
     );
   };
 
+  // 아이템 리스트 불러오기
   const loadBookmarkItems = async () => {
-    const itemList =
+    if (!folderList) return;
+
+    const itemsData =
       selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
-    const filteredItemList = itemList.filter((i) => i.type === bookmarkType);
 
-    const ids = filteredItemList.map((i) => i.gacha_id);
+    const filtered = itemsData.filter((i) => i.type === bookmarkType);
+    const ids = filtered.map((i) => i.gacha_id);
 
-    const { data: gachaData, error: supabaseError } = await supabase
-      .from("gacha")
-      .select("*")
-      .in("id", ids);
+    const { data: gachaData, error } = await supabase.from("gacha").select("*").in("id", ids);
+    if (error) throw error;
 
-    if (supabaseError) {
-      throw supabaseError; // 에러가 발생하면 catch 블록으로 던지기
-    }
+    const gachaMap = new Map(gachaData.map((g) => [g.id, g]));
 
-    const gachaDataMap = new Map(gachaData.map((gacha) => [gacha.id, gacha]));
-
-    const mergedList = filteredItemList.map((item) => {
-      const gachaInfo = gachaDataMap.get(item.gacha_id);
-      const folderInfo = folderList!.get(item.folder_id);
-
+    const mergedList = filtered.map((item) => {
+      const gachaInfo = gachaMap.get(item.gacha_id);
+      const folderInfo = folderList.get(item.folder_id);
       return { ...item, folderName: folderInfo?.name as string, gachaInfo };
     });
 
     setItemList(mergedList);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      loadFolderList();
-    }, [])
-  );
+  // 폴더 보기용 데이터 (gacha_id 기준 그룹화)
+  const getFolderViewData = () => {
+    const map = new Map<number, { folderName: string; items: Array<TItem & { gachaInfo: TGacha }> }>();
 
-  useFocusEffect(
-    useCallback(() => {
-      if (folderList) loadBookmarkItems();
-    }, [selectedFolder, bookmarkType, folderList])
-  );
+    itemList.forEach((item) => {
+      const key = item.gacha_id;
+      if (!map.has(key)) map.set(key, { folderName: item.folderName ?? "기타", items: [] });
+      map.get(key)!.items.push(item);
+    });
 
+    return Array.from(map.values());
+  };
+
+  // WISH / GET 변경 시 초기화
   useFocusEffect(
     useCallback(() => {
       setSearchTerm("");
       setViewMode("item");
       setSelectedFolder(0);
+      loadFolderList();
     }, [bookmarkType])
+  );
+
+  // 폴더/아이템 변경 시 데이터 로드
+  useFocusEffect(
+    useCallback(() => {
+      loadBookmarkItems();
+    }, [selectedFolder, bookmarkType, folderList])
   );
 
   return (
@@ -96,33 +101,28 @@ export default function MyBookmark() {
         </Pressable>
       </View>
 
+      {/* WISH / GET */}
       <Segment segments={BOOKMARK_TYPE} selectedKey={bookmarkType} onSelect={setBookmarkType} />
+
       <View className="flex-1 gap-4">
-        <View className="flex-row items-center justify-between gap-2">
-          {/* 폴더 리스트 */}
+        {/* 폴더 리스트 */}
+        <View className="flex-row items-center justify-between gap-2 mt-3">
           <ScrollView
             horizontal
-            className="min-h-8 flex-grow -ml-6"
-            contentContainerClassName="flex gap-3 flex-row ml-6"
             showsHorizontalScrollIndicator={false}
+            contentContainerClassName="flex-row gap-3"
           >
             {folderList &&
-              Array.from(folderList).map(([id, { name }]) => {
-                const isSelected = id === selectedFolder;
-
-                return (
-                  <Button
-                    key={`folder_` + id}
-                    bold
-                    variant={isSelected ? "contained" : "outlined"}
-                    onPress={() => {
-                      setSelectedFolder(id);
-                    }}
-                  >
-                    {name}
-                  </Button>
-                );
-              })}
+              Array.from(folderList.values()).map((folder) => (
+                <Button
+                  key={`folder_${folder.id}`}
+                  bold
+                  variant={folder.id === selectedFolder ? "contained" : "outlined"}
+                  onPress={() => setSelectedFolder(folder.id)}
+                >
+                  {folder.name}
+                </Button>
+              ))}
           </ScrollView>
           <Link href="/bookmark/folder-manage" asChild>
             <Pressable className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full">
@@ -130,61 +130,80 @@ export default function MyBookmark() {
             </Pressable>
           </Link>
         </View>
+
+        {/* 검색 */}
         <InputBox size="md" color="secondary" value={searchTerm} onChangeText={setSearchTerm} />
 
         {itemList.length ? (
-          <>
-            {/* WISH | GET */}
-            <View className="flex-1 gap-1">
-              <View className="flex-row items-center justify-end gap-1">
-                <Button
-                  bold
-                  variant="text"
-                  color={viewMode === "folder" ? "primary" : "secondary-dark"}
-                  contentClassName={viewMode === "folder" ? "" : "text-secondary-dark-80"}
-                  onPress={() => {
-                    setViewMode("folder");
-                  }}
-                >
-                  폴더 보기
-                </Button>
-                <Button
-                  variant="text"
-                  bold
-                  color={viewMode === "item" ? "primary" : "secondary-dark"}
-                  contentClassName={viewMode === "item" ? "" : "text-secondary-dark-80"}
-                  onPress={() => {
-                    setViewMode("item");
-                  }}
-                >
-                  아이템 보기
-                </Button>
-              </View>
+          <View className="flex-1 gap-1">
+            {/* 보기 모드 버튼 */}
+            <View className="flex-row items-center justify-end gap-1">
+              <Button
+                bold
+                variant="text"
+                color={viewMode === "folder" ? "primary" : "secondary-dark"}
+                contentClassName={viewMode === "folder" ? "" : "text-secondary-dark-80"}
+                onPress={() => setViewMode("folder")}
+              >
+                묶어보기
+              </Button>
+              <Button
+                bold
+                variant="text"
+                color={viewMode === "item" ? "primary" : "secondary-dark"}
+                contentClassName={viewMode === "item" ? "" : "text-secondary-dark-80"}
+                onPress={() => setViewMode("item")}
+              >
+                풀어보기
+              </Button>
+            </View>
+
+            {/* 리스트 */}
+            {viewMode === "item" ? (
               <FlatList
+                key="item"
                 data={itemList}
-                extraData={selectedFolder}
-                contentContainerClassName="pb-4 flex gap-2 justify-center"
-                columnWrapperClassName="flex flex-row items-center justify-between p-2"
                 numColumns={2}
                 keyExtractor={(item) => `${item.id}`}
+                columnWrapperClassName="flex flex-row items-center justify-between p-2"
+                contentContainerClassName="pb-4"
                 showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => {
-                  const { gachaInfo } = item;
-
-                  return (
-                    <GoodsThumbnail
-                      redirectId={gachaInfo.id}
-                      name={item.name}
-                      category={item.folderName}
-                      itemName={gachaInfo.name_kr}
-                      isLocalImage={!!item.thumbnail}
-                      image={item.thumbnail || gachaInfo.image_link}
-                    />
-                  );
-                }}
+                renderItem={({ item }) => (
+                  <GoodsThumbnail
+                    redirectId={item.gachaInfo.id}
+                    name={item.name}
+                    category={item.folderName}
+                    itemName={item.gachaInfo.name_kr}
+                    isLocalImage={!!item.thumbnail}
+                    image={item.thumbnail || item.gachaInfo.image_link}
+                  />
+                )}
               />
-            </View>
-          </>
+            ) : (
+              <ScrollView contentContainerClassName="pb-4 flex flex-col gap-4">
+                {getFolderViewData().map((folderRow) => (
+                  <ScrollView
+                    key={folderRow.folderName}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerClassName="flex-row gap-4 px-2"
+                  >
+                    {folderRow.items.map((gachaItem) => (
+                      <GoodsThumbnail
+                        key={gachaItem.id}
+                        redirectId={gachaItem.gachaInfo.id}
+                        name={gachaItem.name}
+                        category={folderRow.folderName}
+                        itemName={gachaItem.gachaInfo.name_kr}
+                        isLocalImage={!!gachaItem.thumbnail}
+                        image={gachaItem.thumbnail || gachaItem.gachaInfo.image_link}
+                      />
+                    ))}
+                  </ScrollView>
+                ))}
+              </ScrollView>
+            )}
+          </View>
         ) : (
           <SafeAreaView edges={["bottom"]} className="items-center justify-center flex-1 gap-5">
             <Icon name="gachaCapsule" size={80} fill={"gray-06"} />
