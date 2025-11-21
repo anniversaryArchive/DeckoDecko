@@ -6,6 +6,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
+import * as searchHistory from "@utils/searchHistory";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import items from "@table/items";
 
@@ -63,6 +64,8 @@ export default function DetailPagef() {
 
     fetchGachaData();
     logGachaView();
+    // 최근 본 굿즈 로컬 디비 저장
+    searchHistory.addRecentGoodsId(Number(id));
   }, [navigation, id]);
 
   const fetchBookmarkList = async () => {
@@ -96,7 +99,7 @@ export default function DetailPagef() {
         </WiggleBorder>
         {/* 가챠 에니메이션 제목 (없는 경우, 기타) */}
         <View className="flex items-start py-2">
-          <Chip label={gachaData?.meida?.kr_title || "기타"} />
+          <Chip label={gachaData?.media?.kr_title || "기타"} />
         </View>
         {/* 가챠 이름 */}
         <Typography variant="header2" twotone="primary">

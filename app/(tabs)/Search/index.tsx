@@ -1,6 +1,7 @@
+import React, { useRef } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { View, Alert, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
@@ -10,23 +11,30 @@ import { Button, Typography, SearchBox, Chip, SimpleSwiper, Spinner } from "@com
 
 export default function Index() {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(""); // 검색어 상태
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
   const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const swiperRef = useRef<any>(null);
+
+  // 최근 검색어 불러오기
   const loadSearches = useCallback(async () => {
     const searches = await searchHistory.getRecentSearches();
     setRecentSearches(searches);
   }, []);
 
+  // 최근 본 굿즈 불러오기
   const loadRecentGoods = useCallback(async () => {
     const goods = await searchHistory.getRecentGoods();
     setRecentGoods(goods);
   }, []);
 
   const loadPopularGoods = useCallback(async () => {
+    /**
+     * 인기 굿즈 불러오기
+     */
     try {
       const { data: topGachaIds, error: countError } = await supabase.rpc("get_top_gacha_views");
       if (countError) throw countError;
@@ -35,8 +43,7 @@ export default function Index() {
 
       const { data, error } = await supabase
         .from("gacha")
-        .select(
-          `
+        .select(`
         id,
         name,
         name_kr,
@@ -46,8 +53,7 @@ export default function Index() {
         anime:anime_id (
           kr_title
         )
-      `
-        )
+      `)
         .in("id", gachaIds);
 
       if (error) throw error;
@@ -71,6 +77,7 @@ export default function Index() {
     loadAllData();
   }, [loadAllData]);
 
+  // 검색 실행
   const handleSearch = async (value: string) => {
     await searchHistory.addRecentSearch(value);
     await loadSearches();
@@ -117,19 +124,26 @@ export default function Index() {
   };
 
   const handleNavigateToDetail = (id: number) => {
-    console.log("handleNavigateToDetail");
+    console.log('handleNavigateToDetail')
     router.push(`/detail/${id}`);
   };
 
   useEffect(() => {
-    loadSearches();
-    loadRecentGoods();
     loadPopularGoods();
-  }, [loadSearches, loadRecentGoods, loadPopularGoods]);
+  }, [loadPopularGoods]);
+
+  // 화면이 focus될 때마다 최근 검색어/굿즈 갱신
+  useFocusEffect(
+    useCallback(() => {
+      loadSearches();
+      loadRecentGoods();
+    }, [])
+  );
 
   return (
     <View className="flex-1 bg-white">
       <Spinner visible={loading} />
+      {/* 검색창 */}
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
@@ -203,6 +217,7 @@ export default function Index() {
         </View>
         {recentGoods.length > 0 ? (
           <SimpleSwiper
+            ref={swiperRef} // ← ref 연결
             data={recentGoods}
             slidesPerView={2.5}
             itemSpacing={12}
