@@ -132,14 +132,11 @@ export default function Index() {
     loadPopularGoods();
   }, [loadPopularGoods]);
 
-  // 화면이 focus될 때마다 최근 검색어/굿즈 갱신 + 슬라이드 초기화
+  // 화면이 focus될 때마다 최근 검색어/굿즈 갱신
   useFocusEffect(
     useCallback(() => {
       loadSearches();
       loadRecentGoods();
-      if (swiperRef.current?.slideTo) {
-        swiperRef.current.slideTo(0, false);
-      }
     }, [])
   );
 
