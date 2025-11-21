@@ -99,7 +99,7 @@ export default function DetailPagef() {
         </WiggleBorder>
         {/* 가챠 에니메이션 제목 (없는 경우, 기타) */}
         <View className="flex items-start py-2">
-          <Chip label={gachaData?.meida?.kr_title || "기타"} />
+          <Chip label={gachaData?.media?.kr_title || "기타"} />
         </View>
         {/* 가챠 이름 */}
         <Typography variant="header2" twotone="primary">
