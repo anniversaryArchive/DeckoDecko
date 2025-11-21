@@ -23,19 +23,19 @@ export default function MyBookmark() {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemList, setItemList] = useState<Array<TItem & { folderName: string; gachaInfo: TGacha }>>([]);
 
-  // 폴더 리스트 불러오기
+  // 폴더 리스트
   const loadFolderList = async () => {
-    const folderList = await folder.getAll();
+    const folderData = await folder.getAll();
     setFolderList(
       new Map(
-        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderList].map(
-          (folder) => [folder.id, folder]
+        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderData].map(
+          (f) => [f.id, f]
         )
       )
     );
   };
 
-  // 아이템 리스트 불러오기
+  // 아이템 리스트
   const loadBookmarkItems = async () => {
     if (!folderList) return;
 
@@ -59,20 +59,25 @@ export default function MyBookmark() {
     setItemList(mergedList);
   };
 
-  // 폴더 보기용 데이터 (gacha_id 기준 그룹화)
+  // folder view 데이터 (gacha_id 기준 그룹화)
   const getFolderViewData = () => {
-    const map = new Map<number, { folderName: string; items: Array<TItem & { gachaInfo: TGacha }> }>();
+    const map = new Map<
+      number,
+      { folderName: string; items: Array<TItem & { gachaInfo: TGacha }> }
+      >();
 
     itemList.forEach((item) => {
       const key = item.gacha_id;
-      if (!map.has(key)) map.set(key, { folderName: item.folderName ?? "기타", items: [] });
+      if (!map.has(key)) {
+        map.set(key, { folderName: item.folderName ?? "기타", items: [] });
+      }
       map.get(key)!.items.push(item);
     });
 
     return Array.from(map.values());
   };
 
-  // WISH / GET 변경 시 초기화
+  // WISH/GET 변경 시 reset
   useFocusEffect(
     useCallback(() => {
       setSearchTerm("");
@@ -82,7 +87,7 @@ export default function MyBookmark() {
     }, [bookmarkType])
   );
 
-  // 폴더/아이템 변경 시 데이터 로드
+  // 폴더/타입 변경 시 아이템 재로드
   useFocusEffect(
     useCallback(() => {
       loadBookmarkItems();
@@ -181,26 +186,27 @@ export default function MyBookmark() {
               />
             ) : (
               <ScrollView contentContainerClassName="pb-4 flex flex-col gap-4">
-                {getFolderViewData().map((folderRow) => (
-                  <ScrollView
-                    key={folderRow.folderName}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerClassName="flex-row gap-4 px-2"
-                  >
-                    {folderRow.items.map((gachaItem) => (
+                {getFolderViewData().map((folderRow) => {
+                  const main = folderRow.items[0]; // ← 묶어보기 대표 1개만 사용
+
+                  return (
+                    <ScrollView
+                      key={main.gachaInfo.id}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerClassName="flex-row gap-4 px-2"
+                    >
                       <GoodsThumbnail
-                        key={gachaItem.id}
-                        redirectId={gachaItem.gachaInfo.id}
-                        name={gachaItem.name}
+                        redirectId={main.gachaInfo.id}
+                        name={main.name}
                         category={folderRow.folderName}
-                        itemName={gachaItem.gachaInfo.name_kr}
-                        isLocalImage={!!gachaItem.thumbnail}
-                        image={gachaItem.thumbnail || gachaItem.gachaInfo.image_link}
+                        itemName={main.gachaInfo.name_kr}
+                        isLocalImage={!!main.thumbnail}
+                        image={main.thumbnail || main.gachaInfo.image_link}
                       />
-                    ))}
-                  </ScrollView>
-                ))}
+                    </ScrollView>
+                  );
+                })}
               </ScrollView>
             )}
           </View>
