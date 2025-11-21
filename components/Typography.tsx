@@ -1,32 +1,33 @@
-import { PixelRatio, Text, View, StyleProp, TextStyle } from "react-native";
-import Svg, { Text as SvgText } from "react-native-svg";
+import { PixelRatio, Text, View, StyleProp, TextStyle, useWindowDimensions } from "react-native";
+import Svg, { Text as SvgText, TSpan } from "react-native-svg";
+import { splitTextIntoLines } from "@utils/splitTextIntoLines";
 import { colors } from "@utils/tailwind-colors";
 import { fontSize } from "@utils/tailwind-fontSize";
 
-interface ITypography {
+interface IBaseTypographyProps {
+  children: React.ReactNode;
+  numberOfLines?: number;
+  ellipsizeMode?: "head" | "middle" | "tail" | "clip";
+  style?: StyleProp<TextStyle>;
+}
+
+interface IStandardTypographyProps extends IBaseTypographyProps {
   variant?: keyof typeof typographyTheme.variant;
   color?: keyof typeof typographyTheme.color;
   twotone?: never;
   className?: string;
-  children: React.ReactNode;
-  numberOfLines?: number; // 추가: 한 줄 제한
-  ellipsizeMode?: "head" | "middle" | "tail" | "clip"; // 추가: 말줄임표 위치
-  style?: StyleProp<TextStyle>; // 새로 추가된 style prop
 }
 
-interface ITwoToneTypography {
-  variant?: keyof typeof typographyTheme.variant;
+interface ITwoToneTypographyProps extends IBaseTypographyProps {
+  variant?: "header1" | "header2" | "header3";
   color?: never;
-  twotone?: keyof typeof twotoneColorMap;
+  twotone: keyof typeof twotoneColorMap;
   className?: never;
-  children: React.ReactNode;
-  numberOfLines?: number;
-  style?: StyleProp<TextStyle>; // 새로 추가된 style prop
 }
 
-const BASE_FONT_SIZE = 16 * PixelRatio.getFontScale();
+const BASE_FONT_SIZE = 16 * Math.max(PixelRatio.getFontScale(), 0.9);
 
-const typographyTheme = {
+export const typographyTheme = {
   variant: {
     header1: "text-header1 font-DunggeunmisoB",
     header2: "text-header2 font-DunggeunmisoB",
@@ -50,6 +51,7 @@ const typographyTheme = {
     "secondary-light": "text-secondary-light",
     "secondary-dark": "text-secondary-dark",
     black: "text-black",
+    "gray-04": "text-gray-03",
     "gray-05": "text-gray-05",
   },
 };
@@ -61,7 +63,7 @@ const twotoneColorMap = {
   },
 };
 
-const Typography = (props: ITypography | ITwoToneTypography) => {
+const Typography = (props: IStandardTypographyProps | ITwoToneTypographyProps) => {
   const {
     variant = "body1",
     color = "secondary-dark",
@@ -69,31 +71,49 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
     children,
     className = "",
     numberOfLines = 1,
+    ellipsizeMode = "tail",
     style, // 새로 추가된 style prop 받기
   } = props;
+  const { width } = useWindowDimensions();
 
   const getTwotoneTypography = (twotone: keyof typeof twotoneColorMap) => {
-    const regex = /\d+(\.\d+)?/g;
+    const text = children?.toString();
+    if (!text) return;
 
     const [scale, _] = fontSize[variant];
-    const remValue = scale.match(regex);
-
+    const remValue = scale.match(/\d+(\.\d+)?/g);
     const responsiveFontSize = BASE_FONT_SIZE * Number(remValue);
+    const lines = splitTextIntoLines(text, width, responsiveFontSize);
+    const lineHeight = responsiveFontSize * 1.2;
 
-    const strokeWidth: number = variant === "header1" ? 2 : 1.5;
+    const stroke = () => {
+      switch (variant) {
+        case "header1":
+          return 2;
+        case "header3":
+          return 1.2;
+        default:
+          return 1.5;
+      }
+    };
+
     return (
-      <Svg height={responsiveFontSize + strokeWidth} width="100%">
+      <Svg height={lineHeight * lines.length} width="100%">
         <SvgText
           fill={twotoneColorMap[twotone].fill} // 텍스트 내부 색상
           stroke={twotoneColorMap[twotone].stroke} // 외곽선 색상
-          strokeWidth={strokeWidth} // 외곽선 두께
+          strokeWidth={stroke()} // 외곽선 두께
           fontSize={responsiveFontSize} // 폰트 크기
-          x={0}
-          y={responsiveFontSize / 2 + strokeWidth}
           fontFamily={"DunggeunmisoB"}
           alignmentBaseline="middle"
         >
-          {children}
+          {lines.map((line: string, index: number) => {
+            return (
+              <TSpan key={`lines-${index}`} x={0} dy={index === 0 ? lineHeight / 2 : lineHeight}>
+                {line}
+              </TSpan>
+            );
+          })}
         </SvgText>
       </Svg>
     );
@@ -106,9 +126,9 @@ const Typography = (props: ITypography | ITwoToneTypography) => {
       ) : (
         <Text
           className={`${typographyTheme.variant[variant]} ${typographyTheme.color[color]} ${className}`}
-          numberOfLines={numberOfLines === 0 ? undefined : numberOfLines}
+          numberOfLines={numberOfLines}
           maxFontSizeMultiplier={1.5}
-          ellipsizeMode="tail"
+          ellipsizeMode={ellipsizeMode}
           style={[{ flexShrink: 1, overflow: "hidden" }, style]} // 새로 추가된 style 병합 적용
         >
           {children}

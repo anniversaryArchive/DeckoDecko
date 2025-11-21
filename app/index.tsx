@@ -1,4 +1,4 @@
-import "react-native-reanimated/src/initializers"; // TODO: 4.1.1 버전 출시 시 제거
+import "react-native-gesture-handler";
 import "react-native-reanimated"; // 반드시 최상단에 위치
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
@@ -12,7 +12,7 @@ export default function Index() {
         </Pressable>
       </Link>
 
-      <Link href="/(tabs)/Home" asChild>
+      <Link href="/(tabs)/home" asChild>
         <Pressable>
           <Text className="font-dunggeunmiso text-secondary-dark text-2xl">
             BOTTOM NAVIGATION BAR (TABS) TEST

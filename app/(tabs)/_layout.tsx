@@ -6,9 +6,9 @@ import Icon from "@/components/Icon";
 import { colors } from "@/utils/tailwind-colors";
 
 const TABS = [
-  { name: "Home", title: "홈", icon: "star" },
-  { name: "my-bookmark", title: "내 굿즈", icon: "folder" },
-  { name: "Search", title: "검색", icon: "search" },
+  { name: "home", title: "홈", icon: "star" },
+  { name: "bookmark", title: "내 굿즈", icon: "folder" },
+  { name: "search", title: "검색", icon: "search" },
 ];
 
 export default function TabLayout() {
@@ -44,9 +44,9 @@ export default function TabLayout() {
           }}
           listeners={{
             tabPress: (e) => {
-              if (tab.name === "Search") {
+              if (tab.name === "search") {
                 e.preventDefault();
-                router.replace("/Search");
+                router.replace("/search");
               }
             },
           }}

@@ -18,6 +18,7 @@ class TbFolders {
         await inst.runAsync(`
            CREATE TABLE IF NOT EXISTS folders (
             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            sequence INTEGER NOT NULL,
             name TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
           );`);
@@ -25,7 +26,7 @@ class TbFolders {
         const firstRow = await inst.getFirstAsync("SELECT * FROM folders");
 
         if (firstRow === null) {
-          await inst.runAsync("INSERT INTO folders (name) VALUES (?)", "기본 폴더");
+          await inst.runAsync("INSERT INTO folders (name, sequence) VALUES (?, ?)", "기본 폴더", 1);
         }
       }
 
@@ -36,12 +37,16 @@ class TbFolders {
     }
   }
 
-  async create(name: string): Promise<boolean> {
+  async create(name: string, sequence: number): Promise<boolean> {
     try {
       const db = await this.#dbInstance;
       if (!db) return false;
 
-      const result = await db.runAsync("INSERT INTO folders (name) VALUES (?)", name);
+      const result = await db.runAsync(
+        "INSERT INTO folders (name, sequence) VALUES (?, ?)",
+        name,
+        sequence
+      );
 
       return !!result.changes;
     } catch (error) {
@@ -55,7 +60,7 @@ class TbFolders {
     if (!db) return [];
 
     try {
-      return await db.getAllAsync<TFolder>("SELECT * FROM folders ORDER BY created_at");
+      return await db.getAllAsync<TFolder>("SELECT * FROM folders ORDER BY sequence");
     } catch (error) {
       console.error("TbFolders getAll Error : ", error);
       return [];
@@ -74,7 +79,7 @@ class TbFolders {
     }
   }
 
-  async update(id: string, newname: string): Promise<boolean> {
+  async update(id: number, newname: string): Promise<boolean> {
     const db = await this.#dbInstance;
     if (!db) return false;
 
@@ -87,7 +92,28 @@ class TbFolders {
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async updateSequence(newFolderList: TFolder[]): Promise<boolean> {
+    const db = await this.#dbInstance;
+    if (!db) return false;
+
+    try {
+      await db.withTransactionAsync(async () => {
+        for (const folder of newFolderList) {
+          await db.runAsync("UPDATE folders SET sequence = ? WHERE id = ?;", [
+            folder.sequence,
+            folder.id,
+          ]);
+        }
+      });
+
+      return true;
+    } catch (error) {
+      console.error(`TbFolders update sequence Error : ${error}`);
+      return false;
+    }
+  }
+
+  async delete(id: number): Promise<boolean> {
     const db = await this.#dbInstance;
     if (!db) return false;
 
@@ -107,8 +133,10 @@ class TbFolders {
 
     try {
       await db.execAsync(`
-        DELETE FROM folders;
+        DROP TABLE folders;
         UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'folders';`);
+
+      await this.init();
 
       return true;
     } catch (error) {

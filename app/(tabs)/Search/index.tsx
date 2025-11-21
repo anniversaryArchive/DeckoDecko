@@ -182,6 +182,8 @@ export default function Index() {
                   size="lg"
                   color="secondary-light"
                   label={term}
+                  rounded
+                  bold={false}
                   onClick={() => handleSearch(term)}
                   onDelete={() => handleRemoveSearches(term)}
                   className={isLast ? "mr-4" : ""}
