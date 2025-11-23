@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, Dimensions, FlatList, ListRenderItemInfo, Pressable } from "react-native";
+import { View, Dimensions, FlatList, ListRenderItemInfo, Pressable, LayoutChangeEvent } from "react-native";
 import GoodsThumbnail from "@components/GoodsThumbnail";
 import type { IGachaItem } from "@/types/search";
 
@@ -7,7 +7,9 @@ interface SimpleSwiperProps {
   data: IGachaItem[];
   onSlidePress?: (item: IGachaItem, index: number) => void;
   slidesPerView?: number; // 한 화면에 보여질 아이템 수
-  itemSpacing?: number; // 카드 간 간격
+  itemSpacing?: number; // 카드 간 간격 (아이템들 사이 간격)
+  resetTrigger?: number; // 부모에서 변경될 때 초기화 트리거
+  resetToIndex?: number; // 이동할 목표 인덱스
 }
 
 export default function SimpleSwiper({
@@ -15,48 +17,60 @@ export default function SimpleSwiper({
   onSlidePress,
   slidesPerView = 2.5,
   itemSpacing = 10,
+  resetTrigger,
+  resetToIndex = 0,
 }: SimpleSwiperProps) {
   const [screenWidth, setScreenWidth] = useState(Dimensions.get("window").width);
   const flatListRef = useRef<FlatList>(null);
+  const [hasLayout, setHasLayout] = useState(false);
 
   useEffect(() => {
     const onChange = ({ window }: { window: { width: number } }) => {
       setScreenWidth(window.width);
     };
     const subscription = Dimensions.addEventListener("change", onChange);
-    return () => {
-      subscription.remove();
-    };
+    return () => subscription.remove();
   }, []);
 
   const itemWidth = screenWidth / slidesPerView;
 
-  const renderItem = ({ item, index }: ListRenderItemInfo<IGachaItem>) => {
-    const isFirst = index === 0;
-    const isLast = index === data.length - 1;
+  // 부모가 resetTrigger 변경 시 해당 index로 스크롤
+  useEffect(() => {
+    if (!hasLayout || resetTrigger == null) return;
 
-    return (
-      <Pressable
-        onPress={() => onSlidePress?.(item, index)}
-        style={{
-          width: itemWidth,
-          marginLeft: isFirst ? 16 : itemSpacing / 2, // 첫 슬라이드 왼쪽 margin 16
-          marginRight: isLast ? 16 : itemSpacing / 2, // 마지막 슬라이드 오른쪽 margin 16
-        }}
-        className="rounded-lg"
-      >
-        <GoodsThumbnail
-          name={item.name_kr}
-          itemName={item.name_kr}
-          category={item.media_kr_title}
-          image={item.image_link}
-        />
-      </Pressable>
-    );
+    const offset = resetToIndex * (itemWidth + itemSpacing);
+
+    flatListRef.current?.scrollToOffset({
+      offset,
+      animated: false,
+    });
+  }, [resetTrigger, resetToIndex, itemWidth, hasLayout, itemSpacing]);
+
+  const renderItem = ({ item, index }: ListRenderItemInfo<IGachaItem>) => (
+    <Pressable
+      onPress={() => onSlidePress?.(item, index)}
+      style={{
+        width: itemWidth,
+        marginLeft: itemSpacing / 2,
+        marginRight: itemSpacing / 2,
+      }}
+      className="rounded-lg"
+    >
+      <GoodsThumbnail
+        name={item.name_kr}
+        itemName={item.name_kr}
+        category={item.media_kr_title}
+        image={item.image_link}
+      />
+    </Pressable>
+  );
+
+  const handleLayout = (e: LayoutChangeEvent) => {
+    setHasLayout(true);
   };
 
   return (
-    <View className="w-full">
+    <View className="w-full" onLayout={handleLayout}>
       <FlatList
         ref={flatListRef}
         horizontal
@@ -64,9 +78,9 @@ export default function SimpleSwiper({
         renderItem={renderItem}
         keyExtractor={(item, index) => `${item.id}_${index}`}
         showsHorizontalScrollIndicator={false}
-        snapToInterval={itemWidth + itemSpacing / 2}
+        snapToInterval={itemWidth + itemSpacing}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 0 }}
+        contentContainerStyle={{ paddingHorizontal: itemSpacing / 2 }}
       />
     </View>
   );

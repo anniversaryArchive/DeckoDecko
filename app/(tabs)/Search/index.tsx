@@ -16,6 +16,7 @@ export default function Index() {
   const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
   const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [resetIndex, setResetIndex] = useState(0);
 
   const swiperRef = useRef<any>(null);
 
@@ -137,6 +138,7 @@ export default function Index() {
     useCallback(() => {
       loadSearches();
       loadRecentGoods();
+      setResetIndex((s) => s + 1);
     }, [])
   );
 
@@ -217,13 +219,15 @@ export default function Index() {
         </View>
         {recentGoods.length > 0 ? (
           <SimpleSwiper
-            ref={swiperRef} // ← ref 연결
+            ref={swiperRef}
             data={recentGoods}
             slidesPerView={2.5}
             itemSpacing={12}
+            resetTrigger={resetIndex}
+            resetToIndex={0}
             onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
-        ) : (
+          ) : (
           <View className="h-11 items-center justify-center ml-4 mr-4">
             <Typography variant="body2" color="secondary-dark">
               최근 본 굿즈가 없습니다.
@@ -239,12 +243,15 @@ export default function Index() {
         </View>
         {popularGoods.length > 0 ? (
           <SimpleSwiper
+            ref={swiperRef}
             data={popularGoods}
             slidesPerView={2.5}
             itemSpacing={12}
+            resetTrigger={resetIndex}
+            resetToIndex={0}
             onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
-        ) : (
+          ) : (
           <View className="h-11 items-center justify-center ml-4 mr-4">
             <Typography variant="body2" color="secondary-dark">
               인기 굿즈가 없습니다.
