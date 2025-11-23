@@ -37,7 +37,8 @@ export default function MyBookmark() {
 
   // 아이템 리스트
   const loadBookmarkItems = async () => {
-    if (!folderList) return;
+    // folderList가 없어도 기본값 Map 사용
+    const folders = folderList ?? new Map<number, TFolder>();
 
     const itemsData =
       selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
@@ -52,8 +53,8 @@ export default function MyBookmark() {
 
     const mergedList = filtered.map((item) => {
       const gachaInfo = gachaMap.get(item.gacha_id);
-      const folderInfo = folderList.get(item.folder_id);
-      return { ...item, folderName: folderInfo?.name as string, gachaInfo };
+      const folderInfo = folders.get(item.folder_id);
+      return { ...item, folderName: folderInfo?.name ?? "기타", gachaInfo };
     });
 
     setItemList(mergedList);
@@ -91,7 +92,7 @@ export default function MyBookmark() {
   useFocusEffect(
     useCallback(() => {
       loadBookmarkItems();
-    }, [selectedFolder, bookmarkType, folderList])
+    }, [selectedFolder, bookmarkType])
   );
 
   return (
