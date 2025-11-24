@@ -37,7 +37,6 @@ export default function MyBookmark() {
 
   // 아이템 리스트
   const loadBookmarkItems = async () => {
-    // folderList가 없어도 기본값 Map 사용
     const folders = folderList ?? new Map<number, TFolder>();
     const itemsData =
       selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
@@ -76,6 +75,16 @@ export default function MyBookmark() {
     return Array.from(map.values()).map((group) => group.items[0]);
   };
 
+  // 필터링 처리 : 검색어 포함 여부 체크
+  const filteredItemList = itemList.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredFolderViewData = getFolderViewData().filter((item) =>
+    item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useFocusEffect(
     useCallback(() => {
       setSearchTerm("");
@@ -91,11 +100,9 @@ export default function MyBookmark() {
     }, [selectedFolder, bookmarkType])
   );
 
-  // 묶어보기/풀어보기 전환
+  // 보기 모드에 따라 필터된 리스트 선택
   const isBundle = viewMode === "folder";
-  const flatListData = isBundle
-    ? getFolderViewData()
-    : itemList;
+  const flatListData = isBundle ? filteredFolderViewData : filteredItemList;
 
   return (
     <View className="flex-1 gap-4 px-6 pt-1">
@@ -138,8 +145,14 @@ export default function MyBookmark() {
           </Link>
         </View>
 
-        {/* 검색 */}
-        <InputBox size="md" color="secondary" value={searchTerm} onChangeText={setSearchTerm} />
+        {/* 검색 입력 */}
+        <InputBox
+          size="md"
+          color="secondary"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          placeholder="내 굿즈 리스트 검색"
+        />
 
         {flatListData.length ? (
           <View className="flex-1 gap-1">
@@ -169,23 +182,20 @@ export default function MyBookmark() {
               data={flatListData}
               key={isBundle ? "bundle" : "item"}
               numColumns={2}
-              keyExtractor={(item) => isBundle ? `bundle_${item.gacha_id}` : `${item.id}`}
+              keyExtractor={(item) => (isBundle ? `bundle_${item.gacha_id}` : `${item.id}`)}
               columnWrapperClassName="flex flex-row items-center justify-between p-2"
               contentContainerClassName="pb-4"
               contentContainerStyle={{ paddingBottom: 24 }}
               showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => {
-                return (
-                  <GoodsThumbnail
-                    redirectId={item.gachaInfo.id}
-                    name={isBundle ? item.gachaInfo.name_kr : item.name}
-                    category={item.folderName}
-                    itemName={isBundle ? null : item.gachaInfo.name_kr}
-                    image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
-                  />
-                );
-              }}
-
+              renderItem={({ item }) => (
+                <GoodsThumbnail
+                  redirectId={item.gachaInfo.id}
+                  name={isBundle ? item.gachaInfo.name_kr : item.name}
+                  category={item.folderName}
+                  itemName={isBundle ? null : item.gachaInfo.name_kr}
+                  image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
+                />
+              )}
             />
           </View>
         ) : (
