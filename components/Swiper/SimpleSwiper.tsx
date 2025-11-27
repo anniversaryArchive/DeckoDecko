@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { View, Dimensions, FlatList, ListRenderItemInfo, Pressable, LayoutChangeEvent } from "react-native";
 import GoodsThumbnail from "@components/GoodsThumbnail";
 import type { IGachaItem } from "@/types/search";
@@ -12,21 +12,25 @@ interface SimpleSwiperProps {
   resetToIndex?: number; // 이동할 목표 인덱스
 }
 
-export default function SimpleSwiper({
+// ref 전달받아 내부 FlatList 인스턴스에 접근 가능
+const SimpleSwiper = forwardRef<FlatList, SimpleSwiperProps>(({
   data,
   onSlidePress,
   slidesPerView = 2.5,
   itemSpacing = 10,
   resetTrigger,
   resetToIndex = 0,
-}: SimpleSwiperProps) {
+}, ref) => {
   const [screenWidth, setScreenWidth] = useState(Dimensions.get("window").width);
   const flatListRef = useRef<FlatList>(null);
   const [hasLayout, setHasLayout] = useState(false);
 
+  useImperativeHandle(ref, () => flatListRef.current as FlatList);
+
   useEffect(() => {
     const onChange = ({ window }: { window: { width: number } }) => {
       setScreenWidth(window.width);
+      setHasLayout(false);
     };
     const subscription = Dimensions.addEventListener("change", onChange);
     return () => subscription.remove();
@@ -34,35 +38,36 @@ export default function SimpleSwiper({
 
   const itemWidth = screenWidth / slidesPerView;
 
-  // 부모가 resetTrigger 변경 시 해당 index로 스크롤
   useEffect(() => {
     if (!hasLayout || resetTrigger == null) return;
 
     const offset = resetToIndex * (itemWidth + itemSpacing);
-
     flatListRef.current?.scrollToOffset({
       offset,
       animated: false,
     });
   }, [resetTrigger, resetToIndex, itemWidth, hasLayout, itemSpacing]);
 
-  const renderItem = ({ item, index }: ListRenderItemInfo<IGachaItem>) => (
-    <Pressable
-      onPress={() => onSlidePress?.(item, index)}
-      style={{
-        width: itemWidth,
-        marginLeft: itemSpacing / 2,
-        marginRight: itemSpacing / 2,
-      }}
-      className="rounded-lg"
-    >
-      <GoodsThumbnail
-        name={item.name_kr}
-        itemName={item.name_kr}
-        category={item.media_kr_title}
-        image={item.image_link}
-      />
-    </Pressable>
+  const renderItem = useCallback(
+    ({ item, index }: ListRenderItemInfo<IGachaItem>) => (
+      <Pressable
+        onPress={() => onSlidePress?.(item, index)}
+        style={{
+          width: itemWidth,
+          marginLeft: itemSpacing / 2,
+          marginRight: itemSpacing / 2,
+        }}
+        className="rounded-lg"
+      >
+        <GoodsThumbnail
+          name={item.name_kr}
+          itemName={item.name_kr}
+          category={item.media_kr_title}
+          image={item.image_link}
+        />
+      </Pressable>
+    ),
+    [itemWidth, itemSpacing, onSlidePress]
   );
 
   const handleLayout = (e: LayoutChangeEvent) => {
@@ -84,4 +89,6 @@ export default function SimpleSwiper({
       />
     </View>
   );
-}
+});
+
+export default SimpleSwiper;
