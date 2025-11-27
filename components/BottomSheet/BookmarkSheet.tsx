@@ -232,7 +232,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
               openSheet("FOLDER");
             }}
           >
-            {selectedFolder.name}
+            {selectedFolder?.name ?? "폴더 선택"}
           </Button>
           <Divider />
           <TextBox
