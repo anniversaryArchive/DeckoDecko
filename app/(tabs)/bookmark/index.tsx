@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, View, Clipboard, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useFocusEffect } from "expo-router";
 
@@ -43,7 +43,19 @@ export default function MyBookmark() {
     const filtered = itemsData.filter((i) => i.type === bookmarkType);
 
     const ids = filtered.map((i) => i.gacha_id);
-    const { data: gachaData, error } = await supabase.from("gacha").select("*").in("id", ids);
+    const { data: gachaData, error } = await supabase.from("gacha").select(
+      `
+        id,
+        name,
+        name_kr,
+        image_link,
+        anime_id,
+        price,
+        anime:anime_id (
+          kr_title
+        )
+      `
+    ).in("id", ids);
     if (error) throw error;
 
     const gachaMap = new Map(gachaData.map((g) => [g.id, g]));
@@ -71,16 +83,14 @@ export default function MyBookmark() {
       map.get(key)!.items.push(item);
     });
 
-    // 대표 1개만 FlatList에 쓸 수 있게 변환
     return Array.from(map.values()).map((group) => group.items[0]);
   };
 
-  // 필터링 처리 : 검색어 포함 여부 체크
+  // 필터링 처리
   const filteredItemList = itemList.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   const filteredFolderViewData = getFolderViewData().filter((item) =>
     item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -100,7 +110,12 @@ export default function MyBookmark() {
     }, [selectedFolder, bookmarkType])
   );
 
-  // 보기 모드에 따라 필터된 리스트 선택
+  // 클립보드 복사 함수
+  const copyItemListToClipboard = () => {
+    Clipboard.setString(JSON.stringify(itemList, null, 2));
+    Alert.alert("알림", "굿즈 리스트가 클립보드에 복사되었습니다.");
+  };
+
   const isBundle = viewMode === "folder";
   const flatListData = isBundle ? filteredFolderViewData : filteredItemList;
 
@@ -154,6 +169,14 @@ export default function MyBookmark() {
           placeholder="내 굿즈 리스트 검색"
         />
 
+        <Button
+          variant="contained"
+          onPress={copyItemListToClipboard}
+          className="mt-3"
+        >
+          굿즈 리스트 복사
+        </Button>
+
         {flatListData.length ? (
           <View className="flex-1 gap-1">
             {/* 보기 모드 버튼 */}
@@ -190,9 +213,9 @@ export default function MyBookmark() {
               renderItem={({ item }) => (
                 <GoodsThumbnail
                   redirectId={item.gachaInfo.id}
-                  name={isBundle ? item.gachaInfo.name_kr : item.name}
-                  category={(item as TItem & { folderName: string }).folderName}
-                  itemName={isBundle ? undefined : item.gachaInfo.name_kr}
+                  name={isBundle ? "" : item.name}
+                  category={item.gachaInfo.anime ? item.gachaInfo.anime.kr_title : ""}
+                  itemName={item.gachaInfo.name_kr}
                   image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
                 />
               )}
