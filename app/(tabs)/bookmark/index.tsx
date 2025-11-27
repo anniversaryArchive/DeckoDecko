@@ -132,7 +132,14 @@ export default function MyBookmark() {
       </View>
 
       {/* WISH / GET */}
-      <Segment segments={BOOKMARK_TYPE} selectedKey={bookmarkType} onSelect={setBookmarkType} />
+      <Segment
+        segments={BOOKMARK_TYPE}
+        selectedKey={bookmarkType}
+        onSelect={(key) => {
+          setBookmarkType(key);
+          setSelectedFolder(0);  // 선택 폴더를 "전체"로 옮기기
+        }}
+      />
 
       <View className="flex-1 gap-4">
         {/* 폴더 리스트 */}
