@@ -68,22 +68,27 @@ export default function MyBookmark() {
     setItemList(mergedList);
   };
 
-  // 묶어보기: 동일 gacha_id로 그룹핑
+  // 묶어보기: 동일 gacha_id로 그룹핑, 아이템 개수 추가
   const getFolderViewData = () => {
     const map = new Map<
       number,
-      { folderName: string; items: Array<TItem & { gachaInfo: TGacha }> }
+      { folderName: string; items: Array<TItem & { gachaInfo: TGacha }>; count: number }
       >();
 
     itemList.forEach((item) => {
       const key = item.gacha_id;
       if (!map.has(key)) {
-        map.set(key, { folderName: item.folderName ?? "기타", items: [] });
+        map.set(key, { folderName: item.folderName ?? "기타", items: [], count: 0 });
       }
-      map.get(key)!.items.push(item);
+      const group = map.get(key)!;
+      group.items.push(item);
+      group.count++;
     });
 
-    return Array.from(map.values()).map((group) => group.items[0]);
+    return Array.from(map.values()).map((group) => ({
+      ...group.items[0],
+      count: group.count,
+    }));
   };
 
   // 필터링 처리
@@ -109,12 +114,6 @@ export default function MyBookmark() {
       loadBookmarkItems();
     }, [selectedFolder, bookmarkType])
   );
-
-  // 클립보드 복사 함수
-  const copyItemListToClipboard = () => {
-    Clipboard.setString(JSON.stringify(itemList, null, 2));
-    Alert.alert("알림", "굿즈 리스트가 클립보드에 복사되었습니다.");
-  };
 
   const isBundle = viewMode === "folder";
   const flatListData = isBundle ? filteredFolderViewData : filteredItemList;
@@ -176,14 +175,6 @@ export default function MyBookmark() {
           placeholder="내 굿즈 리스트 검색"
         />
 
-        <Button
-          variant="contained"
-          onPress={copyItemListToClipboard}
-          className="mt-3"
-        >
-          굿즈 리스트 복사
-        </Button>
-
         {flatListData.length ? (
           <View className="flex-1 gap-1">
             {/* 보기 모드 버튼 */}
@@ -218,13 +209,20 @@ export default function MyBookmark() {
               contentContainerStyle={{ paddingBottom: 24 }}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
-                <GoodsThumbnail
-                  redirectId={item.gachaInfo.id}
-                  name={isBundle ? "" : item.name}
-                  category={item.gachaInfo.anime ? item.gachaInfo.anime.kr_title : ""}
-                  itemName={item.gachaInfo.name_kr}
-                  image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
-                />
+                <View>
+                  <GoodsThumbnail
+                    redirectId={item.gachaInfo.id}
+                    name={isBundle ? "" : item.name}
+                    category={item.gachaInfo.anime ? item.gachaInfo.anime.kr_title : ""}
+                    itemName={item.gachaInfo.name_kr}
+                    image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
+                  />
+                  {isBundle && (
+                    <Typography variant="body2" color="primary" className="pl-1">
+                      아이템 {item.count}개
+                    </Typography>
+                  )}
+                </View>
               )}
             />
           </View>
