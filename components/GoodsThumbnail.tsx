@@ -44,7 +44,14 @@ const GoodsThumbnail = ({
       <View className="max-w-[150px] pl-1 flex gap-2">
         <View className="overflow-clip flex-row items-center gap-1">
           {/* 카테고리 (ex. 게임, 애니, 연예인 등등) */}
-          <Chip label={category ? category : "기타"} size="sm" className="max-w-[70px]" />
+          <Chip label={category ? category : "기타"} size="sm"
+                className={name ? "max-w-[70px]" : ""}
+                style={
+                  !name
+                    ? { width: `${Math.min((category?.length ?? 2) * 8 + 16, 150)}px` }
+                    : undefined
+                }
+          />
           {/* 아이템 (저장한 상품명 혹은 카테고리 상세정보) */}
           <View className="flex-1">
             <Typography variant="header5" color="primary">
