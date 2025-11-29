@@ -4,6 +4,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet } from "@/components";
+import { LocalImage } from "@components/Image";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
@@ -22,6 +23,11 @@ export default function DetailPagef() {
   const [itemInfo, setItemInfo] = React.useState<TItem>();
 
   const openSheet = activeBottomSheet((state) => state.openSheet);
+
+  const fetchBookmarkList = React.useCallback(async () => {
+    const itemList = await items.getItemsByGachaId(Number(id));
+    setList(itemList);
+  }, [id]);
 
   React.useEffect(() => {
     const fetchGachaData = async () => {
@@ -63,12 +69,7 @@ export default function DetailPagef() {
 
     fetchGachaData();
     logGachaView();
-  }, [navigation, id]);
-
-  const fetchBookmarkList = async () => {
-    const itemList = await items.getItemsByGachaId(Number(id));
-    setList(itemList);
-  };
+  }, [navigation, id, fetchBookmarkList]);
 
   const handleAddGacha = () => {
     openSheet("BOOKMARK");
@@ -96,7 +97,7 @@ export default function DetailPagef() {
         </WiggleBorder>
         {/* 가챠 에니메이션 제목 (없는 경우, 기타) */}
         <View className="flex items-start py-2">
-          <Chip label={gachaData?.meida?.kr_title || "기타"} />
+          <Chip label={gachaData?.media?.kr_title || "기타"} />
         </View>
         {/* 가챠 이름 */}
         <Typography variant="header2" twotone="primary">
@@ -112,11 +113,12 @@ export default function DetailPagef() {
         {list.map((item) => (
           <WiggleBorder key={`gacha-item-${item.id}`} strokeColor="secondary.dark">
             <View className="flex flex-row gap-2 p-2">
-              <View className="w-11 h-11 rounded">
-                <Image
-                  source={{ uri: item.thumbnail || gachaData?.image_link }}
-                  className="w-full h-full"
-                />
+              <View className="w-12 h-12 rounded">
+                {item.thumbnail ? (
+                  <LocalImage assetId={item.thumbnail} width="100%" height="100%" />
+                ) : (
+                  <Image source={{ uri: gachaData?.image_link }} className="w-full h-full" />
+                )}
               </View>
               <View className="flex-1 my-auto">
                 <Typography variant="header5" color="secondary-dark">
