@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, useFocusEffect } from "expo-router";
+import { router, Link, useFocusEffect } from "expo-router";
 
 import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography } from "@components/index";
 import { supabase } from "@utils/supabase";
@@ -64,6 +64,10 @@ export default function MyBookmark() {
     setItemList(mergedList);
   };
 
+  const goToSearch = () => {
+    router.push("/(tabs)/search");
+  };
+
   useFocusEffect(
     useCallback(() => {
       loadFolderList();
@@ -91,7 +95,7 @@ export default function MyBookmark() {
         <Typography variant="header1" color="primary">
           LOGO
         </Typography>
-        <Pressable>
+        <Pressable onPress={goToSearch}>
           <Icon name="search" size={32} fill={colors.primary.DEFAULT} />
         </Pressable>
       </View>
