@@ -6,8 +6,8 @@ import NoImage from "./NoImage";
 
 interface ILocalImageProps {
   assetId?: string;
-  width?: number;
-  height?: number;
+  width?: number | `${number}%`;
+  height?: number | `${number}%`;
 }
 
 const LocalImage = (props: ILocalImageProps) => {
