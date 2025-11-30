@@ -1,88 +1,85 @@
 import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
-
 import images from "@table/images";
 import linkingSettingAlert from "./linkingSettingAlert";
 
-const grantedPermission = async () => {
+/**
+ * 사진 선택 권한 요청
+ */
+const requestImagePermission = async () => {
   try {
-    const initialStatus = await MediaLibrary.getPermissionsAsync();
+    const { status, canAskAgain } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    // 모든 권한이 허용된 경우
-    if (initialStatus.granted && initialStatus.accessPrivileges === "all") {
+    if (status === "granted") {
       return true;
     }
 
-    // 권한이 허용되지 않았고, 다시 물어볼 수 있는 경우
-    if (!initialStatus.granted && initialStatus.canAskAgain) {
-      const { granted } = await MediaLibrary.requestPermissionsAsync();
-      return granted;
+    if (status !== "granted" && canAskAgain) {
+      const retry = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      return retry.status === "granted";
     }
 
-    // '제한된 접근' 권한인 경우
-    if (initialStatus.accessPrivileges === "limited") {
+    if (!canAskAgain) {
       linkingSettingAlert(
-        "'모든 사진' 접근 허용이 필요합니다",
-        "사진을 모두 보려면 설정에서 '모든 사진'으로 권한을 변경해주세요."
+        "권한이 필요합니다",
+        "사진을 선택하려면 설정에서 사진 접근 권한을 허용해야 합니다."
       );
-
-      return false;
-    }
-
-    // 권한이 거부되었고, 다시 물어볼 수 없는 경우
-    if (!initialStatus.granted && !initialStatus.canAskAgain) {
-      linkingSettingAlert(
-        "권한이 거부되었습니다",
-        "사진첩에 접근하려면 앱 설정에서 직접 권한을 허용해야 합니다."
-      );
-
-      return false;
     }
 
     return false;
   } catch (e) {
-    console.error("grantedPermission Error : ", e);
+    console.error("requestImagePermission Error:", e);
+    return false;
   }
 };
 
-const selectImage = async () => {
-  const isGranted = await grantedPermission();
-  let selectedAsset = null;
 
-  if (!isGranted) {
-    console.error("Canntot access to mediaLibray");
-    return selectedAsset;
+/**
+ * 이미지 선택
+ */
+const selectImage = async () => {
+  const granted = await requestImagePermission();
+  if (!granted) {
+    console.error("No image permission");
+    return null;
   }
 
   try {
-    const selectImg = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
     });
 
-    if (!selectImg.canceled) selectedAsset = selectImg.assets[0];
+    if (result.canceled) return null;
+
+    // ImagePicker는 always URI 제공
+    return result.assets[0]; // { uri, width, height, fileName, ... }
   } catch (e) {
-    console.error("selectImage Error : ", e);
-  }
-
-  return selectedAsset;
-};
-
-const saveImage = async (img?: ImagePicker.ImagePickerAsset) => {
-  const selectImg = img || (await selectImage());
-
-  if (!selectImg || !selectImg.assetId) {
+    console.error("selectImage Error:", e);
     return null;
   }
+};
+
+
+/**
+ * 이미지 저장 (MediaLibrary 사용 X)
+ * → 이미지의 URI만 DB에 저장
+ */
+const saveImage = async (img) => {
+  const asset = img || (await selectImage());
+  if (!asset) return null;
 
   try {
-    // 로컬 디비 저장
-    const assetId = selectImg.assetId;
-    await images.create(assetId);
-    return assetId;
+    // MediaLibrary를 쓰지 않으므로 assetId 없음 → uri 저장
+    const uri = asset.uri;
+
+    await images.create(uri);
+
+    return uri;
   } catch (e) {
-    console.error("err", e);
+    console.error("saveImage Error:", e);
     return null;
   }
 };
+
 
 export { selectImage, saveImage };
