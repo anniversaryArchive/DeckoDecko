@@ -6,7 +6,7 @@ import { colors } from "@/utils/tailwind-colors";
 import type { TabPressEvent } from "@react-navigation/native"; // 타입 임포트
 
 const TABS = [
-  { name: "home", title: "홈", icon: "star" },
+  { name: "index", title: "홈", icon: "star" },
   { name: "bookmark", title: "내 굿즈", icon: "folder" },
   { name: "search", title: "검색", icon: "search" },
 ];
