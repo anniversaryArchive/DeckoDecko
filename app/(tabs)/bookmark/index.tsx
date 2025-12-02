@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, View, Clipboard, Alert } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Link, useFocusEffect } from "expo-router";
 
@@ -9,11 +9,8 @@ import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
-
-import type { TGacha } from "@/types/gacha";
-import type { TFolder } from "@/types/folder";
-import type { TBookmarkType } from "@/types/bookmark";
-import type { TItem } from "@/types/item";
+import {TBookmarkType, TItemExtended} from "@/types/bookmark";
+import {TFolder} from "@/types/folder";
 
 export default function MyBookmark() {
   const [bookmarkType, setBookmarkType] = useState<TBookmarkType>("WISH");
@@ -21,7 +18,7 @@ export default function MyBookmark() {
   const [folderList, setFolderList] = useState<Map<number, TFolder>>();
   const [selectedFolder, setSelectedFolder] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [itemList, setItemList] = useState<Array<TItem & { folderName: string; gachaInfo: TGacha }>>([]);
+  const [itemList, setItemList] = useState<TItemExtended[]>([]);
 
   // 폴더 리스트
   const loadFolderList = async () => {
@@ -62,17 +59,17 @@ export default function MyBookmark() {
     const mergedList = filtered.map((item) => {
       const gachaInfo = gachaMap.get(item.gacha_id);
       const folderInfo = folders.get(item.folder_id);
-      return { ...item, folderName: folderInfo?.name ?? "기타", gachaInfo };
+      return { ...item, folderName: folderInfo?.name ?? "기타", gachaInfo: gachaInfo! };
     });
 
     setItemList(mergedList);
   };
 
   // 묶어보기: 동일 gacha_id로 그룹핑, 아이템 개수 추가
-  const getFolderViewData = () => {
+  const getFolderViewData = (): TItemExtended[] => {
     const map = new Map<
       number,
-      { folderName: string; items: Array<TItem & { gachaInfo: TGacha }>; count: number }
+      { folderName: string; items: TItemExtended[]; count: number }
       >();
 
     itemList.forEach((item) => {
@@ -87,7 +84,9 @@ export default function MyBookmark() {
 
     return Array.from(map.values()).map((group) => ({
       ...group.items[0],
+      folderName: group.folderName,
       count: group.count,
+      gachaInfo: group.items[0].gachaInfo,
     }));
   };
 
@@ -221,7 +220,7 @@ export default function MyBookmark() {
                     itemName={item.gachaInfo.name_kr}
                     image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
                   />
-                  {isBundle && (
+                  {isBundle && item.count !== undefined && (
                     <Typography variant="body2" color="primary" className="pl-1">
                       아이템 {item.count}개
                     </Typography>
