@@ -4,9 +4,10 @@ import { colors } from "@utils/tailwind-colors";
 import Icon from "@components/Icon";
 import Typography from "@components/Typography";
 
-const NoImage = (props: { width: number; height: number }) => {
+const NoImage = (props: { width: number | `${number}%`; height: number | `${number}%` }) => {
   const { width, height } = props;
-  const isNeedBigSize = Math.max(width, height) > 200;
+  const isNeedBigSize =
+    typeof width === "number" && typeof height === "number" ? Math.max(width, height) > 200 : false;
 
   return (
     <View
@@ -26,7 +27,7 @@ const NoImage = (props: { width: number; height: number }) => {
         stroke={colors.gray["05"]}
         strokeWidth={3}
       />
-      <Typography variant={isNeedBigSize ? "Header3" : "Header5"} color={"gray-05"}>
+      <Typography variant={isNeedBigSize ? "header3" : "header5"} color={"gray-05"}>
         NO IMAGE
       </Typography>
     </View>

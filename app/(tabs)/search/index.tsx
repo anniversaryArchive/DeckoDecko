@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
-import { View, Alert, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import React, { useRef, useState, useCallback } from "react";
+import { View, FlatList, ScrollView, Alert } from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
 
 import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
 
-import { IGachaItem } from "@/types/search";
-import { Button, Typography, SearchBox, Chip, SimpleSwiper, Spinner } from "@components/index";
+import { Button, Typography, SearchBox, Chip, Spinner, SimpleSwiper } from "@components/index";
+import type { IGachaItem } from "@/types/search";
 
 export default function Index() {
   const router = useRouter();
@@ -14,7 +14,12 @@ export default function Index() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentGoods, setRecentGoods] = useState<IGachaItem[]>([]);
   const [popularGoods, setPopularGoods] = useState<IGachaItem[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const recentSwiperRef = useRef<FlatList<any> | null>(null);
+  const popularSwiperRef = useRef<FlatList<any> | null>(null);
+
+  const [recentResetIndex, setRecentResetIndex] = useState(0);
+  const [popularResetIndex, setPopularResetIndex] = useState(0);
 
   const loadSearches = useCallback(async () => {
     const searches = await searchHistory.getRecentSearches();
@@ -23,7 +28,11 @@ export default function Index() {
 
   const loadRecentGoods = useCallback(async () => {
     const goods = await searchHistory.getRecentGoods();
-    setRecentGoods(goods);
+    setRecentGoods((prev) => {
+      const isSame = JSON.stringify(prev) === JSON.stringify(goods);
+      if (!isSame) setRecentResetIndex(s => s + 1);
+      return goods;
+    });
   }, []);
 
   const loadPopularGoods = useCallback(async () => {
@@ -31,30 +40,34 @@ export default function Index() {
       const { data: topGachaIds, error: countError } = await supabase.rpc("get_top_gacha_views");
       if (countError) throw countError;
 
+      // 직접 받은 데이터 그대로 셋팅, map(find) 제거
+      // gachaIds는 필요한 경우 참고용으로 남김
       const gachaIds = topGachaIds.map((d) => d.gacha_id);
 
       const { data, error } = await supabase
         .from("gacha")
-        .select(
-          `
-        id,
-        name,
-        name_kr,
-        image_link,
-        anime_id,
-        price,
-        anime:anime_id (
-          kr_title
-        )
-      `
-        )
+        .select(`
+          id,
+          name,
+          name_kr,
+          image_link,
+          anime_id,
+          price,
+          anime:anime_id (
+            kr_title
+          )
+        `)
         .in("id", gachaIds);
 
       if (error) throw error;
 
-      const goods = gachaIds.map((id) => data.find((item) => item.id === id));
+      const goods: IGachaItem[] = data ?? [];
 
-      setPopularGoods(goods);
+      setPopularGoods((prev) => {
+        const isSame = JSON.stringify(prev) === JSON.stringify(goods);
+        if (!isSame) setPopularResetIndex(s => s + 1);
+        return goods;
+      });
     } catch (e) {
       console.error("Error loading popular goods", e);
       setPopularGoods([]);
@@ -62,19 +75,12 @@ export default function Index() {
   }, []);
 
   const loadAllData = useCallback(async () => {
-    setLoading(true);
     await Promise.all([loadSearches(), loadRecentGoods(), loadPopularGoods()]);
-    setLoading(false);
   }, [loadSearches, loadRecentGoods, loadPopularGoods]);
-
-  useEffect(() => {
-    loadAllData();
-  }, [loadAllData]);
 
   const handleSearch = async (value: string) => {
     await searchHistory.addRecentSearch(value);
     await loadSearches();
-
     router.push({
       pathname: "/search/search-results",
       params: { searchTerm: value },
@@ -117,19 +123,18 @@ export default function Index() {
   };
 
   const handleNavigateToDetail = (id: number) => {
-    console.log("handleNavigateToDetail");
     router.push(`/detail/${id}`);
   };
 
-  useEffect(() => {
-    loadSearches();
-    loadRecentGoods();
-    loadPopularGoods();
-  }, [loadSearches, loadRecentGoods, loadPopularGoods]);
+  useFocusEffect(
+    useCallback(() => {
+      loadAllData();
+    }, [loadAllData])
+  );
 
   return (
     <View className="flex-1 bg-white">
-      <Spinner visible={loading} />
+      <Spinner visible={false} />
       <View className="ml-2 mr-2">
         <SearchBox
           className="h-16"
@@ -139,7 +144,6 @@ export default function Index() {
         />
       </View>
 
-      {/* 최근 검색어 */}
       <View className="mt-4 mb-4">
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="header4">최근 검색어</Typography>
@@ -186,7 +190,6 @@ export default function Index() {
         )}
       </View>
 
-      {/* 최근 본 굿즈 */}
       <View className="mt-4 mb-4">
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="header4">최근 본 굿즈</Typography>
@@ -203,9 +206,12 @@ export default function Index() {
         </View>
         {recentGoods.length > 0 ? (
           <SimpleSwiper
+            ref={recentSwiperRef}
             data={recentGoods}
             slidesPerView={2.5}
             itemSpacing={12}
+            resetTrigger={recentResetIndex}
+            resetToIndex={0}
             onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
@@ -217,16 +223,18 @@ export default function Index() {
         )}
       </View>
 
-      {/* 인기 굿즈 */}
       <View className="mt-4 mb-4">
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="header4">인기 굿즈</Typography>
         </View>
         {popularGoods.length > 0 ? (
           <SimpleSwiper
+            ref={popularSwiperRef}
             data={popularGoods}
             slidesPerView={2.5}
             itemSpacing={12}
+            resetTrigger={popularResetIndex}
+            resetToIndex={0}
             onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
