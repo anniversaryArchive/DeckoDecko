@@ -1,9 +1,17 @@
 import { useCallback, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, Link, useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 
-import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography, Spinner } from "@components/index";
+import {
+  Button,
+  GoodsThumbnail,
+  Icon,
+  InputBox,
+  Segment,
+  Typography,
+  Spinner,
+} from "@components/index";
 import { supabase } from "@utils/supabase";
 import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
@@ -47,7 +55,9 @@ export default function MyBookmark() {
     try {
       setLoading(true);
       const itemList =
-        selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
+        selectedFolder === 0
+          ? await items.getAll()
+          : await items.getItemsByFolderId(selectedFolder);
       const filteredItemList = itemList.filter((i) => i.type === bookmarkType);
 
       const ids = filteredItemList.map((i) => i.gacha_id);
@@ -101,7 +111,7 @@ export default function MyBookmark() {
   );
 
   return (
-    <View className="flex-1 gap-4 px-6 pt-1">
+    <SafeAreaView edges={["top"]} className="flex-1 gap-4 px-6 pt-1">
       <Spinner visible={loading} />
 
       {/* Header */}
@@ -142,11 +152,15 @@ export default function MyBookmark() {
                 );
               })}
           </ScrollView>
-          <Link href="/bookmark/folder-manage" asChild>
-            <Pressable className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full">
-              <Icon name="folderFill" size={20} />
-            </Pressable>
-          </Link>
+
+          <Pressable
+            className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full"
+            onPress={() => {
+              router.push("/(tabs)/bookmark/folder-manage");
+            }}
+          >
+            <Icon name="folderFill" size={20} />
+          </Pressable>
         </View>
         <InputBox size="md" color="secondary" value={searchTerm} onChangeText={setSearchTerm} />
 
@@ -217,6 +231,6 @@ export default function MyBookmark() {
           </SafeAreaView>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { supabase } from "@/utils/supabase";
 import type { TNotice } from "@/types/notice";
@@ -79,10 +80,7 @@ export default function Home() {
 
         if (popularGachaRes.data?.length) {
           const gachaData = popularGachaRes.data.reduce(
-            (
-              acc: Record<number, { count: number; gacha: IPreviewGacha }>,
-              item: any
-            ) => {
+            (acc: Record<number, { count: number; gacha: IPreviewGacha }>, item: any) => {
               const { gacha_id, gacha } = item;
               if (!acc[gacha_id]) acc[gacha_id] = { count: 0, gacha: gacha as IPreviewGacha };
               acc[gacha_id].count += 1;
@@ -133,7 +131,7 @@ export default function Home() {
   };
 
   return (
-    <View className="flex-1">
+    <SafeAreaView edges={["top"]} className="flex-1">
       <Spinner visible={loading} />
       <View className="flex flex-row justify-between w-full px-4 py-2 bg-white">
         <Typography variant="header1" color="primary">
@@ -203,6 +201,6 @@ export default function Home() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

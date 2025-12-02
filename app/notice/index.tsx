@@ -5,7 +5,7 @@ import { Stack, router } from "expo-router";
 import { Icon, Typography, WiggleDivider } from "@/components";
 
 import { supabase } from "@/utils/supabase";
-import { getColor } from "@/utils/color";
+import { colors } from "@utils/tailwind-colors";
 import { formatYmdHm } from "@/utils/format";
 
 import type { TNotice } from "@/types/notice";
@@ -40,16 +40,13 @@ export default function Notice() {
         options={{
           title: "공지사항",
           headerShown: true,
-          headerTitleStyle: { fontFamily: "DunggeunmisoB", color: getColor("secondary-dark") },
-          contentStyle: { backgroundColor: "white" },
-          headerLeft: () => (
-            <TouchableOpacity className="ml-1.5" onPress={() => router.back()}>
-              <Icon
-                name="back"
-                size={24}
-                fill={getColor("secondary-dark")}
-                stroke={getColor("secondary-dark")}
-              />
+          headerTitleAlign: "center",
+          headerTintColor: colors.secondary.dark,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitleStyle: { fontFamily: "DunggeunmisoB" },
+          headerLeft: ({ tintColor }) => (
+            <TouchableOpacity className="mx-1.5" onPress={() => router.back()}>
+              <Icon name="chevronLeft" size={24} fill={tintColor} stroke={tintColor} />
             </TouchableOpacity>
           ),
         }}
