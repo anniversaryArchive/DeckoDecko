@@ -216,8 +216,8 @@ export default function MyBookmark() {
                 <View>
                   <GoodsThumbnail
                     redirectId={item.gachaInfo.id}
-                    name={isBundle ? "" : item.name}
-                    category={item.gachaInfo.anime ? item.gachaInfo.anime.kr_title : ""}
+                    name={isBundle ? item.gachaInfo.name_kr : item.name}
+                    category={item.folderName}
                     itemName={item.gachaInfo.name_kr}
                     image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
                   />
