@@ -48,11 +48,12 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
 
   const [type, setType] = useState<TBookmarkType>("WISH");
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
-  const [selectedFolder, setSelectFolder] = useState<TFolder>(defaultFolder);
+  const [selectedFolder, setSelectFolder] = useState<TFolder | null>(defaultFolder ?? null);
   const [memo, setMemo] = useState<string>("");
   const [isValid, setIsValid] = useState(true);
 
-  const inputRef = useRef<InputBoxHandle>(null);
+  // useRef 타입에 null 허용 추가
+  const inputRef = useRef<InputBoxHandle | null>(null);
 
   const { sheetStack, openSheet, closeSheet } = activeBottomSheet();
   const isOpen = sheetStack[sheetStack.length - 1] === SHEET_NAME;
@@ -65,7 +66,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
 
   const handleClose = () => {
     setImage(null);
-    setSelectFolder(defaultFolder);
+    setSelectFolder(defaultFolder ?? null);
     setMemo("");
     setIsValid(true);
     setType("WISH");
@@ -83,7 +84,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
       const assetId = image ? await saveImage(image) : itemInfo.thumbnail;
 
       const data: TUpdateItemDTO = {
-        folder_id: selectedFolder.id,
+        folder_id: selectedFolder?.id ?? itemInfo.folder_id,
         type,
         name: itemName as string,
         thumbnail: assetId ?? null,
@@ -101,10 +102,9 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
 
       const assetId = image ? await saveImage(image) : null;
 
-      // DB 양식 정한게 없는거같아서 필요한 것 같은것만 대강 모아놨습니당
       const data: TCreateItemDTO = {
         gacha_id: gachaId,
-        folder_id: selectedFolder.id,
+        folder_id: selectedFolder?.id ?? 0,
         type,
         name: itemName as string,
         thumbnail: assetId ?? null,
@@ -173,19 +173,20 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             {label}
           </Typography>
 
-          <Segment segments={BOOKMARK_TYPE} selectedKey={type} onSelect={setType} />
+          <Segment<TBookmarkType>
+            segments={BOOKMARK_TYPE}
+            selectedKey={type}
+            onSelect={setType}
+          />
           <Pressable
             onPress={pickImage}
             className={`w-[150px] h-[150px] self-center flex items-center justify-center rounded bg-secondary-light `}
           >
             {image ? (
-              // 사용자가 이미지를 선택한 경우 (저장X 선택만 O)
               <Image source={{ uri: image.uri }} className="w-[150px] h-[150px] rounded" />
             ) : itemInfo?.thumbnail ? (
-              // 'edit'모드이면서, 사용자가 저장한 썸네일이 있는 경우
               <LocalImage assetId={itemInfo.thumbnail} width={150} height={150} />
             ) : (
-              // 선택된 이미지 혹은 'edit' 모드의 경우 저장된 썸네일이 없는 경우
               <Icon
                 name="plus"
                 size={44}
@@ -233,7 +234,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
               openSheet("FOLDER");
             }}
           >
-            {selectedFolder.name}
+            {selectedFolder?.name ?? "폴더 선택"}
           </Button>
           <Divider />
           <TextBox

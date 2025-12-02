@@ -11,6 +11,7 @@ import { InputBox } from "@components/Input";
 import Typography from "@components/Typography";
 import Button from "@components/Button";
 import BottomSheet from "./BottomSheet";
+import Spinner from "@/components/Spinner";
 
 import type { TFolder, TFolderPickerMode } from "@/types/folder";
 import type { InputBoxHandle } from "../Input/InputBox";
@@ -57,6 +58,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
   const [mode, setMode] = useState<TFolderPickerMode>(initialMode);
   const [folderList, setFolderList] = useState<TFolder[]>([]);
   const [folderName, setFolderName] = useState<string>(originalFolder ? originalFolder.name : "");
+  const [loading, setLoading] = useState(false);
 
   const inputRef = useRef<InputBoxHandle>(null);
 
@@ -64,14 +66,19 @@ const FolderPicker = (props: TFolderPickerProps) => {
   const isOpen = sheetStack[sheetStack.length - 1] === SHEET_NAME;
 
   const loadFolderList = useCallback(async () => {
-    const folderList = await folder.getAll();
-    setFolderList(folderList);
+    setLoading(true);
+    try {
+      const folderList = await folder.getAll();
+      setFolderList(folderList);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const validateFolderName = (value: string) => {
     if (!value.trim()) return;
 
-    const isExist = folderList.some(({ name }) => name == value);
+    const isExist = folderList.some(({ name }) => name === value);
     if (isExist) {
       return Alert.alert("같은 폴더는 둘이 될 수 없어요!", undefined, [
         {
@@ -132,6 +139,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
 
   return (
     <BottomSheet open={isOpen} onClose={closeSheet}>
+      <Spinner visible={loading} />
       <SafeAreaView edges={["bottom"]} className="flex gap-2">
         <View className="relative h-8">
           <View className="left-4 absolute z-10 w-8">
@@ -172,7 +180,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
             data={folderList}
             className="min-h-72 max-h-96"
             contentContainerClassName="flex gap-1"
-            keyExtractor={(forder) => `${forder.id}`}
+            keyExtractor={(folder) => `${folder.id}`}
             renderItem={({ item }) => (
               <Button
                 size="xl"
