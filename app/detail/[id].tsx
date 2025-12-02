@@ -11,6 +11,7 @@ import {
   Icon,
   BookmarkSheet,
   LocalImage,
+  Spinner
 } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
@@ -28,6 +29,7 @@ export default function DetailPagef() {
   const [gachaData, setGachaData] = React.useState<TGacha | null>(null);
   const [list, setList] = React.useState<TItem[]>([]);
   const [itemInfo, setItemInfo] = React.useState<TItem>();
+  const [loading, setLoading] = React.useState(true);
 
   const openSheet = activeBottomSheet((state) => state.openSheet);
 
@@ -38,6 +40,7 @@ export default function DetailPagef() {
 
   React.useEffect(() => {
     const fetchGachaData = async () => {
+      setLoading(true);
       try {
         // id로 가챠 데이터 조회, media_id가 있으면 media 테이블을 join해서 가져오기
         const { data, error } = await supabase
@@ -56,7 +59,7 @@ export default function DetailPagef() {
 
         if (error || !data) throw error;
         setGachaData(data);
-        fetchBookmarkList();
+        await fetchBookmarkList();
       } catch (err) {
         console.error("🚨 Catch block error:", err);
         navigation.goBack();
@@ -88,6 +91,7 @@ export default function DetailPagef() {
 
   return (
     <SafeAreaView className="relative flex-1 bg-white">
+      <Spinner visible={loading} />
       {/* Header */}
       <View className="flex flex-row items-center justify-between h-12 px-6">
         <Pressable onPress={handleBack}>
