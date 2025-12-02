@@ -5,12 +5,12 @@ import { ImagePickerAsset } from "expo-image-picker";
 
 import { colors } from "@utils/tailwind-colors";
 import { selectImage, saveImage } from "@utils/mediaLibraryService";
-import getChangedValues from "@utils/getChangedValues";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
-import useDefaultFolder from "@/hooks/useDefaultFolder";
+import { BOOKMARK_TYPE } from "@/constants/global";
 import items from "@table/items";
 import folders from "@table/folders";
-import { BOOKMARK_TYPE } from "@/constants/global";
+import getChangedValues from "@utils/getChangedValues";
+import useDefaultFolder from "@/hooks/useDefaultFolder";
 
 import { Divider } from "@components/Divider";
 import { InputBox, TextBox } from "@components/Input";
@@ -77,17 +77,17 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
   const handleSubmit = async () => {
     if (itemInfo) {
       // 수정
-      const itemName = inputRef.current?.getValue() ?? itemInfo?.name;
+      const itemName = inputRef.current?.getValue() || itemInfo?.name;
       if (!validate(itemName)) return;
 
-      const assetId = image ? await saveImage(image) : null;
+      const assetId = image ? await saveImage(image) : itemInfo.thumbnail;
 
       const data: TUpdateItemDTO = {
         folder_id: selectedFolder.id,
         type,
         name: itemName as string,
         thumbnail: assetId ?? null,
-        memo: (memo?.trim() && memo) ?? null,
+        memo: (memo?.trim() && memo) || null,
       };
 
       const updateData = getChangedValues(itemInfo, data);
@@ -108,7 +108,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
         type,
         name: itemName as string,
         thumbnail: assetId ?? null,
-        memo: (memo?.trim() && memo) ?? null,
+        memo: (memo?.trim() && memo) || null,
       };
 
       await items.create(data);
@@ -155,6 +155,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
     const setEditInfo = async (itemInfo: TItem) => {
       setType(itemInfo.type);
       itemInfo.memo && setMemo(itemInfo.memo);
+
       const originalFolder = await folders.getFolderById(itemInfo.folder_id);
       if (originalFolder) setSelectFolder(originalFolder);
     };
@@ -196,7 +197,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
           <InputBox
             size="lg"
             ref={inputRef}
-            defaultValue={itemInfo?.name}
+            defaultValue={itemInfo && itemInfo.name}
             onSubmit={handleSubmit}
             onChangeText={checkDuplicateInSQLite}
             placeholder="아이템 이름을 입력해주세요"
@@ -244,7 +245,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             placeholder="메모"
             className="min-h-28"
           />
-          <View className="flex flex-row mt-20 gap-2">
+          <View className="flex flex-row gap-2 mt-20">
             <View className="flex-1">
               <Button
                 size="xl"
