@@ -3,8 +3,15 @@ import { View, ScrollView, Image, Pressable, TouchableOpacity } from "react-nati
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet } from "@/components";
-import { LocalImage } from "@components/Image";
+import {
+  WiggleBorder,
+  WiggleDivider,
+  Chip,
+  Typography,
+  Icon,
+  BookmarkSheet,
+  LocalImage,
+} from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
