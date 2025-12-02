@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, FlatList, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { SearchBox, Typography, Spinner } from "@/components"; // Spinner 추가 임포트
+import { SearchBox, Typography, Spinner } from "@/components";
 import GoodsThumbnail from "@/components/GoodsThumbnail";
 import * as searchHistory from "@utils/searchHistory";
 import type { IGachaItem } from "@/types/search";
@@ -17,7 +17,7 @@ export default function SearchResults() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(false); // 전체 로딩 상태 추가
+  const [loading, setLoading] = useState(false);
 
   const numColumns = 2; // 필요한 컬럼 수 설정
 

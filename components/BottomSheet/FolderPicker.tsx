@@ -11,7 +11,7 @@ import { InputBox } from "@components/Input";
 import Typography from "@components/Typography";
 import Button from "@components/Button";
 import BottomSheet from "./BottomSheet";
-import Spinner from "@/components/Spinner"; // 스피너 임포트
+import Spinner from "@/components/Spinner";
 
 import type { TFolder, TFolderPickerMode } from "@/types/folder";
 import type { InputBoxHandle } from "../Input/InputBox";
@@ -58,7 +58,7 @@ const FolderPicker = (props: TFolderPickerProps) => {
   const [mode, setMode] = useState<TFolderPickerMode>(initialMode);
   const [folderList, setFolderList] = useState<TFolder[]>([]);
   const [folderName, setFolderName] = useState<string>(originalFolder ? originalFolder.name : "");
-  const [loading, setLoading] = useState(false); // 로딩 상태 추가
+  const [loading, setLoading] = useState(false);
 
   const inputRef = useRef<InputBoxHandle>(null);
 
