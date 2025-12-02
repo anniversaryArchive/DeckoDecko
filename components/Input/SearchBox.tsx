@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Alert, Pressable, View } from "react-native";
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import { colors } from "@utils/tailwind-colors";
 import Icon from "@components/Icon";
 import InputBox, { InputBoxHandle } from "./InputBox";
@@ -31,7 +31,7 @@ const SearchBox = (props: ISearchBoxProps) => {
     onChangeText,
     ...options
   } = props;
-  const navigation = useNavigation();
+  const router = useRouter();
   const inputRef = useRef<InputBoxHandle>(null);
 
   const handleSubmit = () => {
@@ -48,9 +48,9 @@ const SearchBox = (props: ISearchBoxProps) => {
     <View className={`flex flex-row w-full items-center gap-3 ${className}`}>
       <Pressable
         onPress={() => {
-          navigation.goBack();
+          router.back();
         }}
-        disabled={!navigation.canGoBack()}
+        disabled={!router.canGoBack()}
       >
         <Icon
           name="chevronLeft"
@@ -73,12 +73,7 @@ const SearchBox = (props: ISearchBoxProps) => {
         />
       </View>
       <Pressable onPress={handleSubmit}>
-        <Icon
-          name="search"
-          size={24}
-          fill={searchBoxTheme[color]}
-          stroke={searchBoxTheme[color]}
-        />
+        <Icon name="search" size={24} fill={searchBoxTheme[color]} stroke={searchBoxTheme[color]} />
       </Pressable>
     </View>
   );
