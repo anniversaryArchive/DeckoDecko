@@ -3,14 +3,14 @@ import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Link, useFocusEffect } from "expo-router";
 
-import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography } from "@components/index";
+import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography, Spinner } from "@components/index";
 import { supabase } from "@utils/supabase";
 import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
-import {TBookmarkType, TItemExtended} from "@/types/bookmark";
-import {TFolder} from "@/types/folder";
+import { TBookmarkType, TItemExtended } from "@/types/bookmark";
+import { TFolder } from "@/types/folder";
 
 export default function MyBookmark() {
   const [bookmarkType, setBookmarkType] = useState<TBookmarkType>("WISH");
@@ -19,6 +19,7 @@ export default function MyBookmark() {
   const [selectedFolder, setSelectedFolder] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [itemList, setItemList] = useState<TItemExtended[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // 폴더 리스트
   const loadFolderList = async () => {
@@ -34,14 +35,18 @@ export default function MyBookmark() {
 
   // 아이템 리스트
   const loadBookmarkItems = async () => {
-    const folders = folderList ?? new Map<number, TFolder>();
-    const itemsData =
-      selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
-    const filtered = itemsData.filter((i) => i.type === bookmarkType);
+    setLoading(true);
+    try {
+      const folders = folderList ?? new Map<number, TFolder>();
+      const itemsData =
+        selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
+      const filtered = itemsData.filter((i) => i.type === bookmarkType);
 
-    const ids = filtered.map((i) => i.gacha_id);
-    const { data: gachaData, error } = await supabase.from("gacha").select(
-      `
+      const ids = filtered.map((i) => i.gacha_id);
+      const { data: gachaData, error } = await supabase
+        .from("gacha")
+        .select(
+          `
         id,
         name,
         name_kr,
@@ -52,17 +57,21 @@ export default function MyBookmark() {
           kr_title
         )
       `
-    ).in("id", ids);
-    if (error) throw error;
+        )
+        .in("id", ids);
+      if (error) throw error;
 
-    const gachaMap = new Map(gachaData.map((g) => [g.id, g]));
-    const mergedList = filtered.map((item) => {
-      const gachaInfo = gachaMap.get(item.gacha_id);
-      const folderInfo = folders.get(item.folder_id);
-      return { ...item, folderName: folderInfo?.name ?? "기타", gachaInfo: gachaInfo! };
-    });
+      const gachaMap = new Map(gachaData.map((g) => [g.id, g]));
+      const mergedList = filtered.map((item) => {
+        const gachaInfo = gachaMap.get(item.gacha_id);
+        const folderInfo = folders.get(item.folder_id);
+        return { ...item, folderName: folderInfo?.name ?? "기타", gachaInfo: gachaInfo! };
+      });
 
-    setItemList(mergedList);
+      setItemList(mergedList);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 묶어보기: 동일 gacha_id로 그룹핑, 아이템 개수 추가
@@ -91,9 +100,10 @@ export default function MyBookmark() {
   };
 
   // 필터링 처리
-  const filteredItemList = itemList.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredItemList = itemList.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const filteredFolderViewData = getFolderViewData().filter((item) =>
     item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
@@ -123,6 +133,7 @@ export default function MyBookmark() {
 
   return (
     <View className="flex-1 gap-4 px-6 pt-1">
+      <Spinner visible={loading} />
       {/* Header */}
       <View className="flex flex-row items-center justify-between">
         <Typography variant="header1" color="primary">
@@ -139,7 +150,7 @@ export default function MyBookmark() {
         selectedKey={bookmarkType}
         onSelect={(key) => {
           setBookmarkType(key);
-          setSelectedFolder(0);  // 선택 폴더를 "전체"로 옮기기
+          setSelectedFolder(0); // 선택 폴더를 "전체"로 옮기기
         }}
       />
 
@@ -218,7 +229,9 @@ export default function MyBookmark() {
                     name={isBundle ? item.gachaInfo.name_kr : item.name}
                     category={item.folderName}
                     itemName={item.gachaInfo.name_kr}
-                    image={isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link}
+                    image={
+                      isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link
+                    }
                   />
                   {isBundle && item.count !== undefined && (
                     <Typography variant="body2" color="primary" className="pl-1">
