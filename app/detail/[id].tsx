@@ -11,7 +11,7 @@ import {
   Icon,
   BookmarkSheet,
   LocalImage,
-  Spinner
+  Spinner,
 } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
@@ -63,6 +63,8 @@ export default function DetailPagef() {
       } catch (err) {
         console.error("🚨 Catch block error:", err);
         navigation.goBack();
+      } finally {
+        setLoading(false);
       }
     };
 
