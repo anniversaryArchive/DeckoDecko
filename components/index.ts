@@ -14,6 +14,7 @@ import NoticeItem from "./Notice/NoticeItem";
 import { LocalImage, NoImage } from "./Image";
 import { Divider, WiggleDivider } from "./Divider";
 import Spinner from "./Spinner";
+import Header from "./Header";
 
 export {
   Typography,
@@ -39,5 +40,6 @@ export {
   LocalImage,
   NoImage,
   NoticeItem,
-  Spinner
+  Spinner,
+  Header,
 };
