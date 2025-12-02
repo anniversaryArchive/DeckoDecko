@@ -81,11 +81,6 @@ export default function DetailPagef() {
     searchHistory.addRecentGoodsId(Number(id));
   }, [navigation, id]);
 
-  const fetchBookmarkList = async () => {
-    const itemList = await items.getItemsByGachaId(Number(id));
-    setList(itemList);
-  };
-
   const handleAddGacha = () => {
     openSheet("BOOKMARK");
   };
