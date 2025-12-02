@@ -19,6 +19,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      backBehavior="history"
       screenOptions={{
         tabBarLabelStyle: { fontFamily: "DunggeunmisoB", fontSize: 12 },
         tabBarActiveTintColor: colors.primary.DEFAULT,
