@@ -172,7 +172,6 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             {label}
           </Typography>
 
-          {/* 제네릭 TBookmarkType 명시해서 타입 일치하도록 처리 */}
           <Segment<TBookmarkType>
             segments={BOOKMARK_TYPE}
             selectedKey={type}

@@ -3,7 +3,7 @@ import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Link, useFocusEffect } from "expo-router";
 
-import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography } from "@components/index";
+import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography, Spinner } from "@components/index";
 import { supabase } from "@utils/supabase";
 import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
@@ -25,43 +25,55 @@ export default function MyBookmark() {
     Array<TItem & { folderName: string; gachaInfo: TGacha }>
   >([]);
 
+  const [loading, setLoading] = useState(false);
+
   const loadFolderList = async () => {
-    const folderList = await folder.getAll();
-    setFolderList(
-      new Map(
-        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderList].map(
-          (folder) => [folder.id, folder]
+    try {
+      setLoading(true);
+      const folderList = await folder.getAll();
+      setFolderList(
+        new Map(
+          [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderList].map(
+            (folder) => [folder.id, folder]
+          )
         )
-      )
-    );
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadBookmarkItems = async () => {
-    const itemList =
-      selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
-    const filteredItemList = itemList.filter((i) => i.type === bookmarkType);
+    try {
+      setLoading(true);
+      const itemList =
+        selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
+      const filteredItemList = itemList.filter((i) => i.type === bookmarkType);
 
-    const ids = filteredItemList.map((i) => i.gacha_id);
+      const ids = filteredItemList.map((i) => i.gacha_id);
 
-    const { data: gachaData, error: supabaseError } = await supabase
-      .from("gacha")
-      .select("*")
-      .in("id", ids);
+      const { data: gachaData, error: supabaseError } = await supabase
+        .from("gacha")
+        .select("*")
+        .in("id", ids);
 
-    if (supabaseError) {
-      throw supabaseError; // 에러가 발생하면 catch 블록으로 던지기
+      if (supabaseError) {
+        throw supabaseError; // 에러가 발생하면 catch 블록으로 던지기
+      }
+
+      const gachaDataMap = new Map(gachaData.map((gacha) => [gacha.id, gacha]));
+
+      const mergedList = filteredItemList.map((item) => {
+        const gachaInfo = gachaDataMap.get(item.gacha_id);
+        const folderInfo = folderList!.get(item.folder_id);
+
+        return { ...item, folderName: folderInfo?.name as string, gachaInfo };
+      });
+
+      setItemList(mergedList);
+    } finally {
+      setLoading(false);
     }
-
-    const gachaDataMap = new Map(gachaData.map((gacha) => [gacha.id, gacha]));
-
-    const mergedList = filteredItemList.map((item) => {
-      const gachaInfo = gachaDataMap.get(item.gacha_id);
-      const folderInfo = folderList!.get(item.folder_id);
-
-      return { ...item, folderName: folderInfo?.name as string, gachaInfo };
-    });
-
-    setItemList(mergedList);
   };
 
   const goToSearch = () => {
@@ -90,6 +102,8 @@ export default function MyBookmark() {
 
   return (
     <View className="flex-1 gap-4 px-6 pt-1">
+      <Spinner visible={loading} />
+
       {/* Header */}
       <View className="flex flex-row items-center justify-between">
         <Typography variant="header1" color="primary">

@@ -3,7 +3,7 @@ import { View, ScrollView, Image, Pressable, TouchableOpacity } from "react-nati
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet } from "@/components";
+import { WiggleBorder, WiggleDivider, Chip, Typography, Icon, BookmarkSheet, Spinner } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
@@ -20,11 +20,13 @@ export default function DetailPagef() {
   const [gachaData, setGachaData] = React.useState<TGacha | null>(null);
   const [list, setList] = React.useState<TItem[]>([]);
   const [itemInfo, setItemInfo] = React.useState<TItem>();
+  const [loading, setLoading] = React.useState(true);
 
   const openSheet = activeBottomSheet((state) => state.openSheet);
 
   React.useEffect(() => {
     const fetchGachaData = async () => {
+      setLoading(true);
       try {
         // id로 가챠 데이터 조회, media_id가 있으면 media 테이블을 join해서 가져오기
         const { data, error } = await supabase
@@ -43,11 +45,12 @@ export default function DetailPagef() {
 
         if (error || !data) throw error;
         setGachaData(data);
-        fetchBookmarkList();
+        await fetchBookmarkList();
       } catch (err) {
         console.error("🚨 Catch block error:", err);
         navigation.goBack();
       }
+      setLoading(false);
     };
 
     // 가챠 상세 조회 로그 기록
@@ -80,6 +83,7 @@ export default function DetailPagef() {
 
   return (
     <SafeAreaView className="relative flex-1 bg-white">
+      <Spinner visible={loading} />
       {/* Header */}
       <View className="flex flex-row items-center justify-between h-12 px-6">
         <Pressable onPress={handleBack}>
@@ -96,7 +100,7 @@ export default function DetailPagef() {
         </WiggleBorder>
         {/* 가챠 에니메이션 제목 (없는 경우, 기타) */}
         <View className="flex items-start py-2">
-          <Chip label={gachaData?.meida?.kr_title || "기타"} />
+          <Chip label={gachaData?.media?.kr_title || "기타"} />
         </View>
         {/* 가챠 이름 */}
         <Typography variant="header2" twotone="primary">

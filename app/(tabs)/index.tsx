@@ -13,6 +13,7 @@ import {
   Icon,
   ProgressBar,
   NoticeItem,
+  Spinner,
 } from "@/components";
 import items from "@table/items";
 
@@ -29,30 +30,22 @@ export default function Home() {
   const [popularGachaList, setPopularGachaList] = useState<IPreviewGacha[]>([]);
   const [noticeList, setNoticeList] = useState<TNotice[]>([]);
   const [possessionRate, setPossessionRate] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 최근에 새로 추가된 가챠 5개 조회
-    const fetchNewGachaData = async () => {
+    const loadAllData = async () => {
+      setLoading(true);
       try {
-        const { data } = await supabase
+        const fetchNewGachaData = supabase
           .from("gacha")
           .select("id, imageLink:image_link, mediaId:media_id")
           .order("created_at", { ascending: false })
           .limit(LIMIT_COUNT);
-        if (!data?.length) throw new Error("No data");
-        setNewGachaList(data as unknown as IPreviewGacha[]);
-      } catch (error) {
-        console.error("❌ 새로 나왔어요! 가챠 데이터 조회 실패 : ", error);
-      }
-    };
 
-    // 최근 10일 동안 많이 본 가챠 상위 5개 조회
-    const fetchPopularGachaData = async () => {
-      try {
         const tenDaysAgo = new Date();
         tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
 
-        const { data } = await supabase
+        const fetchPopularGachaData = supabase
           .from("gacha_view_log")
           .select(
             `
@@ -67,58 +60,60 @@ export default function Home() {
           .gte("created_at", tenDaysAgo.toISOString())
           .order("created_at", { ascending: false });
 
-        if (!data?.length) return;
-
-        const gachaData = data.reduce(
-          (acc: Record<number, { count: number; gacha: IPreviewGacha }>, item: any) => {
-            const { gacha_id, gacha } = item;
-            if (!acc[gacha_id]) acc[gacha_id] = { count: 0, gacha: gacha as IPreviewGacha };
-            acc[gacha_id].count += 1;
-            return acc;
-          },
-          {}
-        );
-        const list = Object.values(gachaData)
-          .sort((a, b) => b.count - a.count)
-          .map((item) => item.gacha)
-          .slice(0, LIMIT_COUNT);
-        setPopularGachaList(list);
-      } catch (error) {
-        console.error("❌ 인기 가챠 데이터 조회 실패:", error);
-      }
-    };
-
-    // 공지사항 데이터 2개 조회
-    const fetchNoticeData = async () => {
-      try {
-        const { data } = await supabase
+        const fetchNoticeData = supabase
           .from("notice")
           .select("*")
           .order("is_fixed", { ascending: false })
           .order("created_at", { ascending: false })
           .limit(2);
-        setNoticeList(data || []);
+
+        const [newGachaRes, popularGachaRes, noticeRes] = await Promise.all([
+          fetchNewGachaData,
+          fetchPopularGachaData,
+          fetchNoticeData,
+        ]);
+
+        if (newGachaRes.data?.length) {
+          setNewGachaList(newGachaRes.data as unknown as IPreviewGacha[]);
+        }
+
+        if (popularGachaRes.data?.length) {
+          const gachaData = popularGachaRes.data.reduce(
+            (
+              acc: Record<number, { count: number; gacha: IPreviewGacha }>,
+              item: any
+            ) => {
+              const { gacha_id, gacha } = item;
+              if (!acc[gacha_id]) acc[gacha_id] = { count: 0, gacha: gacha as IPreviewGacha };
+              acc[gacha_id].count += 1;
+              return acc;
+            },
+            {}
+          );
+          const list = Object.values(gachaData)
+            .sort((a, b) => b.count - a.count)
+            .map((item) => item.gacha)
+            .slice(0, LIMIT_COUNT);
+          setPopularGachaList(list);
+        }
+
+        setNoticeList(noticeRes.data || []);
+
+        try {
+          const myItems = await items.getAll();
+          const getCount = myItems.filter(({ type }) => type === "GET").length;
+          const allCount = myItems.length;
+          setPossessionRate(getCount === 0 ? 0 : Math.floor((getCount / allCount) * 100));
+        } catch (error) {
+          console.error("❌ Wish/Get 아이템 조회 실패 : ", error);
+        }
       } catch (error) {
-        console.error("❌ 공지사항 데이터 조회 실패:", error);
+        console.error("❌ 데이터를 불러오는 중 에러 발생 : ", error);
       }
+      setLoading(false);
     };
 
-    // Wish/Get 아이템 조회 - 소장률 계산
-    const getAllMyItems = async () => {
-      try {
-        const myItems = await items.getAll();
-        const getCount = myItems.filter(({ type }) => type === "GET").length;
-        const allCount = myItems.length;
-        setPossessionRate(getCount === 0 ? 0 : Math.floor((getCount / allCount) * 100));
-      } catch (error) {
-        console.error("❌ Wish/Get 아이템 조회 실패 : ", error);
-      }
-    };
-
-    fetchNewGachaData();
-    fetchPopularGachaData();
-    fetchNoticeData();
-    getAllMyItems();
+    loadAllData();
   }, []);
 
   const handleNavigateToDetail = (id: number) => {
@@ -139,6 +134,7 @@ export default function Home() {
 
   return (
     <View className="flex-1">
+      <Spinner visible={loading} />
       <View className="flex flex-row justify-between w-full px-4 py-2 bg-white">
         <Typography variant="header1" color="primary">
           LOGO
