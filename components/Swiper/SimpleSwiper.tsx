@@ -13,7 +13,7 @@ interface SimpleSwiperProps {
 }
 
 // ref 전달받아 내부 FlatList 인스턴스에 접근 가능
-const SimpleSwiper = forwardRef<FlatList, SimpleSwiperProps>(({
+const SimpleSwiper = React.memo(forwardRef<FlatList, SimpleSwiperProps>(({
   data,
   onSlidePress,
   slidesPerView = 2.5,
@@ -24,6 +24,8 @@ const SimpleSwiper = forwardRef<FlatList, SimpleSwiperProps>(({
   const [screenWidth, setScreenWidth] = useState(Dimensions.get("window").width);
   const flatListRef = useRef<FlatList>(null);
   const [hasLayout, setHasLayout] = useState(false);
+  // 초기 스크롤 실행 여부 상태 추가
+  const [didInitScroll, setDidInitScroll] = useState(false);
 
   useImperativeHandle(ref, () => flatListRef.current as FlatList);
 
@@ -31,6 +33,7 @@ const SimpleSwiper = forwardRef<FlatList, SimpleSwiperProps>(({
     const onChange = ({ window }: { window: { width: number } }) => {
       setScreenWidth(window.width);
       setHasLayout(false);
+      setDidInitScroll(false); // 화면 크기 변경 시 스크롤 상태 초기화
     };
     const subscription = Dimensions.addEventListener("change", onChange);
     return () => subscription.remove();
@@ -38,15 +41,18 @@ const SimpleSwiper = forwardRef<FlatList, SimpleSwiperProps>(({
 
   const itemWidth = screenWidth / slidesPerView;
 
+  // 리셋 트리거 발동 시 특정 인덱스로 이동하는 로직
   useEffect(() => {
-    if (!hasLayout || resetTrigger == null) return;
+    // 레이아웃이 없거나, 트리거가 없거나, 이미 초기 스크롤을 했다면 실행하지 않음
+    if (!hasLayout || resetTrigger == null || didInitScroll) return;
 
     const offset = resetToIndex * (itemWidth + itemSpacing);
     flatListRef.current?.scrollToOffset({
       offset,
       animated: false,
     });
-  }, [resetTrigger, resetToIndex, itemWidth, hasLayout, itemSpacing]);
+    setDidInitScroll(true); // 스크롤 실행 완료 표시
+  }, [resetTrigger, resetToIndex, itemWidth, hasLayout, itemSpacing, didInitScroll]);
 
   const renderItem = useCallback(
     ({ item, index }: ListRenderItemInfo<IGachaItem>) => (
@@ -72,6 +78,7 @@ const SimpleSwiper = forwardRef<FlatList, SimpleSwiperProps>(({
 
   const handleLayout = (e: LayoutChangeEvent) => {
     setHasLayout(true);
+    setDidInitScroll(false); // 레이아웃 변경 시 스크롤 상태 초기화 (필요에 따라 제거 가능)
   };
 
   return (
@@ -89,6 +96,6 @@ const SimpleSwiper = forwardRef<FlatList, SimpleSwiperProps>(({
       />
     </View>
   );
-});
+}));
 
 export default SimpleSwiper;
