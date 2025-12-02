@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, FlatList, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { SearchBox, Typography } from "@/components";
+import { SearchBox, Typography, Spinner } from "@/components";
 import GoodsThumbnail from "@/components/GoodsThumbnail";
 import * as searchHistory from "@utils/searchHistory";
 import type { IGachaItem } from "@/types/search";
@@ -17,6 +17,7 @@ export default function SearchResults() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const numColumns = 2; // 필요한 컬럼 수 설정
 
@@ -29,7 +30,6 @@ export default function SearchResults() {
 
       const newItems = result?.items ?? [];
 
-      // hasMore 판단과 알림을 setData 바깥에서 처리
       if (newItems.length < LIMIT) {
         setHasMore(false);
         if (newItems.length === 0 && offset > 0) {
@@ -55,6 +55,7 @@ export default function SearchResults() {
   const handleSearch = async (value: string) => {
     setSearchValue(value);
     setOffset(0);
+    setLoading(true);
 
     try {
       const result = await searchHistory.searchGachaAndAnimeByName(value, LIMIT, 0);
@@ -71,6 +72,8 @@ export default function SearchResults() {
       setOffset(0);
       setHasMore(false);
       setTotalCount(0);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,58 +104,62 @@ export default function SearchResults() {
         />
       </View>
 
-      <FlatList<IGachaItem>
-        numColumns={numColumns}
-        data={data}
-        keyExtractor={(item, index) => `${item.id}_${index}`}
-        columnWrapperStyle={
-          numColumns > 1
-            ? {
+      {loading ? (
+        <Spinner visible={true} />
+      ) : (
+        <FlatList<IGachaItem>
+          numColumns={numColumns}
+          data={data}
+          keyExtractor={(item, index) => `${item.id}_${index}`}
+          columnWrapperStyle={
+            numColumns > 1
+              ? {
                 justifyContent: "space-between",
                 paddingHorizontal: 25,
                 marginTop: 10,
                 marginBottom: 10,
               }
-            : undefined
-        }
-        renderItem={renderItem}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.3}
-        ListHeaderComponent={() => (
-          <View>
-            <View className="flex-row items-center mt-2 mb-1 ml-4">
-              <Typography variant="header4" color="secondary-dark" className="mr-1">
-                검색 결과
-              </Typography>
-              <Typography variant="header4" color="primary">
-                {totalCount}
-              </Typography>
-              <Typography variant="header4" color="secondary-dark" className="ml-1">
-                개
-              </Typography>
+              : undefined
+          }
+          renderItem={renderItem}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.3}
+          ListHeaderComponent={() => (
+            <View>
+              <View className="flex-row items-center mt-2 mb-1 ml-4">
+                <Typography variant="header4" color="secondary-dark" className="mr-1">
+                  검색 결과
+                </Typography>
+                <Typography variant="header4" color="primary">
+                  {totalCount}
+                </Typography>
+                <Typography variant="header4" color="secondary-dark" className="ml-1">
+                  개
+                </Typography>
+              </View>
+              <View className="border-t border-[#D2D2D2] mt-2 mx-5" />
             </View>
-            <View className="border-t border-[#D2D2D2] mt-2 mx-5" />
-          </View>
-        )}
-        ListFooterComponent={() =>
-          loadingMore ? (
-            <View className="items-center px-5 py-4">
-              <Typography variant="body2" color="secondary-dark">
-                불러오는 중...
-              </Typography>
-            </View>
-          ) : null
-        }
-        ListEmptyComponent={() =>
-          !loadingMore ? (
-            <View className="h-11 items-center justify-center mx-4">
-              <Typography variant="body2" color="secondary-dark">
-                검색 결과가 없습니다.
-              </Typography>
-            </View>
-          ) : null
-        }
-      />
+          )}
+          ListFooterComponent={() =>
+            loadingMore ? (
+              <View className="items-center px-5 py-4">
+                <Typography variant="body2" color="secondary-dark">
+                  불러오는 중...
+                </Typography>
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={() =>
+            !loadingMore ? (
+              <View className="h-11 items-center justify-center mx-4">
+                <Typography variant="body2" color="secondary-dark">
+                  검색 결과가 없습니다.
+                </Typography>
+              </View>
+            ) : null
+          }
+        />
+      )}
     </View>
   );
 }

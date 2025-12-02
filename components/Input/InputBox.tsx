@@ -16,7 +16,7 @@ interface IInputBoxProps extends TextInputProps {
   wiggleBorder?: boolean;
   value?: string; // 추가됨
   errorMsg?: string;
-  status?: "error";
+  status?: "error" | undefined;
 }
 
 export interface InputBoxHandle {
