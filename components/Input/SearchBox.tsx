@@ -45,37 +45,30 @@ const SearchBox = (props: ISearchBoxProps) => {
   };
 
   return (
-    <View className={`flex flex-row w-full items-center gap-3 ${className}`}>
+    <View className={`flex flex-row items-center justify-center gap-2 ${className}`}>
       <Pressable
         onPress={() => {
           navigation.goBack();
         }}
         disabled={!navigation.canGoBack()}
       >
-        <Icon
-          name="chevronLeft"
-          size={24}
-          fill={searchBoxTheme[color]}
-          stroke={searchBoxTheme[color]}
-        />
+        <Icon name="chevronLeft" size={20} fill={searchBoxTheme[color]} />
       </Pressable>
-      <View className={`grow`}>
-        <InputBox
-          wiggleBorder
-          ref={inputRef}
-          value={value}
-          onChangeText={onChangeText}
-          onSubmit={handleSubmit}
-          placeholder={placeholder}
-          className="text-[16px]"
-          color={color}
-          {...options}
-        />
-      </View>
+      <InputBox
+        wiggleBorder
+        ref={inputRef}
+        value={value}
+        onChangeText={onChangeText}
+        onSubmit={handleSubmit}
+        placeholder={placeholder}
+        className="text-[16px]"
+        color={color}
+        {...options}
+      />
       <Pressable onPress={handleSubmit}>
         <Icon
-          name="search"
-          size={24}
+          name="bigHeadSearch"
+          size={20}
           fill={searchBoxTheme[color]}
           stroke={searchBoxTheme[color]}
         />

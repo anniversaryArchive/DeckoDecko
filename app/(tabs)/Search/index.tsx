@@ -4,9 +4,9 @@ import { useRouter } from "expo-router";
 
 import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
-
-import { IGachaItem } from "@/types/search";
 import { Button, Typography, SearchBox, Chip, SimpleSwiper, Spinner } from "@components/index";
+
+import type { IGachaItem } from "@/types/search";
 
 export default function Index() {
   const router = useRouter();
@@ -128,9 +128,9 @@ export default function Index() {
   }, [loadSearches, loadRecentGoods, loadPopularGoods]);
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 gap-4 mt-1">
       <Spinner visible={loading} />
-      <View className="ml-2 mr-2">
+      <View className="px-6">
         <SearchBox
           className="h-16"
           value={searchValue}
@@ -139,103 +139,105 @@ export default function Index() {
         />
       </View>
 
-      {/* 최근 검색어 */}
-      <View className="mt-4 mb-4">
-        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
-          <Typography variant="header4">최근 검색어</Typography>
-          {recentSearches.length > 0 && (
-            <Button
-              variant="text"
-              size="md"
-              color="secondary-dark"
-              onPress={handleClearRecentSearches}
+      <View className="flex gap-8">
+        {/* 최근 검색어 */}
+        <View className="flex gap-2">
+          <View className="flex flex-row items-center justify-between mx-6">
+            <Typography variant="header4">최근 검색어</Typography>
+            {recentSearches.length > 0 && (
+              <Button
+                variant="text"
+                size="md"
+                color="secondary-dark"
+                onPress={handleClearRecentSearches}
+              >
+                전체 삭제
+              </Button>
+            )}
+          </View>
+          {recentSearches.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="gap-2.5 items-center min-h-11 ml-6"
             >
-              전체 삭제
-            </Button>
+              {recentSearches.map((term, index) => {
+                const isLast = index === recentSearches.length - 1;
+                return (
+                  <Chip
+                    key={`${term}_${index}`}
+                    size="lg"
+                    color="secondary-light"
+                    label={term}
+                    rounded
+                    bold={false}
+                    onClick={() => handleSearch(term)}
+                    onDelete={() => handleRemoveSearches(term)}
+                    className={isLast ? "mr-6" : ""}
+                  />
+                );
+              })}
+            </ScrollView>
+          ) : (
+            <View className="h-11 items-center justify-center">
+              <Typography variant="body2" color="secondary-dark">
+                최근 검색어가 없습니다.
+              </Typography>
+            </View>
           )}
         </View>
-        {recentSearches.length > 0 ? (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="gap-2 items-center min-h-11 ml-4"
-          >
-            {recentSearches.map((term, index) => {
-              const isLast = index === recentSearches.length - 1;
-              return (
-                <Chip
-                  key={`${term}_${index}`}
-                  size="lg"
-                  color="secondary-light"
-                  label={term}
-                  rounded
-                  bold={false}
-                  onClick={() => handleSearch(term)}
-                  onDelete={() => handleRemoveSearches(term)}
-                  className={isLast ? "mr-4" : ""}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : (
-          <View className="h-11 items-center justify-center">
-            <Typography variant="body2" color="secondary-dark">
-              최근 검색어가 없습니다.
-            </Typography>
-          </View>
-        )}
-      </View>
 
-      {/* 최근 본 굿즈 */}
-      <View className="mt-4 mb-4">
-        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
-          <Typography variant="header4">최근 본 굿즈</Typography>
-          {recentGoods.length > 0 && (
-            <Button
-              variant="text"
-              size="md"
-              color="secondary-dark"
-              onPress={handleClearRecentGoods}
-            >
-              전체 삭제
-            </Button>
+        {/* 최근 본 굿즈 */}
+        <View className="flex gap-2">
+          <View className="flex flex-row items-center justify-between mx-6">
+            <Typography variant="header4">최근 본 굿즈</Typography>
+            {recentGoods.length > 0 && (
+              <Button
+                variant="text"
+                size="md"
+                color="secondary-dark"
+                onPress={handleClearRecentGoods}
+              >
+                전체 삭제
+              </Button>
+            )}
+          </View>
+          {recentGoods.length > 0 ? (
+            <SimpleSwiper
+              data={recentGoods}
+              slidesPerView={2.5}
+              itemSpacing={12}
+              onSlidePress={(item) => handleNavigateToDetail(item.id)}
+            />
+          ) : (
+            <View className="h-11 items-center justify-center">
+              <Typography variant="body2" color="secondary-dark">
+                최근 본 굿즈가 없습니다.
+              </Typography>
+            </View>
           )}
         </View>
-        {recentGoods.length > 0 ? (
-          <SimpleSwiper
-            data={recentGoods}
-            slidesPerView={2.5}
-            itemSpacing={12}
-            onSlidePress={(item) => handleNavigateToDetail(item.id)}
-          />
-        ) : (
-          <View className="h-11 items-center justify-center ml-4 mr-4">
-            <Typography variant="body2" color="secondary-dark">
-              최근 본 굿즈가 없습니다.
-            </Typography>
-          </View>
-        )}
-      </View>
 
-      {/* 인기 굿즈 */}
-      <View className="mt-4 mb-4">
-        <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
-          <Typography variant="header4">인기 굿즈</Typography>
-        </View>
-        {popularGoods.length > 0 ? (
-          <SimpleSwiper
-            data={popularGoods}
-            slidesPerView={2.5}
-            itemSpacing={12}
-            onSlidePress={(item) => handleNavigateToDetail(item.id)}
-          />
-        ) : (
-          <View className="h-11 items-center justify-center ml-4 mr-4">
-            <Typography variant="body2" color="secondary-dark">
-              인기 굿즈가 없습니다.
-            </Typography>
+        {/* 인기 굿즈 */}
+        <View className="flex gap-2">
+          <View className="flex flex-row items-center justify-between mx-6">
+            <Typography variant="header4">인기 굿즈</Typography>
           </View>
-        )}
+          {popularGoods.length > 0 ? (
+            <SimpleSwiper
+              data={popularGoods}
+              slidesPerView={2.5}
+              itemSpacing={12}
+              onSlidePress={(item) => handleNavigateToDetail(item.id)}
+            />
+          ) : (
+            <View className="h-11 items-center justify-center">
+              <Typography variant="body2" color="secondary-dark">
+                인기 굿즈가 없습니다.
+              </Typography>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );

@@ -136,7 +136,11 @@ export default function Home() {
   return (
     <View className="flex-1 gap-4 pt-1">
       <Header horizontalGap />
-      <ScrollView className="flex-1" contentContainerClassName="gap-14">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-14"
+        showsVerticalScrollIndicator={false}
+      >
         {/* 배너 영역 */}
         <BasicSwiper data={[1, 2, 3]} />
 

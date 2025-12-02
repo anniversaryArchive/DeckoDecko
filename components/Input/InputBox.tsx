@@ -47,9 +47,11 @@ const BorderComponent = ({
   children: React.ReactNode;
 }) => {
   return wiggleBorder ? (
-    <WiggleBorder strokeWidth={1.5} strokeColor={getColor(borderColor)}>
-      {children}
-    </WiggleBorder>
+    <View className="grow">
+      <WiggleBorder strokeWidth={1.5} strokeColor={getColor(borderColor)}>
+        {children}
+      </WiggleBorder>
+    </View>
   ) : (
     children
   );

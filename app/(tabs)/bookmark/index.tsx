@@ -3,9 +3,16 @@ import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Link, useFocusEffect } from "expo-router";
 
-import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography } from "@components/index";
+import {
+  Button,
+  GoodsThumbnail,
+  Header,
+  Icon,
+  InputBox,
+  Segment,
+  Typography,
+} from "@components/index";
 import { supabase } from "@utils/supabase";
-import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
@@ -64,10 +71,6 @@ export default function MyBookmark() {
     setItemList(mergedList);
   };
 
-  const goToSearch = () => {
-    router.push("/(tabs)/search");
-  };
-
   useFocusEffect(
     useCallback(() => {
       loadFolderList();
@@ -91,14 +94,7 @@ export default function MyBookmark() {
   return (
     <View className="flex-1 gap-4 px-6 pt-1">
       {/* Header */}
-      <View className="flex flex-row items-center justify-between">
-        <Typography variant="header1" color="primary">
-          LOGO
-        </Typography>
-        <Pressable onPress={goToSearch}>
-          <Icon name="search" size={32} fill={colors.primary.DEFAULT} />
-        </Pressable>
-      </View>
+      <Header />
 
       <Segment segments={BOOKMARK_TYPE} selectedKey={bookmarkType} onSelect={setBookmarkType} />
       <View className="flex-1 gap-4">
