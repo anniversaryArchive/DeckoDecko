@@ -1,10 +1,13 @@
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
-
 import images from "@table/images";
 import linkingSettingAlert from "./linkingSettingAlert";
+import Constants from "expo-constants";
 
-const grantedPermission = async () => {
+/**
+ * 미디어 라이브러리 권한 확인 및 요청
+ */
+const grantedPermission = async (): Promise<boolean> => {
   try {
     const initialStatus = await MediaLibrary.getPermissionsAsync();
 
@@ -42,47 +45,107 @@ const grantedPermission = async () => {
     return false;
   } catch (e) {
     console.error("grantedPermission Error : ", e);
+    return false;
   }
 };
 
-const selectImage = async () => {
+/**
+ * 이미지 선택 - 갤러리에서 이미지 하나 선택
+ */
+const selectImage = async (): Promise<ImagePicker.ImagePickerAsset | null> => {
   const isGranted = await grantedPermission();
-  let selectedAsset = null;
 
   if (!isGranted) {
-    console.error("Canntot access to mediaLibray");
-    return selectedAsset;
-  }
-
-  try {
-    const selectImg = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
-    });
-
-    if (!selectImg.canceled) selectedAsset = selectImg.assets[0];
-  } catch (e) {
-    console.error("selectImage Error : ", e);
-  }
-
-  return selectedAsset;
-};
-
-const saveImage = async (img?: ImagePicker.ImagePickerAsset) => {
-  const selectImg = img || (await selectImage());
-
-  if (!selectImg || !selectImg.assetId) {
+    console.error("Cannot access to mediaLibrary");
     return null;
   }
 
   try {
-    // 로컬 디비 저장
-    const assetId = selectImg.assetId;
-    await images.create(assetId);
-    return assetId;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      aspect: [4, 3],
+      quality: 0.6,
+    });
+
+    if (result.canceled || !result.assets?.length) {
+      return null;
+    }
+
+    return result.assets[0];
   } catch (e) {
-    console.error("err", e);
+    console.error("selectImage Error : ", e);
+    return null;
+  }
+};
+
+/**
+ * MediaLibrary Asset 영구 저장 (Android/iOS 공통)
+ */
+const saveImageToLibrary = async (asset: ImagePicker.ImagePickerAsset): Promise<string | null> => {
+  try {
+    // MediaLibrary 권한 재확인
+    const { status } = await MediaLibrary.getPermissionsAsync();
+    if (status !== "granted") {
+      console.error("MediaLibrary permission not granted");
+      return null;
+    }
+
+    // 갤러리 영구 asset 생성 (iOS: Photos, Android: MediaStore)
+    const libraryAsset = await MediaLibrary.createAssetAsync(asset.uri);
+
+    console.log("MediaLibrary asset created:", {
+      id: libraryAsset.id,
+      uri: libraryAsset.uri,
+      filename: libraryAsset.filename,
+    });
+
+    return libraryAsset.id; // Android/iOS 공통 영구 ID
+  } catch (e) {
+    console.error("saveImageToLibrary error:", e);
+    return null;
+  }
+};
+
+/**
+ * 이미지 저장 - ImagePicker → MediaLibrary → DB (완전 영구 저장)
+ */
+const saveImage = async (img?: ImagePicker.ImagePickerAsset): Promise<string | null> => {
+  const selectImg = img || (await selectImage());
+
+  console.log("saveImage called with asset:", selectImg);
+
+  if (!selectImg) {
+    console.error("No image asset provided");
+    return null;
+  }
+
+  // Android인 경우에만 MediaLibrary 영구 저장 로직 실행
+  const isAndroid = Constants?.platform?.ios === undefined;
+  let libraryAssetId: string | null = null;
+
+  if (isAndroid) {
+    // 1. MediaLibrary로 영구 저장 (Android 전용)
+    libraryAssetId = await saveImageToLibrary(selectImg);
+    if (!libraryAssetId) {
+      console.error("Failed to save to MediaLibrary");
+      return null;
+    }
+  } else {
+    // iOS는 uri 직접 사용
+    libraryAssetId = selectImg.uri;
+  }
+
+  // 2. DB에 영구 ID 저장
+  try {
+    await images.create(libraryAssetId!);
+    console.log("Image permanently saved with ID:", libraryAssetId);
+    return libraryAssetId;
+  } catch (e) {
+    console.error("saveImage DB error: ", e);
     return null;
   }
 };
 
 export { selectImage, saveImage };
+export type { ImagePickerAsset } from "expo-image-picker";

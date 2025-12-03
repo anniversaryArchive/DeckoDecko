@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Pressable, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ImagePickerAsset } from "expo-image-picker";
-
 import { colors } from "@utils/tailwind-colors";
-import { selectImage, saveImage } from "@utils/mediaLibraryService";
+import { selectImage, saveImage, type ImagePickerAsset } from "@utils/mediaLibraryService";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import items from "@table/items";
@@ -173,11 +171,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             {label}
           </Typography>
 
-          <Segment<TBookmarkType>
-            segments={BOOKMARK_TYPE}
-            selectedKey={type}
-            onSelect={setType}
-          />
+          <Segment<TBookmarkType> segments={BOOKMARK_TYPE} selectedKey={type} onSelect={setType} />
           <Pressable
             onPress={pickImage}
             className={`w-[150px] h-[150px] self-center flex items-center justify-center rounded bg-secondary-light `}
