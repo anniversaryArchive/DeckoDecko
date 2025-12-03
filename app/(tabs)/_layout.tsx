@@ -41,7 +41,7 @@ export default function TabLayout() {
               <Icon name={tab.icon} size={28.0} fill={color} stroke={color} />
             ),
             tabBarIconStyle: { marginBottom: 4 },
-            sceneStyle: { paddingTop: insets.top, backgroundColor: "white" },
+            sceneStyle: { backgroundColor: "white" },
           }}
           listeners={{
             tabPress: (e) => {
