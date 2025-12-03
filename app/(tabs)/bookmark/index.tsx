@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, View, Alert, Share } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Link, useFocusEffect } from "expo-router";
 
@@ -113,6 +113,26 @@ export default function MyBookmark() {
     router.push("/(tabs)/search");
   };
 
+  // Share API를 사용한 내보내기 함수
+  const shareJsonData = async () => {
+    try {
+      if (itemList.length === 0) {
+        Alert.alert("알림", "내보낼 데이터가 없습니다.");
+        return;
+      }
+      const jsonString = JSON.stringify(itemList, null, 2);
+
+      // 내장 Share 기능 호출
+      await Share.share({
+        message: jsonString,
+        title: "내 굿즈 리스트 JSON",
+      });
+      // 공유 창에서 '복사'를 선택하면 클립보드에 복사됩니다.
+    } catch (error: any) {
+      Alert.alert("오류", error.message);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       setSearchTerm("");
@@ -180,6 +200,17 @@ export default function MyBookmark() {
           </Link>
         </View>
 
+        {/* 3. JSON 내보내기 버튼 // 웹 확인용
+        <View className="flex-row justify-end">
+          <Button
+            variant="text"
+            onPress={shareJsonData}
+            contentClassName="text-gray-500 text-xs"
+          >
+            JSON 데이터 내보내기
+          </Button>
+        </View>*/}
+
         {/* 검색 입력 */}
         <InputBox
           size="md"
@@ -232,6 +263,7 @@ export default function MyBookmark() {
                     image={
                       isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link
                     }
+                    isLocalImage={!isBundle}
                   />
                   {isBundle && item.count !== undefined && (
                     <Typography variant="body2" color="primary" className="pl-1">

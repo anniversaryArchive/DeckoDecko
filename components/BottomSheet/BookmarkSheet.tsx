@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Pressable, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ImagePickerAsset } from "expo-image-picker";
-
 import { colors } from "@utils/tailwind-colors";
-import { selectImage, saveImage } from "@utils/mediaLibraryService";
+import { selectImage, saveImage, type ImagePickerAsset } from "@utils/mediaLibraryService";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import items from "@table/items";

@@ -19,19 +19,19 @@ class TbItems {
 
       if (inst) {
         await inst.runAsync(` 
-            CREATE TABLE IF NOT EXISTS items (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                folder_id INTEGER NOT NULL,
-                gacha_id INTEGER UNIQUE NOT NULL,
-                type TEXT NOT NULL CHECK(type IN ('WISH', 'GET')),
-                name TEXT NOT NULL,
-                thumbnail TEXT,
-                memo TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
-            );
-        `);
+             CREATE TABLE IF NOT EXISTS items (
+                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 folder_id INTEGER NOT NULL,
+                 gacha_id INTEGER NOT NULL,
+                 type TEXT NOT NULL CHECK(type IN ('WISH', 'GET')),
+                 name TEXT NOT NULL,
+                 thumbnail TEXT,
+                 memo TEXT,
+                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                 FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
+             );
+         `);
       }
 
       return inst;
@@ -178,36 +178,38 @@ class TbItems {
       const res = await db.runAsync("DELETE FROM items;");
       return !!res.changes;
     } catch (error) {
-      console.error("테이블 마이그레이션 실패:", error);
+      console.error("TbItems clear Error : ", error);
 
       return false;
     }
   }
 
+  // 마이그레이션 함수 (기존에 잘못 생성된 DB 구조를 변경할 때 사용)
+  // UNIQUE 제약 조건이 없는 items_new 테이블로 데이터를 옮깁니다.
   async migration() {
     try {
       const db = await this.#dbInstance;
       if (!db) return false;
 
       await db.runAsync(`
-          CREATE TABLE items_new (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              folder_id INTEGER NOT NULL,
-              gacha_id INTEGER NOT NULL,
-              type TEXT NOT NULL CHECK(type IN ('WISH', 'GET')),
-              name TEXT NOT NULL,
-              thumbnail TEXT,
-              memo TEXT,
-              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-              FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
-          );
-      `);
+           CREATE TABLE items_new (
+               id INTEGER PRIMARY KEY AUTOINCREMENT,
+               folder_id INTEGER NOT NULL,
+               gacha_id INTEGER NOT NULL,
+               type TEXT NOT NULL CHECK(type IN ('WISH', 'GET')),
+               name TEXT NOT NULL,
+               thumbnail TEXT,
+               memo TEXT,
+               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+               updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+               FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
+           );
+       `);
 
       await db.runAsync(`
-        INSERT INTO items_new (id, folder_id, gacha_id, type, name, thumbnail, memo, created_at, updated_at)
-        SELECT id, folder_id, gacha_id, type, name, thumbnail, memo, created_at, updated_at
-        FROM items;`);
+         INSERT INTO items_new (id, folder_id, gacha_id, type, name, thumbnail, memo, created_at, updated_at)
+         SELECT id, folder_id, gacha_id, type, name, thumbnail, memo, created_at, updated_at
+         FROM items;`);
 
       await db.runAsync(`DROP TABLE items;`);
       const result = await db.runAsync(`ALTER TABLE items_new RENAME TO items;`);
