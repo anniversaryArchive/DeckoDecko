@@ -1,23 +1,14 @@
-import { useEffect, useState } from "react";
-import { View, ScrollView, Pressable } from "react-native";
-import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {useEffect, useState} from "react";
+import {ScrollView, View} from "react-native";
+import {router} from "expo-router";
+import {SafeAreaView} from "react-native-safe-area-context";
 
-import { supabase } from "@/utils/supabase";
-import type { TNotice } from "@/types/notice";
+import {supabase} from "@/utils/supabase";
+import type {TNotice} from "@/types/notice";
 
 import slide1 from '@/assets/main_slide.png';
 
-import {
-  Button,
-  Typography,
-  FeaturedSwiper,
-  BasicSwiper,
-  ProgressBar,
-  NoticeItem,
-  Spinner,
-  Header,
-} from "@/components";
+import {BasicSwiper, Button, FeaturedSwiper, Header, NoticeItem, ProgressBar, Spinner, Typography,} from "@/components";
 import items from "@table/items";
 
 const LIMIT_COUNT = 5;
@@ -129,7 +120,7 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 gap-4 pt-1">
+    <SafeAreaView edges={["top"]} className="flex-1 gap-1.5 pt-1">
       <Spinner visible={loading} />
       <Header horizontalGap />
       <ScrollView
