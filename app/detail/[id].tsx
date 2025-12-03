@@ -15,6 +15,7 @@ import {
 } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { getDeviceUuid } from "@/utils/deviceUuid";
+import * as searchHistory from "@utils/searchHistory";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import items from "@table/items";
 
@@ -81,7 +82,9 @@ export default function DetailPagef() {
 
     fetchGachaData();
     logGachaView();
-  }, [navigation, id, fetchBookmarkList]);
+    // 최근 본 굿즈 로컬 디비 저장
+    searchHistory.addRecentGoodsId(Number(id));
+  }, [navigation, id]);
 
   const handleAddGacha = () => {
     openSheet("BOOKMARK");
@@ -92,7 +95,7 @@ export default function DetailPagef() {
   };
 
   return (
-    <SafeAreaView className="relative flex-1 bg-white">
+    <SafeAreaView className="relative flex-1">
       <Spinner visible={loading} />
       {/* Header */}
       <View className="flex flex-row items-center justify-between h-12 px-6">

@@ -1,13 +1,13 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { supabase } from "@/utils/supabase";
-import type {IGachaItem, IGoodsItem} from '@/types/search';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {supabase} from '@/utils/supabase';
+import type {IGachaItem} from '@/types/search';
 
 
 const MAX_RECENT_SEARCHES = 10;
 const MAX_RECENT_GOODS = 10;
 
 const SEARCH_STORAGE_KEY = "@recent_searches";
-const GOODS_STORAGE_KEY = "@recent_goods";
+const GOODS_ID_KEY = "@recent_goods_ids";
 
 /**
  * 최근 검색어 저장
@@ -71,29 +71,45 @@ export const clearRecentSearches = async () => {
 /**
  * 최근 본 굿즈 추가
  */
-export const addRecentGood = async (item: IGoodsItem) => {
+export const addRecentGoodsId = async (id: number) => {
   try {
-    let goods: IGoodsItem[] = await getRecentGoods();
+    let ids: number[] = JSON.parse(await AsyncStorage.getItem(GOODS_ID_KEY) || "[]");
 
-    goods = goods.filter(good => good.id !== item.id);
-    goods.unshift(item);
+    ids = ids.filter(gid => gid !== id); // 중복 제거
+    ids.unshift(id);                     // 맨 앞에 추가
+    ids = ids.slice(0, MAX_RECENT_GOODS);
 
-    const newGoods = goods.slice(0, MAX_RECENT_GOODS);
-    await AsyncStorage.setItem(GOODS_STORAGE_KEY, JSON.stringify(newGoods));
+    await AsyncStorage.setItem(GOODS_ID_KEY, JSON.stringify(ids));
   } catch (e) {
-    console.error("로컬 최근 본 굿즈 저장 실패", e);
+    console.error("최근 본 가챠 ID 저장 실패", e);
   }
 };
+
 
 /**
  * 최근 본 굿즈 불러오기
  */
 export const getRecentGoods = async (): Promise<IGachaItem[]> => {
   try {
-    const goodsJSON = await AsyncStorage.getItem(GOODS_STORAGE_KEY);
-    return goodsJSON ? JSON.parse(goodsJSON) : [];
+    const ids: number[] = JSON.parse(await AsyncStorage.getItem(GOODS_ID_KEY) || "[]");
+    if (ids.length === 0) return [];
+
+    const { data, error } = await supabase
+      .from("gacha")
+      .select(`*, media:media_id(id, kr_title)`)
+      .in("id", ids);
+
+    if (error) {
+      console.error("최근 본 가챠 조회 실패", error);
+      return [];
+    }
+
+    // IDs 순서대로 정렬
+    return ids
+      .map(id => data.find(d => d.id === id))
+      .filter(Boolean) as IGachaItem[];
   } catch (e) {
-    console.error("로컬 최근 본 굿즈 불러오기 실패", e);
+    console.error("최근 본 가챠 불러오기 실패", e);
     return [];
   }
 };
@@ -103,7 +119,7 @@ export const getRecentGoods = async (): Promise<IGachaItem[]> => {
  */
 export const clearRecentGoods = async () => {
   try {
-    await AsyncStorage.removeItem(GOODS_STORAGE_KEY);
+    await AsyncStorage.removeItem(GOODS_ID_KEY);
   } catch (e) {
     console.error("로컬 최근 본 굿즈 전체 삭제 실패", e);
   }

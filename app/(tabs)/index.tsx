@@ -11,10 +11,10 @@ import {
   Typography,
   FeaturedSwiper,
   BasicSwiper,
-  Icon,
   ProgressBar,
   NoticeItem,
   Spinner,
+  Header,
 } from "@/components";
 import items from "@table/items";
 
@@ -118,10 +118,6 @@ export default function Home() {
     router.push(`/detail/${id}`);
   };
 
-  const goToSearch = () => {
-    router.push("/(tabs)/search");
-  };
-
   const goToNotice = () => {
     router.push("/notice");
   };
@@ -131,28 +127,22 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1">
+    <SafeAreaView edges={["top"]} className="flex-1 gap-4 pt-1">
       <Spinner visible={loading} />
-      <View className="flex flex-row justify-between w-full px-4 py-2 bg-white">
-        <Typography variant="header1" color="primary">
-          LOGO
-        </Typography>
-        <View className="my-auto">
-          <Pressable onPress={goToSearch}>
-            <Icon name="bigHeadSearch" size={24} />
-          </Pressable>
-        </View>
-      </View>
-      <ScrollView className="flex-1">
+      <Header horizontalGap />
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-14"
+        showsVerticalScrollIndicator={false}
+      >
         {/* 배너 영역 */}
         <BasicSwiper data={[1, 2, 3]} />
 
         {/* 내 굿즈 소장률 */}
-        <View className="py-14 px-4">
+        <View className="px-6">
           <Typography variant="header2" color="primary">
             내 굿즈 소장률
           </Typography>
-
           <View className="mt-4">
             <ProgressBar value={possessionRate} height={18} />
           </View>
@@ -168,8 +158,6 @@ export default function Home() {
           onSlidePress={(item) => handleNavigateToDetail(item.id)}
         />
 
-        <View className="mt-10" />
-
         {/* 인기 가챠 */}
         <FeaturedSwiper
           title="지금 이게 인기에요!"
@@ -181,14 +169,14 @@ export default function Home() {
         />
 
         {/* 공지사항 */}
-        <View className="bg-primary-light py-7 px-4 mt-16">
+        <View className="bg-primary-light py-7 px-6">
           <View className="flex flex-row justify-between mb-4">
             <Typography variant="header2" color="secondary-dark">
               공지사항
             </Typography>
 
             <Button variant="text" size="sm" onPress={goToNotice}>
-              <Typography variant="tag" className="text-gray-04">
+              <Typography variant="tag" color="gray-04">
                 전체보기 &gt;
               </Typography>
             </Button>

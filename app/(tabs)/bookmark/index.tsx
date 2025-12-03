@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, ScrollView, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useFocusEffect } from "expo-router";
 
 import {
   Button,
   GoodsThumbnail,
+  Header,
   Icon,
   InputBox,
   Segment,
@@ -13,15 +14,11 @@ import {
   Spinner,
 } from "@components/index";
 import { supabase } from "@utils/supabase";
-import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
-
-import type { TGacha } from "@/types/gacha";
-import type { TFolder } from "@/types/folder";
-import type { TBookmarkType } from "@/types/bookmark";
-import type { TItem } from "@/types/item";
+import { TBookmarkType, TItemExtended } from "@/types/bookmark";
+import { TFolder } from "@/types/folder";
 
 export default function MyBookmark() {
   const [bookmarkType, setBookmarkType] = useState<TBookmarkType>("WISH");
@@ -29,55 +26,57 @@ export default function MyBookmark() {
   const [folderList, setFolderList] = useState<Map<number, TFolder>>();
   const [selectedFolder, setSelectedFolder] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [itemList, setItemList] = useState<
-    Array<TItem & { folderName: string; gachaInfo: TGacha }>
-  >([]);
-
+  const [itemList, setItemList] = useState<TItemExtended[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // 폴더 리스트
   const loadFolderList = async () => {
-    try {
-      setLoading(true);
-      const folderList = await folder.getAll();
-      setFolderList(
-        new Map(
-          [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderList].map(
-            (folder) => [folder.id, folder]
-          )
-        )
-      );
-    } finally {
-      setLoading(false);
-    }
+    const folderData = await folder.getAll();
+    setFolderList(
+      new Map(
+        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderData].map((f) => [
+          f.id,
+          f,
+        ])
+      )
+    );
   };
 
+  // 아이템 리스트
   const loadBookmarkItems = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const itemList =
+      const folders = folderList ?? new Map<number, TFolder>();
+      const itemsData =
         selectedFolder === 0
           ? await items.getAll()
           : await items.getItemsByFolderId(selectedFolder);
-      const filteredItemList = itemList.filter((i) => i.type === bookmarkType);
+      const filtered = itemsData.filter((i) => i.type === bookmarkType);
 
-      const ids = filteredItemList.map((i) => i.gacha_id);
-
-      const { data: gachaData, error: supabaseError } = await supabase
+      const ids = filtered.map((i) => i.gacha_id);
+      const { data: gachaData, error } = await supabase
         .from("gacha")
-        .select("*")
+        .select(
+          `
+        id,
+        name,
+        name_kr,
+        image_link,
+        anime_id,
+        price,
+        anime:anime_id (
+          kr_title
+        )
+      `
+        )
         .in("id", ids);
+      if (error) throw error;
 
-      if (supabaseError) {
-        throw supabaseError; // 에러가 발생하면 catch 블록으로 던지기
-      }
-
-      const gachaDataMap = new Map(gachaData.map((gacha) => [gacha.id, gacha]));
-
-      const mergedList = filteredItemList.map((item) => {
-        const gachaInfo = gachaDataMap.get(item.gacha_id);
-        const folderInfo = folderList!.get(item.folder_id);
-
-        return { ...item, folderName: folderInfo?.name as string, gachaInfo };
+      const gachaMap = new Map(gachaData.map((g) => [g.id, g]));
+      const mergedList = filtered.map((item) => {
+        const gachaInfo = gachaMap.get(item.gacha_id);
+        const folderInfo = folders.get(item.folder_id);
+        return { ...item, folderName: folderInfo?.name ?? "기타", gachaInfo: gachaInfo! };
       });
 
       setItemList(mergedList);
@@ -86,20 +85,36 @@ export default function MyBookmark() {
     }
   };
 
-  const goToSearch = () => {
-    router.push("/(tabs)/search");
+  // 묶어보기: 동일 gacha_id로 그룹핑, 아이템 개수 추가
+  const getFolderViewData = (): TItemExtended[] => {
+    const map = new Map<number, { folderName: string; items: TItemExtended[]; count: number }>();
+
+    itemList.forEach((item) => {
+      const key = item.gacha_id;
+      if (!map.has(key)) {
+        map.set(key, { folderName: item.folderName ?? "기타", items: [], count: 0 });
+      }
+      const group = map.get(key)!;
+      group.items.push(item);
+      group.count++;
+    });
+
+    return Array.from(map.values()).map((group) => ({
+      ...group.items[0],
+      folderName: group.folderName,
+      count: group.count,
+      gachaInfo: group.items[0].gachaInfo,
+    }));
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      loadFolderList();
-    }, [])
+  // 필터링 처리
+  const filteredItemList = itemList.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (folderList) loadBookmarkItems();
-    }, [selectedFolder, bookmarkType, folderList])
+  const filteredFolderViewData = getFolderViewData().filter((item) =>
+    item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useFocusEffect(
@@ -107,51 +122,54 @@ export default function MyBookmark() {
       setSearchTerm("");
       setViewMode("item");
       setSelectedFolder(0);
+      loadFolderList();
     }, [bookmarkType])
   );
+
+  useFocusEffect(
+    useCallback(() => {
+      loadBookmarkItems();
+    }, [selectedFolder, bookmarkType])
+  );
+
+  const isBundle = viewMode === "folder";
+  const flatListData = isBundle ? filteredFolderViewData : filteredItemList;
 
   return (
     <SafeAreaView edges={["top"]} className="flex-1 gap-4 px-6 pt-1">
       <Spinner visible={loading} />
-
       {/* Header */}
-      <View className="flex flex-row items-center justify-between">
-        <Typography variant="header1" color="primary">
-          LOGO
-        </Typography>
-        <Pressable onPress={goToSearch}>
-          <Icon name="search" size={32} fill={colors.primary.DEFAULT} />
-        </Pressable>
-      </View>
+      <Header />
 
-      <Segment segments={BOOKMARK_TYPE} selectedKey={bookmarkType} onSelect={setBookmarkType} />
+      {/* WISH / GET */}
+      <Segment
+        segments={BOOKMARK_TYPE}
+        selectedKey={bookmarkType}
+        onSelect={(key) => {
+          setBookmarkType(key);
+          setSelectedFolder(0); // 선택 폴더를 "전체"로 옮기기
+        }}
+      />
+
       <View className="flex-1 gap-4">
-        <View className="flex-row items-center justify-between gap-2">
-          {/* 폴더 리스트 */}
-          <ScrollView
+        {/* 폴더 리스트 */}
+        <View className="flex-row items-center justify-between gap-2 mt-3">
+          <FlatList
             horizontal
-            className="min-h-8 flex-grow -ml-6"
-            contentContainerClassName="flex gap-3 flex-row ml-6"
+            data={folderList ? Array.from(folderList.values()) : []}
+            keyExtractor={(folder) => `folder_${folder.id}`}
+            renderItem={({ item }) => (
+              <Button
+                bold
+                variant={item.id === selectedFolder ? "contained" : "outlined"}
+                onPress={() => setSelectedFolder(item.id)}
+              >
+                {item.name}
+              </Button>
+            )}
             showsHorizontalScrollIndicator={false}
-          >
-            {folderList &&
-              Array.from(folderList).map(([id, { name }]) => {
-                const isSelected = id === selectedFolder;
-
-                return (
-                  <Button
-                    key={`folder_` + id}
-                    bold
-                    variant={isSelected ? "contained" : "outlined"}
-                    onPress={() => {
-                      setSelectedFolder(id);
-                    }}
-                  >
-                    {name}
-                  </Button>
-                );
-              })}
-          </ScrollView>
+            contentContainerStyle={{ flexDirection: "row", gap: 12 }}
+          />
 
           <Pressable
             className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full"
@@ -162,61 +180,71 @@ export default function MyBookmark() {
             <Icon name="folderFill" size={20} />
           </Pressable>
         </View>
-        <InputBox size="md" color="secondary" value={searchTerm} onChangeText={setSearchTerm} />
 
-        {itemList.length ? (
-          <>
-            {/* WISH | GET */}
-            <View className="flex-1 gap-1">
-              <View className="flex-row items-center justify-end gap-1">
-                <Button
-                  bold
-                  variant="text"
-                  color={viewMode === "folder" ? "primary" : "secondary-dark"}
-                  contentClassName={viewMode === "folder" ? "" : "text-secondary-dark-80"}
-                  onPress={() => {
-                    setViewMode("folder");
-                  }}
-                >
-                  폴더 보기
-                </Button>
-                <Button
-                  variant="text"
-                  bold
-                  color={viewMode === "item" ? "primary" : "secondary-dark"}
-                  contentClassName={viewMode === "item" ? "" : "text-secondary-dark-80"}
-                  onPress={() => {
-                    setViewMode("item");
-                  }}
-                >
-                  아이템 보기
-                </Button>
-              </View>
-              <FlatList
-                data={itemList}
-                extraData={selectedFolder}
-                contentContainerClassName="pb-4 flex gap-2 justify-center"
-                columnWrapperClassName="flex flex-row items-center justify-between p-2"
-                numColumns={2}
-                keyExtractor={(item) => `${item.id}`}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => {
-                  const { gachaInfo } = item;
+        {/* 검색 입력 */}
+        <InputBox
+          size="md"
+          color="secondary"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          placeholder="내 굿즈 리스트 검색"
+        />
 
-                  return (
-                    <GoodsThumbnail
-                      redirectId={gachaInfo.id}
-                      name={item.name}
-                      category={item.folderName}
-                      itemName={gachaInfo.name_kr}
-                      isLocalImage={!!item.thumbnail}
-                      image={item.thumbnail || gachaInfo.image_link}
-                    />
-                  );
-                }}
-              />
+        {flatListData.length ? (
+          <View className="flex-1 gap-1">
+            {/* 보기 모드 버튼 */}
+            <View className="flex-row items-center justify-end gap-1">
+              <Button
+                bold
+                variant="text"
+                color={viewMode === "folder" ? "primary" : "secondary-dark"}
+                contentClassName={viewMode === "folder" ? "" : "text-secondary-dark-80"}
+                onPress={() => setViewMode("folder")}
+              >
+                묶어보기
+              </Button>
+              <Button
+                bold
+                variant="text"
+                color={viewMode === "item" ? "primary" : "secondary-dark"}
+                contentClassName={viewMode === "item" ? "" : "text-secondary-dark-80"}
+                onPress={() => setViewMode("item")}
+              >
+                풀어보기
+              </Button>
             </View>
-          </>
+
+            <FlatList
+              data={flatListData}
+              key={isBundle ? "bundle" : "item"}
+              numColumns={2}
+              keyExtractor={(item) => (isBundle ? `bundle_${item.gacha_id}` : `${item.id}`)}
+              columnWrapperClassName="flex flex-row items-center justify-between p-2"
+              contentContainerClassName="pb-4"
+              contentContainerStyle={{ paddingBottom: 24 }}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <View>
+                  <GoodsThumbnail
+                    redirectId={item.gachaInfo.id}
+                    name={isBundle ? item.gachaInfo.name_kr : item.name}
+                    category={item.folderName}
+                    itemName={item.gachaInfo.name_kr}
+                    image={
+                      isBundle
+                        ? item.gachaInfo.image_link
+                        : item.thumbnail || item.gachaInfo.image_link
+                    }
+                  />
+                  {isBundle && item.count !== undefined && (
+                    <Typography variant="body2" color="primary" className="pl-1">
+                      아이템 {item.count}개
+                    </Typography>
+                  )}
+                </View>
+              )}
+            />
+          </View>
         ) : (
           <SafeAreaView edges={["bottom"]} className="items-center justify-center flex-1 gap-5">
             <Icon name="gachaCapsule" size={80} fill={"gray-06"} />
