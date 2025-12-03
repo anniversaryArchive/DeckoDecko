@@ -6,6 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "@/utils/supabase";
 import type { TNotice } from "@/types/notice";
 
+import slide1 from '@/assets/main_slide.png';
+
 import {
   Button,
   Typography,
@@ -136,7 +138,11 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
       >
         {/* 배너 영역 */}
-        <BasicSwiper data={[1, 2, 3]} />
+        <BasicSwiper
+          data={[
+            { image: slide1 },
+          ]}
+        />
 
         {/* 내 굿즈 소장률 */}
         <View className="px-6">
