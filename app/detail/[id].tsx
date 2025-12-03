@@ -95,7 +95,7 @@ export default function DetailPagef() {
   };
 
   return (
-    <SafeAreaView className="relative flex-1 bg-white">
+    <SafeAreaView className="relative flex-1">
       <Spinner visible={loading} />
       {/* Header */}
       <View className="flex flex-row items-center justify-between h-12 px-6">

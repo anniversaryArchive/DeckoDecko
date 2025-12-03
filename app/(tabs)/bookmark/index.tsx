@@ -3,9 +3,17 @@ import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Link, useFocusEffect } from "expo-router";
 
-import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography, Spinner } from "@components/index";
+import {
+  Button,
+  GoodsThumbnail,
+  Header,
+  Icon,
+  InputBox,
+  Segment,
+  Typography,
+  Spinner,
+} from "@components/index";
 import { supabase } from "@utils/supabase";
-import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
@@ -26,9 +34,10 @@ export default function MyBookmark() {
     const folderData = await folder.getAll();
     setFolderList(
       new Map(
-        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderData].map(
-          (f) => [f.id, f]
-        )
+        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderData].map((f) => [
+          f.id,
+          f,
+        ])
       )
     );
   };
@@ -39,7 +48,9 @@ export default function MyBookmark() {
     try {
       const folders = folderList ?? new Map<number, TFolder>();
       const itemsData =
-        selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
+        selectedFolder === 0
+          ? await items.getAll()
+          : await items.getItemsByFolderId(selectedFolder);
       const filtered = itemsData.filter((i) => i.type === bookmarkType);
 
       const ids = filtered.map((i) => i.gacha_id);
@@ -76,10 +87,7 @@ export default function MyBookmark() {
 
   // 묶어보기: 동일 gacha_id로 그룹핑, 아이템 개수 추가
   const getFolderViewData = (): TItemExtended[] => {
-    const map = new Map<
-      number,
-      { folderName: string; items: TItemExtended[]; count: number }
-      >();
+    const map = new Map<number, { folderName: string; items: TItemExtended[]; count: number }>();
 
     itemList.forEach((item) => {
       const key = item.gacha_id;
@@ -109,10 +117,6 @@ export default function MyBookmark() {
     item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const goToSearch = () => {
-    router.push("/(tabs)/search");
-  };
-
   useFocusEffect(
     useCallback(() => {
       setSearchTerm("");
@@ -135,14 +139,7 @@ export default function MyBookmark() {
     <View className="flex-1 gap-4 px-6 pt-1">
       <Spinner visible={loading} />
       {/* Header */}
-      <View className="flex flex-row items-center justify-between">
-        <Typography variant="header1" color="primary">
-          LOGO
-        </Typography>
-        <Pressable onPress={goToSearch}>
-          <Icon name="search" size={32} fill={colors.primary.DEFAULT} />
-        </Pressable>
-      </View>
+      <Header />
 
       {/* WISH / GET */}
       <Segment
@@ -230,7 +227,9 @@ export default function MyBookmark() {
                     category={item.folderName}
                     itemName={item.gachaInfo.name_kr}
                     image={
-                      isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link
+                      isBundle
+                        ? item.gachaInfo.image_link
+                        : item.thumbnail || item.gachaInfo.image_link
                     }
                   />
                   {isBundle && item.count !== undefined && (

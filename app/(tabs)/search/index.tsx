@@ -4,8 +4,8 @@ import { useFocusEffect, useRouter } from "expo-router";
 
 import { supabase } from "@utils/supabase";
 import * as searchHistory from "@utils/searchHistory";
+import { Button, Typography, SearchBox, Chip, SimpleSwiper, Spinner } from "@components/index";
 
-import { Button, Typography, SearchBox, Chip, Spinner, SimpleSwiper } from "@components/index";
 import type { IGachaItem } from "@/types/search";
 
 export default function Index() {
@@ -30,7 +30,7 @@ export default function Index() {
     const goods = await searchHistory.getRecentGoods();
     setRecentGoods((prev) => {
       const isSame = JSON.stringify(prev) === JSON.stringify(goods);
-      if (!isSame) setRecentResetIndex(s => s + 1);
+      if (!isSame) setRecentResetIndex((s) => s + 1);
       return goods;
     });
   }, []);
@@ -46,7 +46,8 @@ export default function Index() {
 
       const { data, error } = await supabase
         .from("gacha")
-        .select(`
+        .select(
+          `
           id,
           name,
           name_kr,
@@ -56,7 +57,8 @@ export default function Index() {
           anime:anime_id (
             kr_title
           )
-        `)
+        `
+        )
         .in("id", gachaIds);
 
       if (error) throw error;
@@ -65,7 +67,7 @@ export default function Index() {
 
       setPopularGoods((prev) => {
         const isSame = JSON.stringify(prev) === JSON.stringify(goods);
-        if (!isSame) setPopularResetIndex(s => s + 1);
+        if (!isSame) setPopularResetIndex((s) => s + 1);
         return goods;
       });
     } catch (e) {
@@ -133,9 +135,9 @@ export default function Index() {
   );
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 gap-4 mt-1">
       <Spinner visible={false} />
-      <View className="ml-2 mr-2">
+      <View className="px-6">
         <SearchBox
           className="h-16"
           value={searchValue}
@@ -144,6 +146,7 @@ export default function Index() {
         />
       </View>
 
+      {/* 최근 검색어 */}
       <View className="mt-4 mb-4">
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="header4">최근 검색어</Typography>
@@ -190,6 +193,7 @@ export default function Index() {
         )}
       </View>
 
+      {/* 최근 본 굿즈 */}
       <View className="mt-4 mb-4">
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="header4">최근 본 굿즈</Typography>
@@ -206,12 +210,9 @@ export default function Index() {
         </View>
         {recentGoods.length > 0 ? (
           <SimpleSwiper
-            ref={recentSwiperRef}
             data={recentGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            resetTrigger={recentResetIndex}
-            resetToIndex={0}
             onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (
@@ -223,18 +224,16 @@ export default function Index() {
         )}
       </View>
 
+      {/* 인기 굿즈 */}
       <View className="mt-4 mb-4">
         <View className="flex flex-row items-center justify-between mb-2 ml-4 mr-4">
           <Typography variant="header4">인기 굿즈</Typography>
         </View>
         {popularGoods.length > 0 ? (
           <SimpleSwiper
-            ref={popularSwiperRef}
             data={popularGoods}
             slidesPerView={2.5}
             itemSpacing={12}
-            resetTrigger={popularResetIndex}
-            resetToIndex={0}
             onSlidePress={(item) => handleNavigateToDetail(item.id)}
           />
         ) : (

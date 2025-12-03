@@ -34,13 +34,12 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <GestureHandlerRootView className="flex-1">
+      <GestureHandlerRootView>
         <PortalProvider>
           <Stack screenOptions={{ contentStyle: { backgroundColor: "white" } }}>
-            <Stack.Screen name="index" options={{ title: "HOME" }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="detail/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="notice" options={{ headerShown: false }} />
+            <Stack.Screen name="notice/index" options={{ headerShown: false }} />
             <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
           </Stack>
         </PortalProvider>
