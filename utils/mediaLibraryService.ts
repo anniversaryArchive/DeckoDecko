@@ -67,7 +67,7 @@ const selectImage = async (): Promise<ImagePicker.ImagePickerAsset | null> => {
       quality: 1,
     });
 
-    if (result.canceled || !result.assets || result.assets.length === 0) {
+    if (result.canceled || !result.assets?.length) {
       return null;
     }
 

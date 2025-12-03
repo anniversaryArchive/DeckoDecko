@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { View, ViewStyle } from "react-native";
-import { Image } from "expo-image";
+import React, {useEffect, useState} from "react";
+import {View, ViewStyle} from "react-native";
+import {Image} from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 
 import NoImage from "./NoImage";
@@ -8,7 +8,7 @@ import NoImage from "./NoImage";
 interface ILocalImageProps {
   assetId?: string;
   width?: number | `${number}%`;
-  height?:number | `${number}%`;
+  height?: number | `${number}%`;
 }
 
 const LocalImage = (props: ILocalImageProps) => {
@@ -56,7 +56,6 @@ const LocalImage = (props: ILocalImageProps) => {
       <View style={{
         width, height,
         backgroundColor: '#f3f4f6',
-        borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center'
       } as ViewStyle} />
