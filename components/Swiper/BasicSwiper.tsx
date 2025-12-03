@@ -1,6 +1,14 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, Image, ScaledSize, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import Carousel, {ICarouselInstance} from 'react-native-reanimated-carousel';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Dimensions,
+  Image,
+  ScaledSize,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
 // 제네릭 타입 정의
 interface BasicSwiperProps<T extends { image?: any }> {
@@ -9,16 +17,20 @@ interface BasicSwiperProps<T extends { image?: any }> {
   renderItem?: (item: T, index: number) => React.ReactNode;
 }
 
-export default function BasicSwiper<T extends { image?: any }>({ data, onSlidePress, renderItem }: BasicSwiperProps<T>) {
+export default function BasicSwiper<T extends { image?: any }>({
+  data,
+  onSlidePress,
+  renderItem,
+}: BasicSwiperProps<T>) {
   const carouselRef = useRef<ICarouselInstance | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [windowSize, setWindowSize] = useState<ScaledSize>(Dimensions.get('window'));
+  const [windowSize, setWindowSize] = useState<ScaledSize>(Dimensions.get("window"));
 
   useEffect(() => {
     const onChange = ({ window }: { window: ScaledSize }) => {
       setWindowSize(window);
     };
-    const subscription = Dimensions.addEventListener('change', onChange);
+    const subscription = Dimensions.addEventListener("change", onChange);
     return () => subscription.remove();
   }, []);
 
@@ -43,7 +55,7 @@ export default function BasicSwiper<T extends { image?: any }>({ data, onSlidePr
       return (
         <Image
           source={item.image}
-          style={{ width: '100%', height: '100%', borderRadius: 12 }}
+          style={{ width: "100%", height: "100%", borderRadius: 12 }}
           resizeMode="cover"
         />
       );
@@ -82,9 +94,7 @@ export default function BasicSwiper<T extends { image?: any }>({ data, onSlidePr
               onPress={() => onSlidePress?.(index, data[index])}
               style={[styles.card, { height: carouselHeight }]}
             >
-              {renderItem
-                ? renderItem(data[index], index)
-                : defaultRenderItem(data[index], index)}
+              {renderItem ? renderItem(data[index], index) : defaultRenderItem(data[index], index)}
             </TouchableOpacity>
           )}
         />
@@ -102,7 +112,7 @@ export default function BasicSwiper<T extends { image?: any }>({ data, onSlidePr
                   borderRadius: 100,
                   width: 10,
                   height: 10,
-                  backgroundColor: isActive ? '#FFBBC1' : '#D9D9D9',
+                  backgroundColor: isActive ? "#FFBBC1" : "#D9D9D9",
                   marginRight: index !== data.length - 1 ? 10 : 0,
                 }}
                 onPress={() => goToIndex(index)}
@@ -118,32 +128,32 @@ export default function BasicSwiper<T extends { image?: any }>({ data, onSlidePr
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   card: {
     flex: 1,
-    backgroundColor: '#FFBBC1',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FFBBC1",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   fallbackCard: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 12,
   },
   slideText: {
     fontSize: 24,
-    color: '#998372',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "#998372",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 10,
   },
 });

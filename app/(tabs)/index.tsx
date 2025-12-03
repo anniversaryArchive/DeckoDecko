@@ -1,14 +1,24 @@
-import {useEffect, useState} from "react";
-import {ScrollView, View} from "react-native";
-import {router} from "expo-router";
-import {SafeAreaView} from "react-native-safe-area-context";
+import { useEffect, useState } from "react";
+import { ScrollView, View } from "react-native";
+import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import {supabase} from "@/utils/supabase";
-import type {TNotice} from "@/types/notice";
+import { supabase } from "@/utils/supabase";
+import type { TNotice } from "@/types/notice";
 
-import slide1 from '@/assets/main_slide.png';
+// eslint-disable-next-line import/no-unresolved
+import slide1 from "@/assets/main_slide.png";
 
-import {BasicSwiper, Button, FeaturedSwiper, Header, NoticeItem, ProgressBar, Spinner, Typography,} from "@/components";
+import {
+  BasicSwiper,
+  Button,
+  FeaturedSwiper,
+  Header,
+  NoticeItem,
+  ProgressBar,
+  Spinner,
+  Typography,
+} from "@/components";
 import items from "@table/items";
 
 const LIMIT_COUNT = 5;
@@ -129,11 +139,7 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
       >
         {/* 배너 영역 */}
-        <BasicSwiper
-          data={[
-            { image: slide1 },
-          ]}
-        />
+        <BasicSwiper data={[{ image: slide1 }]} />
 
         {/* 내 굿즈 소장률 */}
         <View className="px-6">
