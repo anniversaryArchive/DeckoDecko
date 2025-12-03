@@ -153,7 +153,7 @@ export default function MyBookmark() {
 
       <View className="flex-1 gap-4">
         {/* 폴더 리스트 */}
-        <View className="flex-row items-center justify-between gap-2 mt-3">
+        <View className="flex-row items-center justify-between gap-2">
           <FlatList
             horizontal
             data={folderList ? Array.from(folderList.values()) : []}
