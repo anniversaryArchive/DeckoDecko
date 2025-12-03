@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
-import {View, ViewStyle} from "react-native";
-import {Image} from "expo-image";
+import React, { useEffect, useState } from "react";
+import { View, ViewStyle } from "react-native";
+import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 
 import NoImage from "./NoImage";
@@ -26,7 +26,7 @@ const LocalImage = (props: ILocalImageProps) => {
 
       try {
         setIsLoading(true);
-        console.log('🔄 Loading assetId:', assetId);
+        console.log("🔄 Loading assetId:", assetId);
 
         const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
 
@@ -35,9 +35,9 @@ const LocalImage = (props: ILocalImageProps) => {
 
         if (imageUri) {
           setImageUri(imageUri);
-          console.log('Loaded:', imageUri.substring(0, 50) + '...');
+          console.log("Loaded:", imageUri.substring(0, 50) + "...");
         } else {
-          console.warn('No URI found for:', assetId);
+          console.warn("No URI found for:", assetId);
           setImageUri(null);
         }
       } catch (error) {
@@ -53,12 +53,17 @@ const LocalImage = (props: ILocalImageProps) => {
 
   if (isLoading) {
     return (
-      <View style={{
-        width, height,
-        backgroundColor: '#f3f4f6',
-        justifyContent: 'center',
-        alignItems: 'center'
-      } as ViewStyle} />
+      <View
+        style={
+          {
+            width,
+            height,
+            backgroundColor: "#f3f4f6",
+            justifyContent: "center",
+            alignItems: "center",
+          } as ViewStyle
+        }
+      />
     );
   }
 

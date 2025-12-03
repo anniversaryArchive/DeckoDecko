@@ -231,7 +231,9 @@ export default function MyBookmark() {
                     category={item.folderName}
                     itemName={item.gachaInfo.name_kr}
                     image={
-                      isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link
+                      isBundle
+                        ? item.gachaInfo.image_link
+                        : item.thumbnail || item.gachaInfo.image_link
                     }
                     isLocalImage={!isBundle && !item.thumbnail}
                   />

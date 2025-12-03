@@ -1,10 +1,10 @@
 import * as SQLite from "expo-sqlite";
 
 import CommonTabledbInstance from "@/utils/sqlite";
-import {buildInsertQuery} from "@utils/buildSqliteQuery";
+import { buildInsertQuery } from "@utils/buildSqliteQuery";
 
-import type {TCreateItemDTO, TItem, TUpdateItemDTO} from "@/types/item";
-import type {TFolder} from "@/types/folder";
+import type { TCreateItemDTO, TItem, TUpdateItemDTO } from "@/types/item";
+import type { TFolder } from "@/types/folder";
 
 class TbItems {
   #dbInstance: Promise<SQLite.SQLiteDatabase | null>;
@@ -33,8 +33,8 @@ class TbItems {
       if (!db) return [];
 
       const itemList = (await db.getAllAsync(
-          "SELECT * FROM items WHERE folder_id = ? ORDER BY created_at DESC;",
-          [folder_id]
+        "SELECT * FROM items WHERE folder_id = ? ORDER BY created_at DESC;",
+        [folder_id]
       )) as TItem[];
 
       return itemList;
@@ -51,8 +51,8 @@ class TbItems {
       if (!db) return [];
 
       const itemList = (await db.getAllAsync(
-          "SELECT * FROM items WHERE gacha_id = ? ORDER BY created_at DESC;",
-          [gacha_id]
+        "SELECT * FROM items WHERE gacha_id = ? ORDER BY created_at DESC;",
+        [gacha_id]
       )) as TItem[];
 
       return itemList;
@@ -69,8 +69,8 @@ class TbItems {
       if (!db) return null;
 
       const firstRow: TItem | null = await db.getFirstAsync(
-          "SELECT * FROM items WHERE name = ?;",
-          name
+        "SELECT * FROM items WHERE name = ?;",
+        name
       );
 
       return firstRow;
@@ -87,7 +87,7 @@ class TbItems {
       if (!db) return [];
 
       const itemList = (await db.getAllAsync(
-          "SELECT * FROM items ORDER BY created_at DESC;"
+        "SELECT * FROM items ORDER BY created_at DESC;"
       )) as TItem[];
 
       return itemList;
@@ -116,7 +116,7 @@ class TbItems {
 
       const result = await db.runAsync(`UPDATE items SET ${setClause} WHERE id = ?`, [
         ...values,
-        id
+        id,
       ]);
 
       return !!result.changes;

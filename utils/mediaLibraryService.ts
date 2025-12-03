@@ -2,7 +2,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import images from "@table/images";
 import linkingSettingAlert from "./linkingSettingAlert";
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 
 /**
  * 미디어 라이브러리 권한 확인 및 요청
@@ -86,23 +86,23 @@ const saveImageToLibrary = async (asset: ImagePicker.ImagePickerAsset): Promise<
   try {
     // MediaLibrary 권한 재확인
     const { status } = await MediaLibrary.getPermissionsAsync();
-    if (status !== 'granted') {
-      console.error('MediaLibrary permission not granted');
+    if (status !== "granted") {
+      console.error("MediaLibrary permission not granted");
       return null;
     }
 
     // 갤러리 영구 asset 생성 (iOS: Photos, Android: MediaStore)
     const libraryAsset = await MediaLibrary.createAssetAsync(asset.uri);
 
-    console.log('MediaLibrary asset created:', {
+    console.log("MediaLibrary asset created:", {
       id: libraryAsset.id,
       uri: libraryAsset.uri,
-      filename: libraryAsset.filename
+      filename: libraryAsset.filename,
     });
 
     return libraryAsset.id; // Android/iOS 공통 영구 ID
   } catch (e) {
-    console.error('saveImageToLibrary error:', e);
+    console.error("saveImageToLibrary error:", e);
     return null;
   }
 };
@@ -111,12 +111,12 @@ const saveImageToLibrary = async (asset: ImagePicker.ImagePickerAsset): Promise<
  * 이미지 저장 - ImagePicker → MediaLibrary → DB (완전 영구 저장)
  */
 const saveImage = async (img?: ImagePicker.ImagePickerAsset): Promise<string | null> => {
-  const selectImg = img || await selectImage();
+  const selectImg = img || (await selectImage());
 
-  console.log('saveImage called with asset:', selectImg);
+  console.log("saveImage called with asset:", selectImg);
 
   if (!selectImg) {
-    console.error('No image asset provided');
+    console.error("No image asset provided");
     return null;
   }
 
@@ -128,7 +128,7 @@ const saveImage = async (img?: ImagePicker.ImagePickerAsset): Promise<string | n
     // 1. MediaLibrary로 영구 저장 (Android 전용)
     libraryAssetId = await saveImageToLibrary(selectImg);
     if (!libraryAssetId) {
-      console.error('Failed to save to MediaLibrary');
+      console.error("Failed to save to MediaLibrary");
       return null;
     }
   } else {
@@ -139,7 +139,7 @@ const saveImage = async (img?: ImagePicker.ImagePickerAsset): Promise<string | n
   // 2. DB에 영구 ID 저장
   try {
     await images.create(libraryAssetId!);
-    console.log('Image permanently saved with ID:', libraryAssetId);
+    console.log("Image permanently saved with ID:", libraryAssetId);
     return libraryAssetId;
   } catch (e) {
     console.error("saveImage DB error: ", e);

@@ -171,11 +171,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             {label}
           </Typography>
 
-          <Segment<TBookmarkType>
-            segments={BOOKMARK_TYPE}
-            selectedKey={type}
-            onSelect={setType}
-          />
+          <Segment<TBookmarkType> segments={BOOKMARK_TYPE} selectedKey={type} onSelect={setType} />
           <Pressable
             onPress={pickImage}
             className={`w-[150px] h-[150px] self-center flex items-center justify-center rounded bg-secondary-light `}
