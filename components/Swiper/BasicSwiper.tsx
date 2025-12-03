@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Dimensions, StyleSheet, TouchableOpacity, ScaledSize, Image } from 'react-native';
-import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
+import React, {useEffect, useRef, useState} from 'react';
+import {Dimensions, Image, ScaledSize, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Carousel, {ICarouselInstance} from 'react-native-reanimated-carousel';
 
 // 제네릭 타입 정의
 interface BasicSwiperProps<T extends { image?: any }> {
@@ -58,25 +58,37 @@ export default function BasicSwiper<T extends { image?: any }>({ data, onSlidePr
 
   return (
     <View style={styles.container}>
-      <Carousel
-        ref={carouselRef}
-        width={windowSize.width}
-        height={carouselHeight}
-        data={data}
-        loop={shouldLoop}
-        onProgressChange={onProgressChange}
-        renderItem={({ index }) => (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => onSlidePress?.(index, data[index])}
-            style={[styles.card, { height: carouselHeight }]}
-          >
-            {renderItem
-              ? renderItem(data[index], index)
-              : defaultRenderItem(data[index], index)}
-          </TouchableOpacity>
-        )}
-      />
+      {data.length === 1 ? (
+        // 데이터가 1개일 때는 Carousel 없이 단일 카드만 렌더링
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={[styles.card, { height: carouselHeight }]}
+          onPress={() => onSlidePress?.(0, data[0])}
+        >
+          {renderItem ? renderItem(data[0], 0) : defaultRenderItem(data[0], 0)}
+        </TouchableOpacity>
+      ) : (
+        // 데이터가 2개 이상일 때 Carousel 렌더링
+        <Carousel
+          ref={carouselRef}
+          width={windowSize.width}
+          height={carouselHeight}
+          data={data}
+          loop={shouldLoop}
+          onProgressChange={onProgressChange}
+          renderItem={({ index }) => (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => onSlidePress?.(index, data[index])}
+              style={[styles.card, { height: carouselHeight }]}
+            >
+              {renderItem
+                ? renderItem(data[index], index)
+                : defaultRenderItem(data[index], index)}
+            </TouchableOpacity>
+          )}
+        />
+      )}
 
       {/* 페이지네이션 (Pagination) - 데이터가 1개일 때는 숨김 */}
       {data.length > 1 && (
