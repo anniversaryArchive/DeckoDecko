@@ -65,7 +65,7 @@ const selectImage = async (): Promise<ImagePicker.ImagePickerAsset | null> => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.6,
     });
 
     if (result.canceled || !result.assets?.length) {
