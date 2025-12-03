@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import {View, ScrollView, Pressable, Image, useWindowDimensions} from 'react-native';
 import { router } from "expo-router";
 
 import { supabase } from "@/utils/supabase";
 import type { TNotice } from "@/types/notice";
 
+import TitleLogo from '@/assets/title_logo.png';
 import slide1 from '@/assets/main_slide.png';
 
 import {
@@ -134,19 +135,26 @@ export default function Home() {
     router.push(`/notice/${id}`);
   };
 
+  const { width: screenWidth } = useWindowDimensions();
+  const logoWidth = 100;
+  const logoHeight = (logoWidth / 910) * 500;
+
   return (
     <View className="flex-1">
       <Spinner visible={loading} />
-      <View className="flex flex-row justify-between w-full px-4 py-2 bg-white">
-        <Typography variant="header1" color="primary">
-          LOGO
-        </Typography>
+      <View className="flex flex-row justify-between w-full px-6 py-1 bg-white">
+        <Image
+          source={TitleLogo}
+          style={{ width: logoWidth, height: logoHeight }}
+          resizeMode="contain"
+        />
         <View className="my-auto">
           <Pressable onPress={goToSearch}>
             <Icon name="bigHeadSearch" size={24} />
           </Pressable>
         </View>
       </View>
+
       <ScrollView className="flex-1">
         {/* 배너 영역 */}
         <BasicSwiper
