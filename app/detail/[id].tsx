@@ -100,7 +100,7 @@ export default function DetailPagef() {
       {/* Header */}
       <View className="flex flex-row items-center justify-between h-12 px-6">
         <Pressable onPress={handleBack}>
-          <Icon name="back" size={24} fill="secondary.dark" stroke="secondary.dark" />
+          <Icon name="chevronLeft" size={24} fill="secondary.dark" stroke="secondary.dark" />
         </Pressable>
       </View>
 

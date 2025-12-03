@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { supabase } from "@/utils/supabase";
 import type { TNotice } from "@/types/notice";
@@ -126,7 +127,7 @@ export default function Home() {
   };
 
   return (
-    <View className="flex-1 gap-4 pt-1">
+    <SafeAreaView edges={["top"]} className="flex-1 gap-4 pt-1">
       <Spinner visible={loading} />
       <Header horizontalGap />
       <ScrollView
@@ -188,6 +189,6 @@ export default function Home() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

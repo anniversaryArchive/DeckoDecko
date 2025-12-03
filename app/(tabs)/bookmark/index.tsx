@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, Link, useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 
 import {
   Button,
@@ -136,7 +136,7 @@ export default function MyBookmark() {
   const flatListData = isBundle ? filteredFolderViewData : filteredItemList;
 
   return (
-    <View className="flex-1 gap-4 px-6 pt-1">
+    <SafeAreaView edges={["top"]} className="flex-1 gap-4 px-6 pt-1">
       <Spinner visible={loading} />
       {/* Header */}
       <Header />
@@ -153,7 +153,7 @@ export default function MyBookmark() {
 
       <View className="flex-1 gap-4">
         {/* 폴더 리스트 */}
-        <View className="flex-row items-center justify-between gap-2 mt-3">
+        <View className="flex-row items-center justify-between gap-2">
           <FlatList
             horizontal
             data={folderList ? Array.from(folderList.values()) : []}
@@ -170,11 +170,15 @@ export default function MyBookmark() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: "row", gap: 12 }}
           />
-          <Link href="/bookmark/folder-manage" asChild>
-            <Pressable className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full">
-              <Icon name="folderFill" size={20} />
-            </Pressable>
-          </Link>
+
+          <Pressable
+            className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full"
+            onPress={() => {
+              router.push("/(tabs)/bookmark/folder-manage");
+            }}
+          >
+            <Icon name="folderFill" size={20} />
+          </Pressable>
         </View>
 
         {/* 검색 입력 */}
@@ -255,6 +259,6 @@ export default function MyBookmark() {
           </SafeAreaView>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
