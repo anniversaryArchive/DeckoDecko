@@ -2,6 +2,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import images from "@table/images";
 import linkingSettingAlert from "./linkingSettingAlert";
+import Constants from 'expo-constants';
 
 /**
  * 미디어 라이브러리 권한 확인 및 요청
@@ -119,17 +120,26 @@ const saveImage = async (img?: ImagePicker.ImagePickerAsset): Promise<string | n
     return null;
   }
 
-  // 1. MediaLibrary로 영구 저장
-  const libraryAssetId = await saveImageToLibrary(selectImg);
-  if (!libraryAssetId) {
-    console.error('Failed to save to MediaLibrary');
-    return null;
+  // Android인 경우에만 MediaLibrary 영구 저장 로직 실행
+  const isAndroid = Constants?.platform?.ios === undefined;
+  let libraryAssetId: string | null = null;
+
+  if (isAndroid) {
+    // 1. MediaLibrary로 영구 저장 (Android 전용)
+    libraryAssetId = await saveImageToLibrary(selectImg);
+    if (!libraryAssetId) {
+      console.error('Failed to save to MediaLibrary');
+      return null;
+    }
+  } else {
+    // iOS는 uri 직접 사용
+    libraryAssetId = selectImg.uri;
   }
 
   // 2. DB에 영구 ID 저장
   try {
-    await images.create(libraryAssetId);
-    console.log('Image permanently saved with MediaLibrary ID:', libraryAssetId);
+    await images.create(libraryAssetId!);
+    console.log('Image permanently saved with ID:', libraryAssetId);
     return libraryAssetId;
   } catch (e) {
     console.error("saveImage DB error: ", e);
