@@ -1,6 +1,6 @@
 import uuid from "react-native-uuid";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, Stack } from "expo-router";
 import DraggableFlatList, {
@@ -10,7 +10,7 @@ import DraggableFlatList, {
 
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import { BottomSheet, Button, FolderPicker, Icon, InputBox, Typography } from "@components/index";
-import { getColor } from "@utils/color";
+import { colors } from "@utils/tailwind-colors";
 import folder from "@table/folders";
 
 import type { TFolder } from "@/types/folder";
@@ -113,22 +113,19 @@ const FolderManage = () => {
         options={{
           title: "폴더 관리",
           headerShown: true,
-          fullScreenGestureShadowEnabled: true,
-          headerTitleStyle: { fontFamily: "DunggeunmisoB", color: getColor("primary") },
-          headerLeft: () => (
-            <TouchableOpacity className="ml-1.5" onPress={() => router.back()}>
-              <Icon name="back" size={24} fill={getColor("primary")} stroke={getColor("primary")} />
+          headerTitleAlign: "center",
+          headerTintColor: colors.primary.DEFAULT,
+          headerTitleStyle: { fontFamily: "DunggeunmisoB" },
+          headerBackButtonDisplayMode: "minimal",
+          headerLeft: ({ tintColor }) => (
+            <TouchableOpacity onPress={() => router.back()} className="mx-1.5">
+              <Icon name="chevronLeft" size={24} fill={tintColor} stroke={tintColor} />
             </TouchableOpacity>
           ),
-          headerRight: () => (
-            <Pressable className="mr-1.5" onPress={() => handleOpenAddMode()}>
-              <Icon
-                name="newFolder"
-                size={24}
-                fill={getColor("primary")}
-                stroke={getColor("primary")}
-              />
-            </Pressable>
+          headerRight: ({ tintColor }) => (
+            <TouchableOpacity onPress={() => handleOpenAddMode()} className="mx-2">
+              <Icon name="newFolder" size={24} fill={tintColor} stroke={tintColor} />
+            </TouchableOpacity>
           ),
         }}
       />

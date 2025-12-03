@@ -1,11 +1,19 @@
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, View, Alert, Share } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, Link, useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 
-import { Button, GoodsThumbnail, Icon, InputBox, Segment, Typography, Spinner } from "@components/index";
+import {
+  Button,
+  GoodsThumbnail,
+  Header,
+  Icon,
+  InputBox,
+  Segment,
+  Typography,
+  Spinner,
+} from "@components/index";
 import { supabase } from "@utils/supabase";
-import { colors } from "@utils/tailwind-colors";
 import { BOOKMARK_TYPE } from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
@@ -26,9 +34,10 @@ export default function MyBookmark() {
     const folderData = await folder.getAll();
     setFolderList(
       new Map(
-        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderData].map(
-          (f) => [f.id, f]
-        )
+        [{ id: 0, name: "전체", sequence: 0, created_at: new Date() }, ...folderData].map((f) => [
+          f.id,
+          f,
+        ])
       )
     );
   };
@@ -39,7 +48,9 @@ export default function MyBookmark() {
     try {
       const folders = folderList ?? new Map<number, TFolder>();
       const itemsData =
-        selectedFolder === 0 ? await items.getAll() : await items.getItemsByFolderId(selectedFolder);
+        selectedFolder === 0
+          ? await items.getAll()
+          : await items.getItemsByFolderId(selectedFolder);
       const filtered = itemsData.filter((i) => i.type === bookmarkType);
 
       const ids = filtered.map((i) => i.gacha_id);
@@ -76,10 +87,7 @@ export default function MyBookmark() {
 
   // 묶어보기: 동일 gacha_id로 그룹핑, 아이템 개수 추가
   const getFolderViewData = (): TItemExtended[] => {
-    const map = new Map<
-      number,
-      { folderName: string; items: TItemExtended[]; count: number }
-      >();
+    const map = new Map<number, { folderName: string; items: TItemExtended[]; count: number }>();
 
     itemList.forEach((item) => {
       const key = item.gacha_id;
@@ -109,30 +117,6 @@ export default function MyBookmark() {
     item.gachaInfo.name_kr.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const goToSearch = () => {
-    router.push("/(tabs)/search");
-  };
-
-  // Share API를 사용한 내보내기 함수
-  const shareJsonData = async () => {
-    try {
-      if (itemList.length === 0) {
-        Alert.alert("알림", "내보낼 데이터가 없습니다.");
-        return;
-      }
-      const jsonString = JSON.stringify(itemList, null, 2);
-
-      // 내장 Share 기능 호출
-      await Share.share({
-        message: jsonString,
-        title: "내 굿즈 리스트 JSON",
-      });
-      // 공유 창에서 '복사'를 선택하면 클립보드에 복사됩니다.
-    } catch (error: any) {
-      Alert.alert("오류", error.message);
-    }
-  };
-
   useFocusEffect(
     useCallback(() => {
       setSearchTerm("");
@@ -152,17 +136,10 @@ export default function MyBookmark() {
   const flatListData = isBundle ? filteredFolderViewData : filteredItemList;
 
   return (
-    <View className="flex-1 gap-4 px-6 pt-1">
+    <SafeAreaView edges={["top"]} className="flex-1 gap-4 px-6 pt-1">
       <Spinner visible={loading} />
       {/* Header */}
-      <View className="flex flex-row items-center justify-between">
-        <Typography variant="header1" color="primary">
-          LOGO
-        </Typography>
-        <Pressable onPress={goToSearch}>
-          <Icon name="search" size={32} fill={colors.primary.DEFAULT} />
-        </Pressable>
-      </View>
+      <Header />
 
       {/* WISH / GET */}
       <Segment
@@ -176,7 +153,7 @@ export default function MyBookmark() {
 
       <View className="flex-1 gap-4">
         {/* 폴더 리스트 */}
-        <View className="flex-row items-center justify-between gap-2 mt-3">
+        <View className="flex-row items-center justify-between gap-2">
           <FlatList
             horizontal
             data={folderList ? Array.from(folderList.values()) : []}
@@ -193,23 +170,16 @@ export default function MyBookmark() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: "row", gap: 12 }}
           />
-          <Link href="/bookmark/folder-manage" asChild>
-            <Pressable className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full">
-              <Icon name="folderFill" size={20} />
-            </Pressable>
-          </Link>
-        </View>
 
-        {/* 3. JSON 내보내기 버튼 // 웹 확인용
-        <View className="flex-row justify-end">
-          <Button
-            variant="text"
-            onPress={shareJsonData}
-            contentClassName="text-gray-500 text-xs"
+          <Pressable
+            className="bg-primary-light w-9 h-9 flex items-center justify-center rounded-full"
+            onPress={() => {
+              router.push("/(tabs)/bookmark/folder-manage");
+            }}
           >
-            JSON 데이터 내보내기
-          </Button>
-        </View>*/}
+            <Icon name="folderFill" size={20} />
+          </Pressable>
+        </View>
 
         {/* 검색 입력 */}
         <InputBox
@@ -261,9 +231,10 @@ export default function MyBookmark() {
                     category={item.folderName}
                     itemName={item.gachaInfo.name_kr}
                     image={
-                      isBundle ? item.gachaInfo.image_link : item.thumbnail || item.gachaInfo.image_link
+                      isBundle
+                        ? item.gachaInfo.image_link
+                        : item.thumbnail || item.gachaInfo.image_link
                     }
-                    isLocalImage={!isBundle}
                   />
                   {isBundle && item.count !== undefined && (
                     <Typography variant="body2" color="primary" className="pl-1">
@@ -288,6 +259,6 @@ export default function MyBookmark() {
           </SafeAreaView>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

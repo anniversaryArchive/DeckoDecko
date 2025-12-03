@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { useLocalSearchParams, Stack, router } from "expo-router";
-
-import { Typography, Icon } from "@/components";
-import type { TNotice } from "@/types/notice";
+import { Typography, Icon, Spinner } from "@/components";
 import { supabase } from "@/utils/supabase";
 import { formatYmdHm } from "@/utils/format";
-import { getColor } from "@/utils/color";
+import { colors } from "@utils/tailwind-colors";
+
+import type { TNotice } from "@/types/notice";
 
 export default function NoticeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [notice, setNotice] = useState<TNotice | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchNotice = async () => {
       try {
+        setIsLoading(true);
         const response = await supabase.from("notice").select("*").eq("id", id).single();
         if (response.error || !response.data) throw response.error;
         setNotice(response.data);
@@ -30,20 +31,23 @@ export default function NoticeDetail() {
 
   return (
     <>
+      <Spinner visible={isLoading} />
       <Stack.Screen
         options={{
-          title: notice?.title || "공지사항",
+          title: isLoading ? "" : notice?.title,
           headerShown: true,
-          headerTitleStyle: { fontFamily: "DunggeunmisoB", color: getColor("primary") },
-          contentStyle: { backgroundColor: "white" },
-          headerLeft: () => (
-            <TouchableOpacity className="ml-1.5" onPress={() => router.back()}>
-              <Icon name="back" size={24} fill={getColor("primary")} stroke={getColor("primary")} />
+          headerTitleAlign: "center",
+          headerTitleStyle: { fontFamily: "DunggeunmisoB" },
+          headerTintColor: colors.primary.DEFAULT,
+          headerBackButtonDisplayMode: "minimal",
+          headerLeft: ({ tintColor }) => (
+            <TouchableOpacity className="mx-1.5" onPress={() => router.back()}>
+              <Icon name="chevronLeft" size={24} fill={tintColor} stroke={tintColor} />
             </TouchableOpacity>
           ),
         }}
       />
-      {notice ? (
+      {notice && (
         <ScrollView
           className="p-6"
           contentInsetAdjustmentBehavior="automatic"
@@ -56,10 +60,11 @@ export default function NoticeDetail() {
             {notice.content}
           </Typography>
         </ScrollView>
-      ) : (
-        <View className="p-6">
-          <Typography variant="body1" color="black" className="mt-6" numberOfLines={0}>
-            {isLoading ? "Loading..." : "해당 공지사항을 찾을 수 없습니다!"}
+      )}
+      {!isLoading && !notice && (
+        <View className="p-6 mx-auto">
+          <Typography variant="title1" color="black">
+            "해당 공지사항을 찾을 수 없습니다!"
           </Typography>
         </View>
       )}
