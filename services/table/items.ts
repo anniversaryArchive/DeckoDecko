@@ -184,8 +184,8 @@ class TbItems {
     }
   }
 
-  // 마이그레이션 함수 (기존에 잘못 생성된 DB 구조를 변경할 때 사용)
-  // UNIQUE 제약 조건이 없는 items_new 테이블로 데이터를 옮깁니다.
+  // 마이그레이션 함수
+  // UNIQUE 제약 조건이 없는 items_new 테이블로 데이터 이동
   async migration() {
     try {
       const db = await this.#dbInstance;
