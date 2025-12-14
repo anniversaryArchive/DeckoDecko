@@ -127,38 +127,41 @@ export default function DetailPagef() {
       <ScrollView className="px-6 pt-2 pb-10">
         {/* 가챠의 내 아이템 목록 (Wish, Get) */}
         {list.map((item) => (
-          <WiggleBorder key={`gacha-item-${item.id}`} strokeColor="secondary.dark">
-            <View className="flex flex-row gap-2 p-2">
-              <View className="w-12 h-12 rounded">
-                {item.thumbnail ? (
-                  <LocalImage assetId={item.thumbnail} width="100%" height="100%" />
-                ) : (
-                  <Image source={{ uri: gachaData?.image_link }} className="w-full h-full" />
-                )}
-              </View>
-              <View className="flex-1 my-auto">
-                <Typography variant="header5" color="secondary-dark">
-                  {item.name}
-                </Typography>
-              </View>
+          <TouchableOpacity
+            key={`gacha-item-${item.id}`}
+            activeOpacity={0.6}
+            onPress={() => {
+              setItemInfo(item);
+              handleAddGacha();
+            }}
+          >
+            <WiggleBorder strokeColor="secondary.dark">
+              <View className="flex flex-row gap-2 p-2">
+                <View className="w-12 h-12 rounded">
+                  {item.thumbnail ? (
+                    <LocalImage assetId={item.thumbnail} width="100%" height="100%" />
+                  ) : (
+                    <Image source={{ uri: gachaData?.image_link }} className="w-full h-full" />
+                  )}
+                </View>
+                <View className="flex-1 my-auto">
+                  <Typography variant="header5" color="secondary-dark">
+                    {item.name}
+                  </Typography>
+                </View>
 
-              <TouchableOpacity
-                activeOpacity={0.6}
-                onPress={() => {
-                  setItemInfo(item);
-                  handleAddGacha();
-                }}
-              >
                 <View
-                  className={`rounded my-auto bg-${item.type === "WISH" ? "primary" : "secondary"} flex items-center justify-center w-14 h-7`}
+                  className={`rounded my-auto bg-${
+                    item.type === "WISH" ? "primary" : "secondary"
+                  } flex items-center justify-center w-14 h-7`}
                 >
                   <Typography variant="tag" color="secondary-light">
                     {item.type}
                   </Typography>
                 </View>
-              </TouchableOpacity>
-            </View>
-          </WiggleBorder>
+              </View>
+            </WiggleBorder>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 
