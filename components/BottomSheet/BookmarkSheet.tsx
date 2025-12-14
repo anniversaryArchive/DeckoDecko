@@ -247,6 +247,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             className="min-h-28"
           />
           <View className="flex flex-row gap-2 mt-20">
+            {itemInfo && (
             <View className="flex-1">
               <Button
                 size="xl"
@@ -259,6 +260,8 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
                 삭제
               </Button>
             </View>
+            )}
+
             <View className="flex-1">
               <Button
                 size="xl"
