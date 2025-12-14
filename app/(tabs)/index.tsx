@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import { ScrollView, View } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { supabase } from "@/utils/supabase";
 import type { TNotice } from "@/types/notice";
 
+// eslint-disable-next-line import/no-unresolved
+import slide1 from "@/assets/main_slide.png";
+
 import {
-  Button,
-  Typography,
-  FeaturedSwiper,
   BasicSwiper,
-  ProgressBar,
-  NoticeItem,
-  Spinner,
+  Button,
+  FeaturedSwiper,
   Header,
+  NoticeItem,
+  ProgressBar,
+  Spinner,
+  Typography,
 } from "@/components";
 import items from "@table/items";
 
@@ -127,7 +130,7 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 gap-4 pt-1">
+    <SafeAreaView edges={["top"]} className="flex-1 gap-1.5 pt-1">
       <Spinner visible={loading} />
       <Header horizontalGap />
       <ScrollView
@@ -136,7 +139,7 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
       >
         {/* 배너 영역 */}
-        <BasicSwiper data={[1, 2, 3]} />
+        <BasicSwiper data={[{ image: slide1 }]} />
 
         {/* 내 굿즈 소장률 */}
         <View className="px-6">
