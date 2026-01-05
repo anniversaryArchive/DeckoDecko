@@ -235,6 +235,7 @@ export default function MyBookmark() {
                         ? item.gachaInfo.image_link
                         : item.thumbnail || item.gachaInfo.image_link
                     }
+                    isLocalImage={!isBundle && !item.thumbnail}
                   />
                   {isBundle && item.count !== undefined && (
                     <Typography variant="body2" color="primary" className="pl-1">
