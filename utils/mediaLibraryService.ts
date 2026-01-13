@@ -82,7 +82,7 @@ const selectImage = async (): Promise<ImagePicker.ImagePickerAsset | null> => {
 /**
  * MediaLibrary Asset 영구 저장 (Android/iOS 공통)
  */
-const saveImageToLibrary = async (asset: ImagePicker.ImagePickerAsset): Promise<string | null> => {
+const saveImageToLibrary = async (asset: ImagePicker.ImagePickerAsset): Promise<{ id: string; mediaAsset: MediaLibrary.Asset } | null> => {
   try {
     // MediaLibrary 권한 재확인
     const { status } = await MediaLibrary.getPermissionsAsync();
@@ -100,11 +100,30 @@ const saveImageToLibrary = async (asset: ImagePicker.ImagePickerAsset): Promise<
       filename: libraryAsset.filename,
     });
 
-    return libraryAsset.id; // Android/iOS 공통 영구 ID
+    // createAssetAsync가 반환한 libraryAsset 자체가 MediaLibrary.Asset 타입
+    return { id: libraryAsset.id, mediaAsset: libraryAsset };
   } catch (e) {
     console.error("saveImageToLibrary error:", e);
     return null;
   }
+};
+
+/**
+ * 안드로이드 이미지 선택 시 폴더 생성
+ */
+const ALBUM_NAME = "DeckoDecko";
+
+const getOrCreateAlbum = async (asset: MediaLibrary.Asset) => {
+  const album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
+
+  if (album) {
+    // Android: copy=true 로 설정하면 기존 위치 + DeckoDecko 앨범에 둘 다 존재(중복 저장)
+    await MediaLibrary.addAssetsToAlbumAsync([asset], album, true);
+    return album;
+  }
+
+  // 앨범이 없으면 생성하면서 asset을 복사해서 추가
+  return await MediaLibrary.createAlbumAsync(ALBUM_NAME, asset, true);
 };
 
 /**
@@ -126,17 +145,27 @@ const saveImage = async (img?: ImagePicker.ImagePickerAsset): Promise<string | n
 
   if (isAndroid) {
     // 1. MediaLibrary로 영구 저장 (Android 전용)
-    libraryAssetId = await saveImageToLibrary(selectImg);
-    if (!libraryAssetId) {
+    const saved = await saveImageToLibrary(selectImg);
+    if (!saved) {
       console.error("Failed to save to MediaLibrary");
       return null;
+    }
+
+    libraryAssetId = saved.id;
+
+    // 2. DeckoDecko 앨범 확인 후 없으면 생성, 있으면 해당 앨범에 asset 복사(중복 저장)
+    try {
+      await getOrCreateAlbum(saved.mediaAsset);
+      console.log("Asset added to DeckoDecko album");
+    } catch (e) {
+      console.error("getOrCreateAlbum error:", e);
     }
   } else {
     // iOS는 uri 직접 사용
     libraryAssetId = selectImg.uri;
   }
 
-  // 2. DB에 영구 ID 저장
+  // 3. DB에 영구 ID 저장
   try {
     await images.create(libraryAssetId!);
     console.log("Image permanently saved with ID:", libraryAssetId);
