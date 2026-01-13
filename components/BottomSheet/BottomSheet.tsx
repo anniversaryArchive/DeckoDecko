@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Dimensions, View, Pressable, Keyboard, StyleSheet } from "react-native";
+import { Dimensions, View, Pressable, Keyboard, StyleSheet, Platform } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -7,7 +7,7 @@ import Animated, {
   withSpring,
   withTiming,
   runOnJS,
-  useAnimatedKeyboard,
+  runOnUI,
 } from "react-native-reanimated";
 import { Portal } from "@/PortalContext";
 
@@ -22,7 +22,36 @@ export type BottomSheetProps = {
 export default function BottomSheet({ open, onClose, children }: BottomSheetProps) {
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const overlayOpacity = useSharedValue(0);
-  const keyboard = useAnimatedKeyboard();
+  const paddingBottom = useSharedValue(0);
+
+  // 키보드가 나타나기 시작할 때부터 애니메이션 시작
+  useEffect(() => {
+    const updatePaddingBottom = (height: number, duration: number) => {
+      "worklet";
+      paddingBottom.value = withTiming(height, { duration });
+    };
+
+    const keyboardWillShowListener = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+      (e) => {
+        const duration = Platform.OS === "ios" ? (e.duration || 250) * 1000 : 250;
+        runOnUI(updatePaddingBottom)(e.endCoordinates.height, duration);
+      }
+    );
+
+    const keyboardWillHideListener = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
+      (e) => {
+        const duration = Platform.OS === "ios" ? (e.duration || 250) * 1000 : 250;
+        runOnUI(updatePaddingBottom)(0, duration);
+      }
+    );
+
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
+  }, [paddingBottom]);
 
   useEffect(() => {
     if (open) {
@@ -66,7 +95,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheetProp
   }));
 
   const animatedContentStyle = useAnimatedStyle(() => ({
-    paddingBottom: keyboard.height.value,
+    paddingBottom: paddingBottom.value,
   }));
 
   // 3. 닫혀있고 애니메이션도 끝난 상태면 렌더링하지 않음
