@@ -54,13 +54,13 @@ const FolderManage = () => {
 
   const handleOpenAddMode = useCallback(() => {
     setPickerState({ initialMode: "add" });
-    openSheet("FOLDER");
+    openSheet("FOLDER_ADD");
   }, [openSheet]);
 
   const handleOpenEditMode = useCallback(
     (folder: TFolder) => {
       setPickerState({ initialMode: "edit", originalFolder: folder });
-      openSheet("FOLDER");
+      openSheet("FOLDER_EDIT");
     },
     [openSheet]
   );

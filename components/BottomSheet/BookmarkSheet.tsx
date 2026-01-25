@@ -173,11 +173,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
             {label}
           </Typography>
 
-          <Segment<TBookmarkType>
-            segments={BOOKMARK_TYPE}
-            selectedKey={type}
-            onSelect={setType}
-          />
+          <Segment<TBookmarkType> segments={BOOKMARK_TYPE} selectedKey={type} onSelect={setType} />
           <Pressable
             onPress={pickImage}
             className={`w-[150px] h-[150px] self-center flex items-center justify-center rounded bg-secondary-light `}
@@ -231,7 +227,7 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
               />
             }
             onPress={() => {
-              openSheet("FOLDER");
+              openSheet("FOLDER_SELECT");
             }}
           >
             {selectedFolder?.name ?? "폴더 선택"}
@@ -248,18 +244,18 @@ const BookmarkSheet = (props: IBookmarkSheetProps | IBookmarkSheetEditProps) => 
           />
           <View className="flex flex-row gap-2 mt-20">
             {itemInfo && (
-            <View className="flex-1">
-              <Button
-                size="xl"
-                width="full"
-                bold
-                rounded
-                variant="outlined"
-                onPress={deleteBookmark}
-              >
-                삭제
-              </Button>
-            </View>
+              <View className="flex-1">
+                <Button
+                  size="xl"
+                  width="full"
+                  bold
+                  rounded
+                  variant="outlined"
+                  onPress={deleteBookmark}
+                >
+                  삭제
+                </Button>
+              </View>
             )}
 
             <View className="flex-1">

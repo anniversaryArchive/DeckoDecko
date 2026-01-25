@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type TSheetName = "BOOKMARK" | "FOLDER";
+type TSheetName = "BOOKMARK" | "FOLDER_SELECT" | "FOLDER_ADD" | "FOLDER_EDIT";
 
 interface IBottomSheetState {
   // 현재 열려있는 시트들의 스택

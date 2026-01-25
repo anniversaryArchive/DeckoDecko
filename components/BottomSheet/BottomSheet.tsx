@@ -1,13 +1,19 @@
 import React, { useEffect } from "react";
-import { Dimensions, View, Pressable, Keyboard, StyleSheet, Platform } from "react-native";
+import {
+  Dimensions,
+  View,
+  Pressable,
+  Keyboard,
+  StyleSheet,
+  Platform,
+  KeyboardEventName,
+} from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
-  runOnUI,
 } from "react-native-reanimated";
 import { Portal } from "@/PortalContext";
 
@@ -19,6 +25,17 @@ export type BottomSheetProps = {
   children?: React.ReactNode;
 };
 
+// duration이 있으면 초 단위 값이므로 밀리초로 변환, 없으면 기본값 250ms
+const convertDuration = (duration?: number | null) => {
+  return duration ? duration * 1000 : 250;
+};
+
+// 플랫폼별 키보드 이벤트 이름
+const [keyboardShowEvent, keyboardHideEvent]: KeyboardEventName[] =
+  Platform.OS === "ios"
+    ? ["keyboardWillShow", "keyboardWillHide"]
+    : ["keyboardDidShow", "keyboardDidHide"];
+
 export default function BottomSheet({ open, onClose, children }: BottomSheetProps) {
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const overlayOpacity = useSharedValue(0);
@@ -27,24 +44,15 @@ export default function BottomSheet({ open, onClose, children }: BottomSheetProp
   // 키보드가 나타나기 시작할 때부터 애니메이션 시작
   useEffect(() => {
     const updatePaddingBottom = (height: number, duration: number) => {
-      "worklet";
+      "worklet"; // worklet 함수를 직접 호출하면 자동으로 UI 스레드에서 실행됨
       paddingBottom.value = withTiming(height, { duration });
     };
 
-    const keyboardWillShowListener = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
-      (e) => {
-        const duration = Platform.OS === "ios" ? (e.duration || 250) * 1000 : 250;
-        runOnUI(updatePaddingBottom)(e.endCoordinates.height, duration);
-      }
+    const keyboardWillShowListener = Keyboard.addListener(keyboardShowEvent, (e) =>
+      updatePaddingBottom(e.endCoordinates.height, convertDuration(e.duration))
     );
-
-    const keyboardWillHideListener = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
-      (e) => {
-        const duration = Platform.OS === "ios" ? (e.duration || 250) * 1000 : 250;
-        runOnUI(updatePaddingBottom)(0, duration);
-      }
+    const keyboardWillHideListener = Keyboard.addListener(keyboardHideEvent, (e) =>
+      updatePaddingBottom(0, convertDuration(e.duration))
     );
 
     return () => {
@@ -78,7 +86,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheetProp
     })
     .onEnd(() => {
       if (translateY.value > SCREEN_HEIGHT * 0.25) {
-        runOnJS(onClose)(); // 닫기 실행
+        onClose();
       } else {
         translateY.value = withSpring(0, { damping: 30 });
         overlayOpacity.value = withTiming(0.3, { duration: 300 });
