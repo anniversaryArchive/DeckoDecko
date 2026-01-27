@@ -23,6 +23,7 @@ export type BottomSheetProps = {
   open: boolean;
   onClose: () => void;
   children?: React.ReactNode;
+  isTopSheet?: boolean; // 스택의 최상단 시트인지 여부
 };
 
 // duration이 있으면 초 단위 값이므로 밀리초로 변환, 없으면 기본값 250ms
@@ -36,10 +37,16 @@ const [keyboardShowEvent, keyboardHideEvent]: KeyboardEventName[] =
     ? ["keyboardWillShow", "keyboardWillHide"]
     : ["keyboardDidShow", "keyboardDidHide"];
 
-export default function BottomSheet({ open, onClose, children }: BottomSheetProps) {
+export default function BottomSheet({
+  open,
+  onClose,
+  children,
+  isTopSheet = true,
+}: BottomSheetProps) {
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const overlayOpacity = useSharedValue(0);
   const paddingBottom = useSharedValue(0);
+  const sheetOpacity = useSharedValue(1);
 
   // 키보드가 나타나기 시작할 때부터 애니메이션 시작
   useEffect(() => {
@@ -64,15 +71,22 @@ export default function BottomSheet({ open, onClose, children }: BottomSheetProp
   useEffect(() => {
     if (open) {
       // 바텀시트 열기
-      translateY.value = withSpring(0);
-      overlayOpacity.value = withTiming(0.3, { duration: 300 });
+      translateY.value = withSpring(0, { damping: 20, stiffness: 90 });
+      if (isTopSheet) {
+        overlayOpacity.value = withTiming(0.3, { duration: 300 });
+        sheetOpacity.value = withTiming(1, { duration: 300 });
+      } else {
+        overlayOpacity.value = 0;
+        sheetOpacity.value = withTiming(0, { duration: 300 });
+      }
     } else {
       // 바텀시트 닫기
       Keyboard.isVisible() && Keyboard.dismiss();
       overlayOpacity.value = withTiming(0, { duration: 300 });
       translateY.value = withSpring(SCREEN_HEIGHT, { damping: 30 });
+      sheetOpacity.value = withTiming(0, { duration: 300 });
     }
-  }, [open, translateY, overlayOpacity]); // 의존성 단순화
+  }, [open, translateY, overlayOpacity, isTopSheet, sheetOpacity]);
 
   // 드래그 제스처 (기존과 동일)
   const pan = Gesture.Pan()
@@ -100,6 +114,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheetProp
 
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    opacity: sheetOpacity.value,
   }));
 
   const animatedContentStyle = useAnimatedStyle(() => ({

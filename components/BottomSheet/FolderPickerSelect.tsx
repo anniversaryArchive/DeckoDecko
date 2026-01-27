@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import folder from "@table/folders";
 import { activeBottomSheet } from "@/stores/activeBottomSheet";
 import { colors } from "@utils/tailwind-colors";
 
@@ -11,6 +10,7 @@ import Typography from "@components/Typography";
 import Button from "@components/Button";
 import BottomSheet from "./BottomSheet";
 import { Spinner } from "@/components/Spinner";
+import { useFolderList, useFolderSheetWithLoad } from "./useFolderPicker";
 
 import type { TFolder } from "@/types/folder";
 
@@ -25,37 +25,19 @@ const FolderPickerSelect = ({
   onSelectFolder,
   handleClose: parentHandleClose,
 }: IFolderPickerSelectProps) => {
-  const [folderList, setFolderList] = useState<TFolder[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const { sheetStack, openSheet, closeSheet } = activeBottomSheet();
-  const isOpen = sheetStack[sheetStack.length - 1] === SHEET_NAME;
+  const { folderList, loading, loadFolderList } = useFolderList({ withLoading: true });
+  const { isOpen, handleClose, isTopSheet } = useFolderSheetWithLoad({
+    sheetName: SHEET_NAME,
+    parentHandleClose,
+    loadFolderList,
+  });
+  const { openSheet } = activeBottomSheet();
   const [prevSheetStack, setPrevSheetStack] = useState<string[]>([]);
-
-  const loadFolderList = useCallback(async () => {
-    setLoading(true);
-    try {
-      const folderList = await folder.getAll();
-      setFolderList(folderList);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleClose = useCallback(() => {
-    if (parentHandleClose) {
-      parentHandleClose();
-    }
-    closeSheet();
-  }, [closeSheet, parentHandleClose]);
+  const { sheetStack } = activeBottomSheet();
 
   const handleOpenAdd = useCallback(() => {
     openSheet("FOLDER_ADD");
   }, [openSheet]);
-
-  useEffect(() => {
-    if (isOpen) loadFolderList();
-  }, [isOpen, loadFolderList]);
 
   // FOLDER_ADD가 닫혔을 때 (이전에 FOLDER_ADD가 있었는데 지금은 없을 때) 리스트 새로고침
   useEffect(() => {
@@ -63,7 +45,6 @@ const FolderPickerSelect = ({
     const isAddSheetOpen = sheetStack.includes("FOLDER_ADD");
 
     if (wasAddSheetOpen && !isAddSheetOpen && isOpen) {
-      // TODO:
       loadFolderList();
     }
 
@@ -71,7 +52,7 @@ const FolderPickerSelect = ({
   }, [sheetStack, isOpen, prevSheetStack, loadFolderList]);
 
   return (
-    <BottomSheet open={isOpen} onClose={handleClose}>
+    <BottomSheet open={isOpen} onClose={handleClose} isTopSheet={isTopSheet}>
       <Spinner visible={loading} />
       <SafeAreaView edges={["bottom"]} className="flex gap-2">
         <View className="relative h-8">
