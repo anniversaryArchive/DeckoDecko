@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { View, ViewStyle } from "react-native";
-import { Image } from "expo-image";
+import React, {useEffect, useState} from "react";
+import {Platform, View, ViewStyle} from "react-native";
+import {Image} from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 
 import NoImage from "./NoImage";
@@ -28,10 +28,17 @@ const LocalImage = (props: ILocalImageProps) => {
         setIsLoading(true);
         console.log("🔄 Loading assetId:", assetId);
 
-        const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+        let imageUri: string | null = null;
 
-        // uri 우선, localUri 대체
-        const imageUri = assetInfo.uri || assetInfo.localUri;
+        // iOS: DB에 저장된 assetId(=ImagePicker.uri)를 그대로 사용
+        if (Platform.OS === "ios") {
+          imageUri = assetId;  // iOS는 file:///var/mobile/... 형태 그대로 사용
+          console.log("iOS: Using assetId as uri directly");
+        } else {
+          // Android: MediaLibrary.getAssetInfoAsync 로드
+          const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+          imageUri = assetInfo.uri || assetInfo.localUri;
+        }
 
         if (imageUri) {
           setImageUri(imageUri);

@@ -67,6 +67,11 @@ const saveImageToLibrary = async (
   asset: ImagePicker.ImagePickerAsset
 ): Promise<{ id: string; mediaAsset: MediaLibrary.Asset } | null> => {
   try {
+    if (!asset || !asset.uri) {
+      console.error("asset.uri is null, cannot create MediaLibrary asset");
+      return null;
+    }
+
     const { status } = await MediaLibrary.getPermissionsAsync();
     if (status !== "granted") {
       console.error("MediaLibrary permission not granted");
@@ -81,7 +86,7 @@ const saveImageToLibrary = async (
       return null;
     }
 
-    // 여기서 libraryAsset.uri 접근 시 null check 되었으므로 안전함
+    // 여기서 libraryAsset.uri 접근 시 null check 되었으므로 안전
     console.log("MediaLibrary asset created:", {
       id: libraryAsset.id,
       uri: libraryAsset.uri,
