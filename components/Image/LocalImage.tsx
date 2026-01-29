@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Image } from "expo-image";
+import React, {useEffect, useState} from "react";
+import {Platform, View, ViewStyle} from "react-native";
+import {Image} from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 
 import NoImage from "./NoImage";
@@ -12,45 +13,76 @@ interface ILocalImageProps {
 
 const LocalImage = (props: ILocalImageProps) => {
   const { assetId, width = 155, height = 155 } = props;
-  const [imageUri, setImageUri] = useState<string>();
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadImage = async () => {
+      if (!assetId) {
+        setImageUri(null);
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        if (!assetId) return;
+        setIsLoading(true);
+        console.log("🔄 Loading assetId:", assetId);
 
-        const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+        let imageUri: string | null = null;
 
-        if (assetInfo) {
-          setImageUri(assetInfo.localUri);
+        // iOS: DB에 저장된 assetId(=ImagePicker.uri)를 그대로 사용
+        if (Platform.OS === "ios") {
+          imageUri = assetId;  // iOS는 file:///var/mobile/... 형태 그대로 사용
+          console.log("iOS: Using assetId as uri directly");
         } else {
-          // 로컬 디비에 저장되어있는 assetId 삭제
-          // Alert.alert("이미지를 불러올 수 없습니다", "사진첩에서 이미지가 삭제된 것 같아요!", [
-          //   {
-          //     text: "확인",
-          //     onPress: async () => {
-          //       await images.deleteByAssetId(assetId);
-          //     },
-          //   },
-          // ]);
+          // Android: MediaLibrary.getAssetInfoAsync 로드
+          const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+          imageUri = assetInfo.uri || assetInfo.localUri;
+        }
+
+        if (imageUri) {
+          setImageUri(imageUri);
+          console.log("Loaded:", imageUri.substring(0, 50) + "...");
+        } else {
+          console.warn("No URI found for:", assetId);
+          setImageUri(null);
         }
       } catch (error) {
-        console.error("미디어 라이브러리에서 에러 발생:", error);
-        setImageUri(undefined);
+        console.error("MediaLibrary error:", error);
+        setImageUri(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadImage();
   }, [assetId]);
 
-  return (
-    <>
-      {imageUri ? (
-        <Image source={{ uri: imageUri }} style={{ width, height }} />
-      ) : (
-        <NoImage width={width} height={height} />
-      )}
-    </>
+  if (isLoading) {
+    return (
+      <View
+        style={
+          {
+            width,
+            height,
+            backgroundColor: "#f3f4f6",
+            justifyContent: "center",
+            alignItems: "center",
+          } as ViewStyle
+        }
+      />
+    );
+  }
+
+  return imageUri ? (
+    <Image
+      source={{ uri: imageUri }}
+      style={{ width, height, borderRadius: 8 }}
+      contentFit="cover"
+      cachePolicy="memory-disk"
+    />
+  ) : (
+    <NoImage width={width} height={height} />
   );
 };
 

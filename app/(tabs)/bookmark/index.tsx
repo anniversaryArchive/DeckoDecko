@@ -1,24 +1,15 @@
-import { useCallback, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useFocusEffect } from "expo-router";
+import {useCallback, useState} from "react";
+import {FlatList, Pressable, View} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {router, useFocusEffect} from "expo-router";
 
-import {
-  Button,
-  GoodsThumbnail,
-  Header,
-  Icon,
-  InputBox,
-  Segment,
-  Typography,
-  Spinner,
-} from "@components/index";
-import { supabase } from "@utils/supabase";
-import { BOOKMARK_TYPE } from "@/constants/global";
+import {Button, GoodsThumbnail, Header, Icon, InputBox, Segment, Spinner, Typography,} from "@components/index";
+import {supabase} from "@utils/supabase";
+import {BOOKMARK_TYPE} from "@/constants/global";
 import folder from "@table/folders";
 import items from "@table/items";
-import { TBookmarkType, TItemExtended } from "@/types/bookmark";
-import { TFolder } from "@/types/folder";
+import {TBookmarkType, TItemExtended} from "@/types/bookmark";
+import {TFolder} from "@/types/folder";
 
 export default function MyBookmark() {
   const [bookmarkType, setBookmarkType] = useState<TBookmarkType>("WISH");
@@ -235,6 +226,7 @@ export default function MyBookmark() {
                         ? item.gachaInfo.image_link
                         : item.thumbnail || item.gachaInfo.image_link
                     }
+                    isLocalImage={!isBundle}
                   />
                   {isBundle && item.count !== undefined && (
                     <Typography variant="body2" color="primary" className="pl-1">
