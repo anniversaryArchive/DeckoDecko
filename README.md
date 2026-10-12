@@ -1,50 +1,48 @@
-# Welcome to your Expo app 👋
+# 가챠 탐색대 (DeckoDecko)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+애니메이션·게임 가챠(캡슐토이) 굿즈를 탐색하고 WISH / GET 으로 기록하는 모바일 앱.
+2026-10-13 부터 모노레포로 다시 만든다. 기존 코드는 `legacy/` 에 있다.
 
-## Get started
+## 구조
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+.
+├── apps/
+│   └── mobile/        # Expo 앱 (expo-router)              ← 1주차에 생성
+├── packages/
+│   ├── ui/            # 디자인 토큰, 공용 컴포넌트           ← 1주차에 생성
+│   └── core/          # Supabase 클라이언트, 타입, 쿼리 계층  ← 1주차에 생성
+├── supabase/          # 마이그레이션, RLS, RPC, seed          ← 1주차 주말에 생성
+├── legacy/            # 재개발 전 코드 (참고용, 워크스페이스 제외)
+├── package.json       # 루트 스크립트 (turbo 로 각 패키지 실행)
+├── pnpm-workspace.yaml
+└── turbo.json
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 시작하기
 
-## Learn more
+```bash
+corepack enable          # package.json 의 packageManager(pnpm 10) 사용
+pnpm install
+pnpm lint                # turbo run lint   (모든 워크스페이스)
+pnpm typecheck           # turbo run typecheck
+pnpm test                # turbo run test
+pnpm dev                 # turbo run dev    (apps/mobile 이 생기면 expo start)
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Node 22 이상 (`.nvmrc`). 패키지 매니저는 pnpm 만 쓴다 (`npm install` / `yarn` 금지).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## legacy/ 를 실행해야 할 때
 
-## Join the community
+```bash
+cd legacy
+npm install
+npx expo start
+```
 
-Join our community of developers creating universal apps.
+`legacy/` 는 pnpm 워크스페이스에 포함되지 않으며, 새 코드에서 import 하지 않는다.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 문서
+
+- 기획서: https://claude.ai/code/artifact/87862d93-1288-4f9b-b980-35cad0573692
+- 디자인 (시안 B 확정): https://claude.ai/artifact/H59s4ezb8jvh6ttSpJ4mpW
