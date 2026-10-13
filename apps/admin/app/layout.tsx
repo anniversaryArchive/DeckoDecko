@@ -1,4 +1,5 @@
 import { colors, fonts } from "@deckodecko/ui";
+
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
 import "./globals.css";

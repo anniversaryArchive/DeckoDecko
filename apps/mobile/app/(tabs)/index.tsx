@@ -1,6 +1,8 @@
-import { colors, space } from "@deckodecko/ui";
 import { Link } from "expo-router";
 import { StyleSheet } from "react-native";
+
+import { colors, space } from "@deckodecko/ui";
+
 import { PlaceholderScreen } from "@/components/PlaceholderScreen";
 
 /** 홈. 소장률 카드 · 신상 · 인기 · 공지 띠는 목 데이터로 채운다. */

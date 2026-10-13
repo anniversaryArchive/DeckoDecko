@@ -37,6 +37,7 @@ pnpm-debug.*
 *.pem
 .idea/
 .vscode/*
+!.vscode/settings.json
 !.vscode/extensions.json
 
 # local env files

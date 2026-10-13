@@ -1,6 +1,7 @@
-import { colors } from "@deckodecko/ui";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+
+import { colors } from "@deckodecko/ui";
 
 /**
  * 루트 레이아웃. 탭 그룹 하나와 가챠 상세 스택 하나로 시작한다.

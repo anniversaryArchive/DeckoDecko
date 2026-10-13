@@ -1,6 +1,8 @@
-import { colors, space } from "@deckodecko/ui";
-import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
+
+import { colors, space } from "@deckodecko/ui";
+
+import type { ReactNode } from "react";
 
 type Props = {
   title: string;

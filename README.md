@@ -39,6 +39,14 @@ pnpm --filter @deckodecko/admin dev    # 백오피스만 (http://localhost:3001)
 
 Node 22 이상 (`.nvmrc`). 패키지 매니저는 pnpm 만 쓴다 (`npm install` / `yarn` 금지).
 
+## 편집기 설정
+
+코드 스타일은 Prettier(`.prettierrc`)와 ESLint(`packages/eslint-config`)가 정하고 CI 가 검사한다. 저장할 때 자동으로 맞춰지게 해 두면 CI 에서 걸릴 일이 없다.
+
+- **VS Code**: 저장소를 열면 권장 확장(Prettier, ESLint, EditorConfig, Expo Tools) 설치 안내가 뜬다. `.vscode/settings.json` 이 저장 시 포맷 + ESLint 자동 수정을 켠다.
+- **IntelliJ / WebStorm**: Settings → Languages & Frameworks → JavaScript → Prettier 에서 "Automatic Prettier configuration" 과 "Run on save" 를 켜고, 같은 곳의 ESLint 에서 "Automatic ESLint configuration" 과 "Run eslint --fix on save" 를 켠다. `.editorconfig` 는 자동으로 읽는다.
+- 수동으로 맞추려면 `pnpm format` 과 `pnpm lint -- --fix`.
+
 ## legacy/ 를 실행해야 할 때
 
 ```bash
