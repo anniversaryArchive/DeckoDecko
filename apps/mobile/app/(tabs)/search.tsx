@@ -1,6 +1,7 @@
+import { colors, space } from "@deckodecko/ui";
 import { StyleSheet, Text, View } from "react-native";
 
-/** 검색. 최근 검색어 · 최근 본 굿즈 · 인기는 2주차. */
+/** 검색. 최근 검색어 · 최근 본 굿즈 · 인기가 여기에 온다. */
 export default function SearchScreen() {
   return (
     <View style={styles.container}>
@@ -11,7 +12,7 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, gap: 8 },
-  title: { fontSize: 22, fontWeight: "700", color: "#2B2622" },
-  muted: { fontSize: 14, color: "#7A7068" },
+  container: { flex: 1, padding: space.xl, gap: space.sm },
+  title: { fontSize: 22, fontWeight: "700", color: colors.ink },
+  muted: { fontSize: 14, color: colors.muted },
 });

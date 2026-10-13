@@ -1,21 +1,10 @@
-:root {
-  --bg: #fff9f4;
-  --ink: #2b2622;
-  --muted: #7a7068;
-  --accent: #d9573f;
-}
-
+/* 색·글꼴 값은 app/layout.tsx 가 @deckodecko/ui 토큰에서 CSS 변수로 내려준다. 여기서 직접 적지 않는다. */
 html,
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family:
-    Inter,
-    "Noto Sans KR",
-    "Apple SD Gothic Neo",
-    system-ui,
-    sans-serif;
+  font-family: var(--font-sans);
 }
 
 main {

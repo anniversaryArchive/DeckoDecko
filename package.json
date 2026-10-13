@@ -2,7 +2,7 @@
   "name": "deckodecko",
   "private": true,
   "version": "0.0.0",
-  "description": "가챠 탐색대 (DeckoDecko) monorepo: apps/mobile, packages/ui, packages/core, supabase/",
+  "description": "가챠 탐색대 (DeckoDecko) 모노레포",
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22",
@@ -14,8 +14,8 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "build": "turbo run build",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,css,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,css,md,yaml,yml}\""
   },
   "devDependencies": {
     "prettier": "^3.9.10",

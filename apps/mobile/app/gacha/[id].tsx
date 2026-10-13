@@ -1,3 +1,4 @@
+import { colors, space } from "@deckodecko/ui";
 import { useLocalSearchParams } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -13,7 +14,7 @@ export default function GachaDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, gap: 8 },
-  title: { fontSize: 22, fontWeight: "700", color: "#2B2622" },
-  muted: { fontSize: 14, color: "#7A7068" },
+  container: { flex: 1, padding: space.xl, gap: space.sm },
+  title: { fontSize: 22, fontWeight: "700", color: colors.ink },
+  muted: { fontSize: 14, color: colors.muted },
 });

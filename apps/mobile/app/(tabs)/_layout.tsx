@@ -1,3 +1,4 @@
+import { colors } from "@deckodecko/ui";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
@@ -6,11 +7,11 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#D9573F",
-        tabBarInactiveTintColor: "#7A7068",
-        headerStyle: { backgroundColor: "#FFF9F4" },
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.muted,
+        headerStyle: { backgroundColor: colors.bg },
         headerShadowVisible: false,
-        sceneStyle: { backgroundColor: "#FFF9F4" },
+        sceneStyle: { backgroundColor: colors.bg },
       }}
     >
       <Tabs.Screen

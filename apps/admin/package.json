@@ -10,11 +10,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@deckodecko/ui": "workspace:*",
     "next": "16.4.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@deckodecko/eslint-config": "workspace:*",
     "@types/node": "^22",
     "@types/react": "~19.2.2",
     "@types/react-dom": "~19.2.2",
