@@ -3,7 +3,9 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "claude/**" # 임시: PR 없이 작업 브랜치 push 로도 실행 (PR 열면 main 만 남겨도 됨)
   workflow_dispatch: # Actions 탭에서 수동 실행 (PR 없이 확인용)
 
 concurrency:
