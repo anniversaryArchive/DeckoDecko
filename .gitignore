@@ -49,3 +49,8 @@ pnpm-debug.*
 # Supabase CLI (로컬 상태)
 supabase/.branches/
 supabase/.temp/
+
+# Next.js
+.next/
+out/
+next-env.d.ts

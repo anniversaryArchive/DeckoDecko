@@ -1,0 +1,25 @@
+:root {
+  --bg: #fff9f4;
+  --ink: #2b2622;
+  --muted: #7a7068;
+  --accent: #d9573f;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    Inter,
+    "Noto Sans KR",
+    "Apple SD Gothic Neo",
+    system-ui,
+    sans-serif;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}

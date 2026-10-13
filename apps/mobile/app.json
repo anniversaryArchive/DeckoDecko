@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "가챠 탐색대",
+    "slug": "deckodecko",
+    "version": "1.0.0",
+    "scheme": "deckodecko",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "backgroundColor": "#FFF9F4",
+    "ios": {
+      "bundleIdentifier": "com.anniversaryarchive.deckodecko",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.anniversaryarchive.deckodecko",
+      "edgeToEdgeEnabled": true
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
