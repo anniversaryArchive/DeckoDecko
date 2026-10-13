@@ -37,7 +37,7 @@ pnpm --filter @deckodecko/mobile dev   # 앱만
 pnpm --filter @deckodecko/admin dev    # 백오피스만 (http://localhost:3001)
 ````
 
-Node 22 이상 (`.nvmrc`). 패키지 매니저는 pnpm 만 쓴다 (`npm install` / `yarn` 금지).
+Node 22.12 이상 (`.nvmrc`, `require(esm)` 때문). 패키지 매니저는 pnpm 만 쓴다 (`npm install` / `yarn` 금지).
 
 ## 편집기 설정
 

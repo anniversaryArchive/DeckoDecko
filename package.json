@@ -5,7 +5,7 @@
   "description": "가챠 탐색대 (DeckoDecko) 모노레포",
   "packageManager": "pnpm@10.28.0",
   "engines": {
-    "node": ">=22",
+    "node": ">=22.12.0",
     "pnpm": ">=10"
   },
   "scripts": {

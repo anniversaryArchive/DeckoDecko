@@ -26,11 +26,12 @@ export const rules = {
     "error",
     { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
   ],
-  // import 순서: 외부 → 내부(@/, @deckodecko/) → 상대 경로. 그룹 사이 빈 줄, 그룹 안은 알파벳순.
+  // import 순서: 외부 → 내부(@deckodecko/, @/) → 상대 경로. 그룹 사이 빈 줄, 그룹 안은 알파벳순.
+  // 타입 import 는 따로 모으지 않고 원래 모듈 자리에 둔다.
   "import/order": [
     "error",
     {
-      groups: ["builtin", "external", "internal", ["parent", "sibling", "index"], "type"],
+      groups: ["builtin", "external", "internal", ["parent", "sibling", "index"]],
       pathGroups: [
         { pattern: "@deckodecko/**", group: "internal", position: "before" },
         { pattern: "@/**", group: "internal" },

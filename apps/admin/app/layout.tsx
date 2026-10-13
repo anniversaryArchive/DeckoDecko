@@ -1,7 +1,7 @@
-import { defaultThemeName, fonts, themeToCssVars, themes } from "@deckodecko/ui";
-
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
+
+import { defaultThemeName, fonts, themeToCssVars, themes } from "@deckodecko/ui";
 
 import "./globals.css";
 
