@@ -53,6 +53,7 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 - **스타일**: 색·글꼴·간격은 `packages/ui` 토큰에서 가져온다. 디자인 캔버스의 값이 기준 (배경 #FFF9F4, 포인트 #D9573F, 피치 #FF8E7A, GET 세이지 #CFE8D5/#2E6B4B, 잉크 #2B2622, 흐림 #7A7068). 숫자·영문은 Inter, 한글은 Noto Sans KR.
 - **보안**: anon key 외의 키(service role 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만.
 - **범위**: 기획서의 주차별 투두 밖의 기능을 임의로 추가하지 않는다. 필요하면 먼저 제안한다.
+- **웹**: 출시 대상이 아니다. `react-native-web` 은 CI 에서 Metro 번들을 검증하고(`expo export --platform web`) 로컬에서 빠르게 화면을 볼 때만 쓴다. 웹에서만 동작하는 코드를 넣지 않는다.
 - **legacy/**: 참고용. 코드를 복사해 오지 말고 새로 쓴다 (레거시의 문제점은 기획서의 재개발 체크리스트 참고).
 
 ## Git
