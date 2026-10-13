@@ -154,9 +154,15 @@ importers:
       '@deckodecko/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@types/react':
+        specifier: ~19.2.2
+        version: 19.2.18
       eslint:
         specifier: ^9.39.0
         version: 9.39.5
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
       typescript:
         specifier: ~6.0.3
         version: 6.0.3

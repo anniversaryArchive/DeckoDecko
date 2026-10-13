@@ -1,9 +1,9 @@
-/* 색·글꼴 값은 app/layout.tsx 가 @deckodecko/ui 토큰에서 CSS 변수로 내려준다. 여기서 직접 적지 않는다. */
+/* 색·글꼴 값은 app/layout.tsx 가 @deckodecko/ui 테마에서 CSS 변수(--color-*)로 내려준다. 여기서 직접 적지 않는다. */
 html,
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--ink);
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-sans);
 }
 

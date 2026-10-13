@@ -1,15 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-import { colors } from "@deckodecko/ui";
+import { useTheme } from "@deckodecko/ui";
 
 /** 하단 탭 3개: 홈 · 내 굿즈 · 검색. */
 export default function TabsLayout() {
+  const { colors } = useTheme();
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.muted,
+        tabBarInactiveTintColor: colors.textMuted,
         headerStyle: { backgroundColor: colors.bg },
         headerShadowVisible: false,
         sceneStyle: { backgroundColor: colors.bg },

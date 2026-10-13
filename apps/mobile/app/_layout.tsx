@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
-import { colors } from "@deckodecko/ui";
+import { ThemeProvider, useTheme } from "@deckodecko/ui";
 
 /**
  * 루트 레이아웃. 탭 그룹 하나와 가챠 상세 스택 하나로 시작한다.
@@ -10,11 +10,20 @@ import { colors } from "@deckodecko/ui";
  */
 export default function RootLayout() {
   return (
+    <ThemeProvider>
+      <RootStack />
+    </ThemeProvider>
+  );
+}
+
+function RootStack() {
+  const { scheme, colors } = useTheme();
+  return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
       <Stack
         screenOptions={{
-          headerTintColor: colors.ink,
+          headerTintColor: colors.text,
           contentStyle: { backgroundColor: colors.bg },
         }}
       >
