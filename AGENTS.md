@@ -9,7 +9,7 @@
 2026-10-13 부터 모노레포로 재개발 중. 1.0 출시 11/8, 1.1(AI 사진 등록) 11/22.
 
 - 기획서: https://claude.ai/code/artifact/87862d93-1288-4f9b-b980-35cad0573692
-- 디자인(시안 B 확정): https://claude.ai/artifact/H59s4ezb8jvh6ttSpJ4mpW
+- 디자인: https://claude.ai/artifact/H59s4ezb8jvh6ttSpJ4mpW
 
 ## 구조
 
@@ -50,7 +50,7 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 - **데이터 접근**: 화면 컴포넌트에서 Supabase 를 직접 호출하지 않는다. `packages/core` 의 repository 함수 + React Query 훅을 거친다.
 - **스키마**: Supabase 대시보드에서 직접 바꾸지 않는다. 항상 `supabase/migrations/*.sql` 로. 변경 후 `supabase gen types typescript` 로 타입을 다시 만든다.
 - **문자열**: 화면에 한글을 하드코딩하지 않는다. i18n 리소스(ko, en)에 넣고 키로 쓴다. 날짜·가격·개수는 포맷 헬퍼를 쓴다.
-- **스타일**: 색·글꼴·간격은 `packages/ui` 토큰에서 가져온다. 확정 디자인(시안 B) 값이 기준 (배경 #FFF9F4, 포인트 #D9573F, 피치 #FF8E7A, GET 세이지 #CFE8D5/#2E6B4B, 잉크 #2B2622, 흐림 #7A7068). 숫자·영문은 Inter, 한글은 Noto Sans KR.
+- **스타일**: 색·글꼴·간격은 `packages/ui` 토큰에서 가져온다. 디자인 캔버스의 값이 기준 (배경 #FFF9F4, 포인트 #D9573F, 피치 #FF8E7A, GET 세이지 #CFE8D5/#2E6B4B, 잉크 #2B2622, 흐림 #7A7068). 숫자·영문은 Inter, 한글은 Noto Sans KR.
 - **보안**: anon key 외의 키(service role 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만.
 - **범위**: 기획서의 주차별 투두 밖의 기능을 임의로 추가하지 않는다. 필요하면 먼저 제안한다.
 - **legacy/**: 참고용. 코드를 복사해 오지 말고 새로 쓴다 (레거시의 문제점은 기획서의 재개발 체크리스트 참고).
@@ -64,4 +64,4 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 
 ## 팀
 
-세 명이 비동기로 일한다 (풀타임 · 워홀(호주) · 직장인(주말만)). 리뷰 기한 24시간, 48시간 안에 리뷰가 없으면 풀타임이 병합한다. 누가 무엇을 맡는지와 선행 관계는 기획서의 출시 일정·투두리스트 참고.
+세 명이 비동기로 일한다: 혜진(풀타임), 여경(워홀 · 호주), 소정(직장인 · 주말만). 리뷰 기한 24시간, 48시간 안에 리뷰가 없으면 혜진이 병합한다. 누가 무엇을 맡는지와 선행 관계는 기획서의 출시 일정·투두리스트 참고.
