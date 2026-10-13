@@ -6,17 +6,17 @@
     "scheme": "deckodecko",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "backgroundColor": "#FFF9F4",
     "ios": {
       "bundleIdentifier": "com.anniversaryarchive.deckodecko",
       "supportsTablet": false
     },
     "android": {
-      "package": "com.anniversaryarchive.deckodecko",
-      "edgeToEdgeEnabled": true
+      "package": "com.anniversaryarchive.deckodecko"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": true
     }
