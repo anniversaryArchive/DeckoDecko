@@ -1,6 +1,6 @@
 # supabase/ (백엔드)
 
-Supabase 프로젝트의 코드형 정의. 직장인 1주차 주말(10/17–18) 작업에서 `supabase init` 으로 채운다.
+Supabase 프로젝트의 코드형 정의. 소정이 `supabase init` 으로 채운다.
 
 ```
 supabase/

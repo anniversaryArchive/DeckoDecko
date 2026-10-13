@@ -11,7 +11,7 @@ pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 �
 ```
 
 - `app/(tabs)/` 홈 · 내 굿즈 · 검색 탭, `app/gacha/[id].tsx` 상세 스택.
-- 아이콘·스플래시·글꼴·디자인 토큰은 `packages/ui` 와 함께 1주차 워홀 작업에서 붙인다.
+- 아이콘·스플래시·글꼴은 여경이 `packages/ui` 작업과 함께 붙인다. 디자인 토큰은 `@deckodecko/ui` 에서 가져온다.
 
 ## TODO
 
