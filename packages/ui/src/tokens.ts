@@ -1,8 +1,6 @@
 /**
- * 디자인 토큰. 디자인 캔버스(시안 B)의 값을 그대로 옮긴 것이며, 색·글꼴·간격의 유일한 출처다.
- * 앱(React Native)과 백오피스(Next.js)가 같은 값을 import 한다.
- * 값을 바꾸면 여기 한 곳만 고친다. apps/mobile/app.json 의 backgroundColor 는 JSON 이라 import 할 수 없어
- * colors.bg 와 같은 값을 손으로 맞춘다.
+ * 디자인 토큰. 앱(React Native)과 백오피스(Next.js)가 같은 값을 import 한다.
+ * apps/mobile/app.json 의 backgroundColor 는 JSON 이라 import 할 수 없어 colors.bg 와 같은 값을 손으로 맞춘다.
  */
 export const colors = {
   bg: "#FFF9F4",

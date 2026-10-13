@@ -50,7 +50,7 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 - **데이터 접근**: 화면 컴포넌트에서 Supabase 를 직접 호출하지 않는다. `packages/core` 의 repository 함수 + React Query 훅을 거친다.
 - **스키마**: Supabase 대시보드에서 직접 바꾸지 않는다. 항상 `supabase/migrations/*.sql` 로. 변경 후 `supabase gen types typescript` 로 타입을 다시 만든다.
 - **문자열**: 화면에 한글을 하드코딩하지 않는다. i18n 리소스(ko, en)에 넣고 키로 쓴다. 날짜·가격·개수는 포맷 헬퍼를 쓴다.
-- **스타일**: 색·글꼴·간격은 `packages/ui` 토큰에서 가져온다. 디자인 캔버스의 값이 기준 (배경 #FFF9F4, 포인트 #D9573F, 피치 #FF8E7A, GET 세이지 #CFE8D5/#2E6B4B, 잉크 #2B2622, 흐림 #7A7068). 숫자·영문은 Inter, 한글은 Noto Sans KR.
+- **스타일**: 색·글꼴·간격·모서리는 `@deckodecko/ui` 토큰에서 가져온다. 화면 코드에 색상값이나 글꼴 이름을 직접 적지 않는다.
 - **보안**: anon key 외의 키(service role 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만.
 - **범위**: 기획서의 주차별 투두 밖의 기능을 임의로 추가하지 않는다. 필요하면 먼저 제안한다.
 - **웹**: 출시 대상이 아니다. `react-native-web` 은 CI 에서 Metro 번들을 검증하고(`expo export --platform web`) 로컬에서 빠르게 화면을 볼 때만 쓴다. 웹에서만 동작하는 코드를 넣지 않는다.

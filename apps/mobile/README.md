@@ -15,4 +15,4 @@ pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 �
 
 ## TODO
 
-- [ ] `app.json` 에 `icon`, `splash`(배경 `#FFF9F4`), Android `adaptiveIcon` 추가 — 디자인 캔버스의 로고로 1024px PNG 내보내기 (여경)
+- [ ] `app.json` 에 `icon`, `splash`(배경 `#FFF9F4`), Android `adaptiveIcon` 추가 — 로고 SVG 를 1024px PNG 로 내보내 사용 (여경)
