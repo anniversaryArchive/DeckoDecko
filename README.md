@@ -19,7 +19,8 @@
 ├── pnpm-workspace.yaml
 └── turbo.json
 ```
-```
+
+````
 
 ## 시작하기
 
@@ -32,7 +33,7 @@ pnpm test                # turbo run test
 pnpm dev                 # turbo run dev    (expo start + next dev 동시 실행)
 pnpm --filter @deckodecko/mobile dev   # 앱만
 pnpm --filter @deckodecko/admin dev    # 백오피스만 (http://localhost:3001)
-```
+````
 
 Node 22 이상 (`.nvmrc`). 패키지 매니저는 pnpm 만 쓴다 (`npm install` / `yarn` 금지).
 
