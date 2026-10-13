@@ -8,17 +8,19 @@
 ```
 .
 ├── apps/
-│   ├── mobile/        # Expo 앱 (SDK 57, expo-router) — 탭 3개 + 상세 스택 뼈대
-│   └── admin/         # Next.js 백오피스 (App Router) — 첫 화면 뼈대, 포트 3001
+│   ├── mobile/        # Expo 앱 (expo-router)
+│   └── admin/         # Next.js 백오피스 (운영자용, 포트 3001)
 ├── packages/
-│   ├── ui/            # 디자인 토큰, 공용 컴포넌트           ← 1주차에 생성
-│   └── core/          # Supabase 클라이언트, 타입, 쿼리 계층  ← 1주차에 생성
-├── supabase/          # 백엔드: 마이그레이션, RLS, RPC, seed  ← 1주차 주말에 supabase init
+│   ├── ui/            # 디자인 토큰, 공용 컴포넌트
+│   └── core/          # Supabase 클라이언트, 타입, 쿼리 계층
+├── supabase/          # 백엔드: 마이그레이션, RLS, RPC, seed
 ├── legacy/            # 재개발 전 코드 (참고용, 워크스페이스 제외)
 ├── package.json       # 루트 스크립트 (turbo 로 각 패키지 실행)
 ├── pnpm-workspace.yaml
 └── turbo.json
 ```
+
+아직 없는 폴더(`packages/*`, `supabase/` 내용)는 생기는 대로 채운다. 일정은 기획서 참고.
 
 ````
 
