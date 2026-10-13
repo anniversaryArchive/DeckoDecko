@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch: # Actions 탭에서 수동 실행 (PR 없이 확인용)
 
 concurrency:
   group: ci-${{ github.ref }}
