@@ -6,7 +6,7 @@
 pnpm --filter @deckodecko/mobile dev      # expo start
 pnpm --filter @deckodecko/mobile ios      # iOS 시뮬레이터
 pnpm --filter @deckodecko/mobile android  # Android 에뮬레이터
-pnpm --filter @deckodecko/mobile doctor   # expo-doctor 로 의존성 버전 점검
+pnpm --filter @deckodecko/mobile run doctor   # expo-doctor 로 의존성 버전 점검 (run 을 빼면 pnpm 자체의 doctor 명령이 실행됨)
 pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 빠르게 확인 (출시 대상 아님)
 ```
 

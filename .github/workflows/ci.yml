@@ -25,12 +25,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # package.json 의 packageManager(pnpm@10.x) 를 그대로 사용
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -48,7 +48,7 @@ jobs:
         run: pnpm turbo run build
 
       - name: Expo doctor (SDK · 패키지 버전 정합성)
-        run: pnpm --filter @deckodecko/mobile doctor
+        run: pnpm --filter @deckodecko/mobile run doctor
 
       # 시뮬레이터 없이 Metro 번들을 끝까지 돌려 import 경로·라우트 파일 규칙·네이티브 모듈 설정 오류를 잡는다.
       # 웹은 출시 대상이 아니다. 이 단계는 번들 검증용이다.
