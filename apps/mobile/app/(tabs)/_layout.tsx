@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-/** 하단 탭 3개: 홈 · 내 굿즈 · 검색 (기획서 4절 순서). */
+/** 하단 탭 3개: 홈 · 내 굿즈 · 검색. */
 export default function TabsLayout() {
   return (
     <Tabs
