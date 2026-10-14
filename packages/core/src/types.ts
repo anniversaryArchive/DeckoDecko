@@ -44,5 +44,5 @@ export type GachaDetail = Gacha & {
 
 export type Page<T> = {
   items: T[];
-  totalCount: number;
+  total: number;
 };

@@ -39,13 +39,13 @@ export function createMemoryGachaRepository(seed: readonly GachaDetail[]): Gacha
 
     async searchGacha({ keyword, limit = DEFAULT_LIMIT, offset = 0 }: SearchGachaParams) {
       const q = normalize(keyword);
-      if (!q) return { items: [], totalCount: 0 };
+      if (!q) return { items: [], total: 0 };
       const hits = all.filter((g) =>
         [g.name, g.nameKo, g.media?.title, g.media?.titleJa, g.media?.titleEn]
           .filter((v): v is string => typeof v === "string")
           .some((v) => normalize(v).includes(q))
       );
-      return { items: hits.slice(offset, offset + limit).map(toSummary), totalCount: hits.length };
+      return { items: hits.slice(offset, offset + limit).map(toSummary), total: hits.length };
     },
   };
 }
