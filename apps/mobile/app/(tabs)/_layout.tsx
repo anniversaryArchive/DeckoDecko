@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-import { useTheme } from "@deckodecko/ui";
+import { fonts, typography, useTheme } from "@deckodecko/ui";
 
 /** 하단 탭 3개: 홈 · 내 굿즈 · 검색. */
 export default function TabsLayout() {
@@ -13,6 +13,14 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: colors.textMuted,
         headerStyle: { backgroundColor: colors.bg },
         headerShadowVisible: false,
+        // 내비게이션이 그리는 글자는 Text 를 거치지 않으므로 글꼴을 여기서 지정한다.
+        headerTitleStyle: { fontFamily: fonts.sans.bold },
+        // Noto Sans KR 은 글자 위아래 여백이 커서 줄 높이를 정해 주지 않으면 아래가 잘린다.
+        tabBarLabelStyle: {
+          fontFamily: fonts.sans.bold,
+          fontSize: typography.captionXs.fontSize,
+          lineHeight: typography.captionXs.lineHeight,
+        },
         sceneStyle: { backgroundColor: colors.bg },
       }}
     >

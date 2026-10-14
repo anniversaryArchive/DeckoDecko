@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
-import { space, useTheme } from "@deckodecko/ui";
+import { space } from "@deckodecko/ui";
+import { Text } from "@deckodecko/ui/native";
 
 type Props = {
   title: string;
@@ -12,11 +13,10 @@ type Props = {
 
 /** 아직 만들지 않은 화면의 자리. 실제 화면이 생기면 이 컴포넌트는 지운다. */
 export function PlaceholderScreen({ title, description, children }: Props) {
-  const { colors } = useTheme();
   return (
     <View style={{ flex: 1, padding: space[24], gap: space[8] }}>
-      <Text style={{ fontSize: 22, fontWeight: "700", color: colors.text }}>{title}</Text>
-      <Text style={{ fontSize: 14, color: colors.textMuted }}>{description}</Text>
+      <Text variant="headingLg">{title}</Text>
+      <Text color="textMuted">{description}</Text>
       {children}
     </View>
   );

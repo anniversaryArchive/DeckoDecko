@@ -101,10 +101,28 @@ export type Theme = {
   shadows: ThemeShadows;
 };
 
+/**
+ * 글꼴. 한글은 Noto Sans KR, 숫자 · 영문 강조는 Inter.
+ * RN 은 글꼴 스택(폴백)이 없고 굵기마다 family 이름이 다르므로, 앱은 굵기별 family 이름을 쓴다.
+ * 이름은 apps/mobile 이 useFonts 로 등록하는 @expo-google-fonts 이름과 같아야 한다.
+ * 화면 코드는 fontFamily 를 직접 쓰지 않고 `@deckodecko/ui/native` 의 Text 를 쓴다.
+ */
 export const fonts = {
-  /** 한글 본문. 숫자·영문은 Inter 가 앞에 온다. */
-  sans: ["Inter", "Noto Sans KR", "Apple SD Gothic Neo", "system-ui", "sans-serif"] as const,
-  weight: { regular: 400, medium: 500, bold: 700 } as const,
+  /** 앱(RN): 본문 · 한글. Noto Sans KR 에도 숫자 · 영문 글리프가 있어 기본은 이것 하나로 쓴다. */
+  sans: {
+    regular: "NotoSansKR_400Regular",
+    medium: "NotoSansKR_500Medium",
+    bold: "NotoSansKR_700Bold",
+  },
+  /** 앱(RN): 가격 · 개수 · 소장률처럼 숫자 · 영문만 있는 곳. Text 의 numeric 으로 고른다. */
+  numeric: {
+    regular: "Inter_400Regular",
+    medium: "Inter_500Medium",
+    bold: "Inter_700Bold",
+  },
+  /** 웹(백오피스): CSS 스택. 숫자 · 영문은 Inter, 한글은 Noto Sans KR 로 브라우저가 글자마다 고른다. */
+  web: ["Inter", "Noto Sans KR", "Apple SD Gothic Neo", "system-ui", "sans-serif"],
+  weight: { regular: 400, medium: 500, bold: 700 },
 } as const;
 
 export type FontWeightName = keyof typeof fonts.weight;
