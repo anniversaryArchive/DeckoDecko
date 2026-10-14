@@ -38,6 +38,5 @@ pnpm --filter @deckodecko/core gen:types
 ## 새 도메인 추가
 
 1. `src/types.ts` 에 도메인 타입
-2. `src/repositories/<도메인>.ts` 에 인터페이스, `Repositories` 에 키 추가
+2. `src/repositories/<도메인>.ts` 에 인터페이스, `<도메인>.memory.ts` · `<도메인>.supabase.ts` 에 구현, `repositories/index.ts` 의 `Repositories` 에 키 추가
 3. `src/queryKeys.ts` 에 키, `src/react/hooks.ts` 에 훅
-4. 구현은 memory 와 supabase 둘 다 채운다

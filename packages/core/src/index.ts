@@ -11,5 +11,5 @@ export type { Database, Json } from "./database.types";
 export type { Gacha, GachaDetail, GachaItem, Media, MediaKind, Page } from "./types";
 export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repositories/gacha";
 export type { Repositories } from "./repositories";
-export { createMemoryGachaRepository } from "./repositories/memory";
+export { createMemoryGachaRepository } from "./repositories/gacha.memory";
 export { queryKeys } from "./queryKeys";
