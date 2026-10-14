@@ -1,8 +1,9 @@
-import type { GachaDetail, Media } from "@deckodecko/core";
+import type { GachaDetail, Media } from "../types";
 
 /**
- * 개발용 목 카탈로그. Supabase 연결(2주차) 전까지 홈 · 검색 · 상세가 이 데이터로 돈다.
- * 20개로 늘리는 건 #107 에서. 이름은 디자인 캔버스 예시를 따른다. 이미지는 아직 없다.
+ * 개발용 목 카탈로그. 앱 · 백오피스 · 테스트가 같이 쓴다 (`@deckodecko/core/mocks`).
+ * Supabase 연결(2주차) 전까지 홈 · 검색 · 상세가 이 데이터로 돈다. 20개로 늘리는 건 #107 에서.
+ * 이름은 디자인 캔버스 예시를 따른다. 이미지는 아직 없다. 프로덕션 번들에는 import 하지 않는다.
  */
 
 const media = {

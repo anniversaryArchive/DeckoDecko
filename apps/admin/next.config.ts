@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   // fileURLToPath: Windows 에서 URL.pathname 이 "/C:/..." 가 되는 문제를 피한다.
   outputFileTracingRoot: fileURLToPath(new URL("../../", import.meta.url)),
   // workspace 패키지는 TS 소스 그대로 가져오므로 Next 가 변환하게 한다.
-  transpilePackages: ["@deckodecko/ui"],
+  transpilePackages: ["@deckodecko/core", "@deckodecko/ui"],
 };
 
 export default nextConfig;

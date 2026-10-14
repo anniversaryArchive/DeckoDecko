@@ -10,18 +10,23 @@ import { useGachaList, useGachaSearch } from "@deckodecko/core/react";
 import { CoreProvider } from "@deckodecko/core/react";
 <CoreProvider repositories={repositories}>…</CoreProvider>
 
-// 저장소 만들기 (앱: apps/mobile/lib/repositories.ts)
+// 저장소 만들기 (앱: apps/mobile/lib/repositories.ts, 백오피스: apps/admin/lib/repositories.ts)
 import { createMemoryGachaRepository, type Repositories } from "@deckodecko/core";
+import { mockCatalog } from "@deckodecko/core/mocks";
+
+// React 없는 곳(서버 컴포넌트 · 스크립트)은 저장소를 직접 await
+const list = await repositories.gacha.listGacha();
 ```
 
-| 경로                    | 내용                                                                               | React |
-| ----------------------- | ---------------------------------------------------------------------------------- | ----- |
-| `src/supabase.ts`       | `createSupabaseClient(url, anonKey)`. 환경변수는 호출하는 쪽이 넘김                | 없음  |
-| `src/database.types.ts` | Supabase 생성 타입. `pnpm --filter @deckodecko/core gen:types` 로 갱신             | 없음  |
-| `src/types.ts`          | 도메인 타입 (`Gacha`, `GachaDetail`, `GachaItem`, `Media`)                         | 없음  |
-| `src/repositories/`     | `GachaRepository` 인터페이스와 구현 (`memory`, 2주차에 `supabase`)                 | 없음  |
-| `src/queryKeys.ts`      | React Query 키 규칙                                                                | 없음  |
-| `src/react/`            | `CoreProvider`, `useGachaList` · `usePopularGacha` · `useGacha` · `useGachaSearch` | 있음  |
+| 경로                    | 내용                                                                                                                 | React |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- | ----- |
+| `src/supabase.ts`       | `createSupabaseClient(url, anonKey)`. 환경변수는 호출하는 쪽이 넘김                                                  | 없음  |
+| `src/database.types.ts` | Supabase 생성 타입. `pnpm --filter @deckodecko/core gen:types` 로 갱신                                               | 없음  |
+| `src/types.ts`          | 도메인 타입 (`Gacha`, `GachaDetail`, `GachaItem`, `Media`)                                                           | 없음  |
+| `src/repositories/`     | `GachaRepository` 인터페이스와 구현 (`memory`, 2주차에 `supabase`)                                                   | 없음  |
+| `src/queryKeys.ts`      | React Query 키 규칙                                                                                                  | 없음  |
+| `src/mocks/`            | 개발 · 테스트용 목 카탈로그 (`@deckodecko/core/mocks`). 앱 · 백오피스 · 테스트가 공유                                | 없음  |
+| `src/react/`            | `CoreProvider`, 도메인별 훅 `<도메인>.hooks.ts` (`useGachaList` · `usePopularGacha` · `useGacha` · `useGachaSearch`) | 있음  |
 
 엔트리가 둘인 이유: `@deckodecko/core` 는 React 가 없어 Next.js 서버 컴포넌트 · 스크립트에서 import 해도 되고, `@deckodecko/core/react` 는 클라이언트 전용이다.
 

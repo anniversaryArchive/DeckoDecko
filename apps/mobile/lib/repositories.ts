@@ -1,6 +1,5 @@
 import { createMemoryGachaRepository, type Repositories } from "@deckodecko/core";
-
-import { mockCatalog } from "@/mocks/catalog";
+import { mockCatalog } from "@deckodecko/core/mocks";
 
 /**
  * 앱이 쓰는 저장소 묶음. 루트 레이아웃의 CoreProvider 에 넘긴다.
