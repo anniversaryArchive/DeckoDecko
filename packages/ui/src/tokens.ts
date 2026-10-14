@@ -121,7 +121,7 @@ export const fonts = {
     medium: "Inter_500Medium",
     bold: "Inter_700Bold",
   },
-  /** 웹(백오피스): CSS 스택. 숫자 · 영문은 Inter, 한글은 Noto Sans KR 로 브라우저가 글자마다 고른다. */
+  /** 웹(백오피스): CSS 스택. 영어 · 숫자 · 특수문자는 Inter, 한글은 Noto Sans KR 로 브라우저가 글자마다 고른다. */
   web: ["Inter", "Noto Sans KR", "Apple SD Gothic Neo", "system-ui", "sans-serif"],
   weight: { regular: 400, medium: 500, bold: 700 },
 } as const;
@@ -142,7 +142,7 @@ export type TypeStyle = {
  * 글자 크기 단계. 이름은 "종류 + 크기" (Lg > Md > Sm > Xs). 쓰임은 각 항목 주석에.
  *   display — 큰 숫자 · 브랜드      heading — 화면 · 다이얼로그 제목
  *   title   — 섹션 · 카드 · 버튼     body    — 본문          label · caption — 라벨 · 보조 글자
- * 글꼴(family)은 #110 의 Text 래퍼가 weight 로 고른다.
+ * 글꼴(family)은 `@deckodecko/ui/native` 의 Text 가 weight 로 고른다.
  * lineHeight 는 fontSize 의 1.25배 이상으로 둔다. Inter 의 기본 높이가 1.21배라, 이보다 작으면
  * RN 이 넘치는 부분을 잘라 ( ) $ @ | 같은 특수문자의 위아래가 잘린다.
  */

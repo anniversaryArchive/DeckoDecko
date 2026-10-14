@@ -19,17 +19,24 @@ export type TextProps = RNTextProps & {
   color?: keyof ThemeColors;
 };
 
-/** 한글 · 한자 · 일본어(전각 문자 포함)인지. 이 글자들은 Noto Sans KR, 나머지는 Inter 로 그린다. */
+/**
+ * 한글 · 한자 · 일본어(전각 문자 포함)인지. 이 글자들은 Noto Sans KR, 나머지는 Inter 로 그린다.
+ * ♪ ♀ 처럼 Inter 에 없는 특수기호는 일부러 넣지 않았다. 휴대폰이 시스템 글꼴로 대신 그린다.
+ */
 function isCjk(code: number) {
   return (
     (code >= 0x1100 && code <= 0x11ff) || // 한글 자모
     (code >= 0x3000 && code <= 0x30ff) || // CJK 기호, 히라가나, 가타카나
     (code >= 0x3130 && code <= 0x318f) || // 한글 호환 자모
-    (code >= 0x31f0 && code <= 0x31ff) || // 가타카나 확장
+    (code >= 0x3190 && code <= 0x31ff) || // 한문 훈점, CJK 획, 가타카나 확장
+    (code >= 0x3200 && code <= 0x33ff) || // 괄호 · 원문자 한글 · 한자(㈜), CJK 단위(㎝ ㎏ ㎡)
     (code >= 0x3400 && code <= 0x4dbf) || // 한자 확장 A
     (code >= 0x4e00 && code <= 0x9fff) || // 한자
+    (code >= 0xa960 && code <= 0xa97f) || // 한글 자모 확장 A (옛한글)
     (code >= 0xac00 && code <= 0xd7af) || // 한글 음절
+    (code >= 0xd7b0 && code <= 0xd7ff) || // 한글 자모 확장 B (옛한글)
     (code >= 0xf900 && code <= 0xfaff) || // 호환 한자
+    (code >= 0xfe30 && code <= 0xfe4f) || // CJK 호환 형태 (세로쓰기 부호)
     (code >= 0xff00 && code <= 0xffef) // 전각 · 반각 문자
   );
 }
