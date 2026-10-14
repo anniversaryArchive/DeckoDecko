@@ -14,7 +14,7 @@ type Props = {
 export function PlaceholderScreen({ title, description, children }: Props) {
   const { colors } = useTheme();
   return (
-    <View style={{ flex: 1, padding: space.xl, gap: space.sm }}>
+    <View style={{ flex: 1, padding: space[24], gap: space[8] }}>
       <Text style={{ fontSize: 22, fontWeight: "700", color: colors.text }}>{title}</Text>
       <Text style={{ fontSize: 14, color: colors.textMuted }}>{description}</Text>
       {children}
