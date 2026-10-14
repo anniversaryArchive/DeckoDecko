@@ -25,15 +25,9 @@ import { createMemoryGachaRepository, type Repositories } from "@deckodecko/core
 
 엔트리가 둘인 이유: `@deckodecko/core` 는 React 가 없어 Next.js 서버 컴포넌트 · 스크립트에서 import 해도 되고, `@deckodecko/core/react` 는 클라이언트 전용이다.
 
-## 타입 생성
+## Supabase 연결 (2주차)
 
-로컬 Supabase(`supabase start`)에 마이그레이션이 적용된 상태에서:
-
-```bash
-pnpm --filter @deckodecko/core gen:types
-```
-
-`src/database.types.ts` 는 생성 파일이라 손으로 고치지 않는다. Supabase CLI 가 없으면 `brew install supabase/tap/supabase` 또는 `npx supabase`.
+스키마(#114)가 들어오면 `src/supabase.ts`(anon key 클라이언트 팩토리), `src/database.types.ts`(생성 타입, `supabase gen types typescript`), `src/repositories/gacha.supabase.ts` 를 같이 넣는다. 환경변수는 이 패키지가 읽지 않고 앱 · 백오피스가 넘긴다. service role 키는 어디서도 이 패키지에 넣지 않는다.
 
 ## 새 도메인 추가
 
