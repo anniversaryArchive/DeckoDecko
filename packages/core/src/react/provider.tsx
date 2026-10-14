@@ -11,8 +11,7 @@ const RepositoriesContext = createContext<Repositories | null>(null);
 type Props = {
   /** 화면이 쓸 저장소 묶음. 앱은 apps/mobile/lib/repositories.ts 에서 만든다. */
   repositories: Repositories;
-  /** 테스트에서 바꿔 끼울 때만 넘긴다. 기본은 createQueryClient() */
-  queryClient?: QueryClient;
+  queryClient?: QueryClient; // 테스트에서 바꿔 끼울 때만 넘긴다. 기본은 createQueryClient()
   children: ReactNode;
 };
 

@@ -8,8 +8,7 @@ export type MediaKind = "anime" | "game" | "character";
 /** 작품 (애니 · 게임 · 캐릭터). 가챠가 속한 단위이고 검색 필터 · 상세 상단 칩에 보인다. */
 export type Media = {
   id: string;
-  /** 한국어 이름 */
-  title: string;
+  title: string; // 한국어 이름
   titleJa: string | null;
   titleEn: string | null;
   kind: MediaKind | null;
@@ -20,10 +19,8 @@ export type Media = {
 export type GachaItem = {
   id: string;
   gachaId: string;
-  /** 라인업 순번 (1부터) */
-  number: number;
-  /** 원문(일본어) 이름 */
-  name: string;
+  number: number; // 라인업 순번 (1부터)
+  name: string; // 원문(일본어) 이름
   nameKo: string | null;
   imageUrl: string | null;
 };
@@ -31,15 +28,12 @@ export type GachaItem = {
 /** 목록 · 검색 결과에 쓰는 가챠 요약 */
 export type Gacha = {
   id: string;
-  /** 원문(일본어) 이름 */
-  name: string;
+  name: string; // 원문(일본어) 이름
   nameKo: string | null;
   imageUrl: string | null;
   media: Media | null;
-  /** 엔 단위. 모르면 null */
-  price: number | null;
-  /** "YYYY-MM" */
-  releaseMonth: string | null;
+  price: number | null; // 엔 단위. 모르면 null
+  releaseMonth: string | null; // "YYYY-MM"
   itemCount: number | null;
 };
 

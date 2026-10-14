@@ -5,8 +5,7 @@ export type ListGachaParams = {
 };
 
 export type SearchGachaParams = {
-  /** 가챠 이름(한 · 일) · 작품명을 함께 검색한다 */
-  keyword: string;
+  keyword: string; // 가챠 이름(한 · 일) · 작품명을 함께 검색한다
   limit?: number;
   offset?: number;
 };
@@ -17,12 +16,10 @@ export type SearchGachaParams = {
  *   2주차: createSupabaseGachaRepository (Supabase, 검색 · 인기는 3주차 RPC 로 교체)
  */
 export interface GachaRepository {
-  /** 최신순 목록 (홈 "새로 나왔어요") */
-  listGacha(params?: ListGachaParams): Promise<Gacha[]>;
-  /** 인기순 목록 (홈 "지금 인기"). 3주차 전까지는 구현이 정렬 기준을 정한다 */
+  listGacha(params?: ListGachaParams): Promise<Gacha[]>; // 최신순 목록 (홈 "새로 나왔어요")
+  /** 인기순 목록 (홈 "지금 인기"). 3주차 RPC 전까지는 구현이 정렬 기준을 정한다 */
   listPopularGacha(limit?: number): Promise<Gacha[]>;
-  /** 없으면 null */
-  getGacha(id: string): Promise<GachaDetail | null>;
+  getGacha(id: string): Promise<GachaDetail | null>; // 없으면 null
   /** 결과와 전체 개수를 같이 돌려준다 (결과 화면의 "N개") */
   searchGacha(params: SearchGachaParams): Promise<Page<Gacha>>;
 }
