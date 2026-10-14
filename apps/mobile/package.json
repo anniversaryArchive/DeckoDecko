@@ -12,6 +12,7 @@
     "doctor": "expo-doctor"
   },
   "dependencies": {
+    "@deckodecko/core": "workspace:*",
     "@deckodecko/ui": "workspace:*",
     "@expo/vector-icons": "~15.0.3",
     "expo": "~57.0.28",
