@@ -1,13 +1,13 @@
 import type { Gacha, GachaDetail, Page } from "../types";
 
 export type ListGachaParams = {
-  limit?: number;
+  limit?: number; // 기본 20
 };
 
 export type SearchGachaParams = {
   keyword: string; // 가챠 이름(한 · 일) · 작품명을 함께 검색한다
-  limit?: number;
-  offset?: number;
+  limit?: number; // 기본 20
+  offset?: number; // 기본 0
 };
 
 /**
@@ -17,7 +17,7 @@ export type SearchGachaParams = {
  */
 export interface GachaRepository {
   listGacha(params?: ListGachaParams): Promise<Gacha[]>; // 최신순 목록 (홈 "새로 나왔어요")
-  /** 인기순 목록 (홈 "지금 인기"). 3주차 RPC 전까지는 구현이 정렬 기준을 정한다 */
+  /** 인기순 목록 (홈 "지금 인기"), 기본 10개. 3주차 RPC 전까지는 구현이 정렬 기준을 정한다 */
   listPopularGacha(limit?: number): Promise<Gacha[]>;
   getGacha(id: string): Promise<GachaDetail | null>; // 없으면 null
   /** 결과와 전체 개수를 같이 돌려준다 (결과 화면의 "N개") */

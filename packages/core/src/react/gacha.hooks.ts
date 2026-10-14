@@ -1,6 +1,6 @@
 "use client";
 
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, skipToken, useQuery } from "@tanstack/react-query";
 
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
@@ -28,8 +28,7 @@ export function useGacha(id: string | undefined) {
   const { gacha } = useRepositories();
   return useQuery({
     queryKey: queryKeys.gacha.detail(id ?? ""),
-    queryFn: () => gacha.getGacha(id ?? ""),
-    enabled: Boolean(id),
+    queryFn: id ? () => gacha.getGacha(id) : skipToken,
   });
 }
 
@@ -41,9 +40,8 @@ export function useGachaSearch(keyword: string, options?: { limit?: number; offs
   const { gacha } = useRepositories();
   const trimmed = keyword.trim();
   return useQuery({
-    queryKey: queryKeys.gacha.search(trimmed, options?.offset ?? 0),
-    queryFn: () => gacha.searchGacha({ keyword: trimmed, ...options }),
-    enabled: trimmed.length > 0,
+    queryKey: queryKeys.gacha.search(trimmed, options?.offset, options?.limit),
+    queryFn: trimmed ? () => gacha.searchGacha({ keyword: trimmed, ...options }) : skipToken,
     placeholderData: keepPreviousData,
   });
 }

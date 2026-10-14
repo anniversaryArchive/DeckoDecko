@@ -25,7 +25,7 @@ export default function GachaDetailScreen() {
         gacha.name,
         gacha.media?.title,
         gacha.releaseMonth,
-        gacha.price ? `${gacha.price}엔` : null,
+        gacha.price != null ? `${gacha.price}엔` : null,
       ]
         .filter(Boolean)
         .join(" · ")}

@@ -5,7 +5,7 @@ import type { GachaDetail, Media } from "@deckodecko/core";
  * 20개로 늘리는 건 #107 에서. 이름은 디자인 캔버스 예시를 따른다. 이미지는 아직 없다.
  */
 
-const media: Record<string, Media> = {
+const media = {
   starryForest: {
     id: "m-starry-forest",
     title: "별의 숲",
@@ -22,7 +22,7 @@ const media: Record<string, Media> = {
     kind: "anime",
     imageUrl: null,
   },
-};
+} satisfies Record<string, Media>;
 
 function items(gachaId: string, names: [ja: string, ko: string][]): GachaDetail["items"] {
   return names.map(([name, nameKo], i) => ({
@@ -41,7 +41,7 @@ export const mockCatalog: GachaDetail[] = [
     name: "森のなかまマスコット Vol.3",
     nameKo: "숲속 친구들 마스코트 Vol.3",
     imageUrl: null,
-    media: media.starryForest ?? null,
+    media: media.starryForest,
     price: 400,
     releaseMonth: "2026-11",
     itemCount: 6,
@@ -59,7 +59,7 @@ export const mockCatalog: GachaDetail[] = [
     name: "森のなかまマスコット Vol.2",
     nameKo: "숲속 친구들 마스코트 Vol.2",
     imageUrl: null,
-    media: media.starryForest ?? null,
+    media: media.starryForest,
     price: 400,
     releaseMonth: "2026-10",
     itemCount: 5,
@@ -76,7 +76,7 @@ export const mockCatalog: GachaDetail[] = [
     name: "ねこカフェ日記 ミニフィギュア2",
     nameKo: "고양이 카페 일기 미니 피규어 2",
     imageUrl: null,
-    media: media.catCafe ?? null,
+    media: media.catCafe,
     price: 500,
     releaseMonth: "2026-11",
     itemCount: 4,

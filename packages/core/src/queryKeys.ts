@@ -8,6 +8,7 @@ export const queryKeys = {
     list: (limit?: number) => ["gacha", "list", limit] as const,
     popular: (limit?: number) => ["gacha", "popular", limit] as const,
     detail: (id: string) => ["gacha", "detail", id] as const,
-    search: (keyword: string, offset = 0) => ["gacha", "search", keyword, offset] as const,
+    search: (keyword: string, offset?: number, limit?: number) =>
+      ["gacha", "search", keyword, offset, limit] as const,
   },
 } as const;
