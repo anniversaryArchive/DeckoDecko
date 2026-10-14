@@ -33,7 +33,7 @@ const { colors } = useTheme();
 
 | 토큰         | 쓰는 법                                                       | 비고                                                            |
 | ------------ | ------------------------------------------------------------- | --------------------------------------------------------------- |
-| `typography` | `typography.body.fontSize`, `.lineHeight`                     | 단계 이름은 쓰임새 기준(`title`, `section`, `caption` …)        |
+| `typography` | `typography.body.fontSize`, `.lineHeight`                     | "종류 + 크기" (`headingLg`, `titleSm`, `caption` …)             |
 | `space`      | `space[12]`, 화면 좌우 여백은 `gutter`                        | 시안이 2px 단위라 값이 곧 키. 없는 값은 가까운 단계로           |
 | `radius`     | `radius.card`, 둥근 버튼 · 칩은 `radius.pill`                 | 높이 절반으로 둥근 것은 모두 `pill`                             |
 | `border`     | `border.default`(1.5), `border.divider`(1)                    |                                                                 |

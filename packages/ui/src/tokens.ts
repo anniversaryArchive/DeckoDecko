@@ -113,28 +113,33 @@ export type TypeStyle = {
   weight: FontWeightName;
 };
 
-/** 글자 크기 단계. 글꼴(family)은 #110 의 Text 래퍼가 weight 로 고른다. */
+/**
+ * 글자 크기 단계. 이름은 "종류 + 크기" (Lg > Md > Sm > Xs). 쓰임은 각 항목 주석에.
+ *   display — 큰 숫자 · 브랜드      heading — 화면 · 다이얼로그 제목
+ *   title   — 섹션 · 카드 · 버튼     body    — 본문          label · caption — 라벨 · 보조 글자
+ * 글꼴(family)은 #110 의 Text 래퍼가 weight 로 고른다.
+ */
 export const typography = {
   /** 소장률 같은 큰 숫자 (40) */
-  stat: { fontSize: 40, lineHeight: 40, letterSpacing: -1, weight: "bold" },
+  displayLg: { fontSize: 40, lineHeight: 40, letterSpacing: -1, weight: "bold" },
   /** 스플래시 앱 이름 (28) */
-  display: { fontSize: 28, lineHeight: 28, letterSpacing: -0.6, weight: "bold" },
+  displaySm: { fontSize: 28, lineHeight: 28, letterSpacing: -0.6, weight: "bold" },
   /** 가챠 상세 제목 (22) */
-  title: { fontSize: 22, lineHeight: 30, letterSpacing: -0.4, weight: "bold" },
+  headingLg: { fontSize: 22, lineHeight: 30, letterSpacing: -0.4, weight: "bold" },
   /** 탭 화면 머리글 "내 굿즈", "검색" (20) */
-  header: { fontSize: 20, lineHeight: 27, letterSpacing: -0.4, weight: "bold" },
+  headingMd: { fontSize: 20, lineHeight: 27, letterSpacing: -0.4, weight: "bold" },
   /** 다이얼로그 · 권한 안내 제목 (18) */
-  dialogTitle: { fontSize: 18, lineHeight: 25, letterSpacing: 0, weight: "bold" },
+  headingSm: { fontSize: 18, lineHeight: 25, letterSpacing: 0, weight: "bold" },
   /** 섹션 제목 "새로 나왔어요", 시트 제목 (17) */
-  section: { fontSize: 17, lineHeight: 23, letterSpacing: -0.3, weight: "bold" },
+  titleLg: { fontSize: 17, lineHeight: 23, letterSpacing: -0.3, weight: "bold" },
   /** 목록 묶음 제목 "최근 검색어" (16) */
-  subsection: { fontSize: 16, lineHeight: 22, letterSpacing: 0, weight: "bold" },
+  titleMd: { fontSize: 16, lineHeight: 22, letterSpacing: 0, weight: "bold" },
   /** 버튼 글자, 공지 제목 (15) */
-  button: { fontSize: 15, lineHeight: 21, letterSpacing: 0, weight: "bold" },
+  titleSm: { fontSize: 15, lineHeight: 21, letterSpacing: 0, weight: "bold" },
   /** 본문 (14) */
   body: { fontSize: 14, lineHeight: 21, letterSpacing: 0, weight: "regular" },
   /** 긴 안내문 · 공지 본문 (14, 줄 간격 넓게) */
-  bodyLong: { fontSize: 14, lineHeight: 22, letterSpacing: 0, weight: "regular" },
+  bodyLoose: { fontSize: 14, lineHeight: 22, letterSpacing: 0, weight: "regular" },
   /** 카드 · 행의 이름 (14 굵게) */
   bodyStrong: { fontSize: 14, lineHeight: 19, letterSpacing: 0, weight: "bold" },
   /** 라벨, 설정 항목 (13) */
@@ -142,9 +147,9 @@ export const typography = {
   /** 보조 설명, 칩 글자 (12) */
   caption: { fontSize: 12, lineHeight: 18, letterSpacing: 0, weight: "regular" },
   /** 메타 정보 "별의 숲 · …", 태그 (11) */
-  small: { fontSize: 11, lineHeight: 15, letterSpacing: 0, weight: "regular" },
+  captionSm: { fontSize: 11, lineHeight: 15, letterSpacing: 0, weight: "regular" },
   /** 배지 "NEW", "AI" (10) */
-  tiny: { fontSize: 10, lineHeight: 13, letterSpacing: 0, weight: "bold" },
+  captionXs: { fontSize: 10, lineHeight: 13, letterSpacing: 0, weight: "bold" },
 } as const satisfies Record<string, TypeStyle>;
 
 export type TypographyName = keyof typeof typography;
