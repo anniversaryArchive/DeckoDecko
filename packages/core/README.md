@@ -33,4 +33,4 @@ import { createMemoryGachaRepository, type Repositories } from "@deckodecko/core
 
 1. `src/types.ts` 에 도메인 타입
 2. `src/repositories/<도메인>.ts` 에 인터페이스, `<도메인>.memory.ts` · `<도메인>.supabase.ts` 에 구현, `repositories/index.ts` 의 `Repositories` 에 키 추가
-3. `src/queryKeys.ts` 에 키, `src/react/hooks.ts` 에 훅
+3. `src/queryKeys.ts` 에 키, `src/react/<도메인>.hooks.ts` 에 훅을 만들고 `react/index.ts` 에서 export
