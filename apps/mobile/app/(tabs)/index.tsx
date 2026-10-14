@@ -18,6 +18,9 @@ export default function HomeScreen() {
         <Text variant="displayLg" color="accent">
           64%
         </Text>
+        <Text variant="headingLg" color="textMuted">
+          숲속 친구들 마스코트 Vol.2
+        </Text>
       </View>
       <Link href="/gacha/sample" asChild>
         <Text variant="bodyStrong" color="accent" style={{ marginTop: space[16] }}>
