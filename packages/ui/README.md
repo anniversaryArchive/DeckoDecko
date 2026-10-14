@@ -35,7 +35,7 @@ const { colors } = useTheme();
 | ------------ | ------------------------------------------------------------- | --------------------------------------------------------------- |
 | `typography` | `typography.body.fontSize`, `.lineHeight`                     | "종류 + 크기" (`headingLg`, `titleSm`, `caption` …)             |
 | `space`      | `space[12]`, 화면 좌우 여백은 `gutter`                        | 시안이 2px 단위라 값이 곧 키. 없는 값은 가까운 단계로           |
-| `radius`     | `radius.card`, 둥근 버튼 · 칩은 `radius.pill`                 | 높이 절반으로 둥근 것은 모두 `pill`                             |
+| `radius`     | `radius.card`, 둥근 버튼 · 칩은 `radius.full`                 | 끝까지 둥근 것(정사각형이면 원형)은 모두 `full`                 |
 | `border`     | `border.default`(1.5), `border.divider`(1)                    |                                                                 |
 | `shadows`    | RN `boxShadow: theme.shadows.toast`, 웹 `var(--shadow-toast)` | 테마마다 다름. CSS 문자열이라 양쪽에서 씀 (RN New Architecture) |
 | `fonts`      | 글꼴 스택과 굵기                                              | 실제 family 이름 연결은 Text 래퍼(#110)                         |

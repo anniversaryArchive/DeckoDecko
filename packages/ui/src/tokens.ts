@@ -182,7 +182,7 @@ export const space = {
 /** 화면 좌우 여백 */
 export const gutter = space[24];
 
-/** 모서리(px). 높이의 절반으로 둥근 버튼 · 칩 · 세그먼트 · 검색창은 모두 pill. */
+/** 모서리(px). 끝까지 둥근 버튼 · 칩 · 세그먼트 · 검색창 · 원형 아이콘 버튼은 모두 full. */
 export const radius = {
   /** 진행 막대 */
   bar: 4,
@@ -201,8 +201,8 @@ export const radius = {
   banner: 24,
   /** 바텀 시트 위 모서리, 하단 탭 바 */
   sheet: 28,
-  /** 높이 절반으로 둥근 버튼 · 칩 · 세그먼트 · 검색창 */
-  pill: 999,
+  /** 끝까지 둥글게: 버튼 · 칩 · 세그먼트 · 검색창, 정사각형이면 원형 */
+  full: 999,
 } as const;
 
 /** 테두리 두께(px) */
