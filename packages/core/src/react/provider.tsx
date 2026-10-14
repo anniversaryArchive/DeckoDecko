@@ -4,7 +4,7 @@ import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useState, type ReactNode } from "react";
 
 import { createQueryClient } from "./queryClient";
-import type { Repositories } from "../repositories/gacha";
+import type { Repositories } from "../repositories";
 
 const RepositoriesContext = createContext<Repositories | null>(null);
 

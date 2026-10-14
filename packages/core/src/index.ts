@@ -9,11 +9,7 @@ export { createSupabaseClient } from "./supabase";
 export type { DbClient } from "./supabase";
 export type { Database, Json } from "./database.types";
 export type { Gacha, GachaDetail, GachaItem, Media, MediaKind, Page } from "./types";
-export type {
-  GachaRepository,
-  ListGachaParams,
-  Repositories,
-  SearchGachaParams,
-} from "./repositories/gacha";
+export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repositories/gacha";
+export type { Repositories } from "./repositories";
 export { createMemoryGachaRepository } from "./repositories/memory";
 export { queryKeys } from "./queryKeys";

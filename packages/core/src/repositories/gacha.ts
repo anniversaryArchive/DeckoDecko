@@ -23,8 +23,3 @@ export interface GachaRepository {
   /** 결과와 전체 개수를 같이 돌려준다 (결과 화면의 "N개") */
   searchGacha(params: SearchGachaParams): Promise<Page<Gacha>>;
 }
-
-/** 화면이 쓰는 저장소 묶음. 새 도메인(공지, 요청 · 문의)은 여기에 키를 추가한다. */
-export type Repositories = {
-  gacha: GachaRepository;
-};
