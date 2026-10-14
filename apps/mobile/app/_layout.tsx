@@ -22,7 +22,7 @@ void SplashScreen.preventAutoHideAsync();
  * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
  */
 export default function RootLayout() {
-  // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.numeric 과 같아야 한다.
+  // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.latin 과 같아야 한다.
   const [loaded, error] = useFonts({
     NotoSansKR_400Regular,
     NotoSansKR_500Medium,

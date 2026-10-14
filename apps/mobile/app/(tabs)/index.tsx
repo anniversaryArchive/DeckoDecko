@@ -10,12 +10,12 @@ import { PlaceholderScreen } from "@/components/PlaceholderScreen";
 export default function HomeScreen() {
   return (
     <PlaceholderScreen title="홈" description="소장률 · 새로 나왔어요 · 지금 인기 · 공지">
-      {/* 글꼴 확인용: 한글은 Noto Sans KR, 숫자는 Inter. 실제 소장률 카드가 생기면 지운다. */}
+      {/* 글꼴 확인용: 한글은 Noto Sans KR, 숫자 · 영어 · 특수문자는 Inter. 실제 소장률 카드가 생기면 지운다. */}
       <View style={{ marginTop: space[16], gap: space[4] }}>
         <Text variant="label" color="textMuted">
           내 굿즈 소장률
         </Text>
-        <Text variant="displayLg" numeric color="accent">
+        <Text variant="displayLg" color="accent">
           64%
         </Text>
       </View>

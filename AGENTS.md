@@ -53,6 +53,7 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 - **스타일**: 화면 · 컴포넌트 코드에 색상값이나 크기 숫자를 직접 적지 않는다. 토큰 목록과 쓰는 법은 `packages/ui/README.md`.
   - 색 · 그림자: `useTheme()` 의 `colors.역할`, `shadows.이름` 만 쓴다. `palette` 원색은 화면 코드에서 쓰지 않는다. 테마는 여러 개가 될 수 있으므로 역할 이름 밖의 색을 가정하지 않는다.
   - 글자 · 간격 · 모서리 · 테두리: `@deckodecko/ui` 의 `typography` · `space` · `radius` · `border` 를 쓴다. 간격은 값이 곧 키(`space[12]`), 끝까지 둥근 모양은 `radius.full`.
+  - 앱의 글자는 `@deckodecko/ui/native` 의 `Text` 로 쓴다 (`<Text variant="titleLg">`). `fontFamily` 를 직접 적지 않는다. 한글 · 한자 · 일본어는 Noto Sans KR, 영어 · 숫자 · 특수문자는 Inter 로 `Text` 가 글자를 보고 자동으로 나눈다.
   - 컴포넌트 높이(버튼 54 등)는 토큰이 아니라 그 컴포넌트 파일 안의 상수로 둔다.
   - 색 역할을 추가할 때: 면 위 글자색은 `on` + 면 이름(`onPrimary`, `onWish`), 글자 토큰은 종류 + 크기(`headingLg`, `captionSm`). 새 역할은 `src/themes/` 의 모든 테마에 값을 채운다.
 - **보안**: anon key 외의 키(service role 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만.
