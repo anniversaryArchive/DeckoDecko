@@ -29,7 +29,10 @@ export const palette = {
   stoneLight: "#C9BDB4",
 } as const;
 
-/** 화면이 쓰는 색 역할. 테마가 바뀌어도 이 이름은 그대로다. */
+/**
+ * 화면이 쓰는 색 역할. 테마가 바뀌어도 이 이름은 그대로다.
+ * 어떤 면 위에 올라가는 글자색은 `on` + 면 이름으로 짓는다 (primary → onPrimary, wishSurface → onWish).
+ */
 export type ThemeColors = {
   /** 화면 바탕 */
   bg: string;
@@ -57,15 +60,18 @@ export type ThemeColors = {
   onPrimary: string;
   /** 연한 포인트 면 (상세 상단, 칩 배경) */
   accentSoft: string;
-  /** 강조 카드 면 / 테두리 (홈 소장률 카드, 로고 타일) */
-  highlightBg: string;
+  /** 강조 카드 면 (홈 소장률 카드, 로고 타일) */
+  highlightSurface: string;
+  /** 강조 카드 테두리 */
   highlightLine: string;
-  /** WISH 태그 면 / 글자 */
-  wishBg: string;
-  wishFg: string;
-  /** GET 태그 면 / 글자 */
-  getBg: string;
-  getFg: string;
+  /** WISH 태그 면 */
+  wishSurface: string;
+  /** WISH 태그 면 위 글자 */
+  onWish: string;
+  /** GET 태그 면 */
+  getSurface: string;
+  /** GET 태그 면 위 글자 */
+  onGet: string;
   /** GET 진행 막대 · 점 */
   getMark: string;
   /** 반전 면 (토스트) / 그 위 글자 */
