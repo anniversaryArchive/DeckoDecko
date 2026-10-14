@@ -1,50 +1,63 @@
-# Welcome to your Expo app 👋
+# 가챠 탐색대 (DeckoDecko)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+애니메이션·게임 가챠(캡슐토이) 굿즈를 탐색하고 WISH / GET 으로 기록하는 모바일 앱.
+2026-10-13 부터 모노레포로 다시 만든다. 기존 코드는 `legacy/` 에 있다.
 
-## Get started
+## 구조
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+.
+├── apps/
+│   ├── mobile/        # Expo 앱 (expo-router)
+│   └── admin/         # Next.js 백오피스 (운영자용, 포트 3001)
+├── packages/
+│   ├── ui/            # 디자인 토큰, 공용 컴포넌트
+│   └── core/          # Supabase 클라이언트, 타입, 쿼리 계층
+├── supabase/          # 백엔드: 마이그레이션, RLS, RPC, seed
+├── legacy/            # 재개발 전 코드 (참고용, 워크스페이스 제외)
+├── package.json       # 루트 스크립트 (turbo 로 각 패키지 실행)
+├── pnpm-workspace.yaml
+└── turbo.json
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+아직 없는 폴더(`packages/*`, `supabase/` 내용)는 생기는 대로 채운다. 일정은 기획서 참고.
 
-## Learn more
+````
 
-To learn more about developing your project with Expo, look at the following resources:
+## 시작하기
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+corepack enable          # package.json 의 packageManager(pnpm 10) 사용
+pnpm install
+pnpm lint                # turbo run lint   (모든 워크스페이스)
+pnpm typecheck           # turbo run typecheck
+pnpm test                # turbo run test
+pnpm dev                 # turbo run dev    (expo start + next dev 동시 실행)
+pnpm --filter @deckodecko/mobile dev   # 앱만
+pnpm --filter @deckodecko/admin dev    # 백오피스만 (http://localhost:3001)
+````
 
-## Join the community
+Node 22.12 이상 (`.nvmrc`, `require(esm)` 때문). 패키지 매니저는 pnpm 만 쓴다 (`npm install` / `yarn` 금지).
 
-Join our community of developers creating universal apps.
+## 편집기 설정
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+코드 스타일은 Prettier(`.prettierrc`)와 ESLint(`packages/eslint-config`)가 정하고 CI 가 검사한다. 저장할 때 자동으로 맞춰지게 해 두면 CI 에서 걸릴 일이 없다.
+
+- **VS Code**: 저장소를 열면 권장 확장(Prettier, ESLint, EditorConfig, Expo Tools) 설치 안내가 뜬다. `.vscode/settings.json` 이 저장 시 포맷 + ESLint 자동 수정을 켠다.
+- **IntelliJ / WebStorm**: Settings → Languages & Frameworks → JavaScript → Prettier 에서 "Automatic Prettier configuration" 과 "Run on save" 를 켜고, 같은 곳의 ESLint 에서 "Automatic ESLint configuration" 과 "Run eslint --fix on save" 를 켠다. `.editorconfig` 는 자동으로 읽는다.
+- 수동으로 맞추려면 `pnpm format` 과 `pnpm lint -- --fix`.
+
+## legacy/ 를 실행해야 할 때
+
+```bash
+cd legacy
+npm install
+npx expo start
+```
+
+`legacy/` 는 pnpm 워크스페이스에 포함되지 않으며, 새 코드에서 import 하지 않는다.
+
+## 문서
+
+- 기획서: https://claude.ai/code/artifact/87862d93-1288-4f9b-b980-35cad0573692
+- 디자인: https://claude.ai/artifact/H59s4ezb8jvh6ttSpJ4mpW

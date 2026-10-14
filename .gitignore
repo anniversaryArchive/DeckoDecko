@@ -1,11 +1,16 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
 # dependencies
 node_modules/
 
+# turbo
+.turbo/
+
+# build outputs
+dist/
+build/
+coverage/
+
 # Expo
 .expo/
-dist/
 web-build/
 expo-env.d.ts
 
@@ -25,15 +30,28 @@ expo-env.d.ts
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+pnpm-debug.*
 
-# macOS
+# OS / editor
 .DS_Store
 *.pem
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # local env files
+.env
 .env*.local
 
 # typescript
 *.tsbuildinfo
 
-app-example
+# Supabase CLI (로컬 상태)
+supabase/.branches/
+supabase/.temp/
+
+# Next.js
+.next/
+out/
+next-env.d.ts

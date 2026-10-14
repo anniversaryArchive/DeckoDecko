@@ -1,0 +1,15 @@
+# Windows 에서도 LF 로 체크아웃해 Prettier(endOfLine: lf)와 어긋나지 않게 한다.
+* text=auto eol=lf
+
+# 바이너리는 변환하지 않는다.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.jar binary
+*.keystore binary

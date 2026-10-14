@@ -1,0 +1,9 @@
+# pnpm 워크스페이스. legacy/ 는 의도적으로 제외한다 (옛 npm 프로젝트, 참고용).
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# pnpm 10 은 패키지의 설치 스크립트(postinstall 등)를 기본 차단한다.
+# 실행을 허용할 패키지만 여기에 적는다. 새 경고가 뜨면 왜 필요한지 확인하고 추가한다.
+onlyBuiltDependencies:
+  - unrs-resolver # eslint-config-next 가 쓰는 네이티브 모듈 리졸버
