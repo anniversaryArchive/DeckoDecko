@@ -25,6 +25,9 @@ export function CoreProvider({ repositories, queryClient, children }: Props) {
   );
 }
 
+/**
+ * 저장소 묶음을 꺼낸다. 이 패키지의 훅(<도메인>.hooks.ts)이 쓰기 위한 것이고, 화면에서 직접 부르지 않는다 (AGENTS.md).
+ */
 export function useRepositories(): Repositories {
   const repositories = useContext(RepositoriesContext);
   if (!repositories) {

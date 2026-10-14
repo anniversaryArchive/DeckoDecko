@@ -47,7 +47,7 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 ## 규칙
 
 - **의존성**: 루트 `package.json` 의 `packageManager` 버전을 바꾸지 않는다. 의존성을 바꾸면 `pnpm-lock.yaml` 을 같이 커밋한다. `.npmrc` 의 `node-linker=hoisted` 는 Metro 때문에 필요하니 건드리지 않는다.
-- **데이터 접근**: 화면 컴포넌트에서 Supabase 를 직접 호출하지 않는다. `packages/core` 의 repository 함수 + React Query 훅을 거친다. 훅은 `@deckodecko/core/react` 에서, React 없는 것(클라이언트 팩토리 · 타입 · 저장소 · 쿼리 키)은 `@deckodecko/core` 에서 가져온다. 새 쿼리는 `queryKeys` 에 키를 먼저 추가한다.
+- **데이터 접근**: 화면 컴포넌트에서 Supabase 를 직접 호출하지 않는다. `packages/core` 의 repository 함수 + React Query 훅을 거친다. 훅은 `@deckodecko/core/react` 에서, React 없는 것(타입 · 저장소 · 쿼리 키)은 `@deckodecko/core` 에서 가져온다. 화면에서 `useRepositories()` 로 저장소를 직접 부르지 않는다. 필요한 훅이 없으면 `packages/core/src/react/<도메인>.hooks.ts` 에 훅을 추가하고 `queryKeys` 에 키를 먼저 넣는다. 서버 컴포넌트 · 서버 액션 · 스크립트처럼 React 가 없는 곳만 저장소 함수를 직접 `await` 한다.
 - **스키마**: Supabase 대시보드에서 직접 바꾸지 않는다. 항상 `supabase/migrations/*.sql` 로. 변경 후 `supabase gen types typescript` 로 타입을 다시 만든다.
 - **문자열**: 화면에 한글을 하드코딩하지 않는다. i18n 리소스(ko, en)에 넣고 키로 쓴다. 날짜·가격·개수는 포맷 헬퍼를 쓴다.
 - **스타일**: 색은 `useTheme()` 의 역할 이름(`colors.bg`, `colors.accent` …)으로, 글꼴·간격·모서리는 `@deckodecko/ui` 의 `fonts` · `space` · `radius` 로 쓴다. `palette` 원색이나 색상값을 화면 코드에 직접 적지 않는다. 테마는 여러 개가 될 수 있으므로 역할 이름 밖의 색을 가정하지 않는다.
