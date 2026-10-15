@@ -15,18 +15,38 @@
   },
   "devDependencies": {
     "@deckodecko/eslint-config": "workspace:*",
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@types/react": "~19.2.2",
     "eslint": "^9.39.0",
     "react": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
     "typescript": "~6.0.3"
   },
   "peerDependencies": {
+    "@gorhom/bottom-sheet": "*",
     "react": "^19.0.0",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-gesture-handler": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*"
   },
   "peerDependenciesMeta": {
+    "@gorhom/bottom-sheet": {
+      "optional": true
+    },
     "react-native": {
+      "optional": true
+    },
+    "react-native-gesture-handler": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-safe-area-context": {
       "optional": true
     }
   }
