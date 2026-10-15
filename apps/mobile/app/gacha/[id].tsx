@@ -10,9 +10,9 @@ import { PlaceholderScreen } from "@/components/PlaceholderScreen";
 export default function GachaDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
-  const { data: gacha, isPending } = useGacha(id);
+  const { data: gacha, isLoading } = useGacha(id);
 
-  if (isPending) {
+  if (isLoading) {
     return <PlaceholderScreen title="가챠 상세" description="불러오는 중…" />;
   }
   if (!gacha) {

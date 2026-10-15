@@ -14,7 +14,7 @@ function toSummary(detail: GachaDetail): Gacha {
 
 /**
  * 메모리 안의 배열로 동작하는 저장소. 목 데이터 화면(1주차), 테스트, 스토리북 성격의 개발 화면에 쓴다.
- * 데이터는 이 패키지가 갖지 않고 호출하는 쪽이 넘긴다 (앱: apps/mobile/mocks).
+ * 데이터는 이 저장소가 갖지 않고 호출하는 쪽이 넘긴다 (개발용 목 데이터: @deckodecko/core/mocks).
  * 목록은 받은 순서를 최신순으로 본다. 검색은 가챠 이름(한 · 일) · 작품명(한 · 일 · 영) 부분 일치, 공백 · 대소문자 · 전각 무시.
  */
 export function createMemoryGachaRepository(seed: readonly GachaDetail[]): GachaRepository {

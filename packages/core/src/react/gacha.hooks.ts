@@ -23,7 +23,7 @@ export function usePopularGacha(limit?: number) {
   });
 }
 
-/** 가챠 상세. id 가 비어 있으면 요청하지 않는다. */
+/** 가챠 상세. id 가 비어 있으면 요청하지 않는다 (이때 isPending 은 계속 true 라서 로딩 확인은 isLoading 으로). */
 export function useGacha(id: string | undefined) {
   const { gacha } = useRepositories();
   return useQuery({
@@ -42,6 +42,7 @@ export function useGachaSearch(keyword: string, options?: { limit?: number; offs
   return useQuery({
     queryKey: queryKeys.gacha.search(trimmed, options?.offset, options?.limit),
     queryFn: trimmed ? () => gacha.searchGacha({ keyword: trimmed, ...options }) : skipToken,
-    placeholderData: keepPreviousData,
+    // 검색어를 비우면 이전 결과도 지운다 (keepPreviousData 는 꺼진 쿼리에도 마지막 결과를 돌려준다)
+    placeholderData: trimmed ? keepPreviousData : undefined,
   });
 }
