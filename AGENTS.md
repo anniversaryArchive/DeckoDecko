@@ -8,8 +8,8 @@
 가챠 탐색대(DeckoDecko): 애니·게임 가챠 굿즈를 탐색하고 WISH / GET 으로 기록하는 모바일 앱.
 2026-10-13 부터 모노레포로 재개발 중. 1.0 출시 11/8, 1.1(AI 사진 등록) 11/22.
 
-- 기획서: https://claude.ai/code/artifact/87862d93-1288-4f9b-b980-35cad0573692
-- 디자인: https://claude.ai/artifact/H59s4ezb8jvh6ttSpJ4mpW
+- 기획서: https://claude.ai/code/artifact/e668b2ee-acd5-4991-b030-c40a839ce738
+- 디자인: https://claude.ai/artifact/X8gVyKo8QVoCMaqj2evY7G
 
 ## 구조
 
