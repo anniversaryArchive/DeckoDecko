@@ -59,5 +59,5 @@ npx expo start
 
 ## 문서
 
-- 기획서: https://claude.ai/code/artifact/87862d93-1288-4f9b-b980-35cad0573692
-- 디자인: https://claude.ai/artifact/H59s4ezb8jvh6ttSpJ4mpW
+- 기획서: https://claude.ai/code/artifact/e668b2ee-acd5-4991-b030-c40a839ce738
+- 디자인: https://claude.ai/artifact/X8gVyKo8QVoCMaqj2evY7G
