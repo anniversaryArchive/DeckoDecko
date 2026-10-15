@@ -68,6 +68,36 @@ import { Text } from "@deckodecko/ui/native";
 - iOS 는 한글을 띄어쓰기 단위로 줄바꿈한다 (`lineBreakStrategyIOS="hangul-word"` 기본값). Android 는 같은 옵션이 없어서 글자 단위로 줄이 바뀔 수 있다.
 - 내비게이션 머리글 · 탭 이름처럼 `Text` 를 거치지 않는 글자는 `fonts.sans.bold` 를 직접 지정한다 (`apps/mobile/app/_layout.tsx` 참고).
 
+### 공용 컴포넌트
+
+모두 `@deckodecko/ui/native` 에서 가져온다. 앱에서는 개발 빌드의 홈 → "컴포넌트 카탈로그"(`/dev/components`)에서 모든 종류와 상태를 볼 수 있다. 색 · 크기는 컴포넌트가 정하므로 화면에서 덮어쓰지 않는다 (배치용 `style` 만 넘긴다).
+
+```tsx
+import { BottomSheet, Button, Card, Chip, Input, Segment } from "@deckodecko/ui/native";
+
+<Button onPress={save} fullWidth>{t("item.add")}</Button>
+<Chip selected={filter === "all"} onPress={() => setFilter("all")}>{t("filter.all")}</Chip>
+<Segment value={status} onChange={setStatus} options={[{ value: "wish", label: "WISH" }, { value: "get", label: "GET", tone: "get" }]} />
+<Input label={t("item.name")} value={name} onChangeText={setName} />
+<Card onPress={open} style={{ padding: space[12] }}>…</Card>
+<BottomSheet open={open} onClose={() => setOpen(false)} title={t("item.add")} closeLabel={t("common.close")}>…</BottomSheet>
+```
+
+| 컴포넌트      | 고르는 것                                                                                                                                                          | 높이                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- |
+| `Button`      | `variant`: `primary` · `secondary` · `outline` · `soft` · `danger`, `size`: `lg` · `md` · `sm`, `icon`                                                             | 54 · 44 · 36          |
+| `Chip`        | `selected`, 선택 면 `selectedTone`: `primary` · `inverse`, 오른쪽 `trailing`                                                                                       | 34                    |
+| `Segment`     | `options` 의 `tone`: `primary` · `wish` · `get` (선택된 항목의 면)                                                                                                 | 항목 40               |
+| `Input`       | `label`, `helperText`, 안쪽 `leading` · `trailing`, `multiline`. 글자가 있으면 지우기 버튼이 기본으로 나온다 (`clearable={false}` 로 끔, 읽기 이름은 `clearLabel`) | 48, 여러 줄은 72 이상 |
+| `Card`        | `variant`: `default` · `highlight`, `onPress` 를 넘기면 눌리는 카드. 안쪽 여백은 `style` 로                                                                        | 내용에 맞춤           |
+| `BottomSheet` | `open` · `onClose` 로 연다. `title`, `closeLabel`(넘기면 닫기 버튼). 열고 닫을 때 0.45초 동안 올라오고 내려간다                                                    | 내용에 맞춤           |
+
+- 글자는 모두 props 로 받는다. 컴포넌트 안에 한글을 적지 않는다 (닫기 버튼의 읽기 이름도 `closeLabel` 로).
+- `BottomSheet` 는 `@gorhom/bottom-sheet` 를 감싼 것이다. 앱 루트에 `GestureHandlerRootView` 와 `BottomSheetModalProvider` 가 있어야 한다 (`apps/mobile/app/_layout.tsx`). 시트 안의 `Input` 은 키보드가 올라오면 시트도 같이 올라간다.
+- 선 아이콘 `CloseIcon`(×) · `ChevronDownIcon`(⌄)은 `size` · `color`(색 역할)를 받는다. 칩의 펼침 표시는 `<Chip trailing={<ChevronDownIcon size={14} color="text" />}>`.
+- `Input` 은 RN `TextInput` 이 글꼴을 하나만 쓸 수 있어서 Noto Sans KR 로 고정한다.
+- 시안에 오류 상태 색이 없어서 `Input` 에는 오류 표시가 아직 없다. 필요해지면 색 역할(`danger` 등)부터 추가한다.
+
 ### 글꼴 굵기 추가
 
 지금은 400 · 500 · 700 만 넣었다. 굵기를 추가하려면 세 곳을 같이 고친다.
