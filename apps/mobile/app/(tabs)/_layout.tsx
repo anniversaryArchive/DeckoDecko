@@ -15,6 +15,8 @@ export default function TabsLayout() {
         headerShadowVisible: false,
         // 내비게이션이 그리는 글자는 Text 를 거치지 않으므로 글꼴을 여기서 지정한다.
         headerTitleStyle: { fontFamily: fonts.sans.bold },
+        // 머리글 높이는 고정이라 시스템 글자 크기를 키우면 제목 위쪽이 잘린다. 비워 두면 크기를 따라가므로 꺼 둔다.
+        headerTitleAllowFontScaling: false,
         // Noto Sans KR 은 글자 위아래 여백이 커서 줄 높이를 정해 주지 않으면 아래가 잘린다.
         tabBarLabelStyle: {
           fontFamily: fonts.sans.bold,
