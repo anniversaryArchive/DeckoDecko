@@ -102,18 +102,24 @@ export type Theme = {
 };
 
 /**
- * 글꼴. 한글 · 한자 · 일본어는 Noto Sans KR, 영어 · 숫자 · 특수문자는 Inter.
+ * 글꼴. 한글은 Noto Sans KR, 일본어 · 한자는 Noto Sans JP, 영어 · 숫자 · 특수문자는 Inter.
  * RN 은 글꼴 스택(폴백)이 없고 굵기마다 family 이름이 다르므로, 앱은 굵기별 family 이름을 쓴다.
  * 어느 글자에 어느 글꼴을 쓸지는 Text 가 글자를 보고 자동으로 나눈다.
  * 이름은 apps/mobile 이 useFonts 로 등록하는 @expo-google-fonts 이름과 같아야 한다.
  * 화면 코드는 fontFamily 를 직접 쓰지 않고 `@deckodecko/ui/native` 의 Text 를 쓴다.
  */
 export const fonts = {
-  /** 앱(RN): 한글 · 한자 · 일본어 */
+  /** 앱(RN): 한글, 원문자 · CJK 단위 */
   sans: {
     regular: "NotoSansKR_400Regular",
     medium: "NotoSansKR_500Medium",
     bold: "NotoSansKR_700Bold",
+  },
+  /** 앱(RN): 일본어(가나), 한자, 전각 문자. Noto Sans KR 은 한자가 8천 자 정도뿐이라 따로 둔다 */
+  ja: {
+    regular: "NotoSansJP_400Regular",
+    medium: "NotoSansJP_500Medium",
+    bold: "NotoSansJP_700Bold",
   },
   /** 앱(RN): 영어 · 숫자 · 특수문자 */
   latin: {
@@ -121,8 +127,8 @@ export const fonts = {
     medium: "Inter_500Medium",
     bold: "Inter_700Bold",
   },
-  /** 웹(백오피스): CSS 스택. 영어 · 숫자 · 특수문자는 Inter, 한글은 Noto Sans KR 로 브라우저가 글자마다 고른다. */
-  web: ["Inter", "Noto Sans KR", "Apple SD Gothic Neo", "system-ui", "sans-serif"],
+  /** 웹(백오피스): CSS 스택. 브라우저가 글자마다 앞에서부터 있는 글꼴을 고른다 (Noto Sans KR 에 없는 한자 · 가나는 Noto Sans JP). */
+  web: ["Inter", "Noto Sans KR", "Noto Sans JP", "Apple SD Gothic Neo", "system-ui", "sans-serif"],
   weight: { regular: 400, medium: 500, bold: 700 },
 } as const;
 

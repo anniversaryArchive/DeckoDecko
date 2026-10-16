@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_KR } from "next/font/google";
+import { Inter, Noto_Sans_JP, Noto_Sans_KR } from "next/font/google";
 import type { CSSProperties, ReactNode } from "react";
 
 import { defaultThemeName, fonts, themeToCssVars, themes } from "@deckodecko/ui";
@@ -17,11 +17,16 @@ const inter = Inter({
   weight: ["400", "500", "700"],
   variable: "--font-inter",
 });
-// 한글 글꼴은 용량이 커서 미리 받지(preload) 않고, 쓰일 때 글자 묶음 단위로 받는다.
+// 한글 · 일본어 글꼴은 용량이 커서 미리 받지(preload) 않고, 쓰일 때 글자 묶음 단위로 받는다.
 const notoSansKr = Noto_Sans_KR({
   weight: ["400", "500", "700"],
   preload: false,
   variable: "--font-noto-sans-kr",
+});
+const notoSansJp = Noto_Sans_JP({
+  weight: ["400", "500", "700"],
+  preload: false,
+  variable: "--font-noto-sans-jp",
 });
 
 /** fonts.web 스택의 글꼴 이름을 next/font 가 만든 변수로 바꾼다. 나머지는 시스템 폴백. */
@@ -31,9 +36,11 @@ const fontStack = fonts.web
       ? "var(--font-inter)"
       : f === "Noto Sans KR"
         ? "var(--font-noto-sans-kr)"
-        : f.includes(" ")
-          ? `"${f}"`
-          : f
+        : f === "Noto Sans JP"
+          ? "var(--font-noto-sans-jp)"
+          : f.includes(" ")
+            ? `"${f}"`
+            : f
   )
   .join(", ");
 
@@ -45,7 +52,11 @@ const themeVars = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko" className={`${inter.variable} ${notoSansKr.variable}`} style={themeVars}>
+    <html
+      lang="ko"
+      className={`${inter.variable} ${notoSansKr.variable} ${notoSansJp.variable}`}
+      style={themeVars}
+    >
       <body>{children}</body>
     </html>
   );

@@ -2,6 +2,9 @@
 import { Inter_400Regular } from "@expo-google-fonts/inter/400Regular";
 import { Inter_500Medium } from "@expo-google-fonts/inter/500Medium";
 import { Inter_700Bold } from "@expo-google-fonts/inter/700Bold";
+import { NotoSansJP_400Regular } from "@expo-google-fonts/noto-sans-jp/400Regular";
+import { NotoSansJP_500Medium } from "@expo-google-fonts/noto-sans-jp/500Medium";
+import { NotoSansJP_700Bold } from "@expo-google-fonts/noto-sans-jp/700Bold";
 import { NotoSansKR_400Regular } from "@expo-google-fonts/noto-sans-kr/400Regular";
 import { NotoSansKR_500Medium } from "@expo-google-fonts/noto-sans-kr/500Medium";
 import { NotoSansKR_700Bold } from "@expo-google-fonts/noto-sans-kr/700Bold";
@@ -22,11 +25,14 @@ void SplashScreen.preventAutoHideAsync();
  * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
  */
 export default function RootLayout() {
-  // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.latin 과 같아야 한다.
+  // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.ja · fonts.latin 과 같아야 한다.
   const [loaded, error] = useFonts({
     NotoSansKR_400Regular,
     NotoSansKR_500Medium,
     NotoSansKR_700Bold,
+    NotoSansJP_400Regular,
+    NotoSansJP_500Medium,
+    NotoSansJP_700Bold,
     Inter_400Regular,
     Inter_500Medium,
     Inter_700Bold,

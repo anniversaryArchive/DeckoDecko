@@ -33,14 +33,14 @@ const { colors } = useTheme();
 
 ### 공통 토큰
 
-| 토큰         | 쓰는 법                                                       | 비고                                                            |
-| ------------ | ------------------------------------------------------------- | --------------------------------------------------------------- |
-| `typography` | `typography.body.fontSize`, `.lineHeight`                     | "종류 + 크기" (`headingLg`, `titleSm`, `caption` …)             |
-| `space`      | `space[12]`, 화면 좌우 여백은 `gutter`                        | 시안이 2px 단위라 값이 곧 키. 없는 값은 가까운 단계로           |
-| `radius`     | `radius.card`, 둥근 버튼 · 칩은 `radius.full`                 | 끝까지 둥근 것(정사각형이면 원형)은 모두 `full`                 |
-| `border`     | `border.default`(1.5), `border.divider`(1)                    |                                                                 |
-| `shadows`    | RN `boxShadow: theme.shadows.toast`, 웹 `var(--shadow-toast)` | 테마마다 다름. CSS 문자열이라 양쪽에서 씀 (RN New Architecture) |
-| `fonts`      | 직접 쓰지 않음. 앱은 `Text`, 웹은 `fonts.web` 스택            | `sans`(Noto Sans KR) · `latin`(Inter) 의 굵기별 family 이름     |
+| 토큰         | 쓰는 법                                                       | 비고                                                                             |
+| ------------ | ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `typography` | `typography.body.fontSize`, `.lineHeight`                     | "종류 + 크기" (`headingLg`, `titleSm`, `caption` …)                              |
+| `space`      | `space[12]`, 화면 좌우 여백은 `gutter`                        | 시안이 2px 단위라 값이 곧 키. 없는 값은 가까운 단계로                            |
+| `radius`     | `radius.card`, 둥근 버튼 · 칩은 `radius.full`                 | 끝까지 둥근 것(정사각형이면 원형)은 모두 `full`                                  |
+| `border`     | `border.default`(1.5), `border.divider`(1)                    |                                                                                  |
+| `shadows`    | RN `boxShadow: theme.shadows.toast`, 웹 `var(--shadow-toast)` | 테마마다 다름. CSS 문자열이라 양쪽에서 씀 (RN New Architecture)                  |
+| `fonts`      | 직접 쓰지 않음. 앱은 `Text`, 웹은 `fonts.web` 스택            | `sans`(Noto Sans KR) · `ja`(Noto Sans JP) · `latin`(Inter) 의 굵기별 family 이름 |
 
 글자 토큰의 줄 높이는 글자 크기의 1.25배 이상으로 둔다. Inter 의 기본 높이가 글자 크기의 1.21배라서, 이보다 작으면 RN 이 `( ) $ @ |` 같은 특수문자의 위아래를 자른다.
 
@@ -61,8 +61,10 @@ import { Text } from "@deckodecko/ui/native";
 | `weight`  | `regular` · `medium` · `bold` | `variant` 의 기본 굵기 |
 | `color`   | 색 역할 이름                  | `text`                 |
 
-- 글꼴은 `Text` 가 글자를 보고 자동으로 고른다. **한글 · 한자 · 일본어는 Noto Sans KR, 영어 · 숫자 · 특수문자는 Inter.** DB 에서 온 글이나 번역 문장도 그대로 넘기면 된다.
+- 글꼴은 `Text` 가 글자를 보고 자동으로 고른다. **한글 · 원문자(①⑳)는 Noto Sans KR, 일본어 · 한자는 Noto Sans JP, 영어 · 숫자 · 특수문자는 Inter.** Noto Sans KR 에는 한자가 8천 자 정도뿐이라 일본어 한자(込 様 桜 …)가 빠져 있어서 나눴다. DB 에서 온 글이나 번역 문장도 그대로 넘기면 된다.
 - 화면에서 `fontFamily` · `fontSize` · `fontWeight` 를 직접 적지 않는다. 특히 `fontWeight` 를 넘기면 Android 에서 시스템 글꼴로 바뀐다.
+- 큰 글자(`displayLg` · `displaySm`)는 시스템 글자 크기를 키워도 1.5배까지만 커진다 (`maxFontSizeMultiplier`). 그 이상이면 화면 폭을 넘는다. 나머지 글자는 제한 없이 커진다.
+- `style` 에는 `fontWeight` · `fontFamily` 를 넘길 수 없다 (타입 오류). 굵기는 `weight` 로.
 - iOS 는 한글을 띄어쓰기 단위로 줄바꿈한다 (`lineBreakStrategyIOS="hangul-word"` 기본값). Android 는 같은 옵션이 없어서 글자 단위로 줄이 바뀔 수 있다.
 - 내비게이션 머리글 · 탭 이름처럼 `Text` 를 거치지 않는 글자는 `fonts.sans.bold` 를 직접 지정한다 (`apps/mobile/app/_layout.tsx` 참고).
 
@@ -70,8 +72,8 @@ import { Text } from "@deckodecko/ui/native";
 
 지금은 400 · 500 · 700 만 넣었다. 굵기를 추가하려면 세 곳을 같이 고친다.
 
-1. `src/tokens.ts`: `fonts.weight`, `fonts.sans`, `fonts.latin` 에 굵기 추가.
+1. `src/tokens.ts`: `fonts.weight`, `fonts.sans`, `fonts.ja`, `fonts.latin` 에 굵기 추가.
 2. `apps/mobile/app/_layout.tsx`: `useFonts` 에 글꼴 추가. 굵기별 경로로 import 한다 (`@expo-google-fonts/inter/600SemiBold`). 패키지 루트에서 import 하면 안 쓰는 굵기까지 전부 앱에 들어간다.
 3. `apps/admin/app/layout.tsx`: `next/font` 의 `weight` 배열에 추가.
 
-Noto Sans KR 은 굵기를 하나 추가할 때마다 앱 용량이 약 6MB 씩 늘어난다.
+Noto Sans KR · JP 는 굵기를 하나 추가할 때마다 앱 용량이 각각 약 6MB 씩 늘어난다.

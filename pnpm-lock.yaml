@@ -60,6 +60,9 @@ importers:
       '@expo-google-fonts/inter':
         specifier: ^0.4.2
         version: 0.4.2
+      '@expo-google-fonts/noto-sans-jp':
+        specifier: ^0.4.4
+        version: 0.4.4
       '@expo-google-fonts/noto-sans-kr':
         specifier: ^0.4.4
         version: 0.4.4
@@ -628,6 +631,9 @@ packages:
 
   '@expo-google-fonts/material-symbols@0.4.50':
     resolution: {integrity: sha512-XNSgSfd+1p6wqRAzzhrckGngHJQ1/z+oCMdI5FN+x/VnDeMMFGkXsuRNPYcZTYYff1GwVwx4u6Gqnb30aALysw==}
+
+  '@expo-google-fonts/noto-sans-jp@0.4.4':
+    resolution: {integrity: sha512-1vl2U7uYG5JAXGERZaLMXtfOSgyOU4Qhq30OOPrbAHjOu8AW9Pral/qN9Anta9fjd6eVRTijiNqcgy2TowzrDA==}
 
   '@expo-google-fonts/noto-sans-kr@0.4.4':
     resolution: {integrity: sha512-zePBzeh74ja/0Jiw3T/9+V6Ie3+eONlIl5o1dQQYsOCmfXjJttMz0rGv1oB2AWlzX/TPiL7J3IP3M9Ga7CBvWA==}
@@ -4885,6 +4891,8 @@ snapshots:
   '@expo-google-fonts/inter@0.4.2': {}
 
   '@expo-google-fonts/material-symbols@0.4.50': {}
+
+  '@expo-google-fonts/noto-sans-jp@0.4.4': {}
 
   '@expo-google-fonts/noto-sans-kr@0.4.4': {}
 
