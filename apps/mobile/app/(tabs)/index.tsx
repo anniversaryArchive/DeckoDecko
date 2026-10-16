@@ -29,7 +29,7 @@ export default function HomeScreen() {
       ))}
       <Link
         href="/gacha/sample"
-        style={{ marginTop: space.lg, color: colors.accent, fontWeight: "700" }}
+        style={{ marginTop: space[16], color: colors.accent, fontWeight: "700" }}
       >
         없는 가챠로 이동 (없음 상태 확인용)
       </Link>

@@ -8,8 +8,8 @@
 가챠 탐색대(DeckoDecko): 애니·게임 가챠 굿즈를 탐색하고 WISH / GET 으로 기록하는 모바일 앱.
 2026-10-13 부터 모노레포로 재개발 중. 1.0 출시 11/8, 1.1(AI 사진 등록) 11/22.
 
-- 기획서: https://claude.ai/code/artifact/87862d93-1288-4f9b-b980-35cad0573692
-- 디자인: https://claude.ai/artifact/H59s4ezb8jvh6ttSpJ4mpW
+- 기획서: https://claude.ai/code/artifact/e668b2ee-acd5-4991-b030-c40a839ce738
+- 디자인: https://claude.ai/artifact/X8gVyKo8QVoCMaqj2evY7G
 
 ## 구조
 
@@ -50,7 +50,11 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 - **데이터 접근**: 화면 컴포넌트에서 Supabase 를 직접 호출하지 않는다. `packages/core` 의 repository 함수 + React Query 훅을 거친다. 훅은 `@deckodecko/core/react` 에서, React 없는 것(타입 · 저장소 · 쿼리 키)은 `@deckodecko/core` 에서 가져온다. 화면에서 `useRepositories()` 로 저장소를 직접 부르지 않는다. 필요한 훅이 없으면 `packages/core/src/react/<도메인>.hooks.ts` 에 훅을 추가하고 `queryKeys` 에 키를 먼저 넣는다. 서버 컴포넌트 · 서버 액션 · 스크립트처럼 React 가 없는 곳만 저장소 함수를 직접 `await` 한다.
 - **스키마**: Supabase 대시보드에서 직접 바꾸지 않는다. 항상 `supabase/migrations/*.sql` 로. 변경 후 `supabase gen types typescript` 로 타입을 다시 만든다.
 - **문자열**: 화면에 한글을 하드코딩하지 않는다. i18n 리소스(ko, en)에 넣고 키로 쓴다. 날짜·가격·개수는 포맷 헬퍼를 쓴다.
-- **스타일**: 색은 `useTheme()` 의 역할 이름(`colors.bg`, `colors.accent` …)으로, 글꼴·간격·모서리는 `@deckodecko/ui` 의 `fonts` · `space` · `radius` 로 쓴다. `palette` 원색이나 색상값을 화면 코드에 직접 적지 않는다. 테마는 여러 개가 될 수 있으므로 역할 이름 밖의 색을 가정하지 않는다.
+- **스타일**: 화면 · 컴포넌트 코드에 색상값이나 크기 숫자를 직접 적지 않는다. 토큰 목록과 쓰는 법은 `packages/ui/README.md`.
+  - 색 · 그림자: `useTheme()` 의 `colors.역할`, `shadows.이름` 만 쓴다. `palette` 원색은 화면 코드에서 쓰지 않는다. 테마는 여러 개가 될 수 있으므로 역할 이름 밖의 색을 가정하지 않는다.
+  - 글자 · 간격 · 모서리 · 테두리: `@deckodecko/ui` 의 `typography` · `space` · `radius` · `border` 를 쓴다. 간격은 값이 곧 키(`space[12]`), 끝까지 둥근 모양은 `radius.full`.
+  - 컴포넌트 높이(버튼 54 등)는 토큰이 아니라 그 컴포넌트 파일 안의 상수로 둔다.
+  - 색 역할을 추가할 때: 면 위 글자색은 `on` + 면 이름(`onPrimary`, `onWish`), 글자 토큰은 종류 + 크기(`headingLg`, `captionSm`). 새 역할은 `src/themes/` 의 모든 테마에 값을 채운다.
 - **보안**: anon key 외의 키(service role 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만.
 - **범위**: 기획서의 주차별 투두 밖의 기능을 임의로 추가하지 않는다. 필요하면 먼저 제안한다.
 - **웹**: 출시 대상이 아니다. `react-native-web` 은 CI 에서 Metro 번들을 검증하고(`expo export --platform web`) 로컬에서 빠르게 화면을 볼 때만 쓴다. 웹에서만 동작하는 코드를 넣지 않는다.
