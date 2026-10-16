@@ -21,6 +21,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
 
+import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
 import { i18n, pickLanguage } from "@/lib/i18n";
 import { repositories } from "@/lib/repositories";
 
@@ -33,6 +34,8 @@ void SplashScreen.preventAutoHideAsync();
  * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
  */
 export default function RootLayout() {
+  useLocalDbMigrations();
+
   // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.ja · fonts.latin 과 같아야 한다.
   const [loaded, error] = useFonts({
     NotoSansKR_400Regular,
