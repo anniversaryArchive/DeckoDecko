@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
-import { defaultThemeName, themes, type Theme, type ThemeName } from "./tokens";
+import { defaultThemeName, themes, type ThemeName } from "./themes";
+import type { Theme } from "./tokens";
 
 const ThemeContext = createContext<Theme>(themes[defaultThemeName]);
 

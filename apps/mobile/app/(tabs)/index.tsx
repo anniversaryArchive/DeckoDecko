@@ -11,7 +11,7 @@ export default function HomeScreen() {
     <PlaceholderScreen title="홈" description="소장률 · 새로 나왔어요 · 지금 인기 · 공지">
       <Link
         href="/gacha/sample"
-        style={{ marginTop: space.lg, color: colors.accent, fontWeight: "700" }}
+        style={{ marginTop: space[16], color: colors.accent, fontWeight: "700" }}
       >
         가챠 상세로 이동 (라우팅 확인용)
       </Link>
