@@ -16,12 +16,18 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 /** 검색창 높이 */
 const SEARCH_BAR_HEIGHT = 52;
+/** 검색창 왼쪽 돋보기 아이콘 */
+const SEARCH_ICON_SIZE = 20;
 /** 검색창 안 지우기 버튼(원형) 한 변 */
 const CLEAR_BUTTON_SIZE = 32;
+/** 지우기 버튼 안 X 아이콘 */
+const CLEAR_ICON_SIZE = 16;
 /** 검색창 안 검색 버튼 높이 */
 const SUBMIT_BUTTON_HEIGHT = 40;
 /** 결과 없음 원형 아이콘 한 변 */
 const NO_RESULT_ICON_SIZE = 92;
+/** 결과 없음 원 안의 돋보기 아이콘 */
+const NO_RESULT_GLYPH_SIZE = 40;
 /** 결과 없음 안내를 화면 가운데보다 조금 위로 올리는 값 */
 const NO_RESULT_LIFT = 60;
 
@@ -74,7 +80,7 @@ export default function SearchScreen() {
             paddingRight: space[6],
           }}
         >
-          <Ionicons name="search" size={20} color={colors.accent} />
+          <Ionicons name="search" size={SEARCH_ICON_SIZE} color={colors.accent} />
           <TextInput
             value={input}
             onChangeText={setInput}
@@ -114,7 +120,7 @@ export default function SearchScreen() {
                 backgroundColor: colors.bg,
               }}
             >
-              <Ionicons name="close" size={16} color={colors.textMuted} />
+              <Ionicons name="close" size={CLEAR_ICON_SIZE} color={colors.textMuted} />
             </Pressable>
           )}
           <Pressable
@@ -261,7 +267,7 @@ function NoResult({ keyword }: { keyword: string }) {
           backgroundColor: colors.accentSoft,
         }}
       >
-        <Ionicons name="search" size={40} color={colors.accent} />
+        <Ionicons name="search" size={NO_RESULT_GLYPH_SIZE} color={colors.accent} />
       </View>
       <View style={{ gap: space[6] }}>
         <Text variant="titleLg" style={{ textAlign: "center" }}>

@@ -10,6 +10,9 @@ import { useKeyboardVisible } from "@/hooks/useKeyboardVisible";
 const TAB_HEIGHT = 40;
 /** 비활성 탭(아이콘만)의 폭 */
 const ICON_TAB_WIDTH = 44;
+/** 탭 아이콘 크기. 활성 탭은 라벨이 옆에 붙어 조금 작게 */
+const ACTIVE_ICON_SIZE = 20;
+const INACTIVE_ICON_SIZE = 22;
 
 /**
  * 떠 있는 알약형 하단 탭바. Tabs 의 tabBar 로 넘긴다.
@@ -91,7 +94,7 @@ export function FloatingTabBar({ state, descriptors, navigation, insets }: Botto
               {options.tabBarIcon?.({
                 focused,
                 color: colors[colorRole],
-                size: focused ? 20 : 22,
+                size: focused ? ACTIVE_ICON_SIZE : INACTIVE_ICON_SIZE,
               })}
               {/* 줄 높이는 caption 토큰(18)이 정해 주므로 Noto Sans KR 의 아래가 잘리지 않는다. */}
               {focused && (

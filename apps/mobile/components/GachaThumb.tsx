@@ -3,6 +3,10 @@ import { Image, View } from "react-native";
 
 import { radius, useTheme } from "@deckodecko/ui";
 
+/** 자리 표시 아이콘 크기: 크기를 정한 썸네일은 한 변의 40%, 부모를 채우는 썸네일(카드 · 히어로)은 고정값 */
+const PLACEHOLDER_ICON_RATIO = 0.4;
+const PLACEHOLDER_ICON_FILL_SIZE = 48;
+
 type Props = {
   imageUrl: string | null;
   /** 정사각형 한 변. 생략하면 부모 크기를 채운다 (부모가 너비 · 높이를 정한다). */
@@ -43,7 +47,7 @@ export function GachaThumb({ imageUrl, size, borderRadius = radius.thumb }: Prop
     >
       <Ionicons
         name="gift-outline"
-        size={size != null ? Math.round(size * 0.4) : 48}
+        size={size != null ? Math.round(size * PLACEHOLDER_ICON_RATIO) : PLACEHOLDER_ICON_FILL_SIZE}
         color={colors.accent}
       />
     </View>
