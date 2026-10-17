@@ -75,7 +75,7 @@ export default function HomeScreen() {
           {latest.isPending ? (
             <StateMessage loading message={t("common.loading")} />
           ) : latest.isError ? (
-            <StateMessage message={t("common.loadFailed")} />
+            <StateMessage message={t("common.loadFailed")} onRetry={() => void latest.refetch()} />
           ) : latest.data.length === 0 ? (
             <StateMessage message={t("home.empty")} />
           ) : (
@@ -97,7 +97,10 @@ export default function HomeScreen() {
             {popular.isPending ? (
               <StateMessage loading message={t("common.loading")} />
             ) : popular.isError ? (
-              <StateMessage message={t("common.loadFailed")} />
+              <StateMessage
+                message={t("common.loadFailed")}
+                onRetry={() => void popular.refetch()}
+              />
             ) : popular.data.length === 0 ? (
               <StateMessage message={t("home.empty")} />
             ) : (

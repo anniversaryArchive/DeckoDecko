@@ -28,13 +28,13 @@ const BACK_BUTTON_SIZE = 44;
 export default function GachaDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
-  const { data: gacha, isLoading, isError } = useGacha(id);
+  const { data: gacha, isLoading, isError, refetch } = useGacha(id);
 
   let body;
   if (isLoading) {
     body = <StateMessage fill loading message={t("common.loading")} />;
   } else if (isError) {
-    body = <StateMessage fill message={t("common.loadFailed")} />;
+    body = <StateMessage fill message={t("common.loadFailed")} onRetry={() => void refetch()} />;
   } else if (!gacha) {
     body = <StateMessage fill message={t("detail.notFound", { id })} />;
   } else {

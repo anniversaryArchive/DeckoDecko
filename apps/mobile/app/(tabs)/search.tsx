@@ -170,7 +170,7 @@ function PopularSearches() {
       {popular.isPending ? (
         <StateMessage loading message={t("common.loading")} />
       ) : popular.isError ? (
-        <StateMessage message={t("common.loadFailed")} />
+        <StateMessage message={t("common.loadFailed")} onRetry={() => void popular.refetch()} />
       ) : popular.data.length === 0 ? (
         <StateMessage message={t("home.empty")} />
       ) : (
@@ -205,7 +205,7 @@ function SearchResults({ keyword }: { keyword: string }) {
         search.isPending ? (
           <StateMessage loading message={t("common.loading")} />
         ) : search.isError ? (
-          <StateMessage message={t("common.loadFailed")} />
+          <StateMessage message={t("common.loadFailed")} onRetry={() => void search.refetch()} />
         ) : (
           <NoResult keyword={keyword} />
         )
