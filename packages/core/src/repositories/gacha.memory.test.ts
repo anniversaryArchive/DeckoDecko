@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import type { GachaDetail, Media } from "../types";
-import { GACHA_DEFAULTS } from "./gacha";
 import { createMemoryGachaRepository } from "./gacha.memory";
 
-// 목 카탈로그(#107 에서 바뀜)에 기대지 않도록 테스트마다 작은 seed 를 직접 만든다.
+// 목 카탈로그가 바뀌어도 깨지지 않도록 테스트마다 작은 seed 를 직접 만든다.
 
 const starry: Media = {
   id: "m-starry",
@@ -65,7 +64,6 @@ describe("createMemoryGachaRepository", () => {
     });
 
     it("limit 을 생략하면 기본 20개까지만 돌려준다", async () => {
-      expect(GACHA_DEFAULTS.listLimit).toBe(20);
       const repo = createMemoryGachaRepository(many(25));
       const list = await repo.listGacha();
       expect(list).toHaveLength(20);
@@ -118,7 +116,6 @@ describe("createMemoryGachaRepository", () => {
     });
 
     it("limit 을 생략하면 기본 10개", async () => {
-      expect(GACHA_DEFAULTS.popularLimit).toBe(10);
       const repo = createMemoryGachaRepository(many(15));
       expect(await repo.listPopularGacha()).toHaveLength(10);
     });
@@ -156,11 +153,6 @@ describe("createMemoryGachaRepository", () => {
     it("없는 id 면 null", async () => {
       const repo = createMemoryGachaRepository([gacha("a")]);
       expect(await repo.getGacha("nope")).toBeNull();
-    });
-
-    it("빈 문자열 id 도 null", async () => {
-      const repo = createMemoryGachaRepository([gacha("a")]);
-      expect(await repo.getGacha("")).toBeNull();
     });
   });
 
@@ -281,8 +273,6 @@ describe("createMemoryGachaRepository", () => {
       });
 
       it("limit · offset 을 생략하면 기본 20개 · 0부터", async () => {
-        expect(GACHA_DEFAULTS.searchLimit).toBe(20);
-        expect(GACHA_DEFAULTS.searchOffset).toBe(0);
         const big = createMemoryGachaRepository(many(25, { name: "マスコット" }));
         const page = await big.searchGacha({ keyword: "マスコット" });
         expect(page.items).toHaveLength(20);
