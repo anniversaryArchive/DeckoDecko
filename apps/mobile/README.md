@@ -33,7 +33,8 @@ pnpm --filter @deckodecko/mobile exec drizzle-kit generate --custom --name <이�
 - `.sql` 은 Babel(inline-import)이 문자열로 넣는다. 마이그레이션을 바꾼 뒤에는 `expo start -c` 로 Metro 캐시를 지워야 반영된다.
 - 기본 폴더는 `0001_default_folder.sql` 이 만든다. id 는 기기마다 다른 UUID 이므로 **`is_default` 로 찾는다** (id 를 가정하지 않는다). 삭제는 트리거가 막고, 표시 이름은 i18n 키로 정한다 (`name` 은 빈 문자열).
 - 트리거처럼 본문에 `;` 가 있는 문장은 `--> statement-breakpoint` 로 자르지 않는다. 마이그레이터는 조각마다 첫 문장만 실행한다.
-- 시각은 ISO 8601 UTC 텍스트, id 는 text UUID.
+- `is_default` 는 넣은 뒤 바꿀 수 없다 (트리거). 플래그를 먼저 끄고 지우는 우회를 막는다.
+- 시각은 ISO 8601 UTC 텍스트, id 는 text UUID. `created_at` · `updated_at` 은 INSERT 때만 기본값이 들어간다. 수정할 때는 저장소에서 `updated_at` 을 직접 넣는다.
 
 ## TODO
 

@@ -20,3 +20,11 @@ WHEN OLD.`is_default` = 1
 BEGIN
 	SELECT RAISE(ABORT, 'The default folder cannot be deleted');
 END;
+--> statement-breakpoint
+-- is_default is fixed after insert. Otherwise the delete trigger could be bypassed by clearing the flag first.
+CREATE TRIGGER `folders_prevent_default_change`
+BEFORE UPDATE OF `is_default` ON `folders`
+WHEN OLD.`is_default` <> NEW.`is_default`
+BEGIN
+	SELECT RAISE(ABORT, 'is_default cannot be changed');
+END;
