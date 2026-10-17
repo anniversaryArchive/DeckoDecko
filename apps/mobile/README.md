@@ -17,12 +17,13 @@ pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 �
 
 WISH / GET 기록(items · folders)은 기기 안 SQLite(`deckodecko.db`)에 둔다. drizzle + expo-sqlite. 백오피스는 이 데이터를 읽지 않으므로 core 가 아니라 앱에 둔다 (`docs/adr/0002-monorepo-boundaries.md`).
 
-| 경로                             | 내용                                                       |
-| -------------------------------- | ---------------------------------------------------------- |
-| `lib/db/schema.ts`               | 테이블 정의. 스키마는 여기서만 바꾼다                      |
-| `lib/db/client.ts`               | DB 연결 하나 (`db`). 연결 직후 `PRAGMA foreign_keys = ON`  |
-| `lib/db/useLocalDbMigrations.ts` | 앱 시작 시 마이그레이션 실행. `app/_layout.tsx` 에서 호출  |
-| `drizzle/`                       | drizzle-kit 생성물. 손으로 고치지 않는다 (커스텀 SQL 제외) |
+| 경로                                           | 내용                                                       |
+| ---------------------------------------------- | ---------------------------------------------------------- |
+| `lib/db/schema.ts`                             | 테이블 정의. 스키마는 여기서만 바꾼다                      |
+| `lib/db/client.native.ts`                      | DB 연결 하나 (`db`). 연결 직후 `PRAGMA foreign_keys = ON`  |
+| `lib/db/useLocalDbMigrations.native.ts`        | 앱 시작 시 마이그레이션 실행. `app/_layout.tsx` 에서 호출  |
+| `lib/db/client.ts` · `useLocalDbMigrations.ts` | 웹용 자리표시자. sqlite 를 번들에 넣지 않는다              |
+| `drizzle/`                                     | drizzle-kit 생성물. 손으로 고치지 않는다 (커스텀 SQL 제외) |
 
 ```bash
 pnpm --filter @deckodecko/mobile db:generate                            # schema.ts 를 바꾼 뒤 마이그레이션 생성
@@ -34,6 +35,7 @@ pnpm --filter @deckodecko/mobile exec drizzle-kit generate --custom --name <이�
 - 기본 폴더는 `0001_default_folder.sql` 이 만든다. id 는 기기마다 다른 UUID 이므로 **`is_default` 로 찾는다** (id 를 가정하지 않는다). 삭제는 트리거가 막고, 표시 이름은 i18n 키로 정한다 (`name` 은 빈 문자열).
 - 트리거처럼 본문에 `;` 가 있는 문장은 `--> statement-breakpoint` 로 자르지 않는다. 마이그레이터는 조각마다 첫 문장만 실행한다.
 - `is_default` 는 넣은 뒤 바꿀 수 없다 (트리거). 플래그를 먼저 끄고 지우는 우회를 막는다.
+- 웹(`expo start --web`)에서는 로컬 DB 가 없다. 웹 expo-sqlite 는 COOP/COEP 헤더가 필요한데 dev 서버의 `/` 응답에 붙일 수 없어서다. 마이그레이션 훅은 실패를 돌려주고, `db` 에 접근하면 에러가 난다. 로컬 DB 를 쓰는 화면은 웹에서 이 경우를 처리한다.
 - 시각은 ISO 8601 UTC 텍스트, id 는 text UUID. `created_at` · `updated_at` 은 INSERT 때만 기본값이 들어간다. 수정할 때는 저장소에서 `updated_at` 을 직접 넣는다.
 
 ## TODO
