@@ -1,7 +1,6 @@
 import type { Gacha, GachaDetail } from "../types";
+import { GACHA_DEFAULTS } from "./gacha";
 import type { GachaRepository, ListGachaParams, SearchGachaParams } from "./gacha";
-
-const DEFAULT_LIMIT = 20;
 
 function normalize(s: string): string {
   return s.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
@@ -22,10 +21,10 @@ export function createMemoryGachaRepository(seed: readonly GachaDetail[]): Gacha
 
   return {
     async listGacha(params?: ListGachaParams) {
-      return all.slice(0, params?.limit ?? DEFAULT_LIMIT).map(toSummary);
+      return all.slice(0, params?.limit ?? GACHA_DEFAULTS.listLimit).map(toSummary);
     },
 
-    async listPopularGacha(limit = 10) {
+    async listPopularGacha(limit: number = GACHA_DEFAULTS.popularLimit) {
       // 인기 집계는 3주차 RPC 몫. 그 전까지는 라인업이 많은 순으로 흉내 낸다.
       return [...all]
         .sort((a, b) => b.items.length - a.items.length)
@@ -37,7 +36,11 @@ export function createMemoryGachaRepository(seed: readonly GachaDetail[]): Gacha
       return all.find((g) => g.id === id) ?? null;
     },
 
-    async searchGacha({ keyword, limit = DEFAULT_LIMIT, offset = 0 }: SearchGachaParams) {
+    async searchGacha({
+      keyword,
+      limit = GACHA_DEFAULTS.searchLimit,
+      offset = GACHA_DEFAULTS.searchOffset,
+    }: SearchGachaParams) {
       const q = normalize(keyword);
       if (!q) return { items: [], total: 0 };
       const hits = all.filter((g) =>

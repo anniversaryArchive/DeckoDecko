@@ -10,10 +10,20 @@ import { PlaceholderScreen } from "@/components/PlaceholderScreen";
 export default function GachaDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
-  const { data: gacha, isLoading } = useGacha(id);
+  const { data: gacha, isLoading, isError, refetch } = useGacha(id);
 
   if (isLoading) {
     return <PlaceholderScreen title="가챠 상세" description="불러오는 중…" />;
+  }
+  // 실패를 "없음"과 구분한다. 확인하지 않으면 네트워크 · RLS 에러도 없는 가챠로 보인다.
+  if (isError) {
+    return (
+      <PlaceholderScreen title="가챠 상세" description="불러오지 못했어요">
+        <Text onPress={() => refetch()} style={{ color: colors.accent, fontWeight: "700" }}>
+          다시 시도
+        </Text>
+      </PlaceholderScreen>
+    );
   }
   if (!gacha) {
     return <PlaceholderScreen title="가챠 상세" description={`없는 가챠예요 (id: ${id})`} />;

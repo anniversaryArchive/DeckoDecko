@@ -1,5 +1,13 @@
 import type { Gacha, GachaDetail, Page } from "../types";
 
+/** 인자를 생략했을 때의 기본값. 구현과 훅(쿼리 키)이 같은 값을 쓰도록 여기 둔다. */
+export const GACHA_DEFAULTS = {
+  listLimit: 20,
+  popularLimit: 10,
+  searchLimit: 20,
+  searchOffset: 0,
+} as const;
+
 export type ListGachaParams = {
   limit?: number; // 기본 20
 };

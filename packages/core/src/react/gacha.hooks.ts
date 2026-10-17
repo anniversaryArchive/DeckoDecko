@@ -4,9 +4,10 @@ import { keepPreviousData, skipToken, useQuery } from "@tanstack/react-query";
 
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
+import { GACHA_DEFAULTS } from "../repositories/gacha";
 
 /** 홈 "새로 나왔어요" */
-export function useGachaList(limit?: number) {
+export function useGachaList(limit: number = GACHA_DEFAULTS.listLimit) {
   const { gacha } = useRepositories();
   return useQuery({
     queryKey: queryKeys.gacha.list(limit),
@@ -15,7 +16,7 @@ export function useGachaList(limit?: number) {
 }
 
 /** 홈 "지금 인기" */
-export function usePopularGacha(limit?: number) {
+export function usePopularGacha(limit: number = GACHA_DEFAULTS.popularLimit) {
   const { gacha } = useRepositories();
   return useQuery({
     queryKey: queryKeys.gacha.popular(limit),
@@ -39,9 +40,11 @@ export function useGacha(id: string | undefined) {
 export function useGachaSearch(keyword: string, options?: { limit?: number; offset?: number }) {
   const { gacha } = useRepositories();
   const trimmed = keyword.trim();
+  const offset = options?.offset ?? GACHA_DEFAULTS.searchOffset;
+  const limit = options?.limit ?? GACHA_DEFAULTS.searchLimit;
   return useQuery({
-    queryKey: queryKeys.gacha.search(trimmed, options?.offset, options?.limit),
-    queryFn: trimmed ? () => gacha.searchGacha({ keyword: trimmed, ...options }) : skipToken,
+    queryKey: queryKeys.gacha.search(trimmed, offset, limit),
+    queryFn: trimmed ? () => gacha.searchGacha({ keyword: trimmed, offset, limit }) : skipToken,
     // 검색어를 비우면 이전 결과도 지운다 (keepPreviousData 는 꺼진 쿼리에도 마지막 결과를 돌려준다)
     placeholderData: trimmed ? keepPreviousData : undefined,
   });

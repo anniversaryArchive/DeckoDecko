@@ -8,6 +8,7 @@
  */
 export type { Gacha, GachaDetail, GachaItem, Media, MediaKind, Page } from "./types";
 export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repositories/gacha";
+export { GACHA_DEFAULTS } from "./repositories/gacha";
 export type { Repositories } from "./repositories";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
 export { queryKeys } from "./queryKeys";
