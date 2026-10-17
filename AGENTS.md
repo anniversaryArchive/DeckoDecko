@@ -37,14 +37,14 @@
 ## 명령
 
 ```bash
-corepack enable && pnpm install        # pnpm 만 사용. npm / yarn 금지
-pnpm turbo run lint typecheck build    # CI 와 동일한 검사
-pnpm format                            # prettier --write
-pnpm --filter @deckodecko/mobile dev   # expo start
-pnpm --filter @deckodecko/admin dev    # next dev (3001)
+corepack enable && pnpm install           # pnpm 만 사용. npm / yarn 금지
+pnpm turbo run lint typecheck test build  # CI 와 동일한 검사
+pnpm format                               # prettier --write
+pnpm --filter @deckodecko/mobile dev      # expo start
+pnpm --filter @deckodecko/admin dev       # next dev (3001)
 ```
 
-PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnpm turbo run lint typecheck build` 가 통과해야 한다. CI(`.github/workflows/ci.yml`)가 같은 명령을 돌린다.
+PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnpm turbo run lint typecheck test build` 가 통과해야 한다. CI(`.github/workflows/ci.yml`)가 같은 명령을 돌린다.
 
 ## 규칙
 
