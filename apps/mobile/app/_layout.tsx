@@ -14,7 +14,6 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
@@ -71,7 +70,6 @@ export default function RootLayout() {
 
 function RootStack() {
   const { scheme, colors } = useTheme();
-  const { t } = useTranslation();
   return (
     <>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
@@ -83,7 +81,7 @@ function RootStack() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="gacha/[id]" options={{ title: t("detail.title") }} />
+        <Stack.Screen name="gacha/[id]" options={{ headerShown: false }} />
       </Stack>
     </>
   );
