@@ -26,9 +26,28 @@ import {
 } from "@deckodecko/ui/native";
 
 /** 색 견본 한 칸의 크기 */
-const SWATCH = 44;
+const SWATCH = 36;
 /** 카드 견본 안 썸네일 크기 */
 const THUMB = 64;
+/** 칩 오른쪽 ⌄ 아이콘 크기 */
+const CHEVRON_SIZE = 14;
+
+type ColorRole = keyof ThemeColors;
+
+/** 색 역할을 용도별로 묶는다. 여기 없는 역할(새로 추가된 것)은 "기타"에 나온다 */
+const COLOR_GROUPS: { title: string; roles: ColorRole[] }[] = [
+  { title: "면 · 선", roles: ["bg", "surface", "line", "lineSoft", "scrim"] },
+  { title: "글자", roles: ["text", "textMuted", "textPlaceholder", "textFaint"] },
+  { title: "강조", roles: ["accentSoft", "highlightSurface", "highlightLine", "getMark"] },
+];
+/** 면과 그 위 글자 쌍. 면 위에 글자를 얹어 읽기 괜찮은지 같이 본다 */
+const COLOR_PAIRS: [ColorRole, ColorRole][] = [
+  ["accent", "onAccent"],
+  ["primary", "onPrimary"],
+  ["wishSurface", "onWish"],
+  ["getSurface", "onGet"],
+  ["inverse", "onInverse"],
+];
 
 const VARIANTS: ButtonVariant[] = ["primary", "secondary", "outline", "soft", "danger"];
 const SIZES: ButtonSize[] = ["lg", "md", "sm"];
@@ -59,26 +78,8 @@ function Catalog() {
     >
       <Text color="textMuted">테마: {name}</Text>
 
-      <Section title="색 역할" note="useTheme().colors">
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[12] }}>
-          {(Object.keys(colors) as (keyof ThemeColors)[]).map((k) => (
-            <View key={k} style={{ width: SWATCH * 2, gap: space[4] }}>
-              <View
-                style={{
-                  width: SWATCH,
-                  height: SWATCH,
-                  borderRadius: radius.thumb,
-                  borderWidth: border.divider,
-                  borderColor: colors.line,
-                  backgroundColor: colors[k],
-                }}
-              />
-              <Text variant="captionSm" color="textMuted" numberOfLines={1}>
-                {k}
-              </Text>
-            </View>
-          ))}
-        </View>
+      <Section title="색 역할" note="useTheme().colors · 용도별로 묶었다">
+        <ColorRoles />
       </Section>
 
       <Section title="글자" note="Text variant">
@@ -139,7 +140,10 @@ function Catalog() {
             selected={filter === "media"}
             onPress={() => setFilter("media")}
             trailing={
-              <ChevronDownIcon size={14} color={filter === "media" ? "onPrimary" : "text"} />
+              <ChevronDownIcon
+                size={CHEVRON_SIZE}
+                color={filter === "media" ? "onPrimary" : "text"}
+              />
             }
           >
             작품
@@ -269,6 +273,114 @@ function Catalog() {
         </Button>
       </BottomSheet>
     </ScrollView>
+  );
+}
+
+function ColorRoles() {
+  const { colors } = useTheme();
+  const listed = new Set<ColorRole>([
+    ...COLOR_GROUPS.flatMap((g) => g.roles),
+    ...COLOR_PAIRS.flat(),
+  ]);
+  const rest = (Object.keys(colors) as ColorRole[]).filter((k) => !listed.has(k));
+  const groups = rest.length ? [...COLOR_GROUPS, { title: "기타", roles: rest }] : COLOR_GROUPS;
+  return (
+    <View style={{ gap: space[20] }}>
+      {groups.slice(0, 2).map((g) => (
+        <ColorGroup key={g.title} title={g.title}>
+          {g.roles.map((k) => (
+            <ColorRow key={k} role={k} sample={g.title === "글자"} />
+          ))}
+        </ColorGroup>
+      ))}
+      <ColorGroup title="면 · 그 위 글자">
+        {COLOR_PAIRS.map(([surface, on]) => (
+          <ColorPair key={surface} surface={surface} on={on} />
+        ))}
+      </ColorGroup>
+      {groups.slice(2).map((g) => (
+        <ColorGroup key={g.title} title={g.title}>
+          {g.roles.map((k) => (
+            <ColorRow key={k} role={k} />
+          ))}
+        </ColorGroup>
+      ))}
+    </View>
+  );
+}
+
+/** hex 는 대문자로 맞추고, rgba 등 다른 형식은 그대로 보여 준다 */
+function formatColor(value: string) {
+  return value.startsWith("#") ? value.toUpperCase() : value;
+}
+
+function ColorGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <View style={{ gap: space[8] }}>
+      <Text variant="label" color="textMuted">
+        {title}
+      </Text>
+      {children}
+    </View>
+  );
+}
+
+/** 견본 · 이름 · 값 한 줄. 글자 역할은 그 색으로 쓴 예문을 오른쪽에 둔다 */
+function ColorRow({ role, sample = false }: { role: ColorRole; sample?: boolean }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", gap: space[12] }}>
+      <View
+        style={{
+          width: SWATCH,
+          height: SWATCH,
+          borderRadius: radius.thumb,
+          borderWidth: border.divider,
+          borderColor: colors.line,
+          backgroundColor: colors[role],
+        }}
+      />
+      <View style={{ flex: 1 }}>
+        <Text variant="bodyStrong">{role}</Text>
+        <Text variant="captionSm" color="textMuted">
+          {formatColor(colors[role])}
+        </Text>
+      </View>
+      {sample ? <Text color={role}>가챠 탐색대 Vol.2</Text> : null}
+    </View>
+  );
+}
+
+/** 면 위에 글자를 얹은 견본 */
+function ColorPair({ surface, on }: { surface: ColorRole; on: ColorRole }) {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: space[12],
+        paddingVertical: space[12],
+        paddingHorizontal: space[16],
+        borderRadius: radius.field,
+        borderWidth: border.divider,
+        borderColor: colors.line,
+        backgroundColor: colors[surface],
+      }}
+    >
+      <Text variant="bodyStrong" color={on}>
+        가챠 탐색대 Vol.2
+      </Text>
+      <View style={{ alignItems: "flex-end" }}>
+        <Text variant="captionSm" color={on}>
+          {surface} {formatColor(colors[surface])}
+        </Text>
+        <Text variant="captionSm" color={on}>
+          {on} {formatColor(colors[on])}
+        </Text>
+      </View>
+    </View>
   );
 }
 
