@@ -1,0 +1,197 @@
+name: Expo 패치 주간 업데이트
+
+# 주 1회 Expo SDK 권장 패치 버전을 확인하고, 뒤처졌으면 `expo install --fix` 결과로 PR 을 연다.
+# CI 의 `expo install --check` 는 EXPO_OFFLINE=1 로 lockfile 기준만 보므로, Expo 서버의 새 권장 패치는 여기서 따라간다.
+#
+# 필요 설정: Settings → Actions → General → Workflow permissions 의
+# "Allow GitHub Actions to create and approve pull requests" 가 켜져 있어야 한다.
+# 꺼져 있으면 마지막 `gh pr create` 단계가 실패한다 (브랜치는 push 된 상태로 남는다).
+
+on:
+  schedule:
+    # 매주 월요일 00:00 UTC = 한국 시간 월요일 09:00
+    - cron: "0 0 * * 1"
+  workflow_dispatch: # Actions 탭에서 수동 실행
+
+# 브랜치 push 와 PR 생성에 필요한 만큼만 이 workflow 에 준다. (ci.yml 은 contents: read 그대로)
+permissions:
+  contents: write
+  pull-requests: write
+
+# 수동 실행과 예약 실행이 겹쳐도 한 번에 하나만 돈다. 진행 중인 실행은 취소하지 않는다.
+concurrency:
+  group: expo-weekly-update
+  cancel-in-progress: false
+
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+  NEXT_TELEMETRY_DISABLED: "1"
+  EXPO_NO_TELEMETRY: "1"
+  BRANCH_PREFIX: chore/expo-weekly-
+
+jobs:
+  update:
+    name: expo install --fix → PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      # package.json 의 packageManager(pnpm@10.x) 를 그대로 사용
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # 온라인으로 Expo 서버의 최신 권장 버전과 비교한다. 통과하면 이후 단계는 모두 건너뛴다.
+      # 서버 연결 실패는 아래에서 따로 잡아 job 을 실패시킨다. 그 밖의 실패는 "뒤처짐" 으로 보고 --fix 로 넘어가며,
+      # 원인이 버전이 아니면 --fix 나 뒤 검사 단계가 실패해 job 이 빨갛게 끝난다.
+      - name: Expo 패키지 버전 확인 (온라인)
+        id: check
+        run: |
+          set +e
+          pnpm --filter @deckodecko/mobile exec expo install --check 2>&1 | tee "$RUNNER_TEMP/check.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          # 서버에 닿지 못하면 @expo/cli 는 로컬 bundledNativeModules.json 으로 대신 판단한다.
+          # 그러면 새 권장 패치를 못 보고 "최신" 으로 끝나므로, 이 경우는 실패로 드러낸다.
+          if grep -q "Unable to reach well-known versions endpoint" "$RUNNER_TEMP/check.log"; then
+            echo "::error title=Expo 서버 연결 실패::권장 버전을 받아 오지 못했다. 다음 실행을 기다리거나 workflow_dispatch 로 다시 돌린다."
+            exit 1
+          fi
+          if [ "$status" -eq 0 ]; then
+            echo "Expo 패키지 버전이 최신 권장 버전과 같다. 업데이트할 것 없음."
+            echo "outdated=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "outdated=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # 같은 목적의 열린 PR 이 있으면 새로 만들지 않는다 (먼저 그 PR 을 병합하거나 닫는다).
+      - name: 열린 주간 업데이트 PR 확인
+        id: existing
+        if: steps.check.outputs.outdated == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url=$(gh pr list --state open --limit 100 --json headRefName,url \
+            --jq "[.[] | select(.headRefName | startswith(\"$BRANCH_PREFIX\"))] | .[0].url // empty")
+          if [ -n "$url" ]; then
+            echo "이미 열린 주간 업데이트 PR 이 있어 새로 만들지 않는다: $url"
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: expo install --fix
+        id: fix
+        if: steps.check.outputs.outdated == 'true' && steps.existing.outputs.found == 'false'
+        run: |
+          pnpm --filter @deckodecko/mobile exec expo install --fix
+          # lockfile 정리 (--fix 가 package.json 만 바꾼 경우까지 맞춘다)
+          pnpm install
+          # pnpm 이 쓴 package.json 이 prettier 와 어긋나지 않게 맞춘다
+          pnpm exec prettier --write apps/mobile/package.json
+
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "--fix 후 바뀐 파일이 없다. 종료."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git status --short
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          # 커밋 대상은 --fix 가 바꾼 파일만. 뒤 검사 단계의 빌드 산출물이 섞이지 않게 여기서 목록을 고정한다.
+          git ls-files --modified --others --exclude-standard > "$RUNNER_TEMP/changed-files.txt"
+
+          # 바뀐 패키지 목록 (이전 커밋의 package.json 과 비교) → 커밋 · PR 본문에 쓴다
+          git show HEAD:apps/mobile/package.json > "$RUNNER_TEMP/package.before.json"
+          node -e '
+            const fs = require("fs");
+            const [before, after] = process.argv.slice(1, 3).map((f) => JSON.parse(fs.readFileSync(f, "utf8")));
+            const lines = [];
+            for (const field of ["dependencies", "devDependencies"]) {
+              const b = before[field] || {};
+              const a = after[field] || {};
+              for (const name of [...new Set([...Object.keys(b), ...Object.keys(a)])].sort()) {
+                if (b[name] !== a[name]) lines.push(`- ${name}: ${b[name] ?? "(없음)"} → ${a[name] ?? "(삭제)"}`);
+              }
+            }
+            fs.writeFileSync(process.argv[3], (lines.length ? lines.join("\n") : "- (package.json 변화 없음, lockfile 만 바뀜)") + "\n");
+          ' "$RUNNER_TEMP/package.before.json" apps/mobile/package.json "$RUNNER_TEMP/changes.md"
+          cat "$RUNNER_TEMP/changes.md"
+
+      # GITHUB_TOKEN 으로 만든 PR · push 는 pull_request / push workflow(ci.yml)를 트리거하지 않는다.
+      # 그래서 CI 와 같은 검사를 여기서 돌리고, 통과했을 때만 PR 을 연다.
+      - name: Prettier
+        if: steps.fix.outputs.changed == 'true'
+        run: pnpm format:check
+
+      - name: Lint + Typecheck + Build (turbo)
+        if: steps.fix.outputs.changed == 'true'
+        run: pnpm turbo run lint typecheck build
+
+      - name: Expo doctor (버전 비교 제외)
+        if: steps.fix.outputs.changed == 'true'
+        run: pnpm --filter @deckodecko/mobile run doctor
+        env:
+          EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: "1"
+
+      - name: Expo 패키지 버전 (lockfile 기준)
+        if: steps.fix.outputs.changed == 'true'
+        run: pnpm --filter @deckodecko/mobile exec expo install --check
+        env:
+          EXPO_OFFLINE: "1"
+
+      - name: Expo web bundle (Metro 검증)
+        if: steps.fix.outputs.changed == 'true'
+        run: pnpm --filter @deckodecko/mobile exec expo export --platform web --output-dir dist
+
+      - name: 커밋 · push · PR 생성
+        if: steps.fix.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branch="${BRANCH_PREFIX}$(date -u +%Y%m%d)"
+          # 같은 날 닫힌 PR 의 브랜치가 남아 있으면 실행 번호를 붙여 겹치지 않게 한다
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            branch="${branch}-${GITHUB_RUN_NUMBER}"
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add --pathspec-from-file="$RUNNER_TEMP/changed-files.txt"
+          {
+            echo "chore: Expo SDK 패치 버전 자동 업데이트"
+            echo
+            echo "주간 workflow(expo-weekly-update.yml)가 expo install --fix 로 Expo SDK 권장 버전에 맞췄다."
+            echo
+            echo "바뀐 패키지:"
+            cat "$RUNNER_TEMP/changes.md"
+          } > "$RUNNER_TEMP/commit-msg.txt"
+          git commit -F "$RUNNER_TEMP/commit-msg.txt"
+          git push origin "$branch"
+
+          {
+            echo "## 🛠 주요 변경 사항"
+            echo
+            echo "주간 workflow 가 \`expo install --fix\` 로 Expo SDK 권장 패치 버전에 맞췄다."
+            echo
+            echo "바뀐 패키지:"
+            echo
+            cat "$RUNNER_TEMP/changes.md"
+            echo
+            echo "## ✅ 검사"
+            echo
+            echo "- 이 workflow 안에서 CI 와 같은 검사(prettier · lint · typecheck · build · expo doctor · lockfile 기준 버전 검사 · web 번들)를 통과했다: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- GITHUB_TOKEN 으로 만든 PR 이라 CI 가 자동으로 돌지 않을 수 있다. 필요하면 Actions 탭에서 CI 를 workflow_dispatch 로 이 브랜치에 돌리거나, 이 브랜치에 빈 커밋을 push 한다."
+          } > "$RUNNER_TEMP/pr-body.md"
+          gh pr create \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$branch" \
+            --title "chore: Expo SDK 패치 버전 자동 업데이트 ($(date -u +%Y-%m-%d))" \
+            --body-file "$RUNNER_TEMP/pr-body.md"
