@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "가챠 탐색대"
+  },
+  "android": {
+    "app_name": "가챠 탐색대"
+  }
+}

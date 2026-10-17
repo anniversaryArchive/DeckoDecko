@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "가챠 탐색대",
+    "name": "DeckoDecko",
     "slug": "deckodecko",
     "version": "1.0.0",
     "scheme": "deckodecko",
@@ -9,10 +9,16 @@
     "backgroundColor": "#FFF9F4",
     "ios": {
       "bundleIdentifier": "com.anniversaryarchive.deckodecko",
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "package": "com.anniversaryarchive.deckodecko"
+    },
+    "locales": {
+      "ko": "./locales/ko.json"
     },
     "plugins": ["expo-router", "expo-localization"],
     "experiments": {
