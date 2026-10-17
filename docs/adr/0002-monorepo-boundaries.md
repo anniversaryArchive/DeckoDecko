@@ -45,13 +45,13 @@ Supabase 연결이 붙으면 두 앱이 같은 값을 서로 다른 접두사의
 
 **환경변수 이름**
 
-| 이름                            | 쓰는 곳                   | 공개 여부                      |
-| ------------------------------- | ------------------------- | ------------------------------ |
-| `EXPO_PUBLIC_SUPABASE_URL`      | `apps/mobile`             | 공개 (앱 번들에 들어감)        |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | `apps/mobile`             | 공개                           |
-| `NEXT_PUBLIC_SUPABASE_URL`      | `apps/admin`              | 공개 (브라우저 번들에 들어감)  |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `apps/admin`              | 공개                           |
-| `SUPABASE_SERVICE_ROLE_KEY`     | `apps/admin` 서버 쪽 모듈 | 비공개. 접두사를 붙이지 않는다 |
+| 이름                                   | 쓰는 곳                   | 공개 여부                                        |
+| -------------------------------------- | ------------------------- | ------------------------------------------------ |
+| `EXPO_PUBLIC_SUPABASE_URL`             | `apps/mobile`             | 공개 (앱 번들에 들어감)                          |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `apps/mobile`             | 공개 (`sb_publishable_...`)                      |
+| `NEXT_PUBLIC_SUPABASE_URL`             | `apps/admin`              | 공개 (브라우저 번들에 들어감)                    |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `apps/admin`              | 공개 (`sb_publishable_...`)                      |
+| `SUPABASE_SECRET_KEY`                  | `apps/admin` 서버 쪽 모듈 | 비공개 (`sb_secret_...`). 접두사를 붙이지 않는다 |
 
 - 클라이언트에서 읽는 값은 프레임워크 접두사(`EXPO_PUBLIC_` · `NEXT_PUBLIC_`)를 붙이고, 그 뒤는 `<서비스>_<항목>` 으로 쓴다. 같은 값이면 앱과 백오피스에서 접두사만 다르다.
 - 접두사가 붙은 값은 빌드 때 번들에 그대로 박힌다. 비밀 값에는 절대 붙이지 않는다.
@@ -70,6 +70,6 @@ Supabase 연결이 붙으면 두 앱이 같은 값을 서로 다른 접두사의
 
 - `.npmrc` 의 `node-linker=hoisted` 는 Metro 가 심볼릭 링크 node_modules 에서 모듈을 못 찾는 문제 때문이다. 바꾸지 않는다.
 - 계정 · 동기화가 생겨 로컬 기록을 서버와 맞춰야 하면, 로컬 DB 를 core 로 옮길지 이 ADR 을 다시 본다.
-- turbo 는 strict 모드라 셸 · CI 에서 넣은 환경변수 중 `turbo.json` 에 없는 것은 태스크에 넘기지 않는다. `EXPO_PUBLIC_*` · `NEXT_PUBLIC_*` 는 turbo 가 알아서 잡는다. `SUPABASE_SERVICE_ROLE_KEY` 처럼 접두사 없는 값을 CI 빌드에서 쓰게 되면 `turbo.json` 의 `env` 에 적는다.
+- turbo 는 strict 모드라 셸 · CI 에서 넣은 환경변수 중 `turbo.json` 에 없는 것은 태스크에 넘기지 않는다. `EXPO_PUBLIC_*` · `NEXT_PUBLIC_*` 는 turbo 가 알아서 잡는다. `SUPABASE_SECRET_KEY` 처럼 접두사 없는 값을 CI 빌드에서 쓰게 되면 `turbo.json` 의 `env` 에 적는다.
 - `.env.local` 은 Expo · Next 가 직접 읽으므로 strict 모드와 상관없이 쓸 수 있다. 다만 git 에서 빠진 파일이라 turbo 캐시 계산에 들어가지 않는다. 첫 환경변수를 넣는 PR 에서 `build` 의 `inputs` 에 `.env*` 를 추가한다.
-- 레거시는 `EXPO_PUBLIC_SUPABASE_KEY` 였다. 어떤 키인지 드러나도록 `_ANON_KEY` 로 바꾼다.
+- 레거시는 `EXPO_PUBLIC_SUPABASE_KEY` (legacy anon key) 였다. Supabase 새 키 방식(publishable · secret)으로 옮기고, 어떤 키인지 드러나도록 `_PUBLISHABLE_KEY` · `_SECRET_KEY` 로 쓴다. legacy anon · service_role 키는 쓰지 않는다.
