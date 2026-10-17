@@ -44,6 +44,10 @@ jobs:
       - name: Lint + Typecheck (turbo)
         run: pnpm turbo run lint typecheck
 
+      # 단위 테스트(vitest). test 스크립트가 있는 패키지만 돈다 (지금은 packages/core).
+      - name: Test (turbo)
+        run: pnpm turbo run test
+
       - name: Build (turbo)
         run: pnpm turbo run build
 
