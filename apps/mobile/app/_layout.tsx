@@ -9,14 +9,17 @@ import { NotoSansKR_400Regular } from "@expo-google-fonts/noto-sans-kr/400Regula
 import { NotoSansKR_500Medium } from "@expo-google-fonts/noto-sans-kr/500Medium";
 import { NotoSansKR_700Bold } from "@expo-google-fonts/noto-sans-kr/700Bold";
 import { useFonts } from "expo-font";
+import { useLocales } from "expo-localization";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
 
+import { i18n, pickLanguage } from "@/lib/i18n";
 import { repositories } from "@/lib/repositories";
 
 // 글꼴을 다 불러올 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
@@ -24,7 +27,7 @@ void SplashScreen.preventAutoHideAsync();
 
 /**
  * 루트 레이아웃. 탭 그룹 하나와 가챠 상세 스택 하나로 시작한다.
- * i18n Provider 는 다음 작업에서 여기에 붙는다. 데이터는 CoreProvider(React Query + 저장소)가 제공한다.
+ * 문구는 i18next(lib/i18n, import 하는 순간 기기 언어로 초기화)가, 데이터는 CoreProvider(React Query + 저장소)가 제공한다.
  * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
  */
 export default function RootLayout() {
@@ -43,8 +46,15 @@ export default function RootLayout() {
   // 실패해도 앱은 띄운다. 등록되지 않은 글꼴은 시스템 글꼴로 보인다.
   const ready = loaded || error !== null;
 
+  // 앱을 쓰는 중에 기기 언어를 바꾸면 따라간다 (Android 는 앱을 다시 띄우지 않고 바뀔 수 있다)
+  const locales = useLocales();
   useEffect(() => {
-    if (error) console.warn("글꼴을 불러오지 못해 시스템 글꼴로 표시합니다.", error);
+    const next = pickLanguage(locales);
+    if (i18n.language !== next) void i18n.changeLanguage(next);
+  }, [locales]);
+
+  useEffect(() => {
+    if (error) console.warn("Failed to load fonts; falling back to system fonts.", error);
     if (ready) void SplashScreen.hideAsync();
   }, [ready, error]);
 
@@ -61,6 +71,7 @@ export default function RootLayout() {
 
 function RootStack() {
   const { scheme, colors } = useTheme();
+  const { t } = useTranslation();
   return (
     <>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
@@ -72,7 +83,7 @@ function RootStack() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="gacha/[id]" options={{ title: "가챠 상세" }} />
+        <Stack.Screen name="gacha/[id]" options={{ title: t("detail.title") }} />
       </Stack>
     </>
   );
