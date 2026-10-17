@@ -92,8 +92,8 @@ jobs:
         if: steps.check.outputs.outdated == 'true' && steps.existing.outputs.found == 'false'
         run: |
           pnpm --filter @deckodecko/mobile exec expo install --fix
-          # lockfile 정리 (--fix 가 package.json 만 바꾼 경우까지 맞춘다)
-          pnpm install
+          # lockfile 정리 (--fix 가 package.json 만 바꾼 경우까지 맞춘다). CI=true 면 pnpm 이 기본으로 frozen 이라 명시로 끈다
+          pnpm install --no-frozen-lockfile
           # pnpm 이 쓴 package.json 이 prettier 와 어긋나지 않게 맞춘다
           pnpm exec prettier --write apps/mobile/package.json
 
