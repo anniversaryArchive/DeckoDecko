@@ -1,16 +1,10 @@
 import { BottomSheetTextInput, useBottomSheetInternal } from "@gorhom/bottom-sheet";
-import { useRef, useState, type ReactNode } from "react";
-import {
-  Pressable,
-  TextInput,
-  View,
-  type StyleProp,
-  type TextInputProps,
-  type ViewStyle,
-} from "react-native";
+import { useCallback, useRef, useState, type ReactNode } from "react";
+import { TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from "react-native";
 
 import { useTheme } from "../theme";
 import { border, fonts, radius, space, typography } from "../tokens";
+import { IconButton } from "./IconButton";
 import { CloseIcon } from "./icons";
 import { Text } from "./Text";
 
@@ -64,8 +58,15 @@ export function Input({
   const Field = inSheet ? BottomSheetTextInput : TextInput;
   const inputRef = useRef<TextInput>(null);
   // value 를 넘기지 않는(defaultValue 만 쓰는) 입력창도 지우기 버튼이 보이도록 글자가 있는지 따로 기억한다
+  // value 를 넘기는(제어) 입력창은 글자를 칠 때마다 다시 그려지지 않게 이 상태를 바꾸지 않는다
+  const controlled = rest.value !== undefined;
   const [uncontrolledText, setUncontrolledText] = useState(rest.defaultValue ?? "");
-  const hasText = rest.value !== undefined ? rest.value.length > 0 : uncontrolledText.length > 0;
+  const hasText = controlled ? (rest.value ?? "").length > 0 : uncontrolledText.length > 0;
+  // 시트용 입력창과 기본 입력창의 ref 타입이 조금 달라서(null / undefined) 둘 다 받는 함수로 넘긴다.
+  // 렌더마다 새 함수를 만들면 ref 가 매번 떼었다 붙어서 한 번만 만든다.
+  const setInputRef = useCallback((el: TextInput | null | undefined) => {
+    inputRef.current = el ?? null;
+  }, []);
   const showClear = clearable && !multiline && rest.editable !== false && hasText;
 
   return (
@@ -99,12 +100,9 @@ export function Input({
           multiline={multiline}
           textAlignVertical={multiline ? "top" : "center"}
           {...rest}
-          // 시트용 입력창과 기본 입력창의 ref 타입이 조금 달라서(null / undefined) 둘 다 받는 함수로 넘긴다
-          ref={(el: TextInput | null | undefined) => {
-            inputRef.current = el ?? null;
-          }}
+          ref={setInputRef}
           onChangeText={(text) => {
-            setUncontrolledText(text);
+            if (!controlled) setUncontrolledText(text);
             rest.onChangeText?.(text);
           }}
           onFocus={(e) => {
@@ -126,27 +124,17 @@ export function Input({
         />
         {trailing}
         {showClear ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={clearLabel}
+          <IconButton
+            size={CLEAR_SIZE}
+            label={clearLabel}
             onPress={() => {
               inputRef.current?.clear();
-              setUncontrolledText("");
+              if (!controlled) setUncontrolledText("");
               rest.onChangeText?.("");
             }}
-            hitSlop={space[4]}
-            style={({ pressed }) => ({
-              width: CLEAR_SIZE,
-              height: CLEAR_SIZE,
-              borderRadius: radius.full,
-              backgroundColor: colors.bg,
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: pressed ? 0.7 : 1,
-            })}
           >
             <CloseIcon size={CLEAR_ICON_SIZE} />
-          </Pressable>
+          </IconButton>
         ) : null}
       </View>
       {helperText ? (

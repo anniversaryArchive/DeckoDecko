@@ -6,12 +6,13 @@ import {
   type BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { BackHandler, Keyboard, Platform, Pressable, View } from "react-native";
+import { BackHandler, Keyboard, Platform, View } from "react-native";
 import { Easing } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "../theme";
 import { gutter, radius, space } from "../tokens";
+import { IconButton } from "./IconButton";
 import { CloseIcon } from "./icons";
 import { Text } from "./Text";
 
@@ -218,35 +219,16 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
               ) : (
                 <View style={{ flex: 1 }} />
               )}
-              {closeLabel ? <CloseButton label={closeLabel} onPress={requestClose} /> : null}
+              {closeLabel ? (
+                <IconButton size={CLOSE_SIZE} label={closeLabel} onPress={requestClose}>
+                  <CloseIcon size={CLOSE_ICON_SIZE} />
+                </IconButton>
+              ) : null}
             </View>
           ) : null}
           {children}
         </View>
       </BottomSheetView>
     </BottomSheetModal>
-  );
-}
-
-function CloseButton({ label, onPress }: { label: string; onPress: () => void }) {
-  const { colors } = useTheme();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={onPress}
-      hitSlop={space[4]}
-      style={({ pressed }) => ({
-        width: CLOSE_SIZE,
-        height: CLOSE_SIZE,
-        borderRadius: radius.full,
-        backgroundColor: colors.bg,
-        alignItems: "center",
-        justifyContent: "center",
-        opacity: pressed ? 0.7 : 1,
-      })}
-    >
-      <CloseIcon size={CLOSE_ICON_SIZE} />
-    </Pressable>
   );
 }
