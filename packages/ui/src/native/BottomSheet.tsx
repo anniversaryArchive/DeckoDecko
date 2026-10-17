@@ -4,6 +4,7 @@ import {
   BottomSheetView,
   useBottomSheetTimingConfigs,
   type BottomSheetBackdropProps,
+  type BottomSheetBackgroundProps,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { BackHandler, Keyboard, Platform, View } from "react-native";
@@ -67,6 +68,11 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
   openRef.current = open;
   // 이번 닫힘을 화면이 시작했는지 (open 을 false 로 바꿈). 그때는 onClose 를 부르지 않는다.
   const closedByParent = useRef(false);
+  // 시트가 실제로 움직이기 시작했는지. present() 는 다음 프레임에 동작해서, 그 전에 dismiss() 를 부르면
+  // 라이브러리가 그리기를 건너뛰고 onDismiss 도 오지 않아 이후로 다시 열리지 않는다. 그래서 그 전의 닫기 요청은 미뤄 둔다.
+  const shown = useRef(false);
+  // 화면이 사라지는 중인지. 정리 단계에서 라이브러리가 onDismiss 를 불러도 사용자가 닫은 것으로 보지 않는다.
+  const unmounted = useRef(false);
   // 내용 높이를 정수 dp 로 올려 고정하고, 1dp 안쪽의 변화는 무시한다. 그대로 두면 Android 에서 시트가 소수점 픽셀만큼
   // 움직일 때마다 내용 높이가 1px(0.4dp 안팎) 오르내리고, 라이브러리가 그때마다 목표 위치를 다시 잡아 애니메이션이 끝나지 않는다.
   const [contentHeight, setContentHeight] = useState<number>();
@@ -108,6 +114,9 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       if (!presented.current) {
         presented.current = true;
         ref.current?.present();
+      } else if (closedByParent.current && !shown.current) {
+        // 아직 뜨기 전에 미뤄 둔 닫기가 있었다. 다시 열렸으니 닫기를 버린다.
+        closedByParent.current = false;
       } else if (closedByParent.current && cancelPendingClose.current) {
         // 키보드를 기다리느라 아직 시트를 닫기 전에 다시 열렸다. 닫기를 취소하고 그대로 둔다.
         cancelPendingClose.current();
@@ -116,19 +125,34 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       // 이미 닫히는 중에 다시 열렸으면 닫힘이 끝난 뒤(onDismiss) 다시 연다.
     } else if (presented.current && !closedByParent.current) {
       closedByParent.current = true;
-      requestClose();
+      // 아직 뜨기 전이면 닫기를 미뤄 두고, 뜨기 시작할 때(markShown) 닫는다.
+      if (shown.current) requestClose();
     }
   }, [open, requestClose]);
 
+  // 시트가 실제로 움직이기 시작했다. 그 전에 화면이 닫으라고 했으면 이제 닫는다.
+  const markShown = useCallback(() => {
+    if (shown.current) return;
+    shown.current = true;
+    if (closedByParent.current && !openRef.current) requestClose();
+  }, [requestClose]);
+
   // 화면을 나갈 때 키보드를 기다리던 리스너와 타이머를 정리한다.
-  useEffect(() => () => cancelPendingClose.current?.(), []);
+  useEffect(
+    () => () => {
+      unmounted.current = true;
+      cancelPendingClose.current?.();
+    },
+    []
+  );
 
   // Android 뒤로가기는 화면보다 떠 있는 시트를 먼저 닫는다. 가로채지 않으면 시트가 열린 채로 화면이 뒤로 넘어간다.
   // open 이 아니라 시트가 실제로 떠 있는지를 본다. 화면이 open 을 늦게 바꿔도 뒤로가기가 막히지 않게.
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       if (!presented.current) return false;
-      requestClose();
+      // 뜨는 중에는 뒤로가기를 먹기만 한다 (아직 닫을 수 없다)
+      if (shown.current) requestClose();
       return true;
     });
     return () => sub.remove();
@@ -150,13 +174,47 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
     [colors.scrim, requestClose]
   );
 
+  // 라이브러리 기본 배경은 accessible · "Bottom Sheet" · adjustable 로 고정돼 있어 화면 읽기 프로그램이 빈 영역을 따로 읽는다.
+  // 같은 모양의 단순한 View 로 직접 그린다.
+  const renderBackground = useCallback(
+    ({ pointerEvents, style }: BottomSheetBackgroundProps) => (
+      <View
+        pointerEvents={pointerEvents}
+        style={[
+          style,
+          {
+            backgroundColor: colors.surface,
+            borderTopLeftRadius: radius.sheet,
+            borderTopRightRadius: radius.sheet,
+          },
+        ]}
+      />
+    ),
+    [colors.surface]
+  );
+
   return (
     <BottomSheetModal
       ref={ref}
+      // 라이브러리 기본값(true)이면 시트 전체가 "Bottom Sheet" 요소 하나로 묶여 제목 · 버튼 · 입력창을 화면 읽기 프로그램이 읽지 못한다.
+      // 기본 이름("Bottom Sheet") · 역할(adjustable)도 null 로 지워, 묶이지 않은 빈 영역이 따로 읽히지 않게 한다.
+      accessible={false}
+      accessibilityLabel={null}
+      accessibilityRole={null}
+      onAnimate={(_from, to) => {
+        if (to >= 0) markShown();
+      }}
+      // 동작 줄이기가 켜져 애니메이션 없이 열릴 때를 대비해 onChange 로도 표시한다
+      onChange={(index) => {
+        if (index >= 0) markShown();
+      }}
       onDismiss={() => {
         presented.current = false;
+        shown.current = false;
         const byParent = closedByParent.current;
         closedByParent.current = false;
+        // 화면이 사라지면서 닫힌 것이다. 아무것도 알리지 않는다.
+        if (unmounted.current) return;
         if (!byParent) {
           // 사용자가 닫았다. 화면이 open 을 false 로 바꾸게 알린다.
           if (openRef.current) onClose();
@@ -175,11 +233,7 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
       backdropComponent={renderBackdrop}
-      backgroundStyle={{
-        backgroundColor: colors.surface,
-        borderTopLeftRadius: radius.sheet,
-        borderTopRightRadius: radius.sheet,
-      }}
+      backgroundComponent={renderBackground}
       handleStyle={{ paddingTop: space[10], paddingBottom: 0 }}
       handleIndicatorStyle={{
         width: HANDLE.width,
