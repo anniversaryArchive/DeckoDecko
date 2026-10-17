@@ -2,7 +2,7 @@ import { sql } from "drizzle-orm";
 import { check, index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 /**
- * 기기 로컬 DB 스키마 (expo-sqlite). 기획서 7절 데이터 모델 + 8.2절 재개발 체크리스트 기준.
+ * 기기 로컬 DB 스키마 (expo-sqlite).
  * - id 는 text UUID. 시각은 ISO 8601 UTC 텍스트.
  * - 스키마를 바꾸면 `pnpm --filter @deckodecko/mobile db:generate` 로 drizzle/ 에 마이그레이션을 만든다.
  * - 기본 폴더 행과 삭제 방지 트리거는 커스텀 마이그레이션(drizzle/0001_*.sql)에 있다.
