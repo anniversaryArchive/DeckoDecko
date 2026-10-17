@@ -12,7 +12,12 @@
     "doctor": "expo-doctor"
   },
   "dependencies": {
+    "@deckodecko/core": "workspace:*",
     "@deckodecko/ui": "workspace:*",
+    "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/noto-sans-jp": "^0.4.4",
+    "@expo-google-fonts/noto-sans-kr": "^0.4.4",
+    "@expo/metro-runtime": "~57.0.17",
     "@expo/vector-icons": "~15.0.3",
     "expo": "~57.0.30",
     "expo-constants": "~57.0.22",

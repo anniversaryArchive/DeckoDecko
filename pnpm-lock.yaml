@@ -17,12 +17,15 @@ importers:
 
   apps/admin:
     dependencies:
+      '@deckodecko/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@deckodecko/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       next:
         specifier: 16.4.0
-        version: 16.4.0(@types/node@22.20.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.4.0(@babel/core@7.29.7)(@types/node@22.20.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -54,9 +57,24 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@deckodecko/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@deckodecko/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@expo-google-fonts/inter':
+        specifier: ^0.4.2
+        version: 0.4.2
+      '@expo-google-fonts/noto-sans-jp':
+        specifier: ^0.4.4
+        version: 0.4.4
+      '@expo-google-fonts/noto-sans-kr':
+        specifier: ^0.4.4
+        version: 0.4.4
+      '@expo/metro-runtime':
+        specifier: ~57.0.17
+        version: 57.0.17(@expo/log-box@57.0.4)(expo@57.0.30)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)
       '@expo/vector-icons':
         specifier: ~15.0.3
         version: 15.0.3(expo-font@57.0.4)(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)
@@ -131,6 +149,28 @@ importers:
         specifier: ~6.0.3
         version: 6.0.3
 
+  packages/core:
+    dependencies:
+      '@tanstack/react-query':
+        specifier: ^5.104.2
+        version: 5.104.3(react@19.2.3)
+    devDependencies:
+      '@deckodecko/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@types/react':
+        specifier: ~19.2.2
+        version: 19.2.18
+      eslint:
+        specifier: ^9.39.0
+        version: 9.39.5
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+
   packages/eslint-config:
     dependencies:
       '@eslint/js':
@@ -163,6 +203,9 @@ importers:
       react:
         specifier: 19.2.3
         version: 19.2.3
+      react-native:
+        specifier: 0.86.3
+        version: 0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3)
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
@@ -614,8 +657,17 @@ packages:
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  '@expo-google-fonts/inter@0.4.2':
+    resolution: {integrity: sha512-syfiImMaDmq7cFi0of+waE2M4uSCyd16zgyWxdPOY7fN2VBmSLKEzkfbZgeOjJq61kSqPBNNtXjggiQiSD6gMQ==}
+
   '@expo-google-fonts/material-symbols@0.4.50':
     resolution: {integrity: sha512-XNSgSfd+1p6wqRAzzhrckGngHJQ1/z+oCMdI5FN+x/VnDeMMFGkXsuRNPYcZTYYff1GwVwx4u6Gqnb30aALysw==}
+
+  '@expo-google-fonts/noto-sans-jp@0.4.4':
+    resolution: {integrity: sha512-1vl2U7uYG5JAXGERZaLMXtfOSgyOU4Qhq30OOPrbAHjOu8AW9Pral/qN9Anta9fjd6eVRTijiNqcgy2TowzrDA==}
+
+  '@expo-google-fonts/noto-sans-kr@0.4.4':
+    resolution: {integrity: sha512-zePBzeh74ja/0Jiw3T/9+V6Ie3+eONlIl5o1dQQYsOCmfXjJttMz0rGv1oB2AWlzX/TPiL7J3IP3M9Ga7CBvWA==}
 
   '@expo/cli@57.0.31':
     resolution: {integrity: sha512-NPTMPGQ9i3KzULyP1bzp8hMggoe3QlkfICw388zJuj0UhqfGHEZURkJFuHBksb/ndTjfrCrCBOO0HQz/9QzXIw==}
@@ -1395,6 +1447,14 @@ packages:
 
   '@swc/helpers@0.5.23':
     resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
+
+  '@tanstack/query-core@5.104.3':
+    resolution: {integrity: sha512-DZY9TuJAOgU3UyHUhXb4CcTYEHNZszlwkPg4VViIwTxOKzLprPUU+rbaPZQd3srqkGOtpaDdKpW972UV/LKlcg==}
+
+  '@tanstack/react-query@5.104.3':
+    resolution: {integrity: sha512-5Ts1ImwJKqoJgPkLxl9WrPQy1JEoEmti3MaaODCfBamHUGFk57IFrc+AIksPq+BAm10EsroX56qm398Z42LG7w==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@turbo/darwin-64@2.11.7':
     resolution: {integrity: sha512-Z2LFOxwbiJueD1miByXJS/BrW21vv6YaQXZustty5jEX4vQYw6zyh101Sz1QO7WG0mqBzKagZ/DoAeeujI0/Sw==}
@@ -4867,7 +4927,13 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
+  '@expo-google-fonts/inter@0.4.2': {}
+
   '@expo-google-fonts/material-symbols@0.4.50': {}
+
+  '@expo-google-fonts/noto-sans-jp@0.4.4': {}
+
+  '@expo-google-fonts/noto-sans-kr@0.4.4': {}
 
   '@expo/cli@57.0.31(@expo/dom-webview@57.0.1)(@expo/metro-runtime@57.0.17)(expo-constants@57.0.22)(expo-font@57.0.4)(expo-router@57.0.28)(expo@57.0.30)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)(typescript@6.0.3)':
     dependencies:
@@ -5819,6 +5885,13 @@ snapshots:
   '@swc/helpers@0.5.23':
     dependencies:
       tslib: 2.8.1
+
+  '@tanstack/query-core@5.104.3': {}
+
+  '@tanstack/react-query@5.104.3(react@19.2.3)':
+    dependencies:
+      '@tanstack/query-core': 5.104.3
+      react: 19.2.3
 
   '@turbo/darwin-64@2.11.7':
     optional: true
@@ -8189,7 +8262,7 @@ snapshots:
     dependencies:
       content-type: 2.1.0
 
-  next@16.4.0(@types/node@22.20.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  next@16.4.0(@babel/core@7.29.7)(@types/node@22.20.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@next/env': 16.4.0
       '@swc/helpers': 0.5.23
@@ -8198,7 +8271,7 @@ snapshots:
       postcss: 8.5.23
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      styled-jsx: 5.1.6(react@19.2.3)
+      styled-jsx: 5.1.6(@babel/core@7.29.7)(react@19.2.3)
     optionalDependencies:
       '@next/swc-darwin-arm64': 16.4.0
       '@next/swc-darwin-x64': 16.4.0
@@ -8985,10 +9058,12 @@ snapshots:
 
   structured-headers@0.4.1: {}
 
-  styled-jsx@5.1.6(react@19.2.3):
+  styled-jsx@5.1.6(@babel/core@7.29.7)(react@19.2.3):
     dependencies:
       client-only: 0.0.1
       react: 19.2.3
+    optionalDependencies:
+      '@babel/core': 7.29.7
 
   styleq@0.1.3: {}
 
