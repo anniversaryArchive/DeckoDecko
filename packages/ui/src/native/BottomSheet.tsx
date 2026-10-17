@@ -19,6 +19,8 @@ import { Text } from "./Text";
 const HANDLE = { width: 40, height: 4 } as const;
 /** 닫기 버튼 지름 */
 const CLOSE_SIZE = 36;
+/** 닫기 버튼 안 × 크기 */
+const CLOSE_ICON_SIZE = 14;
 /** 열고 닫는 데 걸리는 시간(ms) */
 const DURATION = 450;
 /** iOS 에서 키보드가 내려가기 시작했다는 알림이 오지 않을 때 시트를 닫기까지 기다리는 최대 시간(ms) */
@@ -244,7 +246,7 @@ function CloseButton({ label, onPress }: { label: string; onPress: () => void })
         opacity: pressed ? 0.7 : 1,
       })}
     >
-      <CloseIcon size={14} />
+      <CloseIcon size={CLOSE_ICON_SIZE} />
     </Pressable>
   );
 }

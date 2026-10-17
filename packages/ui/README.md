@@ -18,6 +18,8 @@ const { colors } = useTheme();
 - `src/tokens.ts`: `palette`(원색), `Theme` 의 모양(색 역할 · 그림자), 공통 토큰.
 - `src/themes/`: 테마 값. 파일 하나가 테마 하나 (`peachCream.ts`).
 - `src/native/`: React Native 컴포넌트 (`Text` …). **`@deckodecko/ui/native`** 로 따로 내보낸다. 백오피스는 react-native 가 없으므로 이 입구를 import 하지 않는다.
+  - 이 입구를 쓰는 앱은 `react-native` · `@gorhom/bottom-sheet` · `react-native-gesture-handler` · `react-native-reanimated` · `react-native-safe-area-context` 를 **모두** 설치해야 한다. `Text` 만 써도 마찬가지다 (`Input` 이 시트 라이브러리를 import 하고, 입구 하나로 같이 내보내기 때문).
+  - `package.json` 에는 이 라이브러리들이 선택(optional) peer 로 적혀 있다. 기본 입구(`@deckodecko/ui`)만 쓰는 백오피스에는 필요 없어서다. peer 설정은 입구별로 나눌 수 없다.
 - 테마마다 달라지는 것은 **색(`colors`)과 그림자(`shadows`)** 뿐이다. 글꼴 · 크기 · 간격 · 모서리는 공통.
 
 ### 새 테마 추가

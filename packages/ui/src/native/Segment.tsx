@@ -79,7 +79,8 @@ export function Segment<T extends string>({
               alignItems: "center",
               justifyContent: "center",
               paddingHorizontal: space[8],
-              backgroundColor: selected ? c.bg : "transparent",
+              // 선택되지 않은 항목은 배경을 칠하지 않는다 (바깥 면이 보인다)
+              backgroundColor: selected ? c.bg : undefined,
             }}
           >
             <Text

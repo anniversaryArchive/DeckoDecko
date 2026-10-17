@@ -18,6 +18,8 @@ import { Text } from "./Text";
 const HEIGHT = 48;
 /** 지우기 버튼 지름 */
 const CLEAR_SIZE = 32;
+/** 지우기 버튼 안 × 크기 */
+const CLEAR_ICON_SIZE = 12;
 /** 여러 줄(메모) 입력창 최소 높이 */
 const MULTILINE_MIN_HEIGHT = 72;
 
@@ -143,7 +145,7 @@ export function Input({
               opacity: pressed ? 0.7 : 1,
             })}
           >
-            <CloseIcon size={12} />
+            <CloseIcon size={CLEAR_ICON_SIZE} />
           </Pressable>
         ) : null}
       </View>
