@@ -31,14 +31,25 @@ const SWATCH = 36;
 const THUMB = 64;
 /** 칩 오른쪽 ⌄ 아이콘 크기 */
 const CHEVRON_SIZE = 14;
+/** 색 쓰임 예시 안 썸네일 크기 */
+const USAGE_THUMB = 24;
+/** 색 쓰임 예시의 진행 막대 높이 · 점 지름 */
+const USAGE_BAR = 6;
+const USAGE_DOT = 8;
+/** 색 쓰임 예시의 진행률 (목 데이터) */
+const USAGE_PROGRESS = "64%";
 
 type ColorRole = keyof ThemeColors;
 
 /** 색 역할을 용도별로 묶는다. 여기 없는 역할(새로 추가된 것)은 "기타"에 나온다 */
-const COLOR_GROUPS: { title: string; roles: ColorRole[] }[] = [
-  { title: "면 · 선", roles: ["bg", "surface", "line", "lineSoft", "scrim"] },
+const COLOR_GROUPS: { title: string; roles: ColorRole[]; usage?: "surface" | "accent" }[] = [
+  { title: "면 · 선", roles: ["bg", "surface", "line", "lineSoft", "scrim"], usage: "surface" },
   { title: "글자", roles: ["text", "textMuted", "textPlaceholder", "textFaint"] },
-  { title: "강조", roles: ["accentSoft", "highlightSurface", "highlightLine", "getMark"] },
+  {
+    title: "강조",
+    roles: ["accentSoft", "highlightSurface", "highlightLine", "getMark"],
+    usage: "accent",
+  },
 ];
 /** 면과 그 위 글자 쌍. 면 위에 글자를 얹어 읽기 괜찮은지 같이 본다 */
 const COLOR_PAIRS: [ColorRole, ColorRole][] = [
@@ -291,6 +302,7 @@ function ColorRoles() {
           {g.roles.map((k) => (
             <ColorRow key={k} role={k} sample={g.title === "글자"} />
           ))}
+          {g.usage === "surface" ? <SurfaceUsage /> : null}
         </ColorGroup>
       ))}
       <ColorGroup title="면 · 그 위 글자">
@@ -303,8 +315,195 @@ function ColorRoles() {
           {g.roles.map((k) => (
             <ColorRow key={k} role={k} />
           ))}
+          {g.usage === "accent" ? <AccentUsage /> : null}
         </ColorGroup>
       ))}
+    </View>
+  );
+}
+
+/** 예시 아래에 어떤 역할을 어디에 썼는지 적는다 */
+function UsageNote({ children }: { children: ReactNode }) {
+  return (
+    <Text variant="captionSm" color="textMuted">
+      {children}
+    </Text>
+  );
+}
+
+/** 면 · 선이 화면에서 쓰이는 모습: 바탕 위 카드와 목록, 시트 뒤를 덮는 scrim */
+function SurfaceUsage() {
+  const { colors } = useTheme();
+  const frame = {
+    flex: 1,
+    borderRadius: radius.tile,
+    borderWidth: border.divider,
+    borderColor: colors.line,
+    backgroundColor: colors.bg,
+    overflow: "hidden",
+  } as const;
+  return (
+    <View style={{ gap: space[8], marginTop: space[4] }}>
+      <Text variant="caption" weight="bold">
+        이렇게 쓴다
+      </Text>
+      <View style={{ flexDirection: "row", gap: space[12] }}>
+        <View style={{ flex: 1, gap: space[6] }}>
+          <View style={[frame, { padding: space[12] }]}>
+            <View
+              style={{
+                paddingHorizontal: space[12],
+                borderRadius: radius.row,
+                borderWidth: border.default,
+                borderColor: colors.line,
+                backgroundColor: colors.surface,
+              }}
+            >
+              {["토끼", "곰돌이"].map((item, i) => (
+                <View
+                  key={item}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: space[8],
+                    paddingVertical: space[10],
+                    borderTopWidth: i === 0 ? 0 : border.divider,
+                    borderTopColor: colors.lineSoft,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: USAGE_THUMB,
+                      height: USAGE_THUMB,
+                      borderRadius: radius.bar,
+                      borderWidth: border.divider,
+                      borderColor: colors.lineSoft,
+                      backgroundColor: colors.bg,
+                    }}
+                  />
+                  <Text variant="captionSm">{item}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+          <UsageNote>
+            바탕 bg · 카드 surface + line 테두리 · 행 구분선과 썸네일 테두리 lineSoft
+          </UsageNote>
+        </View>
+        <View style={{ flex: 1, gap: space[6] }}>
+          <View style={[frame, { justifyContent: "flex-end" }]}>
+            <View style={{ padding: space[12], gap: space[6] }}>
+              <Text variant="captionSm">뒤 화면</Text>
+              <Text variant="captionSm" color="textMuted">
+                목록 · 카드
+              </Text>
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                backgroundColor: colors.scrim,
+              }}
+            />
+            <View
+              style={{
+                padding: space[12],
+                borderTopLeftRadius: radius.tile,
+                borderTopRightRadius: radius.tile,
+                backgroundColor: colors.surface,
+              }}
+            >
+              <Text variant="captionSm" weight="bold">
+                시트
+              </Text>
+            </View>
+          </View>
+          <UsageNote>시트 · 다이얼로그 뒤를 덮는 scrim, 시트 면은 surface</UsageNote>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+/** 강조 색이 쓰이는 모습: 연한 포인트 면, 강조 카드, GET 진행 막대 */
+function AccentUsage() {
+  const { colors } = useTheme();
+  return (
+    <View style={{ gap: space[12], marginTop: space[4] }}>
+      <Text variant="caption" weight="bold">
+        이렇게 쓴다
+      </Text>
+      <View style={{ gap: space[6] }}>
+        <View style={{ flexDirection: "row", gap: space[8] }}>
+          {["신상품", "별의 숲"].map((label) => (
+            <View
+              key={label}
+              style={{
+                paddingHorizontal: space[12],
+                paddingVertical: space[6],
+                borderRadius: radius.full,
+                backgroundColor: colors.accentSoft,
+              }}
+            >
+              <Text variant="captionSm" weight="bold" color="accent">
+                {label}
+              </Text>
+            </View>
+          ))}
+        </View>
+        <UsageNote>accentSoft: 연한 포인트 면 (칩 배경, 상세 상단)</UsageNote>
+      </View>
+      <View style={{ gap: space[6] }}>
+        <View
+          style={{
+            gap: space[4],
+            padding: space[16],
+            borderRadius: radius.banner,
+            borderWidth: border.default,
+            borderColor: colors.highlightLine,
+            backgroundColor: colors.highlightSurface,
+          }}
+        >
+          <Text variant="caption" color="textMuted">
+            내 굿즈 소장률
+          </Text>
+          <Text variant="headingLg" color="accent">
+            {USAGE_PROGRESS}
+          </Text>
+        </View>
+        <UsageNote>
+          highlightSurface 면 + highlightLine 테두리: 강조 카드 (홈 소장률 카드, 로고 타일)
+        </UsageNote>
+      </View>
+      <View style={{ gap: space[6] }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: space[8] }}>
+          <View
+            style={{
+              width: USAGE_DOT,
+              height: USAGE_DOT,
+              borderRadius: radius.full,
+              backgroundColor: colors.getMark,
+            }}
+          />
+          <View
+            style={{
+              flex: 1,
+              height: USAGE_BAR,
+              borderRadius: radius.bar,
+              backgroundColor: colors.lineSoft,
+              overflow: "hidden",
+            }}
+          >
+            <View
+              style={{ width: USAGE_PROGRESS, height: "100%", backgroundColor: colors.getMark }}
+            />
+          </View>
+        </View>
+        <UsageNote>getMark: GET 진행 막대 · 점 (막대 바탕은 lineSoft)</UsageNote>
+      </View>
     </View>
   );
 }
