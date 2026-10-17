@@ -21,15 +21,8 @@ const HANDLE = { width: 40, height: 4 } as const;
 const CLOSE_SIZE = 36;
 /** 열고 닫는 데 걸리는 시간(ms) */
 const DURATION = 450;
-/** 키보드가 내려갔다는 알림이 오지 않을 때 시트를 닫기까지 기다리는 최대 시간(ms) */
-const KEYBOARD_HIDE_TIMEOUT = 600;
-/**
- * 키보드가 내려가는 시간 중 얼마가 지나면 시트를 출발시킬지 (0~1).
- * 다 내려갈 때까지 기다리면 시트가 늦게 움직여 답답하다. 키보드가 먼저 움직이기 시작한 것만 보이면 순서는 자연스럽다.
- */
-const KEYBOARD_LEAD = 0.4;
-/** iOS 는 키보드가 내려가기 시작할 때 알림이 온다 (내려가는 시간 duration 포함). Android 는 다 내려간 뒤에만 온다 */
-const KEYBOARD_HIDE_EVENT = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+/** iOS 에서 키보드가 내려가기 시작했다는 알림이 오지 않을 때 시트를 닫기까지 기다리는 최대 시간(ms) */
+const KEYBOARD_HIDE_TIMEOUT = 300;
 
 export type BottomSheetProps = {
   /** 열려 있는지. 화면의 상태로 연다 */
@@ -65,16 +58,23 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
   // 내용 높이를 정수 dp 로 올려 고정하고, 1dp 안쪽의 변화는 무시한다. 그대로 두면 Android 에서 시트가 소수점 픽셀만큼
   // 움직일 때마다 내용 높이가 1px(0.4dp 안팎) 오르내리고, 라이브러리가 그때마다 목표 위치를 다시 잡아 애니메이션이 끝나지 않는다.
   const [contentHeight, setContentHeight] = useState<number>();
-  // 키보드가 내려가길 기다리는 중인지. 닫기를 여러 번 눌러도 한 번만 기다린다.
+  // 키보드가 내려가기 시작하길 기다리는 중인지. 닫기를 여러 번 눌러도 한 번만 기다린다.
   const closing = useRef(false);
 
-  // 키보드가 열려 있으면 키보드를 먼저 내리고, 키보드가 움직이기 시작한 뒤에 시트를 닫는다.
-  // 같이 닫으면 시트가 내려가는 동안 키보드가 그 위에 남아 있다가 늦게 내려간다.
+  // 키보드가 열려 있으면 키보드와 시트가 같이 내려가게 한다.
+  // 시트만 닫으면 시트가 먼저 내려가고, 키보드는 그 위에 남아 있다가 입력창이 사라진 뒤에야 늦게 내려간다.
   const requestClose = useCallback(() => {
     if (!Keyboard.isVisible()) {
       ref.current?.dismiss();
       return;
     }
+    // Android 는 키보드가 내려가기 시작했다는 알림이 없다. 키보드를 내리라고 한 바로 뒤에 시트를 닫는다.
+    if (Platform.OS !== "ios") {
+      Keyboard.dismiss();
+      ref.current?.dismiss();
+      return;
+    }
+    // iOS 는 키보드가 실제로 움직이기 시작할 때(keyboardWillHide) 시트를 출발시켜 둘의 출발을 맞춘다.
     if (closing.current) return;
     closing.current = true;
     const finish = () => {
@@ -83,11 +83,8 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       closing.current = false;
       ref.current?.dismiss();
     };
-    const sub = Keyboard.addListener(KEYBOARD_HIDE_EVENT, (e) => {
-      clearTimeout(timer);
-      timer = setTimeout(finish, (e?.duration ?? 0) * KEYBOARD_LEAD);
-    });
-    let timer = setTimeout(finish, KEYBOARD_HIDE_TIMEOUT);
+    const sub = Keyboard.addListener("keyboardWillHide", finish);
+    const timer = setTimeout(finish, KEYBOARD_HIDE_TIMEOUT);
     Keyboard.dismiss();
   }, []);
 
