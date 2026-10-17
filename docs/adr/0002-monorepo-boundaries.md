@@ -7,7 +7,8 @@
 
 앱(Expo)과 백오피스(Next.js)가 도메인 타입과 데이터 접근을 같이 쓴다.
 레거시는 화면이 Supabase 를 직접 불렀고, SQLite 서비스마다 DB 연결을 따로 열었다.
-세 명이 비동기로 일하므로 "이 코드는 어디에 두나"를 매번 묻지 않도록 경계를 먼저 정한다.
+Supabase 연결이 붙으면 두 앱이 같은 값을 서로 다른 접두사의 환경변수로 읽어야 한다.
+세 명이 비동기로 일하므로 "이 코드는 어디에 두나", "이 변수 이름은 뭐로 하나"를 매번 묻지 않도록 먼저 정한다.
 
 ## 선택지
 
@@ -27,15 +28,15 @@
 
 ## 결정
 
-| 경로                     | 맡는 것                                                        | 의존해도 되는 것  |
-| ------------------------ | -------------------------------------------------------------- | ----------------- |
-| `apps/mobile`            | 화면 · 라우팅, 로컬 DB(`lib/db`, `drizzle/`), 저장소 조립      | core, ui          |
-| `apps/admin`             | 운영 화면. 쓰기(service role)는 서버 쪽 모듈에서만             | core, ui          |
-| `packages/core`          | 도메인 타입, 저장소 인터페이스 · 구현, 쿼리 키, React Query 훅 | React(./react 만) |
-| `packages/ui`            | 디자인 토큰 · 테마 · 공용 컴포넌트                             | React             |
-| `packages/eslint-config` | 공통 린트 규칙                                                 | –                 |
-| `supabase/`              | 원격 스키마 · RLS · RPC · seed (마이그레이션 파일로만)         | –                 |
-| `legacy/`                | 참고용. 워크스페이스 밖, import 금지                           | –                 |
+| 경로                     | 맡는 것                                                        | 의존해도 되는 것                    |
+| ------------------------ | -------------------------------------------------------------- | ----------------------------------- |
+| `apps/mobile`            | 화면 · 라우팅, 로컬 DB(`lib/db`, `drizzle/`), 저장소 조립      | core, ui                            |
+| `apps/admin`             | 운영 화면. 쓰기(service role)는 서버 쪽 모듈에서만             | core, ui                            |
+| `packages/core`          | 도메인 타입, 저장소 인터페이스 · 구현, 쿼리 키, React Query 훅 | React · React Query (`./react` 만)  |
+| `packages/ui`            | 디자인 토큰 · 테마 · 공용 컴포넌트                             | React, React Native (`./native` 만) |
+| `packages/eslint-config` | 공통 린트 규칙                                                 | –                                   |
+| `supabase/`              | 원격 스키마 · RLS · RPC · seed (마이그레이션 파일로만)         | –                                   |
+| `legacy/`                | 참고용. 워크스페이스 밖, import 금지                           | –                                   |
 
 - core 엔트리는 셋: `@deckodecko/core`(React 없음, 서버 컴포넌트 · 스크립트에서도 import), `@deckodecko/core/react`(Provider · 훅, 클라이언트 전용), `@deckodecko/core/mocks`(목 데이터).
 - 화면은 훅만 쓴다. 저장소는 앱 · 백오피스의 `lib/repositories.ts` 에서 조립해 `CoreProvider` 로 넘긴다. React 가 없는 곳만 저장소 함수를 직접 await 한다.
@@ -69,5 +70,6 @@
 
 - `.npmrc` 의 `node-linker=hoisted` 는 Metro 가 심볼릭 링크 node_modules 에서 모듈을 못 찾는 문제 때문이다. 바꾸지 않는다.
 - 계정 · 동기화가 생겨 로컬 기록을 서버와 맞춰야 하면, 로컬 DB 를 core 로 옮길지 이 ADR 을 다시 본다.
-- turbo 는 strict 모드라 `turbo.json` 에 적지 않은 환경변수를 태스크에 넘기지 않는다. `EXPO_PUBLIC_*` · `NEXT_PUBLIC_*` 는 turbo 가 알아서 잡지만, `SUPABASE_SERVICE_ROLE_KEY` 처럼 접두사 없는 값을 빌드에서 쓰게 되면 `turbo.json` 의 `env` 에 적는다. `.env*` 파일 변경도 캐시에 반영되도록 첫 환경변수를 넣는 PR 에서 `inputs` 에 추가한다.
+- turbo 는 strict 모드라 셸 · CI 에서 넣은 환경변수 중 `turbo.json` 에 없는 것은 태스크에 넘기지 않는다. `EXPO_PUBLIC_*` · `NEXT_PUBLIC_*` 는 turbo 가 알아서 잡는다. `SUPABASE_SERVICE_ROLE_KEY` 처럼 접두사 없는 값을 CI 빌드에서 쓰게 되면 `turbo.json` 의 `env` 에 적는다.
+- `.env.local` 은 Expo · Next 가 직접 읽으므로 strict 모드와 상관없이 쓸 수 있다. 다만 git 에서 빠진 파일이라 turbo 캐시 계산에 들어가지 않는다. 첫 환경변수를 넣는 PR 에서 `build` 의 `inputs` 에 `.env*` 를 추가한다.
 - 레거시는 `EXPO_PUBLIC_SUPABASE_KEY` 였다. 어떤 키인지 드러나도록 `_ANON_KEY` 로 바꾼다.
