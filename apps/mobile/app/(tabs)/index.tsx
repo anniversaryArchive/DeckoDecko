@@ -42,6 +42,14 @@ export default function HomeScreen() {
           없는 가챠로 이동 (없음 상태 확인용)
         </Text>
       </Link>
+      {/* 개발 빌드에서만 보인다. 출시 빌드에서는 카탈로그 화면도 홈으로 돌려보낸다. */}
+      {__DEV__ ? (
+        <Link href="/dev/components" asChild>
+          <Text variant="bodyStrong" color="accent" style={{ marginTop: space[8] }}>
+            컴포넌트 카탈로그 (개발용)
+          </Text>
+        </Link>
+      ) : null}
     </PlaceholderScreen>
   );
 }
