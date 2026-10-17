@@ -10,7 +10,7 @@ pnpm --filter @deckodecko/mobile run doctor   # expo-doctor 로 의존성 버전
 pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 빠르게 확인 (출시 대상 아님)
 ```
 
-- CI 는 `doctor`(버전 비교 제외)와 `EXPO_OFFLINE=1 expo install --check`(lockfile 의 expo 기준 버전 비교)로 막는다. 버전 검사가 실패하면 `pnpm --filter @deckodecko/mobile exec expo install --fix` 로 맞춘다.
+- CI 는 `doctor`(버전 비교 · React Native Directory 검사 제외)와 `EXPO_OFFLINE=1 expo install --check`(lockfile 의 expo 기준 버전 비교)로 막는다. 버전 검사가 실패하면 `pnpm --filter @deckodecko/mobile exec expo install --fix` 로 맞춘다. Directory 검사는 별도 단계에서 경고만 남긴다.
 - 주간 workflow(`.github/workflows/expo-weekly-update.yml`)가 매주 월요일 09:00(KST) Expo SDK 권장 패치를 확인하고, 뒤처졌으면 `expo install --fix` 결과로 PR 을 연다.
 - `app/(tabs)/` 홈 · 내 굿즈 · 검색 탭, `app/gacha/[id].tsx` 상세 스택.
 - 아이콘·스플래시·글꼴은 여경이 `packages/ui` 작업과 함께 붙인다. 디자인 토큰은 `@deckodecko/ui` 에서 가져온다.

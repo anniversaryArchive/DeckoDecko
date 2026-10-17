@@ -47,12 +47,27 @@ jobs:
       - name: Build (turbo)
         run: pnpm turbo run build
 
-      # doctor 의 패키지 버전 비교는 실행 시점에 Expo 서버의 최신 권장 버전과 맞춰 보므로, 레포가 그대로여도 Expo 가 패치를 내면 깨진다.
-      # 그 검사 하나만 빼고 나머지 doctor 검사(설정 · 중복 의존성 등)는 계속 막는다.
-      - name: Expo doctor (버전 비교 제외)
+      # doctor 검사 중 두 개는 실행 시점의 외부 서버 응답에 따라 결과가 바뀌어, 레포가 그대로여도 CI 가 깨진다.
+      # - 패키지 버전 비교: Expo 서버의 최신 권장 버전과 맞춰 본다 (Expo 가 패치를 내면 실패)
+      # - React Native Directory: reactnative.directory 를 조회한다 (서버 장애, 패키지가 unmaintained 등으로 바뀌면 실패)
+      # 둘을 빼고 나머지 doctor 검사(설정 · 중복 의존성 등)는 계속 막는다.
+      - name: Expo doctor (외부 조회 검사 제외)
         run: pnpm --filter @deckodecko/mobile run doctor
         env:
           EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: "1"
+          EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK: "0"
+
+      # Directory 검사는 새 패키지를 넣을 때 알아 두면 좋은 정보라 돌리되 막지 않는다 (#129).
+      # 실패하면 PR 체크 화면에 노란 어노테이션으로 남는다. 위 단계가 통과했으므로 여기서 실패하는 건 Directory 검사뿐이다.
+      # WARN_ON_NETWORK_ERRORS 는 쓰지 않는다: 이 검사는 fetch 오류를 일반 실패로 돌려서 그 변수로는 걸러지지 않는다 (expo-doctor 1.20.4).
+      - name: React Native Directory (경고만)
+        run: |
+          if ! pnpm --filter @deckodecko/mobile run doctor; then
+            echo "::warning title=React Native Directory::React Native Directory 검사가 실패했습니다. 서버 장애일 수 있으니 로그를 보고, 새로 넣은 패키지가 원인이면 대체 라이브러리를 검토하세요."
+          fi
+        env:
+          EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: "1"
+          EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK: "1"
 
       # 빠진 버전 비교는 여기서 lockfile 기준으로 다시 막는다. EXPO_OFFLINE=1 이면 Expo 서버 대신
       # lockfile 에 고정된 expo 패키지의 bundledNativeModules.json 과 비교하므로, 결과는 lockfile 이 바뀔 때만 달라진다.
