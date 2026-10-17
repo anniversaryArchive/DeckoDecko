@@ -22,6 +22,8 @@
 | `supabase/`     | 마이그레이션 · RLS · RPC · seed                    |
 | `legacy/`       | 재개발 전 코드. **참고만, import 금지, 수정 금지** |
 
+`packages/ui` 의 RN 컴포넌트는 `@deckodecko/ui/native` 로만 내보낸다. `apps/admin` 은 이 입구를 import 하지 않는다 (react-native 가 없어 빌드가 깨진다).
+
 아직 없는 폴더는 생기는 대로 채운다. 무엇을 언제 만드는지는 기획서의 투두리스트가 기준이고, 이 파일에는 일정을 적지 않는다.
 
 ## 먼저 읽을 것 (버전 차이 주의)
@@ -53,8 +55,9 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
 - **스타일**: 화면 · 컴포넌트 코드에 색상값이나 크기 숫자를 직접 적지 않는다. 토큰 목록과 쓰는 법은 `packages/ui/README.md`.
   - 색 · 그림자: `useTheme()` 의 `colors.역할`, `shadows.이름` 만 쓴다. `palette` 원색은 화면 코드에서 쓰지 않는다. 테마는 여러 개가 될 수 있으므로 역할 이름 밖의 색을 가정하지 않는다.
   - 글자 · 간격 · 모서리 · 테두리: `@deckodecko/ui` 의 `typography` · `space` · `radius` · `border` 를 쓴다. 간격은 값이 곧 키(`space[12]`), 끝까지 둥근 모양은 `radius.full`.
+  - 앱의 글자는 `@deckodecko/ui/native` 의 `Text` 로 쓴다 (`<Text variant="titleLg">`). `fontFamily` 를 직접 적지 않는다. 한글 · 원문자는 Noto Sans KR, 일본어 · 한자는 Noto Sans JP, 영어 · 숫자 · 특수문자는 Inter 로 `Text` 가 글자를 보고 자동으로 나눈다.
   - 컴포넌트 높이(버튼 54 등)는 토큰이 아니라 그 컴포넌트 파일 안의 상수로 둔다.
-  - 색 역할을 추가할 때: 면 위 글자색은 `on` + 면 이름(`onPrimary`, `onWish`), 글자 토큰은 종류 + 크기(`headingLg`, `captionSm`). 새 역할은 `src/themes/` 의 모든 테마에 값을 채운다.
+  - 토큰을 추가할 때: 면 위 글자색은 `on` + 면 이름(`onPrimary`, `onWish`), 글자 토큰은 종류 + 크기(`headingLg`, `captionSm`). 새 색 역할은 `src/themes/` 의 모든 테마에 값을 채운다. 글자 토큰의 줄 높이는 글자 크기의 1.25배 이상으로 둔다 (작으면 RN 이 특수문자 위아래를 자른다).
 - **보안**: anon key 외의 키(service role 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만.
 - **범위**: 기획서의 주차별 투두 밖의 기능을 임의로 추가하지 않는다. 필요하면 먼저 제안한다.
 - **웹**: 출시 대상이 아니다. `react-native-web` 은 CI 에서 Metro 번들을 검증하고(`expo export --platform web`) 로컬에서 빠르게 화면을 볼 때만 쓴다. 웹에서만 동작하는 코드를 넣지 않는다.

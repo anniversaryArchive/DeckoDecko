@@ -1,15 +1,13 @@
 import { useLocalSearchParams } from "expo-router";
-import { Text } from "react-native";
 
 import { useGacha } from "@deckodecko/core/react";
-import { useTheme } from "@deckodecko/ui";
+import { Text } from "@deckodecko/ui/native";
 
 import { PlaceholderScreen } from "@/components/PlaceholderScreen";
 
 /** 가챠 상세. 탭 밖의 스택 화면이라 뒤로가기 헤더가 붙는다. 레이아웃은 #107 에서 채운다. */
 export default function GachaDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { colors } = useTheme();
   const { data: gacha, isLoading, isError, refetch } = useGacha(id);
 
   if (isLoading) {
@@ -19,7 +17,7 @@ export default function GachaDetailScreen() {
   if (isError) {
     return (
       <PlaceholderScreen title="가챠 상세" description="불러오지 못했어요">
-        <Text onPress={() => refetch()} style={{ color: colors.accent, fontWeight: "700" }}>
+        <Text variant="body" weight="bold" color="accent" onPress={() => refetch()}>
           다시 시도
         </Text>
       </PlaceholderScreen>
@@ -41,7 +39,7 @@ export default function GachaDetailScreen() {
         .join(" · ")}
     >
       {gacha.items.map((item) => (
-        <Text key={item.id} style={{ color: colors.text }}>
+        <Text key={item.id}>
           {item.number}. {item.nameKo ?? item.name}
         </Text>
       ))}

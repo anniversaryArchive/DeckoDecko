@@ -6,7 +6,8 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./native": "./src/native/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -17,9 +18,16 @@
     "@types/react": "~19.2.2",
     "eslint": "^9.39.0",
     "react": "19.2.3",
+    "react-native": "0.86.3",
     "typescript": "~6.0.3"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    }
   }
 }

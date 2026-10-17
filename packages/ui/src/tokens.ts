@@ -101,10 +101,35 @@ export type Theme = {
   shadows: ThemeShadows;
 };
 
+/**
+ * 글꼴. 한글은 Noto Sans KR, 일본어 · 한자는 Noto Sans JP, 영어 · 숫자 · 특수문자는 Inter.
+ * RN 은 글꼴 스택(폴백)이 없고 굵기마다 family 이름이 다르므로, 앱은 굵기별 family 이름을 쓴다.
+ * 어느 글자에 어느 글꼴을 쓸지는 Text 가 글자를 보고 자동으로 나눈다.
+ * 이름은 apps/mobile 이 useFonts 로 등록하는 @expo-google-fonts 이름과 같아야 한다.
+ * 화면 코드는 fontFamily 를 직접 쓰지 않고 `@deckodecko/ui/native` 의 Text 를 쓴다.
+ */
 export const fonts = {
-  /** 한글 본문. 숫자·영문은 Inter 가 앞에 온다. */
-  sans: ["Inter", "Noto Sans KR", "Apple SD Gothic Neo", "system-ui", "sans-serif"] as const,
-  weight: { regular: 400, medium: 500, bold: 700 } as const,
+  /** 앱(RN): 한글, 원문자 · CJK 단위 */
+  sans: {
+    regular: "NotoSansKR_400Regular",
+    medium: "NotoSansKR_500Medium",
+    bold: "NotoSansKR_700Bold",
+  },
+  /** 앱(RN): 일본어(가나), 한자, 전각 문자. Noto Sans KR 은 한자가 8천 자 정도뿐이라 따로 둔다 */
+  ja: {
+    regular: "NotoSansJP_400Regular",
+    medium: "NotoSansJP_500Medium",
+    bold: "NotoSansJP_700Bold",
+  },
+  /** 앱(RN): 영어 · 숫자 · 특수문자 */
+  latin: {
+    regular: "Inter_400Regular",
+    medium: "Inter_500Medium",
+    bold: "Inter_700Bold",
+  },
+  /** 웹(백오피스): CSS 스택. 브라우저가 글자마다 앞에서부터 있는 글꼴을 고른다 (Noto Sans KR 에 없는 한자 · 가나는 Noto Sans JP). */
+  web: ["Inter", "Noto Sans KR", "Noto Sans JP", "Apple SD Gothic Neo", "system-ui", "sans-serif"],
+  weight: { regular: 400, medium: 500, bold: 700 },
 } as const;
 
 export type FontWeightName = keyof typeof fonts.weight;
@@ -123,13 +148,15 @@ export type TypeStyle = {
  * 글자 크기 단계. 이름은 "종류 + 크기" (Lg > Md > Sm > Xs). 쓰임은 각 항목 주석에.
  *   display — 큰 숫자 · 브랜드      heading — 화면 · 다이얼로그 제목
  *   title   — 섹션 · 카드 · 버튼     body    — 본문          label · caption — 라벨 · 보조 글자
- * 글꼴(family)은 #110 의 Text 래퍼가 weight 로 고른다.
+ * 글꼴(family)은 `@deckodecko/ui/native` 의 Text 가 weight 로 고른다.
+ * lineHeight 는 fontSize 의 1.25배 이상으로 둔다. Inter 의 기본 높이가 1.21배라, 이보다 작으면
+ * RN 이 넘치는 부분을 잘라 ( ) $ @ | 같은 특수문자의 위아래가 잘린다.
  */
 export const typography = {
   /** 소장률 같은 큰 숫자 (40) */
-  displayLg: { fontSize: 40, lineHeight: 40, letterSpacing: -1, weight: "bold" },
+  displayLg: { fontSize: 40, lineHeight: 50, letterSpacing: -1, weight: "bold" },
   /** 스플래시 앱 이름 (28) */
-  displaySm: { fontSize: 28, lineHeight: 28, letterSpacing: -0.6, weight: "bold" },
+  displaySm: { fontSize: 28, lineHeight: 35, letterSpacing: -0.6, weight: "bold" },
   /** 가챠 상세 제목 (22) */
   headingLg: { fontSize: 22, lineHeight: 30, letterSpacing: -0.4, weight: "bold" },
   /** 탭 화면 머리글 "내 굿즈", "검색" (20) */
