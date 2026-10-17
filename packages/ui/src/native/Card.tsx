@@ -3,6 +3,7 @@ import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { useTheme } from "../theme";
 import { border, radius } from "../tokens";
+import { PRESSED_OPACITY } from "./pressable";
 
 export type CardProps = {
   children: ReactNode;
@@ -45,7 +46,7 @@ export function Card({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
-      style={({ pressed }) => [shape, { opacity: pressed ? 0.85 : 1 }, style]}
+      style={({ pressed }) => [shape, { opacity: pressed ? PRESSED_OPACITY : 1 }, style]}
     >
       {children}
     </Pressable>

@@ -3,6 +3,7 @@ import { Pressable } from "react-native";
 
 import { useTheme } from "../theme";
 import { radius, space } from "../tokens";
+import { PRESSED_OPACITY } from "./pressable";
 
 export type IconButtonProps = {
   /** 버튼 지름 */
@@ -33,7 +34,7 @@ export function IconButton({ size, label, onPress, children }: IconButtonProps) 
         backgroundColor: colors.bg,
         alignItems: "center",
         justifyContent: "center",
-        opacity: pressed ? 0.7 : 1,
+        opacity: pressed ? PRESSED_OPACITY : 1,
       })}
     >
       {children}

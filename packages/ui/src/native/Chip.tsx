@@ -3,6 +3,7 @@ import { Pressable, type PressableProps, type StyleProp, type ViewStyle } from "
 
 import { useTheme } from "../theme";
 import { border, radius, space } from "../tokens";
+import { DISABLED_OPACITY, PRESSED_OPACITY } from "./pressable";
 import { Text } from "./Text";
 
 /** 칩 높이. 시안의 필터 칩(목록 · 검색) */
@@ -38,9 +39,10 @@ export function Chip({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected, disabled: !!disabled }}
       disabled={disabled}
       {...rest}
+      // 쓰는 쪽이 accessibilityState 를 넘겨도 selected · disabled 가 지워지지 않게 합친다
+      accessibilityState={{ ...rest.accessibilityState, selected, disabled: !!disabled }}
       style={({ pressed }) => [
         {
           height: HEIGHT,
@@ -55,7 +57,7 @@ export function Chip({
           alignItems: "center",
           alignSelf: "flex-start",
           gap: space[2],
-          opacity: disabled ? 0.4 : pressed ? 0.8 : 1,
+          opacity: disabled ? DISABLED_OPACITY : pressed ? PRESSED_OPACITY : 1,
         },
         style,
       ]}

@@ -217,7 +217,7 @@ function Catalog() {
           helperText="같은 이름의 아이템이 있으면 알려드려요"
           clearLabel="지우기"
         />
-        <Input placeholder="상품명 · 작품명으로 검색" />
+        <Input placeholder="상품명 · 작품명으로 검색" clearLabel="지우기" />
         <Input label="메모" multiline placeholder="구매한 곳, 교환 희망 등 메모를 남겨 보세요" />
       </Section>
 

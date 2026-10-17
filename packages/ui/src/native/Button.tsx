@@ -3,6 +3,7 @@ import { Pressable, View, type PressableProps, type StyleProp, type ViewStyle } 
 
 import { useTheme } from "../theme";
 import { border, radius, space, type ThemeColors, type TypographyName } from "../tokens";
+import { DISABLED_OPACITY, PRESSED_OPACITY } from "./pressable";
 import { Text } from "./Text";
 
 /** 버튼 높이. 시안의 54(시트 · 화면 하단) · 44(카드 안, 빈 화면) · 36(작은 동작) */
@@ -62,9 +63,10 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
       {...rest}
+      // 쓰는 쪽이 accessibilityState 를 넘겨도 disabled 가 지워지지 않게 합친다
+      accessibilityState={{ ...rest.accessibilityState, disabled: !!disabled }}
       style={({ pressed }) => [
         {
           height: HEIGHT[size],
@@ -78,7 +80,7 @@ export function Button({
           justifyContent: "center",
           gap: space[8],
           alignSelf: fullWidth ? "stretch" : "flex-start",
-          opacity: disabled ? 0.4 : pressed ? 0.8 : 1,
+          opacity: disabled ? DISABLED_OPACITY : pressed ? PRESSED_OPACITY : 1,
         },
         style,
       ]}

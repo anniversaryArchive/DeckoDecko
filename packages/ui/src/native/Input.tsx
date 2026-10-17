@@ -1,5 +1,5 @@
 import { BottomSheetTextInput, useBottomSheetInternal } from "@gorhom/bottom-sheet";
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode, type Ref } from "react";
 import { TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from "react-native";
 
 import { useTheme } from "../theme";
@@ -28,8 +28,13 @@ export type InputProps = Omit<TextInputProps, "style"> & {
   trailing?: ReactNode;
   /** 글자가 있을 때 오른쪽에 지우기 버튼을 그린다. 기본은 켜짐, 여러 줄 · 읽기 전용에서는 그리지 않는다 */
   clearable?: boolean;
-  /** 지우기 버튼을 화면 읽기 프로그램이 읽을 이름 ("지우기"). 컴포넌트 안에 문구를 두지 않으므로 화면에서 넘긴다 */
+  /**
+   * 지우기 버튼을 화면 읽기 프로그램이 읽을 이름 ("지우기"). 컴포넌트 안에 문구를 두지 않으므로 화면에서 넘긴다.
+   * 넘기지 않으면 지우기 버튼을 그리지 않는다 (이름 없는 버튼이 생기지 않게).
+   */
   clearLabel?: string;
+  /** 입력창(TextInput) ref. 다음 칸으로 포커스를 옮기거나 시트가 열릴 때 포커스를 줄 때 쓴다 */
+  ref?: Ref<TextInput>;
   /** 바깥 상자(이름 · 입력창 · 안내 묶음)의 스타일 */
   style?: StyleProp<ViewStyle>;
 };
@@ -50,6 +55,7 @@ export function Input({
   style,
   onFocus,
   onBlur,
+  ref,
   ...rest
 }: InputProps) {
   const { colors } = useTheme();
@@ -64,10 +70,16 @@ export function Input({
   const hasText = controlled ? (rest.value ?? "").length > 0 : uncontrolledText.length > 0;
   // 시트용 입력창과 기본 입력창의 ref 타입이 조금 달라서(null / undefined) 둘 다 받는 함수로 넘긴다.
   // 렌더마다 새 함수를 만들면 ref 가 매번 떼었다 붙어서 한 번만 만든다.
-  const setInputRef = useCallback((el: TextInput | null | undefined) => {
-    inputRef.current = el ?? null;
-  }, []);
-  const showClear = clearable && !multiline && rest.editable !== false && hasText;
+  // 쓰는 쪽이 넘긴 ref 에도 같은 입력창을 연결한다.
+  const setInputRef = useCallback(
+    (el: TextInput | null | undefined) => {
+      inputRef.current = el ?? null;
+      if (typeof ref === "function") ref(el ?? null);
+      else if (ref) ref.current = el ?? null;
+    },
+    [ref]
+  );
+  const showClear = clearable && !!clearLabel && !multiline && rest.editable !== false && hasText;
 
   return (
     <View style={[{ gap: space[6] }, style]}>
@@ -128,8 +140,12 @@ export function Input({
             size={CLEAR_SIZE}
             label={clearLabel}
             onPress={() => {
-              inputRef.current?.clear();
-              if (!controlled) setUncontrolledText("");
+              // 값을 화면이 관리하면 화면이 value 를 비우게 알리기만 한다.
+              // 입력창을 직접 비우면, 화면이 빈 값을 받아들이지 않을 때 입력창과 value 가 어긋난다.
+              if (!controlled) {
+                inputRef.current?.clear();
+                setUncontrolledText("");
+              }
               rest.onChangeText?.("");
             }}
           >
