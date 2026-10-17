@@ -28,3 +28,15 @@ WHEN OLD.`is_default` <> NEW.`is_default`
 BEGIN
 	SELECT RAISE(ABORT, 'is_default cannot be changed');
 END;
+--> statement-breakpoint
+-- Deleting a normal folder keeps its records: they move to the default folder first.
+-- items.folder_id is ON DELETE RESTRICT, so if this ever fails the delete fails instead of losing records.
+CREATE TRIGGER `folders_move_items_to_default`
+BEFORE DELETE ON `folders`
+WHEN OLD.`is_default` = 0
+BEGIN
+	UPDATE `items`
+	SET `folder_id` = (SELECT `id` FROM `folders` WHERE `is_default` = 1),
+		`updated_at` = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+	WHERE `folder_id` = OLD.`id`;
+END;

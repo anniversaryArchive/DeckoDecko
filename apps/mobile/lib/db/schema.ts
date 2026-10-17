@@ -5,7 +5,7 @@ import { check, index, integer, sqliteTable, text, uniqueIndex } from "drizzle-o
  * 기기 로컬 DB 스키마 (expo-sqlite).
  * - id 는 text UUID. 시각은 ISO 8601 UTC 텍스트.
  * - 스키마를 바꾸면 `pnpm --filter @deckodecko/mobile db:generate` 로 drizzle/ 에 마이그레이션을 만든다.
- * - 기본 폴더 행과 삭제 방지 트리거는 커스텀 마이그레이션(drizzle/0001_*.sql)에 있다.
+ * - 기본 폴더 행과 트리거(기본 폴더 보호, 폴더 삭제 시 기록을 기본 폴더로 옮기기)는 커스텀 마이그레이션(drizzle/0001_*.sql)에 있다.
  */
 
 /** 기본값: 현재 시각 ISO 8601 (밀리초, UTC) */
@@ -36,7 +36,8 @@ export const items = sqliteTable(
     id: text("id").primaryKey(),
     folderId: text("folder_id")
       .notNull()
-      .references(() => folders.id, { onDelete: "cascade" }),
+      // 폴더를 지우면 트리거가 기록을 기본 폴더로 먼저 옮긴다. RESTRICT 는 그게 안 됐을 때 기록이 같이 지워지지 않게 막는 안전장치.
+      .references(() => folders.id, { onDelete: "restrict" }),
     // 가챠 하나에 아이템 여러 개가 가능하므로 UNIQUE 를 걸지 않는다.
     gachaId: text("gacha_id").notNull(),
     type: text("type", { enum: ["WISH", "GET"] }).notNull(),

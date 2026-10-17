@@ -1,6 +1,6 @@
 {
-  "id": "3cef4bfc-b05e-416a-92b0-0c6074ceff02",
-  "prevId": "e2292dae-9822-4ef4-a53b-0fb20c6c6732",
+  "id": "80b3fa2d-4948-4e7a-bc1d-dcbbf6729b56",
+  "prevId": "d86ba6ac-e978-490a-bd92-194448aafb83",
   "version": "6",
   "dialect": "sqlite",
   "tables": {
@@ -157,7 +157,7 @@
             "id"
           ],
           "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "restrict"
         }
       },
       "compositePrimaryKeys": {},
