@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
 
+import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
 import { repositories } from "@/lib/repositories";
 
 // 글꼴을 다 불러올 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
@@ -28,6 +29,8 @@ void SplashScreen.preventAutoHideAsync();
  * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
  */
 export default function RootLayout() {
+  useLocalDbMigrations();
+
   // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.ja · fonts.latin 과 같아야 한다.
   const [loaded, error] = useFonts({
     NotoSansKR_400Regular,
