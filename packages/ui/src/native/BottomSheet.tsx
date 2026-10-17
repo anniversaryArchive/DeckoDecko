@@ -5,8 +5,8 @@ import {
   useBottomSheetTimingConfigs,
   type BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
-import { Pressable, View } from "react-native";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { BackHandler, Pressable, View } from "react-native";
 import { Easing } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -53,6 +53,9 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
   // 한 번도 열지 않은 시트에 dismiss() 를 부르면 그 뒤의 present() 가 무시된다 (@gorhom/bottom-sheet 5.2).
   // 그래서 열려 있을 때만 닫는다.
   const presented = useRef(false);
+  // 내용 높이를 정수 dp 로 올려 고정하고, 1dp 안쪽의 변화는 무시한다. 그대로 두면 Android 에서 시트가 소수점 픽셀만큼
+  // 움직일 때마다 내용 높이가 1px(0.4dp 안팎) 오르내리고, 라이브러리가 그때마다 목표 위치를 다시 잡아 애니메이션이 끝나지 않는다.
+  const [contentHeight, setContentHeight] = useState<number>();
 
   useEffect(() => {
     if (open && !presented.current) {
@@ -61,6 +64,16 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
     } else if (!open && presented.current) {
       ref.current?.dismiss();
     }
+  }, [open]);
+
+  // Android 뒤로가기는 화면보다 열린 시트를 먼저 닫는다. 가로채지 않으면 시트가 열린 채로 화면이 뒤로 넘어간다.
+  useEffect(() => {
+    if (!open) return;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      ref.current?.dismiss();
+      return true;
+    });
+    return () => sub.remove();
   }, [open]);
 
   const renderBackdrop = useCallback(
@@ -104,27 +117,39 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
         backgroundColor: colors.line,
       }}
     >
-      <BottomSheetView
-        style={{
-          paddingTop: space[16],
-          paddingHorizontal: gutter,
-          paddingBottom: Math.max(insets.bottom, space[24]),
-          gap: space[16],
-        }}
-      >
-        {title || closeLabel ? (
-          <View
-            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
-          >
-            <Text variant="headingSm" accessibilityRole="header" style={{ flex: 1 }}>
-              {title ?? ""}
-            </Text>
-            {closeLabel ? (
-              <CloseButton label={closeLabel} onPress={() => ref.current?.dismiss()} />
-            ) : null}
-          </View>
-        ) : null}
-        {children}
+      <BottomSheetView style={{ height: contentHeight }}>
+        <View
+          onLayout={(e) => {
+            const { height } = e.nativeEvent.layout;
+            setContentHeight((prev) =>
+              prev !== undefined && Math.abs(height - prev) < 1 ? prev : Math.ceil(height)
+            );
+          }}
+          style={{
+            paddingTop: space[16],
+            paddingHorizontal: gutter,
+            paddingBottom: Math.max(insets.bottom, space[24]),
+            gap: space[16],
+          }}
+        >
+          {title || closeLabel ? (
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text variant="headingSm" accessibilityRole="header" style={{ flex: 1 }}>
+                {title ?? ""}
+              </Text>
+              {closeLabel ? (
+                <CloseButton label={closeLabel} onPress={() => ref.current?.dismiss()} />
+              ) : null}
+            </View>
+          ) : null}
+          {children}
+        </View>
       </BottomSheetView>
     </BottomSheetModal>
   );
