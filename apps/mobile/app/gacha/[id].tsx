@@ -20,6 +20,8 @@ const HERO_HEIGHT = 300;
 const HERO_RADIUS = 36;
 /** 뒤로 버튼(원형) 한 변 */
 const BACK_BUTTON_SIZE = 44;
+/** 뒤로 버튼 안 화살표 아이콘 */
+const BACK_ICON_SIZE = 20;
 
 /**
  * 가챠 상세. 스택 헤더 없이 히어로 이미지 + 기본 정보. 뒤로 버튼은 로딩 · 에러 상태에서도 보이도록 화면 위에 띄운다.
@@ -71,7 +73,7 @@ function BackButton() {
         opacity: pressed ? 0.7 : 1,
       })}
     >
-      <Ionicons name="chevron-back" size={20} color={colors.text} />
+      <Ionicons name="chevron-back" size={BACK_ICON_SIZE} color={colors.text} />
     </Pressable>
   );
 }

@@ -19,6 +19,8 @@ import { formatPrice } from "@/lib/i18n";
 
 /** 상단 원형 검색 버튼 한 변 */
 const ICON_BUTTON_SIZE = 44;
+/** 상단 검색 버튼 안 아이콘 */
+const ICON_SIZE = 20;
 /** "새로 나왔어요" 카드 폭 · 이미지 높이 */
 const CARD_WIDTH = 156;
 const CARD_IMAGE_HEIGHT = 140;
@@ -62,7 +64,7 @@ export default function HomeScreen() {
             opacity: pressed ? 0.7 : 1,
           })}
         >
-          <Ionicons name="search" size={20} color={colors.text} />
+          <Ionicons name="search" size={ICON_SIZE} color={colors.text} />
         </Pressable>
       </View>
 
