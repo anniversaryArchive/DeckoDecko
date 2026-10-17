@@ -1,23 +1,9 @@
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { useEffect } from "react";
-
-import migrations from "@/drizzle/migrations";
-
-import { db } from "./client";
-
 /**
- * 앱 시작 시 로컬 DB 마이그레이션을 한 번 돌린다. 루트 레이아웃에서 호출한다.
- * 실패하면 console.error 로 남긴다.
- * TODO: 아직 로컬 DB 를 쓰는 화면이 없어 렌더 게이팅(완료 전 스플래시 유지 · 실패 화면)은 하지 않는다. 2주차에 결정한다.
+ * 웹용 자리표시자. 실제 구현은 `useLocalDbMigrations.native.ts` (client.ts 주석 참고).
+ * 웹에서는 마이그레이션을 돌리지 않고, 네이티브 훅과 같은 모양으로 실패를 돌려준다.
  */
-export function useLocalDbMigrations() {
-  const { success, error } = useMigrations(db, migrations);
+const unsupportedOnWeb = new Error("[local-db] not available on web (iOS / Android only)");
 
-  useEffect(() => {
-    if (error) {
-      console.error("[local-db] migration failed", error);
-    }
-  }, [error]);
-
-  return { success, error };
+export function useLocalDbMigrations(): { success: boolean; error?: Error } {
+  return { success: false, error: unsupportedOnWeb };
 }
