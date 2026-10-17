@@ -6,7 +6,7 @@ import {
   type BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { BackHandler, Pressable, View } from "react-native";
+import { BackHandler, Keyboard, Pressable, View } from "react-native";
 import { Easing } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -21,6 +21,8 @@ const HANDLE = { width: 40, height: 4 } as const;
 const CLOSE_SIZE = 36;
 /** 열고 닫는 데 걸리는 시간(ms) */
 const DURATION = 450;
+/** 키보드가 내려갔다는 알림이 오지 않을 때 시트를 닫기까지 기다리는 최대 시간(ms) */
+const KEYBOARD_HIDE_TIMEOUT = 600;
 
 export type BottomSheetProps = {
   /** 열려 있는지. 화면의 상태로 연다 */
@@ -56,25 +58,47 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
   // 내용 높이를 정수 dp 로 올려 고정하고, 1dp 안쪽의 변화는 무시한다. 그대로 두면 Android 에서 시트가 소수점 픽셀만큼
   // 움직일 때마다 내용 높이가 1px(0.4dp 안팎) 오르내리고, 라이브러리가 그때마다 목표 위치를 다시 잡아 애니메이션이 끝나지 않는다.
   const [contentHeight, setContentHeight] = useState<number>();
+  // 키보드가 내려가길 기다리는 중인지. 닫기를 여러 번 눌러도 한 번만 기다린다.
+  const closing = useRef(false);
+
+  // 키보드가 열려 있으면 키보드를 먼저 내리고, 다 내려간 뒤에 시트를 닫는다.
+  // 같이 닫으면 시트가 내려가는 동안 키보드가 그 위에 남아 있다가 늦게 내려간다.
+  const requestClose = useCallback(() => {
+    if (!Keyboard.isVisible()) {
+      ref.current?.dismiss();
+      return;
+    }
+    if (closing.current) return;
+    closing.current = true;
+    const finish = () => {
+      sub.remove();
+      clearTimeout(timer);
+      closing.current = false;
+      ref.current?.dismiss();
+    };
+    const sub = Keyboard.addListener("keyboardDidHide", finish);
+    const timer = setTimeout(finish, KEYBOARD_HIDE_TIMEOUT);
+    Keyboard.dismiss();
+  }, []);
 
   useEffect(() => {
     if (open && !presented.current) {
       presented.current = true;
       ref.current?.present();
     } else if (!open && presented.current) {
-      ref.current?.dismiss();
+      requestClose();
     }
-  }, [open]);
+  }, [open, requestClose]);
 
   // Android 뒤로가기는 화면보다 열린 시트를 먼저 닫는다. 가로채지 않으면 시트가 열린 채로 화면이 뒤로 넘어간다.
   useEffect(() => {
     if (!open) return;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      ref.current?.dismiss();
+      requestClose();
       return true;
     });
     return () => sub.remove();
-  }, [open]);
+  }, [open, requestClose]);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -83,11 +107,13 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
         appearsOnIndex={0}
         disappearsOnIndex={-1}
         opacity={1}
-        pressBehavior="close"
+        // 라이브러리가 바로 닫지 않게 제자리(0)로 두고, 키보드부터 내리는 requestClose 로 닫는다
+        pressBehavior={0}
+        onPress={requestClose}
         style={[props.style, { backgroundColor: colors.scrim }]}
       />
     ),
-    [colors.scrim]
+    [colors.scrim, requestClose]
   );
 
   return (
@@ -143,9 +169,7 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
               <Text variant="headingSm" accessibilityRole="header" style={{ flex: 1 }}>
                 {title ?? ""}
               </Text>
-              {closeLabel ? (
-                <CloseButton label={closeLabel} onPress={() => ref.current?.dismiss()} />
-              ) : null}
+              {closeLabel ? <CloseButton label={closeLabel} onPress={requestClose} /> : null}
             </View>
           ) : null}
           {children}
