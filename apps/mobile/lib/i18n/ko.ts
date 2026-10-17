@@ -13,17 +13,34 @@ export const ko = {
     // 한국어는 단수 · 복수 구분이 없어 _other 하나만 쓰인다. en 과 키 모양을 맞추려고 _one 도 둔다.
     itemCount_one: "{{count}}종",
     itemCount_other: "{{count}}종",
+    appName: "가챠 탐색대",
+    back: "뒤로",
+    last10Days: "최근 10일",
+    // 가챠 정보 줄 (검색 결과 카드 · 상세). 값은 포맷 헬퍼로 만든 문자열을 넣는다.
+    pricePerPlay: "1회 {{price}}",
+    taxIncluded: "(세금 포함)",
+    released: "{{month}} 발매",
+    itemTotal: "전 {{total}}",
   },
   home: {
     title: "홈",
-    description: "소장률 · 새로 나왔어요 · 지금 인기 · 공지",
     collectionRate: "내 굿즈 소장률",
-    listFailed: "목록을 불러오지 못했어요",
-    missingGachaLink: "없는 가챠로 이동 (없음 상태 확인용)",
+    newArrivals: "새로 나왔어요",
+    newBadge: "NEW",
+    popular: "지금 인기",
+    empty: "아직 등록된 가챠가 없어요.",
   },
   search: {
     title: "검색",
     placeholder: "상품명 · 작품명으로 검색",
+    submit: "검색",
+    clear: "검색어 지우기",
+    popularTitle: "인기 검색 굿즈",
+    // <bold> 는 화면의 Trans 가 굵은 Text 로 바꾼다
+    resultCount_one: "총 <bold>{{count, number}}</bold>개",
+    resultCount_other: "총 <bold>{{count, number}}</bold>개",
+    noResult: "'{{keyword}}' 결과가 없어요",
+    noResultHint: "작품명이나 상품명 일부만 입력해 보세요.\n아직 등록되지 않은 가챠일 수도 있어요.",
   },
   detail: {
     title: "가챠 상세",
