@@ -282,7 +282,7 @@ describe("createMemoryGachaRepository", () => {
     });
   });
 
-  describe("seed 격리", () => {
+  describe("seed 배열 격리", () => {
     it("저장소를 만든 뒤 seed 배열을 바꿔도 결과가 바뀌지 않는다", async () => {
       const seed = [gacha("a", { name: "hit" }, 1), gacha("b", { name: "hit" }, 2)];
       const repo = createMemoryGachaRepository(seed);
