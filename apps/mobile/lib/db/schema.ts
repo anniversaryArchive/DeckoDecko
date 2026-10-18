@@ -51,6 +51,7 @@ export const items = sqliteTable(
   (t) => [
     index("items_folder_id_idx").on(t.folderId),
     index("items_gacha_id_idx").on(t.gachaId),
-    check("items_type_check", sql`${t.type} IN ('WISH', 'GET')`),
+    // 컬럼 이름만 쓴다. ${t.type} 은 "items"."type" 이 되어, drizzle-kit 이 __new_items 로 다시 만들 때 실패한다.
+    check("items_type_check", sql`type IN ('WISH', 'GET')`),
   ]
 );

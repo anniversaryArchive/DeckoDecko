@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d86ba6ac-e978-490a-bd92-194448aafb83",
+  "id": "06468467-1944-4579-8444-e17a8cb17f4c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "folders": {
@@ -165,7 +165,7 @@
       "checkConstraints": {
         "items_type_check": {
           "name": "items_type_check",
-          "value": "\"items\".\"type\" IN ('WISH', 'GET')"
+          "value": "type IN ('WISH', 'GET')"
         }
       }
     }

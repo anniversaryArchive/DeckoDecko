@@ -6,7 +6,7 @@ VALUES (
 	lower(hex(randomblob(4))) || '-' ||
 	lower(hex(randomblob(2))) || '-' ||
 	'4' || substr(lower(hex(randomblob(2))), 2) || '-' ||
-	substr('89ab', 1 + (abs(random()) % 4), 1) || substr(lower(hex(randomblob(2))), 2) || '-' ||
+	substr('89ab', 1 + (random() & 3), 1) || substr(lower(hex(randomblob(2))), 2) || '-' ||
 	lower(hex(randomblob(6))),
 	0,
 	'',
@@ -35,6 +35,9 @@ CREATE TRIGGER `folders_move_items_to_default`
 BEFORE DELETE ON `folders`
 WHEN OLD.`is_default` = 0
 BEGIN
+	SELECT RAISE(ABORT, 'Default folder is missing; cannot move items')
+	WHERE NOT EXISTS (SELECT 1 FROM `folders` WHERE `is_default` = 1)
+		AND EXISTS (SELECT 1 FROM `items` WHERE `folder_id` = OLD.`id`);
 	UPDATE `items`
 	SET `folder_id` = (SELECT `id` FROM `folders` WHERE `is_default` = 1),
 		`updated_at` = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')

@@ -1,6 +1,6 @@
 {
-  "id": "80b3fa2d-4948-4e7a-bc1d-dcbbf6729b56",
-  "prevId": "d86ba6ac-e978-490a-bd92-194448aafb83",
+  "id": "08fc762e-a4c9-4113-bd57-b8db7cfc9a89",
+  "prevId": "06468467-1944-4579-8444-e17a8cb17f4c",
   "version": "6",
   "dialect": "sqlite",
   "tables": {
@@ -165,7 +165,7 @@
       "checkConstraints": {
         "items_type_check": {
           "name": "items_type_check",
-          "value": "\"items\".\"type\" IN ('WISH', 'GET')"
+          "value": "type IN ('WISH', 'GET')"
         }
       }
     }
