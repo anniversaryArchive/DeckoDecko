@@ -12,8 +12,8 @@ export const ko = {
     price: "{{value, number}}엔",
     // 한국어는 단수 · 복수 구분이 없어 보통 _other 만 쓰인다. en 과 키 모양을 맞추려고 _one 도 둔다.
     // 기기에 Intl.PluralRules 가 없으면 i18next 가 count=1 에 _one 을 고르므로 지우지 않는다.
-    itemCount_one: "{{count}}종",
-    itemCount_other: "{{count}}종",
+    itemCount_one: "{{count, number}}종",
+    itemCount_other: "{{count, number}}종",
   },
   home: {
     title: "홈",

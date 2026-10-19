@@ -7,8 +7,8 @@ export const en: Messages = {
     loadFailed: "Couldn't load",
     retry: "Try again",
     price: "¥{{value, number}}",
-    itemCount_one: "{{count}} item",
-    itemCount_other: "{{count}} items",
+    itemCount_one: "{{count, number}} item",
+    itemCount_other: "{{count, number}} items",
   },
   home: {
     title: "Home",
