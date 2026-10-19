@@ -19,8 +19,11 @@ export function formatItemCount(count: number): string {
 export function formatMonth(yearMonth: string): string {
   const match = /^(\d{4})-(\d{2})$/.exec(yearMonth);
   if (!match) return yearMonth;
+  const month = Number(match[2]);
+  // 1–12 밖이면 Date 가 다음 해로 넘겨 버리므로(2026-13 → 2027년 1월) 받은 그대로 돌려준다
+  if (month < 1 || month > 12) return yearMonth;
   // 월만 쓰므로 시간대 영향을 받지 않게 UTC 로 만들고 UTC 로 표시한다
-  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, 1));
+  const date = new Date(Date.UTC(Number(match[1]), month - 1, 1));
   return new Intl.DateTimeFormat(i18n.language, {
     year: "numeric",
     month: "short",
