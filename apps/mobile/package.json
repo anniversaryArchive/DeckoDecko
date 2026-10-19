@@ -47,7 +47,6 @@
   "devDependencies": {
     "@deckodecko/eslint-config": "workspace:*",
     "@types/react": "~19.2.2",
-    "babel-plugin-inline-import": "^3.0.0",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.0",
     "eslint-config-expo": "~57.0.2",

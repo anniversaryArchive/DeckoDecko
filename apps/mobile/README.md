@@ -41,7 +41,7 @@ pnpm --filter @deckodecko/mobile exec drizzle-kit generate --custom --name <이�
 ```
 
 - 이미 나간 마이그레이션 파일은 고치지 않고 새 파일을 추가한다. 사용자 기기에는 적용된 기록이 남아 있다.
-- `.sql` 은 Babel(inline-import)이 문자열로 넣는다. 마이그레이션을 바꾼 뒤에는 `expo start -c` 로 Metro 캐시를 지워야 반영된다.
+- `.sql` 은 Metro transformer(`metro.sql-transformer.js`)가 문자열 모듈로 바꾼다. `.sql` 을 고치면 Metro 가 알아서 다시 변환하므로 캐시를 지울 필요가 없다.
 - 기본 폴더는 `0001_default_folder.sql` 이 만든다. id 는 기기마다 다른 UUID 이므로 **`is_default` 로 찾는다** (id 를 가정하지 않는다). 삭제는 트리거가 막고, 표시 이름은 i18n 키로 정한다 (`name` 은 빈 문자열).
 - 외래 키 검사(`PRAGMA foreign_keys`)는 마이그레이션이 끝난 뒤 켠다. 마이그레이터가 트랜잭션 안에서 돌아 그 안의 `PRAGMA foreign_keys = OFF` 가 무시되므로, 켠 채로 돌리면 drizzle-kit 의 테이블 재생성(`DROP TABLE`)이 실패한다.
 - CHECK 같은 SQL 조각에는 `${t.col}` 대신 컬럼 이름만 쓴다. 테이블 이름이 붙으면 재생성할 때 `__new_*` 테이블에서 실패한다.
