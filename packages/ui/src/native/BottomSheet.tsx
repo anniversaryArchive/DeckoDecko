@@ -125,12 +125,12 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       // 이미 닫히는 중에 다시 열렸으면 닫힘이 끝난 뒤(onDismiss) 다시 연다.
     } else if (presented.current && !closedByParent.current) {
       closedByParent.current = true;
-      // 아직 뜨기 전이면 닫기를 미뤄 두고, 뜨기 시작할 때(markShown) 닫는다.
+      // 아직 뜨기 전이면 닫기를 미뤄 두고, 다 뜬 뒤(markShown) 닫는다.
       if (shown.current) requestClose();
     }
   }, [open, requestClose]);
 
-  // 시트가 실제로 움직이기 시작했다. 그 전에 화면이 닫으라고 했으면 이제 닫는다.
+  // 시트가 실제로 떴다. 그 전에 화면이 닫으라고 했으면 이제 닫는다.
   const markShown = useCallback(() => {
     if (shown.current) return;
     shown.current = true;
@@ -201,10 +201,7 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       accessible={false}
       accessibilityLabel={null}
       accessibilityRole={null}
-      onAnimate={(_from, to) => {
-        if (to >= 0) markShown();
-      }}
-      // 동작 줄이기가 켜져 애니메이션 없이 열릴 때를 대비해 onChange 로도 표시한다
+      // 다 뜬 뒤(onChange)에만 표시한다. iOS 에서 열리는 애니메이션이 막 시작될 때(onAnimate) 닫으면 dismiss() 가 무시돼 시트가 열린 채로 남는다.
       onChange={(index) => {
         if (index >= 0) markShown();
       }}
