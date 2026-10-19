@@ -93,16 +93,32 @@ describe("createMemoryGachaRepository", () => {
       expect(first).not.toHaveProperty("items");
       expect(first).toMatchObject({ id: "a", itemCount: 3 });
     });
+
+    it("limit 이 양의 정수가 아니면 기본 20개", async () => {
+      const repo = createMemoryGachaRepository(many(25));
+      for (const limit of [0, -1, 2.5, Number.NaN]) {
+        expect(await repo.listGacha({ limit }), String(limit)).toHaveLength(20);
+      }
+    });
   });
 
   describe("listPopularGacha", () => {
-    it("라인업(items) 이 많은 순으로 정렬한다", async () => {
+    it("라인업 수(itemCount) 가 많은 순으로 정렬한다", async () => {
       const repo = createMemoryGachaRepository([
         gacha("small", {}, 1),
         gacha("big", {}, 8),
         gacha("mid", {}, 4),
       ]);
       expect(ids(await repo.listPopularGacha())).toEqual(["big", "mid", "small"]);
+    });
+
+    it("items 배열이 아니라 itemCount 를 기준으로 하고, 모르면(null) 0 으로 본다", async () => {
+      const repo = createMemoryGachaRepository([
+        gacha("unknown", { itemCount: null }, 9),
+        gacha("listed", { itemCount: 12 }, 0),
+        gacha("few", { itemCount: 2 }, 5),
+      ]);
+      expect(ids(await repo.listPopularGacha())).toEqual(["listed", "few", "unknown"]);
     });
 
     it("라인업 수가 같으면 원래 순서를 유지한다 (안정 정렬)", async () => {
@@ -118,6 +134,13 @@ describe("createMemoryGachaRepository", () => {
     it("limit 을 생략하면 기본 10개", async () => {
       const repo = createMemoryGachaRepository(many(15));
       expect(await repo.listPopularGacha()).toHaveLength(10);
+    });
+
+    it("limit 이 양의 정수가 아니면 기본 10개", async () => {
+      const repo = createMemoryGachaRepository(many(15));
+      for (const limit of [0, -1, 2.5, Number.NaN]) {
+        expect(await repo.listPopularGacha(limit), String(limit)).toHaveLength(10);
+      }
     });
 
     it("limit 만큼만 돌려준다", async () => {
@@ -278,6 +301,22 @@ describe("createMemoryGachaRepository", () => {
         expect(page.items).toHaveLength(20);
         expect(page.items[0]?.id).toBe("g1");
         expect(page.total).toBe(25);
+      });
+
+      it("limit 이 양의 정수가 아니면 기본 20개", async () => {
+        const big = createMemoryGachaRepository(many(25, { name: "マスコット" }));
+        for (const limit of [0, -1, 2.5, Number.NaN]) {
+          const page = await big.searchGacha({ keyword: "マスコット", limit });
+          expect(page.items, String(limit)).toHaveLength(20);
+          expect(page.total, String(limit)).toBe(25);
+        }
+      });
+
+      it("offset 이 0 이상의 정수가 아니면 처음부터", async () => {
+        for (const offset of [-1, -3, 1.5, Number.NaN]) {
+          const page = await repo.searchGacha({ keyword: "マスコット", limit: 3, offset });
+          expect(ids(page.items), String(offset)).toEqual(["g1", "g2", "g3"]);
+        }
       });
     });
   });

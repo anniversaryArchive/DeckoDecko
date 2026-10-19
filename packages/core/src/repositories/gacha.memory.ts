@@ -6,6 +6,11 @@ function normalize(s: string): string {
   return s.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
 }
 
+/** min 이상의 정수가 아니면(음수 · 소수 · NaN 등) 기본값. limit 은 1, offset 은 0 부터 받는다. */
+function count(n: number | undefined, fallback: number, min = 1): number {
+  return n !== undefined && Number.isInteger(n) && n >= min ? n : fallback;
+}
+
 function toSummary(detail: GachaDetail): Gacha {
   const { items: _items, ...summary } = detail;
   return summary;
@@ -21,14 +26,14 @@ export function createMemoryGachaRepository(seed: readonly GachaDetail[]): Gacha
 
   return {
     async listGacha(params?: ListGachaParams) {
-      return all.slice(0, params?.limit ?? GACHA_DEFAULTS.listLimit).map(toSummary);
+      return all.slice(0, count(params?.limit, GACHA_DEFAULTS.listLimit)).map(toSummary);
     },
 
-    async listPopularGacha(limit: number = GACHA_DEFAULTS.popularLimit) {
-      // 인기 집계는 3주차 RPC 몫. 그 전까지는 라인업이 많은 순으로 흉내 낸다.
+    async listPopularGacha(limit?: number) {
+      // 인기 집계는 3주차 RPC 몫. 그 전까지는 라인업 수(itemCount, 모르면 0)가 많은 순으로 흉내 낸다.
       return [...all]
-        .sort((a, b) => b.items.length - a.items.length)
-        .slice(0, limit)
+        .sort((a, b) => (b.itemCount ?? 0) - (a.itemCount ?? 0))
+        .slice(0, count(limit, GACHA_DEFAULTS.popularLimit))
         .map(toSummary);
     },
 
@@ -36,12 +41,10 @@ export function createMemoryGachaRepository(seed: readonly GachaDetail[]): Gacha
       return all.find((g) => g.id === id) ?? null;
     },
 
-    async searchGacha({
-      keyword,
-      limit = GACHA_DEFAULTS.searchLimit,
-      offset = GACHA_DEFAULTS.searchOffset,
-    }: SearchGachaParams) {
-      const q = normalize(keyword);
+    async searchGacha(params: SearchGachaParams) {
+      const limit = count(params.limit, GACHA_DEFAULTS.searchLimit);
+      const offset = count(params.offset, GACHA_DEFAULTS.searchOffset, 0);
+      const q = normalize(params.keyword);
       if (!q) return { items: [], total: 0 };
       const hits = all.filter((g) =>
         [g.name, g.nameKo, g.media?.title, g.media?.titleJa, g.media?.titleEn]
