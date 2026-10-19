@@ -19,6 +19,14 @@ Supabase 연결이 붙으면 두 앱이 같은 값을 서로 다른 접두사의
 | 앱 · 백오피스가 각자 Supabase 호출    | 패키지가 하나 줄어든다                                 | 쿼리 · 타입이 두 벌이 된다. 레거시의 쿼리 불일치 버그가 그대로 |
 | `packages/core` 에 저장소 + 훅 (채택) | 타입 · 쿼리 키 · 저장소가 한 곳. 목 저장소로 바꿔 끼움 | 엔트리를 React 유무로 나눠야 한다                              |
 
+**로컬 DB 라이브러리**
+
+| 선택지                            | 장점                                                                              | 단점                                                        |
+| --------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| drizzle + expo-sqlite (채택)      | Expo SDK 모듈이라 Expo Go 에서 바로 돈다. 스키마에서 타입 · 마이그레이션을 만든다 | 커스텀 SQL(트리거 · 데이터)은 손으로 쓴다                   |
+| expo-sqlite 만 (SQL 직접)         | 의존성이 가장 적다                                                                | 타입 · 마이그레이션을 직접 관리한다. 레거시와 같은 문제     |
+| WatermelonDB · Realm 같은 로컬 DB | 동기화 · 관찰 기능이 들어 있다                                                    | 네이티브 모듈이라 Expo Go 에서 못 돌고 개발 빌드가 필요하다 |
+
 **로컬 DB(drizzle + expo-sqlite)를 어디에 두나**
 
 | 선택지                                  | 장점                                                      | 단점                                                                        |
@@ -31,7 +39,7 @@ Supabase 연결이 붙으면 두 앱이 같은 값을 서로 다른 접두사의
 | 경로                     | 맡는 것                                                        | 의존해도 되는 것                    |
 | ------------------------ | -------------------------------------------------------------- | ----------------------------------- |
 | `apps/mobile`            | 화면 · 라우팅, 로컬 DB(`lib/db`, `drizzle/`), 저장소 조립      | core, ui                            |
-| `apps/admin`             | 운영 화면. 쓰기(service role)는 서버 쪽 모듈에서만             | core, ui                            |
+| `apps/admin`             | 운영 화면. 쓰기(secret key)는 서버 쪽 모듈에서만               | core, ui                            |
 | `packages/core`          | 도메인 타입, 저장소 인터페이스 · 구현, 쿼리 키, React Query 훅 | React · React Query (`./react` 만)  |
 | `packages/ui`            | 디자인 토큰 · 테마 · 공용 컴포넌트                             | React, React Native (`./native` 만) |
 | `packages/eslint-config` | 공통 린트 규칙                                                 | –                                   |
@@ -60,6 +68,7 @@ Supabase 연결이 붙으면 두 앱이 같은 값을 서로 다른 접두사의
 
 ## 이유
 
+- 로컬 DB 는 drizzle + expo-sqlite 로 한다. 지금은 Expo Go 로 개발하고, 기록 두 테이블에 동기화가 없어 무거운 로컬 DB 가 필요 없다. 스키마 하나에서 타입과 마이그레이션이 나와 레거시의 손으로 쓴 SQL · 연결 분산 문제를 피한다.
 - 백오피스는 사용자 기기의 SQLite 를 읽을 수 없다. 로컬 DB 를 core 에 두어도 공유할 코드가 없고, 의존성만 백오피스에 따라간다.
 - 공유가 필요한 것은 도메인 타입뿐이다. 이것은 어느 쪽이든 core 의 `types.ts` 에 둔다. DB 컬럼을 그대로 노출하지 않는다는 원칙과도 맞다.
 - 저장소 인터페이스를 core 에 두고 구현을 주입하면, 목 → Supabase · drizzle 로 바꿔도 화면 코드는 그대로다.
@@ -71,5 +80,6 @@ Supabase 연결이 붙으면 두 앱이 같은 값을 서로 다른 접두사의
 - `.npmrc` 의 `node-linker=hoisted` 는 Metro 가 심볼릭 링크 node_modules 에서 모듈을 못 찾는 문제 때문이다. 바꾸지 않는다.
 - 계정 · 동기화가 생겨 로컬 기록을 서버와 맞춰야 하면, 로컬 DB 를 core 로 옮길지 이 ADR 을 다시 본다.
 - turbo 는 strict 모드라 셸 · CI 에서 넣은 환경변수 중 `turbo.json` 에 없는 것은 태스크에 넘기지 않는다. `EXPO_PUBLIC_*` · `NEXT_PUBLIC_*` 는 turbo 가 알아서 잡는다. `SUPABASE_SECRET_KEY` 처럼 접두사 없는 값을 CI 빌드에서 쓰게 되면 `turbo.json` 의 `env` 에 적는다.
-- `.env.local` 은 Expo · Next 가 직접 읽으므로 strict 모드와 상관없이 쓸 수 있다. 다만 git 에서 빠진 파일이라 turbo 캐시 계산에 들어가지 않는다. 첫 환경변수를 넣는 PR 에서 `build` 의 `inputs` 에 `.env*` 를 추가한다.
+- `.env.local` 은 Expo · Next 가 직접 읽으므로 strict 모드와 상관없이 쓸 수 있다. 다만 git 에서 빠진 파일이라 기본 캐시 계산에 들어가지 않아서, `build` 의 `inputs` 에 `.env*` 를 넣는다 (#133).
+- EAS 빌드는 `.env.local` 이 아니라 EAS 환경변수(development · preview · production)를 쓴다. 로컬은 `eas env:pull` 로 `.env.local` 을 만든다.
 - 레거시는 `EXPO_PUBLIC_SUPABASE_KEY` (legacy anon key) 였다. Supabase 새 키 방식(publishable · secret)으로 옮기고, 어떤 키인지 드러나도록 `_PUBLISHABLE_KEY` · `_SECRET_KEY` 로 쓴다. legacy anon · service_role 키는 쓰지 않는다.
