@@ -10,7 +10,8 @@ export const ko = {
     retry: "다시 시도",
     // 포맷 헬퍼(lib/i18n/format.ts)가 쓴다. 화면에서 직접 쓰지 않는다.
     price: "{{value, number}}엔",
-    // 한국어는 단수 · 복수 구분이 없어 _other 하나만 쓰인다. en 과 키 모양을 맞추려고 _one 도 둔다.
+    // 한국어는 단수 · 복수 구분이 없어 보통 _other 만 쓰인다. en 과 키 모양을 맞추려고 _one 도 둔다.
+    // 기기에 Intl.PluralRules 가 없으면 i18next 가 count=1 에 _one 을 고르므로 지우지 않는다.
     itemCount_one: "{{count}}종",
     itemCount_other: "{{count}}종",
   },
