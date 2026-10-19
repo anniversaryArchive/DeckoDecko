@@ -26,7 +26,7 @@ CLI 는 루트 devDependency(`supabase`)로 들어 있어 따로 설치하지 �
 
 ```bash
 pnpm install
-pnpm exec supabase login                                    # 브라우저로 액세스 토큰 발급
+pnpm exec supabase login                                    # 팀 공용 Supabase 계정으로 브라우저 로그인
 pnpm exec supabase link --project-ref mdlgzwgxvvncejtpdfmq  # dev 에 연결
 ```
 
@@ -35,7 +35,7 @@ pnpm exec supabase link --project-ref mdlgzwgxvvncejtpdfmq  # dev 에 연결
 
 ### 환경변수
 
-Supabase org 와 Expo `deckodecko` org 에 초대받았다면 값을 따로 전달받을 필요가 없다.
+Supabase 는 팀 공용 계정으로 로그인하고, Expo `deckodecko` org 에 초대받았다면 값을 따로 전달받을 필요가 없다.
 
 - 앱: EAS 환경변수에서 받아 온다.
 
