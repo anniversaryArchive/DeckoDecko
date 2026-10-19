@@ -68,9 +68,12 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
   openRef.current = open;
   // 이번 닫힘을 화면이 시작했는지 (open 을 false 로 바꿈). 그때는 onClose 를 부르지 않는다.
   const closedByParent = useRef(false);
-  // 시트가 실제로 움직이기 시작했는지. present() 는 다음 프레임에 동작해서, 그 전에 dismiss() 를 부르면
-  // 라이브러리가 그리기를 건너뛰고 onDismiss 도 오지 않아 이후로 다시 열리지 않는다. 그래서 그 전의 닫기 요청은 미뤄 둔다.
+  // 시트가 다 열렸는지 (onChange). 그 전의 닫기 요청은 미뤄 뒀다가 다 열리면 닫는다.
+  // - present() 는 다음 프레임에 동작해서, 그 전에 dismiss() 를 부르면 라이브러리가 그리기를 건너뛰고 onDismiss 도 오지 않아 이후로 다시 열리지 않는다.
+  // - 열리기 시작할 때(onAnimate)는 시트가 아직 닫힌 위치라, 이때 dismiss() 를 부르면 라이브러리가 이미 그 위치라고 보고 닫지 않는다 (iOS).
   const shown = useRef(false);
+  // 다 열리기 전에 사용자가 Android 뒤로가기를 눌렀는지. 다 열리면 닫는다.
+  const closedByUserBeforeShown = useRef(false);
   // 화면이 사라지는 중인지. 정리 단계에서 라이브러리가 onDismiss 를 불러도 사용자가 닫은 것으로 보지 않는다.
   const unmounted = useRef(false);
   // 내용 높이를 정수 dp 로 올려 고정하고, 1dp 안쪽의 변화는 무시한다. 그대로 두면 Android 에서 시트가 소수점 픽셀만큼
@@ -115,7 +118,7 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
         presented.current = true;
         ref.current?.present();
       } else if (closedByParent.current && !shown.current) {
-        // 아직 뜨기 전에 미뤄 둔 닫기가 있었다. 다시 열렸으니 닫기를 버린다.
+        // 다 열리기 전에 미뤄 둔 닫기가 있었다. 다시 열렸으니 닫기를 버린다.
         closedByParent.current = false;
       } else if (closedByParent.current && cancelPendingClose.current) {
         // 키보드를 기다리느라 아직 시트를 닫기 전에 다시 열렸다. 닫기를 취소하고 그대로 둔다.
@@ -125,16 +128,18 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       // 이미 닫히는 중에 다시 열렸으면 닫힘이 끝난 뒤(onDismiss) 다시 연다.
     } else if (presented.current && !closedByParent.current) {
       closedByParent.current = true;
-      // 아직 뜨기 전이면 닫기를 미뤄 두고, 다 뜬 뒤(markShown) 닫는다.
+      // 아직 다 열리기 전이면 닫기를 미뤄 두고, 다 열리면(markShown) 닫는다.
       if (shown.current) requestClose();
     }
   }, [open, requestClose]);
 
-  // 시트가 실제로 떴다. 그 전에 화면이 닫으라고 했으면 이제 닫는다.
+  // 시트가 다 열렸다. 그 전에 화면이 닫으라고 했거나 사용자가 뒤로가기를 눌렀으면 이제 닫는다.
   const markShown = useCallback(() => {
     if (shown.current) return;
     shown.current = true;
-    if (closedByParent.current && !openRef.current) requestClose();
+    const byUser = closedByUserBeforeShown.current;
+    closedByUserBeforeShown.current = false;
+    if ((closedByParent.current && !openRef.current) || byUser) requestClose();
   }, [requestClose]);
 
   // 화면을 나갈 때 키보드를 기다리던 리스너와 타이머를 정리한다.
@@ -151,8 +156,9 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       if (!presented.current) return false;
-      // 뜨는 중에는 뒤로가기를 먹기만 한다 (아직 닫을 수 없다)
+      // 열리는 중에는 아직 닫을 수 없어서, 다 열리면 닫도록 미뤄 둔다
       if (shown.current) requestClose();
+      else closedByUserBeforeShown.current = true;
       return true;
     });
     return () => sub.remove();
@@ -201,13 +207,14 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       accessible={false}
       accessibilityLabel={null}
       accessibilityRole={null}
-      // 다 뜬 뒤(onChange)에만 표시한다. iOS 에서 열리는 애니메이션이 막 시작될 때(onAnimate) 닫으면 dismiss() 가 무시돼 시트가 열린 채로 남는다.
+      // 다 열렸을 때 온다. 동작 줄이기가 켜져 애니메이션 없이 열릴 때도 온다.
       onChange={(index) => {
         if (index >= 0) markShown();
       }}
       onDismiss={() => {
         presented.current = false;
         shown.current = false;
+        closedByUserBeforeShown.current = false;
         const byParent = closedByParent.current;
         closedByParent.current = false;
         // 화면이 사라지면서 닫힌 것이다. 아무것도 알리지 않는다.
