@@ -1,6 +1,9 @@
 import type { Gacha, GachaDetail, Page } from "../types";
 
-/** 인자를 생략했을 때의 기본값. 구현과 훅(쿼리 키)이 같은 값을 쓰도록 여기 둔다. */
+/**
+ * 인자를 생략했을 때의 기본값. 구현과 훅(쿼리 키)이 같은 값을 쓰도록 여기 둔다.
+ * limit 이 양의 정수가 아니거나 offset 이 0 이상의 정수가 아니면(음수 · 소수 · NaN) 생략한 것으로 보고 이 값을 쓴다.
+ */
 export const GACHA_DEFAULTS = {
   listLimit: 20,
   popularLimit: 10,
