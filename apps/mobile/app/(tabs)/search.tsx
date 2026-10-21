@@ -1,35 +1,20 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { FlatList, Keyboard, Pressable, ScrollView, TextInput, View } from "react-native";
+import { FlatList, Keyboard, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useGachaSearch, usePopularGacha } from "@deckodecko/core/react";
-import { border, fonts, gutter, radius, space, typography, useTheme } from "@deckodecko/ui";
+import { gutter, space } from "@deckodecko/ui";
 import { Text } from "@deckodecko/ui/native";
 
-import { GachaResultCard } from "@/components/GachaResultCard";
+import { EmptyState } from "@/components/EmptyState";
+import { GachaCardSlot } from "@/components/GachaCardSlot";
+import { QueryState } from "@/components/QueryState";
 import { RankedGachaList } from "@/components/RankedGachaList";
+import { SearchBar } from "@/components/SearchBar";
 import { SectionHeader } from "@/components/SectionHeader";
 import { StateMessage } from "@/components/StateMessage";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-
-/** 검색창 높이 */
-const SEARCH_BAR_HEIGHT = 52;
-/** 검색창 왼쪽 돋보기 아이콘 */
-const SEARCH_ICON_SIZE = 20;
-/** 검색창 안 지우기 버튼(원형) 한 변 */
-const CLEAR_BUTTON_SIZE = 32;
-/** 지우기 버튼 안 X 아이콘 */
-const CLEAR_ICON_SIZE = 16;
-/** 검색창 안 검색 버튼 높이 */
-const SUBMIT_BUTTON_HEIGHT = 40;
-/** 결과 없음 원형 아이콘 한 변 */
-const NO_RESULT_ICON_SIZE = 92;
-/** 결과 없음 원 안의 돋보기 아이콘 */
-const NO_RESULT_GLYPH_SIZE = 40;
-/** 결과 없음 안내를 화면 가운데보다 조금 위로 올리는 값 */
-const NO_RESULT_LIFT = 60;
 
 /**
  * 검색. 상단(제목 + 입력창)은 고정이고, 아래 영역이 검색어 유무에 따라 인기 목록 ↔ 결과 목록으로 바뀐다.
@@ -37,7 +22,6 @@ const NO_RESULT_LIFT = 60;
  */
 export default function SearchScreen() {
   const { t } = useTranslation();
-  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [input, setInput] = useState("");
   // 검색 버튼으로 확정한 검색어. 입력이 그대로면 디바운스를 기다리지 않고 이 값을 쓴다.
@@ -66,82 +50,7 @@ export default function SearchScreen() {
         <Text variant="headingMd" accessibilityRole="header">
           {t("search.title")}
         </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: space[10],
-            height: SEARCH_BAR_HEIGHT,
-            borderRadius: radius.full,
-            borderWidth: border.default,
-            borderColor: colors.primary,
-            backgroundColor: colors.surface,
-            paddingLeft: space[18],
-            paddingRight: space[6],
-          }}
-        >
-          <Ionicons name="search" size={SEARCH_ICON_SIZE} color={colors.accent} />
-          <TextInput
-            value={input}
-            onChangeText={setInput}
-            onSubmitEditing={submit}
-            placeholder={t("search.placeholder")}
-            placeholderTextColor={colors.textPlaceholder}
-            accessibilityLabel={t("search.placeholder")}
-            returnKeyType="search"
-            autoCapitalize="none"
-            autoCorrect={false}
-            // TextInput 은 Text 를 거치지 않으므로 글꼴 · 크기를 직접 준다 (입력 15 = titleSm 크기, 굵기는 regular).
-            // 한 줄 입력창에 lineHeight 를 주면 Android 에서 글자가 위로 밀려 잘린다. 높이는 검색창이 정하고 글자는 가운데 둔다.
-            style={{
-              flex: 1,
-              minWidth: 0,
-              alignSelf: "stretch",
-              paddingVertical: 0,
-              textAlignVertical: "center",
-              includeFontPadding: false,
-              fontFamily: fonts.sans.regular,
-              fontSize: typography.titleSm.fontSize,
-              color: colors.text,
-            }}
-          />
-          {input !== "" && (
-            <Pressable
-              onPress={() => setInput("")}
-              accessibilityRole="button"
-              accessibilityLabel={t("search.clear")}
-              hitSlop={space[6]}
-              style={{
-                width: CLEAR_BUTTON_SIZE,
-                height: CLEAR_BUTTON_SIZE,
-                borderRadius: radius.full,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: colors.bg,
-              }}
-            >
-              <Ionicons name="close" size={CLEAR_ICON_SIZE} color={colors.textMuted} />
-            </Pressable>
-          )}
-          <Pressable
-            onPress={submit}
-            accessibilityRole="button"
-            accessibilityLabel={t("search.submit")}
-            hitSlop={{ top: space[2], bottom: space[2] }}
-            style={({ pressed }) => ({
-              height: SUBMIT_BUTTON_HEIGHT,
-              paddingHorizontal: space[18],
-              borderRadius: radius.full,
-              justifyContent: "center",
-              backgroundColor: colors.primary,
-              opacity: pressed ? 0.7 : 1,
-            })}
-          >
-            <Text variant="bodyStrong" color="onPrimary">
-              {t("search.submit")}
-            </Text>
-          </Pressable>
-        </View>
+        <SearchBar value={input} onChangeText={setInput} onSubmit={submit} />
       </View>
 
       {keyword ? <SearchResults keyword={keyword} /> : <PopularSearches />}
@@ -173,15 +82,13 @@ function PopularSearches() {
         variant="titleMd"
         caption={t("common.last10Days")}
       />
-      {popular.isPending ? (
-        <StateMessage loading message={t("common.loading")} />
-      ) : popular.isError ? (
-        <StateMessage message={t("common.loadFailed")} onRetry={() => void popular.refetch()} />
-      ) : popular.data.length === 0 ? (
-        <StateMessage message={t("home.empty")} />
-      ) : (
-        <RankedGachaList gachas={popular.data} />
-      )}
+      <QueryState
+        query={popular}
+        isEmpty={(list) => list.length === 0}
+        empty={<StateMessage message={t("home.empty")} />}
+      >
+        {(list) => <RankedGachaList gachas={list} />}
+      </QueryState>
     </ScrollView>
   );
 }
@@ -195,7 +102,7 @@ function SearchResults({ keyword }: { keyword: string }) {
     <FlatList
       data={search.data?.items ?? []}
       keyExtractor={(gacha) => gacha.id}
-      renderItem={({ item }) => <GachaResultCard gacha={item} />}
+      renderItem={({ item }) => <GachaCardSlot gacha={item} layout="horizontal" />}
       ListHeaderComponent={
         search.data ? (
           // parent 로 넘기면 Trans 가 번역 조각을 ResultCountText 의 직접 자식으로 주므로 Text 가 글자별 글꼴을 나눌 수 있다.
@@ -207,14 +114,21 @@ function SearchResults({ keyword }: { keyword: string }) {
           />
         ) : null
       }
+      // 결과가 있으면 그려지지 않으므로 로딩 · 에러 · 결과 없음만 여기서 고른다
       ListEmptyComponent={
-        search.isPending ? (
-          <StateMessage loading message={t("common.loading")} />
-        ) : search.isError ? (
-          <StateMessage message={t("common.loadFailed")} onRetry={() => void search.refetch()} />
-        ) : (
-          <NoResult keyword={keyword} />
-        )
+        <QueryState
+          query={search}
+          isEmpty={(result) => result.items.length === 0}
+          empty={
+            <EmptyState
+              icon="search"
+              title={t("search.noResult", { keyword })}
+              description={t("search.noResultHint")}
+            />
+          }
+        >
+          {() => null}
+        </QueryState>
       }
       ItemSeparatorComponent={Separator}
       keyboardShouldPersistTaps="handled"
@@ -240,43 +154,4 @@ function ResultCountText({ children }: { children?: ReactNode }) {
 
 function Separator() {
   return <View style={{ height: space[10] }} />;
-}
-
-/** 결과 없음. 일러스트 대신 연한 포인트 원 안에 검색 아이콘. */
-function NoResult({ keyword }: { keyword: string }) {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
-  return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: space[18],
-        paddingHorizontal: space[16],
-        paddingBottom: NO_RESULT_LIFT,
-      }}
-    >
-      <View
-        style={{
-          width: NO_RESULT_ICON_SIZE,
-          height: NO_RESULT_ICON_SIZE,
-          borderRadius: radius.full,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: colors.accentSoft,
-        }}
-      >
-        <Ionicons name="search" size={NO_RESULT_GLYPH_SIZE} color={colors.accent} />
-      </View>
-      <View style={{ gap: space[6] }}>
-        <Text variant="titleLg" style={{ textAlign: "center" }}>
-          {t("search.noResult", { keyword })}
-        </Text>
-        <Text variant="label" weight="regular" color="textMuted" style={{ textAlign: "center" }}>
-          {t("search.noResultHint")}
-        </Text>
-      </View>
-    </View>
-  );
 }
