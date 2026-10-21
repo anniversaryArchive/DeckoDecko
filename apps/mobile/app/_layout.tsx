@@ -8,6 +8,7 @@ import { NotoSansJP_700Bold } from "@expo-google-fonts/noto-sans-jp/700Bold";
 import { NotoSansKR_400Regular } from "@expo-google-fonts/noto-sans-kr/400Regular";
 import { NotoSansKR_500Medium } from "@expo-google-fonts/noto-sans-kr/500Medium";
 import { NotoSansKR_700Bold } from "@expo-google-fonts/noto-sans-kr/700Bold";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
 import { useLocales } from "expo-localization";
 import { Stack } from "expo-router";
@@ -15,6 +16,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
@@ -60,12 +62,18 @@ export default function RootLayout() {
 
   if (!ready) return null;
 
+  // 바텀 시트(@deckodecko/ui/native 의 BottomSheet)는 제스처 루트와 시트 Provider 안에서만 열린다.
   return (
-    <ThemeProvider>
-      <CoreProvider repositories={repositories}>
-        <RootStack />
-      </CoreProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
+        {/* 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다 */}
+        <CoreProvider repositories={repositories}>
+          <BottomSheetModalProvider>
+            <RootStack />
+          </BottomSheetModalProvider>
+        </CoreProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -84,6 +92,7 @@ function RootStack() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="gacha/[id]" options={{ title: t("detail.title") }} />
+        <Stack.Screen name="dev/components" options={{ title: "컴포넌트 카탈로그" }} />
       </Stack>
     </>
   );
