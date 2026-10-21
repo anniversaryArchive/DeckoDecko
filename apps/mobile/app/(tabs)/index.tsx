@@ -11,11 +11,10 @@ import { Text } from "@deckodecko/ui/native";
 import { GachaCardSlot } from "@/components/GachaCardSlot";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { QueryState } from "@/components/QueryState";
-import { RankedGachaList } from "@/components/RankedGachaList";
 import { SectionHeader } from "@/components/SectionHeader";
 import { StateMessage } from "@/components/StateMessage";
 
-/** 홈. 상단 바 · 새로 나왔어요(가로 카드) · 지금 인기(순위 목록). 공지 띠 · 소장률 카드는 2주차 이후. */
+/** 홈. 상단 바 · 새로 나왔어요(세로 카드 가로 스크롤) · 지금 인기(가로 카드 목록). 공지 띠 · 소장률 카드는 2주차 이후. */
 export default function HomeScreen() {
   return (
     <View style={{ flex: 1 }}>
@@ -91,7 +90,7 @@ function NewArrivalsSection() {
   );
 }
 
-/** "지금 인기": 최근 10일 순위. */
+/** "지금 인기": 최근 10일 인기 순. */
 function PopularSection() {
   const { t } = useTranslation();
   const popular = usePopularGacha();
@@ -103,7 +102,13 @@ function PopularSection() {
           isEmpty={(list) => list.length === 0}
           empty={<StateMessage message={t("home.empty")} />}
         >
-          {(list) => <RankedGachaList gachas={list} />}
+          {(list) => (
+            <View style={{ gap: space[10] }}>
+              {list.map((gacha) => (
+                <GachaCardSlot key={gacha.id} gacha={gacha} layout="horizontal" />
+              ))}
+            </View>
+          )}
         </QueryState>
       </View>
     </Section>

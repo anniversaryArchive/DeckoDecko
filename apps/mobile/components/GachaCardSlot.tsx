@@ -9,8 +9,8 @@ import { openGacha } from "@/lib/routes";
 
 /**
  * 자리 크기. 시안 카드와 같은 크기라 배치(가로 스크롤 폭, 목록 간격)는 실제 카드가 들어와도 그대로다.
- * vertical: 홈 "새로 나왔어요" (폭 156, 이미지 140 + 글 세 줄)
- * horizontal: 검색 결과 (썸네일 96 + 위아래 여백 12)
+ * vertical: 세로 카드. 홈 "새로 나왔어요" (폭 156, 이미지 140 + 글 세 줄)
+ * horizontal: 가로 카드. 홈 "지금 인기", 검색 "인기 검색 굿즈" · 검색 결과 (썸네일 96 + 위아래 여백 12)
  */
 const SIZE = {
   vertical: { width: 156, height: 236 },
@@ -23,7 +23,7 @@ type Props = {
 };
 
 /**
- * 가챠 카드 자리. #139 의 공용 GoodsCard 가 들어오면 이 컴포넌트를 GoodsCard 로 바꾼다.
+ * 가챠 카드 자리. #139 의 공용 GoodsCard(가로 · 세로)가 들어오면 이 컴포넌트를 GoodsCard 로 바꾼다.
  * 그 전까지는 바꿔야 할 자리라는 게 보이도록 점선 네모에 이름만 둔다. 누르면 상세로 간다.
  */
 export function GachaCardSlot({ gacha, layout }: Props) {

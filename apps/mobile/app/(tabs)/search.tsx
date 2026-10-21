@@ -10,7 +10,6 @@ import { Text } from "@deckodecko/ui/native";
 import { EmptyState } from "@/components/EmptyState";
 import { GachaCardSlot } from "@/components/GachaCardSlot";
 import { QueryState } from "@/components/QueryState";
-import { RankedGachaList } from "@/components/RankedGachaList";
 import { SearchBar } from "@/components/SearchBar";
 import { SectionHeader } from "@/components/SectionHeader";
 import { StateMessage } from "@/components/StateMessage";
@@ -62,7 +61,7 @@ function isEmpty(value: string) {
   return value === "";
 }
 
-/** 검색어가 없을 때: 인기 검색 굿즈 순위. */
+/** 검색어가 없을 때: 인기 검색 굿즈. */
 function PopularSearches() {
   const { t } = useTranslation();
   const popular = usePopularGacha();
@@ -87,7 +86,13 @@ function PopularSearches() {
         isEmpty={(list) => list.length === 0}
         empty={<StateMessage message={t("home.empty")} />}
       >
-        {(list) => <RankedGachaList gachas={list} />}
+        {(list) => (
+          <View style={{ gap: space[10] }}>
+            {list.map((gacha) => (
+              <GachaCardSlot key={gacha.id} gacha={gacha} layout="horizontal" />
+            ))}
+          </View>
+        )}
       </QueryState>
     </ScrollView>
   );
