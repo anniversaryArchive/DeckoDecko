@@ -21,7 +21,7 @@ pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 �
 2. 키는 `화면.요소` (`home.title`, `detail.notFound`). 여러 화면이 같이 쓰면 `common` 에 둔다.
 3. 화면에서는 `const { t } = useTranslation()` 후 `t("home.title")`. 값은 `{{id}}` 로 넣는다 (`t("detail.notFound", { id })`).
 4. 가격 · 날짜 · 개수는 문구에 단위를 직접 붙이지 않고 `formatPrice` · `formatMonth` · `formatDate` · `formatItemCount` (`@/lib/i18n`) 를 쓴다.
-5. 기기 언어가 지원 언어(ko · en)에 없으면 ko 로 보인다. 앱을 쓰는 중에 기기 언어를 바꾸면 바로 따라간다.
+5. 기기 언어가 지원 언어(ko · en)에 없으면 en 으로 보인다 (앱 이름과 같은 규칙: ko 만 한국어). 앱을 쓰는 중에 기기 언어를 바꾸면 바로 따라간다.
 
 ## TODO
 

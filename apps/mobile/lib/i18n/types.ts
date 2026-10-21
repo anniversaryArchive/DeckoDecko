@@ -5,6 +5,6 @@ type DeepStrings<T> = { [K in keyof T]: T[K] extends string ? string : DeepStrin
 
 export type Messages = DeepStrings<typeof ko>;
 
-/** 앱이 지원하는 언어. 기기 언어가 여기 없으면 ko 로 보인다. */
+/** 앱이 지원하는 언어. 기기 언어가 여기 없으면 en 으로 보인다. */
 export const languages = ["ko", "en"] as const;
 export type Language = (typeof languages)[number];
