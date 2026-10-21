@@ -46,6 +46,7 @@ pnpm --filter @deckodecko/mobile exec drizzle-kit generate --custom --name <이�
 - 외래 키 검사(`PRAGMA foreign_keys`)는 마이그레이션이 끝난 뒤 켠다. 마이그레이터가 트랜잭션 안에서 돌아 그 안의 `PRAGMA foreign_keys = OFF` 가 무시되므로, 켠 채로 돌리면 drizzle-kit 의 테이블 재생성(`DROP TABLE`)이 실패한다.
 - CHECK 같은 SQL 조각에는 `${t.col}` 대신 컬럼 이름만 쓴다. 테이블 이름이 붙으면 재생성할 때 `__new_*` 테이블에서 실패한다.
 - 트리거처럼 본문에 `;` 가 있는 문장은 `--> statement-breakpoint` 로 자르지 않는다. 마이그레이터는 조각마다 첫 문장만 실행한다.
+- `db:generate` 결과에 `DROP TABLE \`folders\`` 가 있으면, 같은 PR 에 트리거를 다시 만드는 커스텀 마이그레이션을 추가한다. SQLite 는 테이블을 지울 때 거기 걸린 트리거도 같이 지우므로, 그대로 두면 기본 폴더 보호와 기록 옮기기가 오류 없이 꺼진다.
 - `is_default` 는 넣은 뒤 바꿀 수 없다 (트리거). 플래그를 먼저 끄고 지우는 우회를 막는다.
 - 일반 폴더를 지우면 그 안의 기록(items)은 지워지지 않고 기본 폴더로 옮겨진다 (트리거, `updated_at` 도 갱신). `folder_id` 는 `ON DELETE RESTRICT` 라 옮기지 못하면 폴더 삭제가 실패한다.
 - 웹(`expo start --web`)에서는 로컬 DB 가 없다. 웹 expo-sqlite 는 COOP/COEP 헤더가 필요한데 dev 서버의 `/` 응답에 붙일 수 없어서다. 마이그레이션 훅은 실패를 돌려주고, `db` 에 접근하면 에러가 난다. 로컬 DB 를 쓰는 화면은 웹에서 이 경우를 처리한다.
