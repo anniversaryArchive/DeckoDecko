@@ -20,7 +20,7 @@ const list = await repositories.gacha.listGacha();
 
 | 경로                    | 내용                                                                                                                 | React |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------- | ----- |
-| `src/supabase.ts`       | `createSupabaseClient(url, anonKey)`. 환경변수는 호출하는 쪽이 넘김                                                  | 없음  |
+| `src/supabase.ts`       | `createSupabaseClient(url, publishableKey)`. 환경변수는 호출하는 쪽이 넘김                                           | 없음  |
 | `src/database.types.ts` | Supabase 생성 타입. `pnpm --filter @deckodecko/core gen:types` 로 갱신                                               | 없음  |
 | `src/types.ts`          | 도메인 타입 (`Gacha`, `GachaDetail`, `GachaItem`, `Media`)                                                           | 없음  |
 | `src/repositories/`     | `GachaRepository` 인터페이스와 구현 (`memory`, 2주차에 `supabase`)                                                   | 없음  |
@@ -32,7 +32,7 @@ const list = await repositories.gacha.listGacha();
 
 ## Supabase 연결 (2주차)
 
-스키마(#114)가 들어오면 `src/supabase.ts`(anon key 클라이언트 팩토리), `src/database.types.ts`(생성 타입, `supabase gen types typescript`), `src/repositories/gacha.supabase.ts` 를 같이 넣는다. 환경변수는 이 패키지가 읽지 않고 앱 · 백오피스가 넘긴다. service role 키는 어디서도 이 패키지에 넣지 않는다.
+스키마(#114)가 들어오면 `src/supabase.ts`(publishable key 클라이언트 팩토리), `src/database.types.ts`(생성 타입, `supabase gen types typescript`), `src/repositories/gacha.supabase.ts` 를 같이 넣는다. 환경변수는 이 패키지가 읽지 않고 앱 · 백오피스가 넘긴다. secret key(`sb_secret_...`)는 어디서도 이 패키지에 넣지 않는다.
 
 ## 새 도메인 추가
 

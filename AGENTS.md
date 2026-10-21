@@ -58,7 +58,7 @@ PR 전에 반드시: `pnpm install --frozen-lockfile && pnpm format:check && pnp
   - 앱의 글자는 `@deckodecko/ui/native` 의 `Text` 로 쓴다 (`<Text variant="titleLg">`). `fontFamily` 를 직접 적지 않는다. 한글 · 원문자는 Noto Sans KR, 일본어 · 한자는 Noto Sans JP, 영어 · 숫자 · 특수문자는 Inter 로 `Text` 가 글자를 보고 자동으로 나눈다.
   - 컴포넌트 높이(버튼 54 등)는 토큰이 아니라 그 컴포넌트 파일 안의 상수로 둔다.
   - 토큰을 추가할 때: 면 위 글자색은 `on` + 면 이름(`onPrimary`, `onWish`), 글자 토큰은 종류 + 크기(`headingLg`, `captionSm`). 새 색 역할은 `src/themes/` 의 모든 테마에 값을 채운다. 글자 토큰의 줄 높이는 글자 크기의 1.25배 이상으로 둔다 (작으면 RN 이 특수문자 위아래를 자른다).
-- **보안**: anon key 외의 키(service role 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만.
+- **보안**: Supabase publishable key(`sb_publishable_...`) 외의 키(secret key `sb_secret_...` 등)는 클라이언트 코드에 절대 넣지 않는다. 백오피스 쓰기는 Next 서버 쪽에서만. legacy anon · service_role 키는 쓰지 않는다.
 - **범위**: 기획서의 주차별 투두 밖의 기능을 임의로 추가하지 않는다. 필요하면 먼저 제안한다.
 - **웹**: 출시 대상이 아니다. `react-native-web` 은 CI 에서 Metro 번들을 검증하고(`expo export --platform web`) 로컬에서 빠르게 화면을 볼 때만 쓴다. 웹에서만 동작하는 코드를 넣지 않는다.
 - **legacy/**: 참고용. 코드를 복사해 오지 말고 새로 쓴다 (레거시의 문제점은 기획서의 재개발 체크리스트 참고).
