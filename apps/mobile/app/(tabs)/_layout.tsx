@@ -1,11 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 import { fonts, typography, useTheme } from "@deckodecko/ui";
 
 /** 하단 탭 3개: 홈 · 내 굿즈 · 검색. */
 export default function TabsLayout() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   return (
     <Tabs
       screenOptions={{
@@ -29,7 +31,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "홈",
+          title: t("home.title"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" color={color} size={size} />
           ),
@@ -38,7 +40,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="goods"
         options={{
-          title: "내 굿즈",
+          title: t("goods.title"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="albums-outline" color={color} size={size} />
           ),
@@ -47,7 +49,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "검색",
+          title: t("search.title"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search-outline" color={color} size={size} />
           ),
