@@ -43,6 +43,38 @@ export function CloseIcon({ size = 16, color = "textMuted" }: LineIconProps) {
   );
 }
 
+/** 느낌표 ! (토스트 · 경고). 세로 선과 점 */
+export function AlertIcon({ size = 16, color = "textMuted" }: LineIconProps) {
+  const { colors } = useTheme();
+  const t = thickness(size);
+  return (
+    <View
+      style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
+      {/* 시안의 24 칸 아이콘: 7 – 13 선, 17 점 */}
+      <View
+        style={{
+          width: t,
+          height: size * 0.25,
+          borderRadius: radius.full,
+          backgroundColor: colors[color],
+        }}
+      />
+      <View
+        style={{
+          width: t,
+          height: t,
+          marginTop: size * 0.15,
+          borderRadius: radius.full,
+          backgroundColor: colors[color],
+        }}
+      />
+    </View>
+  );
+}
+
 /** 아래 화살표 ⌄ (펼치기 · 고르기) */
 export function ChevronDownIcon({ size = 16, color = "textMuted" }: LineIconProps) {
   const { colors } = useTheme();
