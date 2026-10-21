@@ -58,7 +58,7 @@ export default function RootLayout() {
   }, [locales]);
 
   useEffect(() => {
-    if (error) console.warn("Failed to load fonts; falling back to system fonts.", error);
+    if (error) console.warn("글꼴을 불러오지 못해 시스템 글꼴로 표시합니다.", error);
     if (ready) void SplashScreen.hideAsync();
   }, [ready, error]);
 
