@@ -41,12 +41,17 @@ insert into "public"."gacha" (id, anime_id, name, name_kr, price, image_link) va
   (19, 4, 'ピクセルダンジョン アクリルブロック', '픽셀 던전 아크릴 블록',        500, 'https://placehold.co/400x400?text=G19'),
   (20, 4, 'ピクセルダンジョン ラバーコースター', '픽셀 던전 러버 코스터',        400, 'https://placehold.co/400x400?text=G20');
 
+-- id 를 직접 넣었으니 백오피스 · 로컬에서 새로 추가할 때 21번부터 나오게 맞춘다
+select setval(pg_get_serial_sequence('public.gacha', 'id'), (select max(id) from "public"."gacha"));
+
 -- 등록일을 하루씩 벌려서 최신순 정렬 · NEW 표시를 확인할 수 있게 한다 (20번이 제일 최신)
+-- 발매 월은 등록일이 속한 달의 1일로 채운다 (상세 화면 발매 월 확인용)
 -- set_updated_at 트리거가 updated_at 을 now() 로 덮지 않게 잠깐 끈다
 alter table "public"."gacha" disable trigger "gacha_set_updated_at";
 update "public"."gacha"
-  set created_at = now() - make_interval(days => 21 - id::int),
-      updated_at = now() - make_interval(days => 21 - id::int);
+  set created_at    = now() - make_interval(days => 21 - id::int),
+      updated_at    = now() - make_interval(days => 21 - id::int),
+      release_month = date_trunc('month', now() - make_interval(days => 21 - id::int))::date;
 alter table "public"."gacha" enable trigger "gacha_set_updated_at";
 
 -- ─────────────────────────────────────────────
@@ -66,10 +71,10 @@ cross join lateral generate_series(1, 4 + (g.id % 3)::int) as n;
 -- ─────────────────────────────────────────────
 -- 4. notice (공지)
 -- ─────────────────────────────────────────────
-insert into "public"."notice" (title, body, is_published, created_at) values
+insert into "public"."notice" (title, body, is_published, created_at, updated_at) values
   ('가챠 탐색대 1.0 오픈 안내',
    '가챠 탐색대가 새로워졌어요! 갖고 싶은 가챠는 WISH, 뽑은 가챠는 GET으로 기록해 보세요.',
-   true, now() - interval '2 days'),
+   true, now() - interval '2 days', now() - interval '2 days'),
   ('11월 신규 가챠 업데이트',
    '11월 신규 가챠 20종을 추가했어요. 홈 화면 NEW 표시를 확인해 주세요.',
-   true, now() - interval '1 day');
+   true, now() - interval '1 day', now() - interval '1 day');

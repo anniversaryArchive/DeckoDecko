@@ -26,7 +26,7 @@ CLI 는 루트 devDependency(`supabase`)로 들어 있어 따로 설치하지 �
 
 ```bash
 pnpm install
-pnpm exec supabase login                                    # 팀 공용 Supabase 계정으로 브라우저 로그인
+pnpm exec supabase login                                    # 브라우저로 액세스 토큰 발급
 pnpm exec supabase link --project-ref mdlgzwgxvvncejtpdfmq  # dev 에 연결
 ```
 
@@ -35,7 +35,7 @@ pnpm exec supabase link --project-ref mdlgzwgxvvncejtpdfmq  # dev 에 연결
 
 ### 환경변수
 
-Supabase 는 팀 공용 계정으로 로그인하고, Expo `deckodecko` org 에 초대받았다면 값을 따로 전달받을 필요가 없다.
+Supabase org 와 Expo `deckodecko` org 에 초대받았다면 값을 따로 전달받을 필요가 없다.
 
 - 앱: EAS 환경변수에서 받아 온다.
 
@@ -56,9 +56,12 @@ pnpm exec supabase migration new <설명>      # supabase/migrations/<시각>_<�
 # SQL 작성
 pnpm exec supabase db push --dry-run         # dev 에 적용될 파일 확인
 pnpm exec supabase db push                   # dev 에 적용
-pnpm exec supabase gen types typescript --linked > <packages/core 의 생성 타입 경로>
+pnpm exec supabase gen types typescript --linked > packages/core/src/database.types.ts
 ```
 
+- 생성 타입은 `packages/core/src/database.types.ts` 에 둔다. 손으로 고치지 않고 마이그레이션을 바꿀 때마다 다시 만든다.
+- 아직 dev 에 push 하지 않은 마이그레이션의 타입은 로컬 DB(`supabase start` 후)에서 만든다: `--linked` 대신 `--local`.
+- Windows PowerShell 에서는 `>` 대신 `| Out-File -Encoding utf8 packages/core/src/database.types.ts` 를 쓴다 (`>` 는 UTF-16 으로 저장된다).
 - 이미 push 된 마이그레이션 파일은 고치지 않는다. 바꿀 게 있으면 새 마이그레이션을 추가한다.
 - prod 적용은 출시 준비 때 따로 정한다 (dev 에서 검증된 마이그레이션만).
 
