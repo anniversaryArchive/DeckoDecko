@@ -4,13 +4,14 @@ import { useTranslation } from "react-i18next";
 
 import { fonts, typography, useTheme } from "@deckodecko/ui";
 
-/** 하단 탭 3개: 홈 · 내 굿즈 · 검색. */
+/** 하단 탭 3개: 홈 · 내 굿즈 · 검색. 헤더는 숨기고 각 화면이 상단 영역과 safe area 를 직접 그린다. */
 export default function TabsLayout() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.textMuted,
         headerStyle: { backgroundColor: colors.bg },

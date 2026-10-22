@@ -8,5 +8,6 @@ export { Card, type CardProps } from "./Card";
 export { Chip, type ChipProps } from "./Chip";
 export { ChevronDownIcon, CloseIcon, type LineIconProps } from "./icons";
 export { Input, type InputProps } from "./Input";
+export { DISABLED_OPACITY, PRESSED_OPACITY } from "./pressable";
 export { Segment, type SegmentOption, type SegmentProps, type SegmentTone } from "./Segment";
 export { Text, type TextProps } from "./Text";
