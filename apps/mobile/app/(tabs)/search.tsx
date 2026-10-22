@@ -9,6 +9,7 @@ import { Text } from "@deckodecko/ui/native";
 
 import { EmptyState } from "@/components/EmptyState";
 import { GachaCardSlot } from "@/components/GachaCardSlot";
+import { PopularGachaList } from "@/components/PopularGachaList";
 import { QueryState } from "@/components/QueryState";
 import { SearchBar } from "@/components/SearchBar";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -86,13 +87,7 @@ function PopularSearches() {
         isEmpty={(list) => list.length === 0}
         empty={<StateMessage message={t("home.empty")} />}
       >
-        {(list) => (
-          <View style={{ gap: space[10] }}>
-            {list.map((gacha) => (
-              <GachaCardSlot key={gacha.id} gacha={gacha} layout="horizontal" />
-            ))}
-          </View>
-        )}
+        {(list) => <PopularGachaList gachas={list} />}
       </QueryState>
     </ScrollView>
   );

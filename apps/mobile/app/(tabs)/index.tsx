@@ -10,6 +10,7 @@ import { Text } from "@deckodecko/ui/native";
 
 import { GachaCardSlot } from "@/components/GachaCardSlot";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { PopularGachaList } from "@/components/PopularGachaList";
 import { QueryState } from "@/components/QueryState";
 import { SectionHeader } from "@/components/SectionHeader";
 import { StateMessage } from "@/components/StateMessage";
@@ -102,13 +103,7 @@ function PopularSection() {
           isEmpty={(list) => list.length === 0}
           empty={<StateMessage message={t("home.empty")} />}
         >
-          {(list) => (
-            <View style={{ gap: space[10] }}>
-              {list.map((gacha) => (
-                <GachaCardSlot key={gacha.id} gacha={gacha} layout="horizontal" />
-              ))}
-            </View>
-          )}
+          {(list) => <PopularGachaList gachas={list} />}
         </QueryState>
       </View>
     </Section>
