@@ -46,3 +46,33 @@ export type Page<T> = {
   items: T[];
   total: number;
 };
+
+export type ItemType = "WISH" | "GET";
+
+/** 사용자가 기기에 남긴 WISH / GET 기록 한 건 (로컬 DB items). 가챠 라인업(GachaItem)과는 별개다. */
+export type Item = {
+  id: string;
+  gachaId: string;
+  folderId: string;
+  type: ItemType;
+  name: string;
+  thumbnail: string | null;
+  memo: string | null;
+  createdAt: string; // ISO 8601 UTC
+  updatedAt: string;
+};
+
+/** 내 굿즈 폴더. 기본 폴더는 하나뿐이고 name 이 비어 있다 (표시 이름은 화면에서 i18n 키로). */
+export type Folder = {
+  id: string;
+  name: string;
+  sequence: number;
+  isDefault: boolean;
+  createdAt: string;
+};
+
+/** 종류별 기록 개수. 소장률(collectionRate)의 입력 */
+export type ItemCounts = {
+  wish: number;
+  get: number;
+};

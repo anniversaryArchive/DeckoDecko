@@ -24,7 +24,7 @@ import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
 import { i18n, pickLanguage } from "@/lib/i18n";
 import { repositories } from "@/lib/repositories";
 
-// 글꼴을 다 불러올 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
+// 글꼴과 로컬 DB 마이그레이션이 끝날 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
 void SplashScreen.preventAutoHideAsync();
 
 /**
@@ -33,7 +33,9 @@ void SplashScreen.preventAutoHideAsync();
  * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
  */
 export default function RootLayout() {
-  useLocalDbMigrations();
+  const localDb = useLocalDbMigrations();
+  // 실패해도 앱은 띄운다 (로컬 기록 훅만 에러 상태가 된다). 웹은 바로 실패로 끝난다.
+  const localDbDone = localDb.success || localDb.error !== undefined;
 
   // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.ja · fonts.latin 과 같아야 한다.
   const [loaded, error] = useFonts({
@@ -48,7 +50,7 @@ export default function RootLayout() {
     Inter_700Bold,
   });
   // 실패해도 앱은 띄운다. 등록되지 않은 글꼴은 시스템 글꼴로 보인다.
-  const ready = loaded || error !== null;
+  const ready = (loaded || error !== null) && localDbDone;
 
   // 앱을 쓰는 중에 기기 언어를 바꾸면 따라간다 (Android 는 앱을 다시 띄우지 않고 바뀔 수 있다)
   const locales = useLocales();
