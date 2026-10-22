@@ -23,15 +23,24 @@ revoke all on sequence "public"."anime_id_seq" from "anon", "authenticated";
 -- ─────────────────────────────────────────────
 -- 2. gacha
 --    - 레거시의 updated_at 이 text 라 timestamptz 로 바로잡는다.
---      빈 문자열 · 공백만 있는 값은 null 로 둔다.
---      dev 값의 형식 · 시간대는 push 전에 확인한다 (#135 리뷰).
+--      dev 값은 날짜 없이 시각만 있다('7:17:30', '1:57:31'). 날짜를 알 수 없어 버리고,
+--      날짜로 시작하는 값만 변환한다. 비게 된 값은 등록 시각(created_at)으로 채운다.
+--      (아래 UPDATE 는 set_updated_at 트리거를 만들기 전이라 트리거가 덮지 않는다.)
 --    - id 에 자동 번호(identity)를 켜고, 지금 있는 값 다음부터 나오게 맞춘다.
 --    - anime_id FK 에 인덱스를 단다 (작품별 가챠 목록).
 --    - 발매 월(release_month): 그 달 1일로 저장한다. 앱은 "YYYY-MM" 으로 바꿔 쓴다.
 --    - 수정 시 updated_at 갱신은 파일 끝의 set_updated_at 트리거가 한다.
 -- ─────────────────────────────────────────────
 alter table "public"."gacha"
-  alter column "updated_at" type timestamptz using nullif(btrim("updated_at"), '')::timestamptz;
+  alter column "updated_at" type timestamptz using (
+    case when btrim("updated_at") ~ '^\d{4}-\d{2}-\d{2}'
+         then btrim("updated_at")::timestamptz
+    end
+  );
+
+update "public"."gacha"
+  set "updated_at" = "created_at"
+  where "updated_at" is null;
 
 alter table "public"."gacha"
   alter column "created_at" set default now(),
