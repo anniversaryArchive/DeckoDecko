@@ -133,15 +133,20 @@ function VerticalCard({
             : { paddingTop: space[12], paddingHorizontal: space[14], paddingBottom: space[14] }
         }
       >
-        <Text
-          variant={captionVariant}
-          weight="regular"
-          color="textMuted"
-          numberOfLines={1}
-          style={{ minHeight: linesHeight(captionVariant) }}
-        >
-          {caption ?? ""}
-        </Text>
+        {caption ? (
+          <Text
+            variant={captionVariant}
+            weight="regular"
+            color="textMuted"
+            numberOfLines={1}
+            style={{ minHeight: linesHeight(captionVariant) }}
+          >
+            {caption}
+          </Text>
+        ) : (
+          // 빈 Text 는 Android 가 minHeight 보다 높게 잡아 제목이 내려가서, 같은 높이의 빈 칸으로 자리를 잡는다
+          <View style={{ height: linesHeight(captionVariant) }} />
+        )}
         <Text
           variant={titleVariant}
           weight="bold"
