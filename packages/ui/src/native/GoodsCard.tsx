@@ -298,7 +298,7 @@ function Badge({ label, tone }: GoodsCardBadge) {
         backgroundColor: tone === "accent" ? colors.accent : colors.getSurface,
       }}
     >
-      <Text variant="captionXs" color={tone === "accent" ? "onAccent" : "onGet"}>
+      <Text variant="captionXs" color={tone === "accent" ? "onAccent" : "onGet"} numberOfLines={1}>
         {label}
       </Text>
     </View>
