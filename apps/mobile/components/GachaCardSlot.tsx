@@ -32,7 +32,7 @@ export function GachaCardSlot({ gacha, layout }: Props) {
   return (
     <Pressable
       onPress={() => openGacha(gacha.id)}
-      accessibilityRole="button"
+      accessibilityRole="link"
       accessibilityLabel={joinLabel([media, name])}
       style={({ pressed }) => [
         SIZE[layout],
