@@ -156,8 +156,9 @@ function ToastView({
         <Pressable
           accessibilityRole="button"
           onPress={() => {
-            onAction();
+            // 먼저 닫는다. onAction 안에서 show() 로 띄운 새 토스트를 이어지는 닫기가 지우지 않게
             onDismiss();
+            onAction();
           }}
           hitSlop={space[6]}
           style={({ pressed }) => ({
