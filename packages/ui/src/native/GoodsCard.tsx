@@ -114,12 +114,8 @@ function VerticalCard({
   const small = size === "sm";
   const captionVariant = small ? "captionXs" : "captionSm";
   const titleVariant = small ? "caption" : "bodyStrong";
-  return (
-    <Card
-      onPress={onPress}
-      accessibilityLabel={accessibilityLabel}
-      style={[{ width }, small && { borderRadius: radius.row }, style]}
-    >
+  const body = (
+    <>
       <View
         style={[
           { height: imageHeight, backgroundColor: colors.accentSoft },
@@ -166,6 +162,22 @@ function VerticalCard({
           </Text>
         )}
       </View>
+    </>
+  );
+  return (
+    <Card
+      onPress={onPress}
+      accessibilityLabel={accessibilityLabel}
+      style={[{ width }, small && { borderRadius: radius.row }, style]}
+    >
+      {/* Card 는 onPress 가 없으면 읽기 이름을 붙이지 않으므로, 가로 카드처럼 한 덩어리로 묶어 읽게 한다 */}
+      {onPress ? (
+        body
+      ) : (
+        <View accessible accessibilityLabel={accessibilityLabel}>
+          {body}
+        </View>
+      )}
     </Card>
   );
 }
