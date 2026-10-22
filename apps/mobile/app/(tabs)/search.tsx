@@ -97,19 +97,21 @@ function PopularSearches() {
 function SearchResults({ keyword }: { keyword: string }) {
   const { t } = useTranslation();
   const search = useGachaSearch(keyword);
+  // 새 검색어를 불러오는 동안에는 이전 검색어의 결과 · 개수를 보이지 않는다 (목록이 비면 QueryState 가 로딩을 그린다)
+  const result = search.isPlaceholderData ? undefined : search.data;
 
   return (
     <FlatList
-      data={search.data?.items ?? []}
+      data={result?.items ?? []}
       keyExtractor={(gacha) => gacha.id}
       renderItem={({ item }) => <GachaCardSlot gacha={item} layout="horizontal" />}
       ListHeaderComponent={
-        search.data ? (
+        result ? (
           // parent 로 넘기면 Trans 가 번역 조각을 ResultCountText 의 직접 자식으로 주므로 Text 가 글자별 글꼴을 나눌 수 있다.
           <Trans
             parent={ResultCountText}
             i18nKey="search.resultCount"
-            count={search.data.total}
+            count={result.total}
             components={{ bold: <Text variant="label" weight="bold" /> }}
           />
         ) : null
