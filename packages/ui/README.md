@@ -109,7 +109,7 @@ toast.show({ title: t("item.saveFailed"), message: t("item.duplicateName"), acti
 - `BottomSheet` 는 `@gorhom/bottom-sheet` 를 감싼 것이다. 앱 루트에 `GestureHandlerRootView` 와 `BottomSheetModalProvider` 가 있어야 한다 (`apps/mobile/app/_layout.tsx`). 시트 안의 `Input` 은 키보드가 올라오면 시트도 같이 올라간다.
 - `onClose` 는 사용자가 닫았을 때(끌기 · 뒤 배경 · 닫기 버튼 · Android 뒤로가기)만 불린다. 화면이 `open={false}` 로 닫거나 화면이 사라질 때는 불리지 않는다.
 - 시트에서 다른 화면으로 이동할 때는 **먼저 `open` 을 `false` 로 바꾼다.** 시트 Provider 가 앱 루트에 있어서, 열린 채로 이동하면 시트가 새 화면 위에 남는다.
-- `GoodsCard` 는 가챠 카드다. 세로는 홈 "새로 나왔어요"(`size="md"`) · 검색 "최근 본 굿즈"(`size="sm"`, 가격 없음), 가로(`layout="horizontal"`)는 "지금 인기" · "인기 검색 굿즈" · 검색 결과에 쓴다. 사진은 `image` 로 넘기고 카드가 정한 자리를 채운다 (자리 표시 포함, 앱의 썸네일 컴포넌트). `accessibilityLabel` 을 생략하면 작품명 · 이름 · 가격 · 보조 정보를 이어서 읽는다.
+- `GoodsCard` 는 가챠 카드다. 세로는 홈 "새로 나왔어요"(`size="md"`) · 검색 "최근 본 굿즈"(`size="sm"`, 가격 없음), 가로(`layout="horizontal"`)는 "지금 인기" · "인기 검색 굿즈" · 검색 결과에 쓴다. 사진은 `image` 로 넘기고 카드가 정한 자리를 채운다 (자리 표시 포함, 앱의 썸네일 컴포넌트). `accessibilityLabel` 을 생략하면 배지 · 작품명 · 이름 · 가격 · 보조 정보를 이어서 읽는다.
 - 세로 카드는 작품명 · 가격이 없거나 이름이 한 줄이어도 높이가 같다 (가로 스크롤에서 나란히 놓여서). 가로 카드의 `accessory` 는 카드를 누르는 영역 밖에 있어서, 안의 버튼을 화면 읽기 프로그램이 따로 고를 수 있다.
 - `ProgressBar` 는 진행 막대다. 지금은 소장률에 쓴다. `summary` 는 강조 면(`Card variant="highlight"`) 위에 둔다 (막대 바탕이 흰 면). `segments` 는 아이템 하나가 한 칸이고 GET → WISH → 미등록 순으로 칠한다. 20칸이 넘으면 칸 사이가 좁아진다.
 - `TabBar` 는 탭마다 같은 폭의 칸에 놓여서, 선택이 바뀌어도 다른 탭의 아이콘은 움직이지 않는다. 그리기만 한다: 내비게이션 연결 · safe area · 키보드가 뜰 때 숨기기는 앱의 탭 레이아웃(`Tabs` 의 `tabBar`)이 맡는다. 아이콘도 앱이 `renderIcon` 으로 그린다 (탭 바가 색 · 크기를 넘긴다).

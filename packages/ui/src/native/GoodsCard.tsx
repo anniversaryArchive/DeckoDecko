@@ -35,7 +35,7 @@ type CommonProps = {
   /** 사진 왼쪽 위 배지 */
   badge?: GoodsCardBadge | null;
   onPress?: () => void;
-  /** 생략하면 작품명 · 이름 · 가격 · 보조 정보를 이어서 읽는다 */
+  /** 생략하면 배지 · 작품명 · 이름 · 가격 · 보조 정보를 이어서 읽는다 */
   accessibilityLabel?: string;
   /** 배치용 (가로 스크롤의 간격 등) */
   style?: StyleProp<ViewStyle>;
@@ -70,6 +70,7 @@ export function GoodsCard(props: GoodsCardProps) {
   const label =
     props.accessibilityLabel ??
     [
+      props.badge?.label,
       props.caption,
       props.title,
       props.price,
