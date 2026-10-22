@@ -8,7 +8,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./react": "./src/react/index.ts",
-    "./mocks": "./src/mocks/index.ts"
+    "./mocks": "./src/mocks/index.ts",
+    "./testing": "./src/testing/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
