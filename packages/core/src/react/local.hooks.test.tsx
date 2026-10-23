@@ -19,6 +19,7 @@ import {
   useIsItemNameTaken,
   useItem,
   useItemCounts,
+  useItemCountsByFolder,
   useItems,
   useSetItemType,
   useUpdateItem,
@@ -86,11 +87,12 @@ describe("로컬 기록 훅", () => {
     await waitFor(() => expect(result.current.error).toBeInstanceOf(Error));
   });
 
-  it("폴더를 지우면 폴더 목록과, 기본 폴더로 옮겨진 기록 목록이 같이 바뀐다", async () => {
+  it("폴더를 지우면 폴더 목록 · 폴더별 개수와, 기본 폴더로 옮겨진 기록 목록이 같이 바뀐다", async () => {
     const { wrapper } = setup();
     const { result } = renderHook(
       () => ({
         folders: useFolders(),
+        countsByFolder: useItemCountsByFolder(),
         createFolder: useCreateFolder(),
         deleteFolder: useDeleteFolder(),
         createItem: useCreateItem(),
@@ -111,6 +113,7 @@ describe("로컬 기록 훅", () => {
       });
     });
     await waitFor(() => expect(result.current.folders.data).toHaveLength(2));
+    await waitFor(() => expect(result.current.countsByFolder.data).toEqual({ [folderId]: 1 }));
 
     const inDefault = renderHook(() => useItems({ folderId: defaultId }), { wrapper });
     await waitFor(() => expect(inDefault.result.current.data).toEqual([]));
@@ -118,6 +121,7 @@ describe("로컬 기록 훅", () => {
     await act(() => result.current.deleteFolder.mutateAsync(folderId));
     await waitFor(() => expect(result.current.folders.data).toHaveLength(1));
     await waitFor(() => expect(inDefault.result.current.data).toHaveLength(1));
+    expect(result.current.countsByFolder.data).toEqual({ [defaultId]: 1 });
   });
 
   it("items · folders 저장소를 넘기지 않은 Provider 에서는 던진다", () => {
