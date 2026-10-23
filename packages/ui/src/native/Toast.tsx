@@ -9,8 +9,17 @@ import {
   type ReactNode,
 } from "react";
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, View } from "react-native";
-import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  type ExitAnimationsValues,
+  type LayoutAnimation,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { scheduleOnRN } from "react-native-worklets";
 
 import { useTheme } from "../theme";
 import { radius, space } from "../tokens";
@@ -28,16 +37,28 @@ const ACTION_HEIGHT = 32;
 const DEFAULT_DURATION = 4000;
 /** 나타나고 사라지는 시간(ms) */
 const ANIMATION_DURATION = 200;
+/** 사라질 때 위로 올라가는 거리 */
+const EXIT_DISTANCE = 24;
+/** 위로 이만큼 밀고 놓으면 닫힌다 */
+const SWIPE_DISMISS_DISTANCE = 24;
+/** 이 속도(px/s)보다 빠르게 위로 튕기면 거리가 짧아도 닫힌다 */
+const SWIPE_DISMISS_VELOCITY = 500;
+/** 세로로 이만큼 움직여야 밀기로 본다 (그 전에 손을 떼면 탭) */
+const SWIPE_ACTIVE_OFFSET = 8;
 
 export type ToastOptions = {
   /** 굵은 첫 줄 ("저장하지 못했어요") */
   title: string;
   /** 둘째 줄 설명 */
   message?: string;
-  /** 넘기면 오른쪽에 동작 버튼을 그린다 ("다시 열기"). 누르면 onAction 뒤에 토스트가 닫힌다 */
+  /** 넘기면 오른쪽에 동작 버튼을 그린다 ("다시 열기"). 누르면 토스트를 닫고 onAction 을 부른다 */
   actionLabel?: string;
   onAction?: () => void;
-  /** 저절로 사라지기까지(ms). null 이면 저절로 사라지지 않는다. 생략하면 4초 */
+  /**
+   * 저절로 사라지기까지(ms). null 이면 저절로 사라지지 않는다. 생략하면 4초.
+   * 어느 쪽이든 사용자는 토스트를 탭하거나 위로 밀어서 닫을 수 있다.
+   * 화면 읽기 프로그램이 켜져 있고 동작 버튼이 있으면 저절로 사라지지 않는다 (버튼까지 가기 전에 사라지지 않게).
+   */
   duration?: number | null;
 };
 
@@ -96,12 +117,49 @@ function ToastView({
 }: ToastOptions & { onDismiss: () => void }) {
   const { colors, shadows } = useTheme();
   const insets = useSafeAreaInsets();
+  const hasAction = Boolean(actionLabel && onAction);
+  const screenReaderEnabled = useScreenReaderEnabled();
+  // 저절로 닫히기까지 시간. null 이면 사용자가 닫을 때까지 남는다
+  const dismissAfter = hasAction && screenReaderEnabled ? null : duration;
 
   useEffect(() => {
-    if (duration === null) return;
-    const timer = setTimeout(onDismiss, duration);
+    if (dismissAfter === null) return;
+    const timer = setTimeout(onDismiss, dismissAfter);
     return () => clearTimeout(timer);
-  }, [duration, onDismiss]);
+  }, [dismissAfter, onDismiss]);
+
+  // 위로 밀어서 닫기. 아래로는 움직이지 않는다
+  const offsetY = useSharedValue(0);
+  const swipe = Gesture.Pan()
+    .activeOffsetY([-SWIPE_ACTIVE_OFFSET, SWIPE_ACTIVE_OFFSET])
+    .onUpdate((event) => {
+      offsetY.value = Math.min(0, event.translationY);
+    })
+    .onEnd((event) => {
+      if (
+        event.translationY < -SWIPE_DISMISS_DISTANCE ||
+        event.velocityY < -SWIPE_DISMISS_VELOCITY
+      ) {
+        scheduleOnRN(onDismiss);
+      } else {
+        offsetY.value = withTiming(0, { duration: ANIMATION_DURATION });
+      }
+    });
+  const swipeStyle = useAnimatedStyle(() => ({ transform: [{ translateY: offsetY.value }] }));
+  // 사라질 때는 지금 밀려 있는 자리에서 이어서 올라간다 (FadeOutUp 은 제자리로 돌아갔다가 올라가서 튄다)
+  const exiting = (_values: ExitAnimationsValues): LayoutAnimation => {
+    "worklet";
+    const from = offsetY.value;
+    return {
+      initialValues: { opacity: 1, transform: [{ translateY: from }] },
+      animations: {
+        opacity: withTiming(0, { duration: ANIMATION_DURATION }),
+        transform: [
+          { translateY: withTiming(from - EXIT_DISTANCE, { duration: ANIMATION_DURATION }) },
+        ],
+      },
+    };
+  };
 
   // iOS 의 화면 읽기 프로그램은 새로 그려진 alert 를 저절로 읽지 않아서 직접 알린다 (Android 는 accessibilityLiveRegion)
   useEffect(() => {
@@ -110,72 +168,110 @@ function ToastView({
   }, [title, message]);
 
   return (
-    <Animated.View
-      entering={FadeInUp.duration(ANIMATION_DURATION)}
-      exiting={FadeOutUp.duration(ANIMATION_DURATION)}
-      accessibilityRole="alert"
-      accessibilityLiveRegion="assertive"
-      style={{
-        position: "absolute",
-        top: insets.top + space[8],
-        left: space[20],
-        right: space[20],
-        flexDirection: "row",
-        alignItems: "center",
-        gap: space[12],
-        paddingVertical: space[12],
-        paddingHorizontal: space[14],
-        borderRadius: radius.row,
-        backgroundColor: colors.inverse,
-        boxShadow: shadows.toast,
-      }}
-    >
-      <View
-        style={{
-          width: ICON_CIRCLE,
-          height: ICON_CIRCLE,
-          borderRadius: radius.full,
-          backgroundColor: colors.accent,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+    <GestureDetector gesture={swipe}>
+      <Animated.View
+        entering={FadeInUp.duration(ANIMATION_DURATION)}
+        exiting={exiting}
+        accessibilityRole="alert"
+        accessibilityLiveRegion="assertive"
+        style={[
+          swipeStyle,
+          {
+            position: "absolute",
+            top: insets.top + space[8],
+            left: space[20],
+            right: space[20],
+            flexDirection: "row",
+            alignItems: "center",
+            gap: space[12],
+            paddingVertical: space[12],
+            paddingHorizontal: space[14],
+            borderRadius: radius.row,
+            backgroundColor: colors.inverse,
+            boxShadow: shadows.toast,
+          },
+        ]}
       >
-        <AlertIcon size={ICON_SIZE} color="onAccent" />
-      </View>
-      <View style={{ flex: 1, minWidth: 0 }}>
-        <Text variant="label" weight="bold" color="onInverse">
-          {title}
-        </Text>
-        {message ? (
-          <Text variant="caption" color="onInverseMuted">
-            {message}
-          </Text>
-        ) : null}
-      </View>
-      {actionLabel && onAction ? (
+        {/* 아이콘 · 글자를 탭하면 닫힌다. 화면 읽기 프로그램은 두 번 탭(Android) · 문지르기(iOS escape)로 닫는다 */}
         <Pressable
-          accessibilityRole="button"
-          onPress={() => {
-            // 먼저 닫는다. onAction 안에서 show() 로 띄운 새 토스트를 이어지는 닫기가 지우지 않게
-            onDismiss();
-            onAction();
+          onPress={onDismiss}
+          accessibilityActions={[{ name: "escape" }]}
+          onAccessibilityAction={(event) => {
+            if (event.nativeEvent.actionName === "escape") onDismiss();
           }}
-          hitSlop={space[6]}
-          style={({ pressed }) => ({
-            height: ACTION_HEIGHT,
-            paddingHorizontal: space[12],
-            borderRadius: radius.full,
-            // 어두운 면 위의 밝은 버튼: 반전 면의 글자색을 면으로 쓴다
-            backgroundColor: colors.onInverse,
-            justifyContent: "center",
-            opacity: pressed ? PRESSED_OPACITY : 1,
-          })}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: space[12],
+          }}
         >
-          <Text variant="caption" weight="bold" color="inverse" numberOfLines={1}>
-            {actionLabel}
-          </Text>
+          <View
+            style={{
+              width: ICON_CIRCLE,
+              height: ICON_CIRCLE,
+              borderRadius: radius.full,
+              backgroundColor: colors.accent,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <AlertIcon size={ICON_SIZE} color="onAccent" />
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text variant="label" weight="bold" color="onInverse">
+              {title}
+            </Text>
+            {message ? (
+              <Text variant="caption" color="onInverseMuted">
+                {message}
+              </Text>
+            ) : null}
+          </View>
         </Pressable>
-      ) : null}
-    </Animated.View>
+        {hasAction && onAction ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              // 먼저 닫는다. onAction 안에서 show() 로 띄운 새 토스트를 이어지는 닫기가 지우지 않게
+              onDismiss();
+              onAction();
+            }}
+            hitSlop={space[6]}
+            style={({ pressed }) => ({
+              height: ACTION_HEIGHT,
+              paddingHorizontal: space[12],
+              borderRadius: radius.full,
+              // 어두운 면 위의 밝은 버튼: 반전 면의 글자색을 면으로 쓴다
+              backgroundColor: colors.onInverse,
+              justifyContent: "center",
+              opacity: pressed ? PRESSED_OPACITY : 1,
+            })}
+          >
+            <Text variant="caption" weight="bold" color="inverse" numberOfLines={1}>
+              {actionLabel}
+            </Text>
+          </Pressable>
+        ) : null}
+      </Animated.View>
+    </GestureDetector>
   );
+}
+
+/** 화면 읽기 프로그램(VoiceOver · TalkBack)이 켜져 있는지. 켜고 끄면 바로 바뀐다 */
+function useScreenReaderEnabled(): boolean {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    AccessibilityInfo.isScreenReaderEnabled().then((value) => {
+      if (mounted) setEnabled(value);
+    });
+    const subscription = AccessibilityInfo.addEventListener("screenReaderChanged", setEnabled);
+    return () => {
+      mounted = false;
+      subscription.remove();
+    };
+  }, []);
+  return enabled;
 }
