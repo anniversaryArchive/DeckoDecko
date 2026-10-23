@@ -1,62 +1,121 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { FlatList, ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useGachaList } from "@deckodecko/core/react";
-import { space } from "@deckodecko/ui";
+import { useGachaList, usePopularGacha } from "@deckodecko/core/react";
+import { gutter, space } from "@deckodecko/ui";
 import { Text } from "@deckodecko/ui/native";
 
-import { PlaceholderScreen } from "@/components/PlaceholderScreen";
-import { formatItemCount } from "@/lib/i18n";
+import { GachaCardSlot } from "@/components/GachaCardSlot";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { PopularGachaList } from "@/components/PopularGachaList";
+import { QueryState } from "@/components/QueryState";
+import { SectionHeader } from "@/components/SectionHeader";
+import { StateMessage } from "@/components/StateMessage";
 
-/** 홈. 소장률 카드 · 신상 · 인기 · 공지 띠는 목 데이터로 채운다. 지금은 저장소 훅이 도는지 보여 주는 목록만 있다. */
+/** 홈. 상단 바 · 새로 나왔어요(세로 카드 가로 스크롤) · 지금 인기(가로 카드 목록). 공지 띠 · 소장률 카드는 2주차 이후. */
 export default function HomeScreen() {
-  const { t } = useTranslation();
-  const { data: gachaList, isPending, isError } = useGachaList();
-  const sample = gachaList?.[0];
   return (
-    <PlaceholderScreen title={t("home.title")} description={t("home.description")}>
-      {/* 글꼴 확인용: 한글은 Noto Sans KR, 숫자 · 영어 · 특수문자는 Inter. 실제 소장률 카드가 생기면 지운다. */}
-      <View style={{ marginTop: space[16], gap: space[4] }}>
-        <Text variant="label" color="textMuted">
-          {t("home.collectionRate")}
-        </Text>
-        <Text variant="displayLg" color="accent">
-          64%
-        </Text>
-        {/* 한글과 영어 · 숫자가 섞인 가챠 이름 (목 데이터 첫 번째) */}
-        {sample ? (
-          <Text variant="headingLg" color="textMuted">
-            {sample.nameKo ?? sample.name}
-          </Text>
-        ) : null}
-      </View>
-      {isPending && <Text color="textMuted">{t("common.loading")}</Text>}
-      {isError && <Text color="accent">{t("home.listFailed")}</Text>}
-      {gachaList?.map((gacha) => (
-        <Link key={gacha.id} href={{ pathname: "/gacha/[id]", params: { id: gacha.id } }} asChild>
-          <Text>
-            {gacha.nameKo ?? gacha.name}
-            <Text color="textMuted">
-              {"  "}
-              {gacha.media?.title ?? ""} · {formatItemCount(gacha.itemCount ?? 0)}
+    <View style={{ flex: 1 }}>
+      <HomeHeader />
+      <ScrollView
+        contentContainerStyle={{ paddingTop: space[6], paddingBottom: space[24], gap: space[24] }}
+      >
+        <NewArrivalsSection />
+        <PopularSection />
+        {/* 개발 빌드에서만 보인다. 출시 빌드에서는 카탈로그 화면도 홈으로 돌려보낸다. 개발자만 보는 문구라 i18n 을 거치지 않는다. */}
+        {__DEV__ ? (
+          <Link href="/dev/components" asChild>
+            <Text variant="bodyStrong" color="accent" style={{ paddingHorizontal: gutter }}>
+              컴포넌트 카탈로그 (개발용)
             </Text>
-          </Text>
-        </Link>
-      ))}
-      <Link href="/gacha/sample" asChild>
-        <Text variant="bodyStrong" color="accent" style={{ marginTop: space[16] }}>
-          {t("home.missingGachaLink")}
-        </Text>
-      </Link>
-      {/* 개발 빌드에서만 보인다. 출시 빌드에서는 카탈로그 화면도 홈으로 돌려보낸다. */}
-      {__DEV__ ? (
-        <Link href="/dev/components" asChild>
-          <Text variant="bodyStrong" color="accent" style={{ marginTop: space[8] }}>
-            컴포넌트 카탈로그 (개발용)
-          </Text>
-        </Link>
-      ) : null}
-    </PlaceholderScreen>
+          </Link>
+        ) : null}
+      </ScrollView>
+    </View>
+  );
+}
+
+function HomeHeader() {
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingTop: insets.top + space[24],
+        paddingHorizontal: gutter,
+        paddingBottom: space[10],
+      }}
+    >
+      <Text variant="headingSm" accessibilityRole="header">
+        {t("common.appName")}
+      </Text>
+      <HeaderIconButton
+        icon="search"
+        variant="outline"
+        label={t("search.title")}
+        onPress={() => router.push("/search")}
+      />
+    </View>
+  );
+}
+
+/** "새로 나왔어요": 가로로 넘기는 카드. */
+function NewArrivalsSection() {
+  const { t } = useTranslation();
+  const latest = useGachaList();
+  return (
+    <Section header={<SectionHeader title={t("home.newArrivals")} badge={t("home.newBadge")} />}>
+      <QueryState
+        query={latest}
+        isEmpty={(list) => list.length === 0}
+        empty={<StateMessage message={t("home.empty")} />}
+      >
+        {(list) => (
+          <FlatList
+            horizontal
+            data={list}
+            keyExtractor={(gacha) => gacha.id}
+            renderItem={({ item }) => <GachaCardSlot gacha={item} layout="vertical" />}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: gutter, gap: space[12] }}
+          />
+        )}
+      </QueryState>
+    </Section>
+  );
+}
+
+/** "지금 인기": 최근 10일 인기 순. */
+function PopularSection() {
+  const { t } = useTranslation();
+  const popular = usePopularGacha();
+  return (
+    <Section header={<SectionHeader title={t("home.popular")} caption={t("common.last10Days")} />}>
+      <View style={{ paddingHorizontal: gutter }}>
+        <QueryState
+          query={popular}
+          isEmpty={(list) => list.length === 0}
+          empty={<StateMessage message={t("home.empty")} />}
+        >
+          {(list) => <PopularGachaList gachas={list} />}
+        </QueryState>
+      </View>
+    </Section>
+  );
+}
+
+/** 섹션 = 제목(좌우 gutter) + 14 아래 내용. 내용의 좌우 여백은 내용 쪽에서 준다 (가로 스크롤은 끝까지 닿아야 해서). */
+function Section({ header, children }: { header: ReactNode; children: ReactNode }) {
+  return (
+    <View style={{ gap: space[14] }}>
+      <View style={{ paddingHorizontal: gutter }}>{header}</View>
+      {children}
+    </View>
   );
 }

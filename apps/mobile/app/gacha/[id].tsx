@@ -1,53 +1,102 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import type { GachaDetail } from "@deckodecko/core";
 import { useGacha } from "@deckodecko/core/react";
+import { gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Text } from "@deckodecko/ui/native";
 
-import { PlaceholderScreen } from "@/components/PlaceholderScreen";
-import { formatMonth, formatPrice } from "@/lib/i18n";
+import { GachaHero } from "@/components/GachaHero";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { QueryState } from "@/components/QueryState";
+import { StateMessage } from "@/components/StateMessage";
+import { joinDot, useGachaDisplay } from "@/hooks/useGachaDisplay";
 
-/** 가챠 상세. 탭 밖의 스택 화면이라 뒤로가기 헤더가 붙는다. 레이아웃은 #107 에서 채운다. */
+/**
+ * 가챠 상세. 스택 헤더 없이 히어로 이미지 + 기본 정보. 뒤로 버튼은 로딩 · 에러 상태에서도 보이도록 화면 위에 띄운다.
+ * 소장률 · 내 아이템 · 아이템 추가는 2주차.
+ */
 export default function GachaDetailScreen() {
-  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: gacha, isLoading, isError, refetch } = useGacha(id);
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const gacha = useGacha(id);
 
-  if (isLoading) {
-    return <PlaceholderScreen title={t("detail.title")} description={t("common.loading")} />;
-  }
-  // 실패를 "없음"과 구분한다. 확인하지 않으면 네트워크 · RLS 에러도 없는 가챠로 보인다.
-  if (isError) {
-    return (
-      <PlaceholderScreen title={t("detail.title")} description={t("common.loadFailed")}>
-        <Text variant="body" weight="bold" color="accent" onPress={() => refetch()}>
-          {t("common.retry")}
-        </Text>
-      </PlaceholderScreen>
-    );
-  }
-  if (!gacha) {
-    return (
-      <PlaceholderScreen title={t("detail.title")} description={t("detail.notFound", { id })} />
-    );
-  }
   return (
-    <PlaceholderScreen
-      title={gacha.nameKo ?? gacha.name}
-      description={[
-        gacha.name,
-        gacha.media?.title,
-        gacha.releaseMonth ? formatMonth(gacha.releaseMonth) : null,
-        gacha.price != null ? formatPrice(gacha.price) : null,
-      ]
-        .filter(Boolean)
-        .join(" · ")}
-    >
-      {gacha.items.map((item) => (
-        <Text key={item.id}>
-          {item.number}. {item.nameKo ?? item.name}
+    <View style={{ flex: 1 }}>
+      <QueryState
+        query={gacha}
+        fill
+        empty={<StateMessage fill message={t("detail.notFound", { id })} />}
+      >
+        {(detail) => <DetailContent gacha={detail} />}
+      </QueryState>
+      <HeaderIconButton
+        icon="chevron-back"
+        variant="surface"
+        label={t("common.back")}
+        onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
+        style={{ position: "absolute", top: insets.top + space[16], left: space[20] }}
+      />
+    </View>
+  );
+}
+
+function DetailContent({ gacha }: { gacha: GachaDetail }) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { name, media, pricePerPlay, release, itemTotal } = useGachaDisplay(gacha);
+  // 가격 뒤에 붙는 보조 문구: "(세금 포함) · 전 6종". 가격이 없으면 종 수만.
+  const priceTail = joinDot([pricePerPlay != null ? t("common.taxIncluded") : null, itemTotal]);
+
+  return (
+    <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + space[24] }}>
+      <GachaHero imageUrl={gacha.imageUrl} />
+
+      <View style={{ paddingVertical: space[20], paddingHorizontal: gutter, gap: space[6] }}>
+        {(media != null || release != null) && (
+          <View style={{ flexDirection: "row", alignItems: "center", gap: space[8] }}>
+            {media != null && (
+              <Text
+                variant="captionSm"
+                weight="bold"
+                color="onGet"
+                style={{
+                  backgroundColor: colors.getSurface,
+                  borderRadius: radius.full,
+                  overflow: "hidden",
+                  paddingHorizontal: space[10],
+                  paddingVertical: space[2],
+                }}
+              >
+                {media}
+              </Text>
+            )}
+            {release != null && (
+              <Text variant="caption" color="textMuted">
+                {release}
+              </Text>
+            )}
+          </View>
+        )}
+        <Text variant="headingLg" accessibilityRole="header">
+          {name}
         </Text>
-      ))}
-    </PlaceholderScreen>
+        {(pricePerPlay != null || priceTail !== "") && (
+          <Text variant="body" weight="bold" color="accent">
+            {pricePerPlay}
+            {pricePerPlay != null && priceTail !== "" ? " " : null}
+            {priceTail !== "" && (
+              <Text variant="body" color="textMuted">
+                {priceTail}
+              </Text>
+            )}
+          </Text>
+        )}
+      </View>
+    </ScrollView>
   );
 }

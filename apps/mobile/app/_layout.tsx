@@ -15,7 +15,6 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { CoreProvider } from "@deckodecko/core/react";
@@ -60,7 +59,7 @@ export default function RootLayout() {
   }, [locales]);
 
   useEffect(() => {
-    if (error) console.warn("Failed to load fonts; falling back to system fonts.", error);
+    if (error) console.warn("글꼴을 불러오지 못해 시스템 글꼴로 표시합니다.", error);
     if (ready) void SplashScreen.hideAsync();
   }, [ready, error]);
 
@@ -86,7 +85,6 @@ export default function RootLayout() {
 
 function RootStack() {
   const { scheme, colors } = useTheme();
-  const { t } = useTranslation();
   return (
     <>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
@@ -98,7 +96,7 @@ function RootStack() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="gacha/[id]" options={{ title: t("detail.title") }} />
+        <Stack.Screen name="gacha/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="dev/components" options={{ title: "컴포넌트 카탈로그" }} />
       </Stack>
     </>
