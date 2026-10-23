@@ -2,6 +2,7 @@ import { Redirect } from "expo-router";
 import { useState, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 
+import { useFolders } from "@deckodecko/core/react";
 import {
   border,
   gutter,
@@ -24,6 +25,8 @@ import {
   type ButtonSize,
   type ButtonVariant,
 } from "@deckodecko/ui/native";
+
+import { FolderSelectSheet } from "@/components/FolderSelectSheet";
 
 /** 색 견본 한 칸의 크기 */
 const SWATCH = 36;
@@ -81,6 +84,11 @@ function Catalog() {
   const [tab, setTab] = useState<"wish" | "get">("get");
   const [itemName, setItemName] = useState("토끼 (당근 바구니)");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [folderSheetOpen, setFolderSheetOpen] = useState(false);
+  const [folderId, setFolderId] = useState<string>();
+  const folders = useFolders();
+  const pickedFolder = folders.data?.find((f) => f.id === folderId) ?? folders.data?.[0];
+  const pickedFolderName = pickedFolder?.isDefault ? "기본 폴더" : (pickedFolder?.name ?? "-");
 
   return (
     <ScrollView
@@ -258,6 +266,15 @@ function Catalog() {
         </Button>
       </Section>
 
+      <Section
+        title="FolderSelectSheet"
+        note="앱 컴포넌트 · 로컬 DB 폴더. 위 시트의 폴더 버튼으로도 연다 (시트 위에 시트)"
+      >
+        <Button variant="outline" onPress={() => setFolderSheetOpen(true)}>
+          {`폴더 선택 시트 열기 (지금: ${pickedFolderName})`}
+        </Button>
+      </Section>
+
       <BottomSheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
@@ -278,11 +295,24 @@ function Catalog() {
           onChangeText={setItemName}
           clearLabel="지우기"
         />
+        <Button variant="secondary" fullWidth onPress={() => setFolderSheetOpen(true)}>
+          {`폴더: ${pickedFolderName}`}
+        </Button>
         <Input label="메모" multiline placeholder="구매한 곳, 교환 희망 등 메모를 남겨 보세요" />
         <Button fullWidth onPress={() => setSheetOpen(false)}>
           추가하기
         </Button>
       </BottomSheet>
+
+      <FolderSelectSheet
+        open={folderSheetOpen}
+        onClose={() => setFolderSheetOpen(false)}
+        selectedFolderId={pickedFolder?.id}
+        onSelect={(id) => {
+          setFolderId(id);
+          setFolderSheetOpen(false);
+        }}
+      />
     </ScrollView>
   );
 }
