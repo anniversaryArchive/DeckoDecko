@@ -13,6 +13,7 @@ export {
   useIsItemNameTaken,
   useItem,
   useItemCounts,
+  useItemCountsByFolder,
   useItems,
   useSetItemType,
   useUpdateItem,

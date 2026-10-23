@@ -65,6 +65,14 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
         return { wish: of("WISH"), get: of("GET") };
       },
 
+      async countItemsByFolder() {
+        const rows = await db
+          .select({ folderId: items.folderId, n: count() })
+          .from(items)
+          .groupBy(items.folderId);
+        return Object.fromEntries(rows.map((r) => [r.folderId, r.n]));
+      },
+
       async createItem(input) {
         const at = now();
         const [row] = await db
