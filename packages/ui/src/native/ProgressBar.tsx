@@ -33,7 +33,10 @@ export type ProgressBarProps =
       wish: number;
       /** 전체 칸 수 (라인업 종 수). get + wish 가 넘으면 넘는 만큼 그리지 않는다 */
       total: number;
-      /** 넘기면 막대 아래에 범례를 그린다. 글자는 쓰는 쪽에서 ("GET 3", "WISH 2", "미등록 1") */
+      /**
+       * 넘기면 막대 아래에 범례를 그린다. 글자는 쓰는 쪽에서 ("GET 3", "WISH 2", "미등록 1").
+       * 화면 읽기 프로그램도 이 글자를 막대의 값으로 읽는다. 없으면 GET 수만 값으로 읽는다
+       */
       legend?: { get: string; wish: string; none: string };
     });
 
@@ -98,7 +101,12 @@ function SegmentBar({
       <View
         accessibilityRole="progressbar"
         accessibilityLabel={accessibilityLabel}
-        accessibilityValue={{ min: 0, max: count, now: getCount }}
+        // 숫자 값(now)에는 GET 수만 들어가서, 범례가 있으면 범례 글자(GET · WISH · 미등록)를 값으로 읽는다
+        accessibilityValue={
+          legend
+            ? { text: [legend.get, legend.wish, legend.none].join(", ") }
+            : { min: 0, max: count, now: getCount }
+        }
         style={{ flexDirection: "row", gap: count > DENSE_SEGMENTS ? space[2] : space[4] }}
       >
         {/* 종 수를 모르면(0) 빈 막대 하나 */}
