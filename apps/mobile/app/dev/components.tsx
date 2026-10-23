@@ -28,7 +28,6 @@ import {
   useToast,
   type ButtonSize,
   type ButtonVariant,
-  type TabBarVariant,
 } from "@deckodecko/ui/native";
 
 /** 색 견본 한 칸의 크기 */
@@ -56,13 +55,6 @@ const TABS = [
   { key: "goods", label: "내 굿즈", icon: "folder", iconOff: "folder-outline" },
   { key: "search", label: "검색", icon: "search", iconOff: "search" },
 ] as const;
-
-/** TabBar 견본: 모양마다 한 줄씩 */
-const TAB_VARIANTS: { variant: TabBarVariant; note: string }[] = [
-  { variant: "pill", note: "선택된 탭만 이름 (시안)" },
-  { variant: "labeled", note: "늘 아이콘 아래 이름" },
-  { variant: "icon", note: "아이콘만" },
-];
 
 /** Toast 견본 문구 (시안 "아이템 추가 실패") */
 const SAVE_FAILED = {
@@ -355,26 +347,18 @@ function Catalog() {
         <ProgressBarDemo />
       </Section>
 
-      <Section title="TabBar" note="variant: pill(기본) · labeled · icon. 눌러서 탭을 바꿔 본다">
-        {TAB_VARIANTS.map(({ variant, note }) => (
-          <View key={variant} style={{ gap: space[6] }}>
-            <Text variant="captionSm" color="textMuted">
-              {variant} — {note}
-            </Text>
-            <TabBar
-              variant={variant}
-              items={TABS.map((tab) => ({
-                key: tab.key,
-                label: tab.label,
-                selected: tab.key === tabKey,
-                onPress: () => setTabKey(tab.key),
-                renderIcon: ({ color, size, selected }) => (
-                  <Ionicons name={selected ? tab.icon : tab.iconOff} color={color} size={size} />
-                ),
-              }))}
-            />
-          </View>
-        ))}
+      <Section title="TabBar" note="선택된 탭만 이름. 눌러서 탭을 바꿔 본다">
+        <TabBar
+          items={TABS.map((tab) => ({
+            key: tab.key,
+            label: tab.label,
+            selected: tab.key === tabKey,
+            onPress: () => setTabKey(tab.key),
+            renderIcon: ({ color, size, selected }) => (
+              <Ionicons name={selected ? tab.icon : tab.iconOff} color={color} size={size} />
+            ),
+          }))}
+        />
       </Section>
 
       <Section

@@ -11,6 +11,6 @@ export { AlertIcon, ChevronDownIcon, CloseIcon, type LineIconProps } from "./ico
 export { Input, type InputProps } from "./Input";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar";
 export { Segment, type SegmentOption, type SegmentProps, type SegmentTone } from "./Segment";
-export { TabBar, type TabBarItem, type TabBarProps, type TabBarVariant } from "./TabBar";
+export { TabBar, type TabBarItem, type TabBarProps } from "./TabBar";
 export { Text, type TextProps } from "./Text";
 export { ToastProvider, useToast, type ToastOptions } from "./Toast";
