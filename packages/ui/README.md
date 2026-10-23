@@ -103,7 +103,7 @@ toast.show({ title: t("item.saveFailed"), message: t("item.duplicateName"), acti
 | `GoodsCard`   | `layout`: `vertical`(`size` `md` 156 · `sm` 124) · `horizontal`(썸네일 96). `badge`(`accent` · `get`), 가로는 `priceNote` · `meta` · 오른쪽 `accessory`                                                         | 내용에 맞춤           |
 | `ProgressBar` | `variant`: `summary`(`value` 0 – 1) · `segments`(`get` · `wish` · `total`, `legend`)                                                                                                                            | 10 · 8                |
 | `TabBar`      | `items`: `label` · `renderIcon` · `selected` · `onPress`. 선택된 탭만 이름이 보인다                                                                                                                             | 탭 40                 |
-| `useToast`    | `show({ title, message, actionLabel, onAction, duration })` · `hide()`. `duration` 기본 4초, `null` 이면 안 사라짐. 탭하거나 위로 밀면 닫힘. 앱 루트에 `ToastProvider`                                          | 내용에 맞춤           |
+| `useToast`    | `show({ title, message, actionLabel, onAction, duration })` · `hide()`. `duration` 기본 4초(0 이하도 4초), `null` 이면 안 사라짐. 위로 밀거나 탭하면 닫힘. 앱 루트에 `ToastProvider closeLabel closeHint`       | 내용에 맞춤           |
 
 - 글자는 모두 props 로 받는다. 컴포넌트 안에 한글을 적지 않는다 (닫기 버튼의 읽기 이름도 `closeLabel` 로).
 - `BottomSheet` 는 `@gorhom/bottom-sheet` 를 감싼 것이다. 앱 루트에 `GestureHandlerRootView` 와 `BottomSheetModalProvider` 가 있어야 한다 (`apps/mobile/app/_layout.tsx`). 시트 안의 `Input` 은 키보드가 올라오면 시트도 같이 올라간다.
@@ -111,9 +111,9 @@ toast.show({ title: t("item.saveFailed"), message: t("item.duplicateName"), acti
 - 시트에서 다른 화면으로 이동할 때는 **먼저 `open` 을 `false` 로 바꾼다.** 시트 Provider 가 앱 루트에 있어서, 열린 채로 이동하면 시트가 새 화면 위에 남는다.
 - `GoodsCard` 는 가챠 카드다. 세로는 홈 "새로 나왔어요"(`size="md"`) · 검색 "최근 본 굿즈"(`size="sm"`, 가격 없음), 가로(`layout="horizontal"`)는 "지금 인기" · "인기 검색 굿즈" · 검색 결과에 쓴다. 사진은 `image` 로 넘기고 카드가 정한 자리를 채운다 (자리 표시 포함, 앱의 썸네일 컴포넌트). `accessibilityLabel` 을 생략하면 배지 · 작품명 · 이름 · 가격 · 보조 정보를 이어서 읽는다.
 - 세로 카드는 작품명 · 가격이 없거나 이름이 한 줄이어도 높이가 같다 (가로 스크롤에서 나란히 놓여서). 가로 카드의 `accessory` 는 카드를 누르는 영역 밖에 있어서, 안의 버튼을 화면 읽기 프로그램이 따로 고를 수 있다.
-- `ProgressBar` 는 진행 막대다. 지금은 소장률에 쓴다. `summary` 는 강조 면(`Card variant="highlight"`) 위에 둔다 (막대 바탕이 흰 면). `segments` 는 아이템 하나가 한 칸이고 GET → WISH → 미등록 순으로 칠한다. 20칸이 넘으면 칸 사이가 좁아진다.
+- `ProgressBar` 는 진행 막대다. 지금은 소장률에 쓴다. `summary` 는 강조 면(`Card variant="highlight"`) 위에 둔다 (막대 바탕이 흰 면). `segments` 는 아이템 하나가 한 칸이고 GET → WISH → 미등록 순으로 칠한다. 20칸이 넘으면 칸 사이가 좁아진다. `legend` 를 넘기면 화면 읽기 프로그램이 범례 글자를 막대의 값으로 읽는다 (없으면 GET 수만 읽어서 WISH 수가 빠진다).
 - `TabBar` 는 탭마다 같은 폭의 칸에 놓여서, 선택이 바뀌어도 다른 탭의 아이콘은 움직이지 않는다. 그리기만 한다: 내비게이션 연결 · safe area · 키보드가 뜰 때 숨기기는 앱의 탭 레이아웃(`Tabs` 의 `tabBar`)이 맡는다. 아이콘도 앱이 `renderIcon` 으로 그린다 (탭 바가 색 · 크기를 넘긴다).
-- 토스트는 앱 루트(`apps/mobile/app/_layout.tsx`)의 `ToastProvider` 가 그린다. 화면 맨 위, 상태 바 바로 아래(머리글과 같은 높이)에 머리글 · 바텀 시트 위로 겹쳐 뜬다. 화면에서는 `useToast()` 로 띄운다. 이미 떠 있을 때 다시 `show` 하면 새 내용으로 바꾸고 시간을 다시 잰다. 화면 읽기 프로그램이 켜져 있고 동작 버튼이 있으면 저절로 사라지지 않는다 (버튼까지 가기 전에 사라지지 않게). 대신 토스트를 두 번 탭(Android) · 문지르기(iOS)로 닫을 수 있다.
+- 토스트는 앱 루트(`apps/mobile/app/_layout.tsx`)의 `ToastProvider` 가 그린다. 화면 맨 위, 상태 바 바로 아래(머리글과 같은 높이)에 머리글 · 바텀 시트 위로 겹쳐 뜬다. 화면에서는 `useToast()` 로 띄운다. 이미 떠 있을 때 다시 `show` 하면 그 자리에서 내용만 바꾸고 시간을 다시 잰다. 화면 읽기 프로그램이 켜져 있고 동작 버튼이 있으면 저절로 사라지지 않는다 (버튼까지 가기 전에 사라지지 않게). 화면 읽기 프로그램은 밀기를 쓸 수 없어서 두 번 탭, 동작 목록의 닫기(`closeLabel`), iOS 문지르기로 닫는다. iOS 는 내용 다음에 `closeHint` 를 읽는다.
 - 선 아이콘 `CloseIcon`(×) · `ChevronDownIcon`(⌄) · `AlertIcon`(!)은 `size` · `color`(색 역할)를 받는다. 칩의 펼침 표시는 `<Chip trailing={<ChevronDownIcon size={14} color="text" />}>`.
 - `Input` 은 RN `TextInput` 이 글꼴을 하나만 쓸 수 있어서 Noto Sans KR 로 고정한다.
 - 시안에 오류 상태 색이 없어서 `Input` 에는 오류 표시가 아직 없다. 필요해지면 색 역할(`danger` 등)부터 추가한다.

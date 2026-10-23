@@ -16,6 +16,8 @@ export const en: Messages = {
     taxIncluded: "(tax incl.)",
     released: "Out {{month}}",
     itemTotal: "{{total}} total",
+    close: "Close",
+    closeToastHint: "Dismisses the alert.",
   },
   home: {
     title: "Home",

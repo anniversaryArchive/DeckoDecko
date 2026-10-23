@@ -15,6 +15,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { CoreProvider } from "@deckodecko/core/react";
@@ -35,6 +36,7 @@ void SplashScreen.preventAutoHideAsync();
  */
 export default function RootLayout() {
   useLocalDbMigrations();
+  const { t } = useTranslation();
 
   // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.ja · fonts.latin 과 같아야 한다.
   const [loaded, error] = useFonts({
@@ -72,7 +74,7 @@ export default function RootLayout() {
       <ThemeProvider>
         {/* 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다 */}
         <CoreProvider repositories={repositories}>
-          <ToastProvider>
+          <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
             <BottomSheetModalProvider>
               <RootStack />
             </BottomSheetModalProvider>
