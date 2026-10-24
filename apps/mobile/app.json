@@ -20,7 +20,15 @@
     "locales": {
       "ko": "./locales/ko.json"
     },
-    "plugins": ["expo-router", "expo-localization", "expo-sqlite"],
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        { "photosPermission": false, "cameraPermission": false, "microphonePermission": false }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     },
