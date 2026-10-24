@@ -105,6 +105,8 @@ export function FolderSelectSheet({
         <ScrollView
           style={{ maxHeight: height * LIST_MAX_HEIGHT_RATIO, flexGrow: 0 }}
           ref={listRef}
+          // 키보드가 열려 있어도 첫 탭에 폴더가 골라지게 한다 (기본값이면 첫 탭은 키보드만 내린다). 키보드는 시트가 닫히면서 내린다
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ gap: space[8] }}
           onContentSizeChange={() => {
             if (!scrollToNew.current) return;
