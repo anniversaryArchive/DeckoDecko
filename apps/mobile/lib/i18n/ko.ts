@@ -14,6 +14,7 @@ export const ko = {
     // 기기에 Intl.PluralRules 가 없으면 i18next 가 count=1 에 _one 을 고르므로 지우지 않는다.
     itemCount_one: "{{count, number}}종",
     itemCount_other: "{{count, number}}종",
+    back: "뒤로",
   },
   home: {
     title: "홈",
@@ -34,7 +35,22 @@ export const ko = {
     title: "내 굿즈",
     empty: "아직 저장된 가챠가 없어요.",
   },
-  folder: {},
+  folder: {
+    // 폴더 선택 시트 (아이템 시트에서 연다)
+    selectTitle: "폴더 선택",
+    // 기본 폴더는 DB 에 이름이 비어 있어 이 문구로 보인다
+    defaultName: "기본 폴더",
+    // 포맷 헬퍼(formatFolderItemCount)가 쓴다
+    itemCount_one: "아이템 {{count, number}}개",
+    itemCount_other: "아이템 {{count, number}}개",
+    newFolder: "새 폴더",
+    createLabel: "새 폴더 만들기",
+    namePlaceholder: "폴더 이름",
+    create: "만들기",
+    nameHint: "같은 이름의 폴더는 만들 수 없어요",
+    nameTaken: "이미 같은 이름의 폴더가 있어요",
+    createFailed: "폴더를 만들지 못했어요",
+  },
   notice: {},
   settings: {},
   feedback: {},

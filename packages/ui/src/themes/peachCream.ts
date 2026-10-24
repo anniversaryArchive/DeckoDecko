@@ -34,4 +34,11 @@ export const peachCream = {
     toast: "0 8px 24px rgba(43, 38, 34, 0.25)",
     popover: "0 10px 30px rgba(43, 38, 34, 0.12)",
   },
+  folders: {
+    default: { fill: palette.creamDeep, stroke: palette.stone },
+    cycle: [
+      { fill: palette.peachLight, stroke: palette.coral },
+      { fill: palette.sage, stroke: palette.sageDeep },
+    ],
+  },
 } as const satisfies Theme;

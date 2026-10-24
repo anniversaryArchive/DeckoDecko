@@ -40,6 +40,11 @@ export type BottomSheetProps = {
   title?: string;
   /** 넘기면 제목 오른쪽에 닫기 버튼을 그린다. 화면 읽기 프로그램이 읽을 이름 ("닫기") */
   closeLabel?: string;
+  /**
+   * 뒤 배경을 눌렀을 때 시트를 닫지 않고 이것만 부른다. 화면이 open 을 false 로 바꿔 닫는다.
+   * 시트 위에 띄운 시트에서 아래 시트까지 한 번에 닫을 때 쓴다. 생략하면 이 시트만 닫고 onClose 를 부른다.
+   */
+  onBackdropPress?: () => void;
   children: ReactNode;
 };
 
@@ -48,7 +53,14 @@ export type BottomSheetProps = {
  * 높이는 내용에 맞춘다. 안에 넣은 Input 은 키보드가 올라오면 시트도 같이 올라간다.
  * 앱 루트에 GestureHandlerRootView 와 BottomSheetModalProvider 가 있어야 한다 (apps/mobile/app/_layout.tsx).
  */
-export function BottomSheet({ open, onClose, title, closeLabel, children }: BottomSheetProps) {
+export function BottomSheet({
+  open,
+  onClose,
+  title,
+  closeLabel,
+  onBackdropPress,
+  children,
+}: BottomSheetProps) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const ref = useRef<BottomSheetModal>(null);
@@ -173,11 +185,11 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
         opacity={1}
         // 라이브러리가 바로 닫지 않게 제자리(0)로 두고, 키보드부터 내리는 requestClose 로 닫는다
         pressBehavior={0}
-        onPress={requestClose}
+        onPress={onBackdropPress ?? requestClose}
         style={[props.style, { backgroundColor: colors.scrim }]}
       />
     ),
-    [colors.scrim, requestClose]
+    [colors.scrim, onBackdropPress, requestClose]
   );
 
   // 라이브러리 기본 배경은 accessible · "Bottom Sheet" · adjustable 로 고정돼 있어 화면 읽기 프로그램이 빈 영역을 따로 읽는다.

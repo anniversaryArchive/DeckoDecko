@@ -36,6 +36,15 @@ export function useItemCounts(gachaId?: string) {
   });
 }
 
+/** 폴더 id → 기록 수 (폴더 선택 시트). 기록이 없는 폴더는 빠지므로 `?? 0` 으로 읽는다. */
+export function useItemCountsByFolder() {
+  const { items } = useLocalRepositories();
+  return useQuery({
+    queryKey: queryKeys.items.countsByFolder(),
+    queryFn: () => items.countItemsByFolder(),
+  });
+}
+
 /**
  * 같은 가챠 안에 같은 이름의 기록이 있는지. 시트의 이름 입력에서 쓴다 (입력 디바운스는 화면 쪽).
  * gachaId 가 없거나 이름이 비어 있으면 요청하지 않는다.

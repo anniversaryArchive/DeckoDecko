@@ -22,6 +22,7 @@ export const queryKeys = {
       ["items", "list", gachaId, type, folderId] as const,
     detail: (id: string) => ["items", "detail", id] as const,
     counts: (gachaId: string | null) => ["items", "counts", gachaId] as const,
+    countsByFolder: () => ["items", "countsByFolder"] as const,
     nameTaken: (gachaId: string, name: string, excludeId: string | null) =>
       ["items", "nameTaken", gachaId, name, excludeId] as const,
   },
