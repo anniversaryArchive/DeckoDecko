@@ -24,7 +24,10 @@ export const ko = {
     taxIncluded: "(세금 포함)",
     released: "{{month}} 발매",
     itemTotal: "전 {{total}}",
+    cancel: "취소",
     close: "닫기",
+    // 입력창 지우기 버튼 (화면 읽기 프로그램이 읽는다)
+    clear: "지우기",
     // 토스트(ToastProvider)의 iOS 화면 읽기 안내. 동작 결과를 적는다 (제스처 이름은 VoiceOver 가 붙인다)
     closeToastHint: "알림을 닫아요",
   },
@@ -108,6 +111,33 @@ export const ko = {
     nameHint: "같은 이름의 폴더는 만들 수 없어요",
     nameTaken: "이미 같은 이름의 폴더가 있어요",
     createFailed: "폴더를 만들지 못했어요",
+  },
+  item: {
+    // 아이템 추가 · 수정 시트 (상세에서 연다)
+    addTitle: "아이템 추가",
+    editTitle: "아이템 수정",
+    typeLabel: "상태",
+    wish: "WISH · 갖고 싶어요",
+    get: "GET · 소장 중",
+    addPhoto: "사진 추가",
+    changePhoto: "사진 바꾸기",
+    removePhoto: "사진 지우기",
+    // 사진이 있을 때 사진 칸의 읽기 이름 · Android 선택 창 제목
+    photoOptions: "사진 바꾸기 · 지우기",
+    nameLabel: "아이템 이름",
+    nameHint: "같은 이름의 아이템이 있으면 알려드려요",
+    nameTaken: "이 가챠에 같은 이름의 아이템이 있어요",
+    // 수정 시트의 이름 아래 안내. date 는 포맷 헬퍼(formatDate)로 만든 문자열
+    registered: "{{date}} 등록",
+    registeredWithPhoto: "{{date}} 등록 · 사진 1장",
+    folderLabel: "폴더",
+    memoLabel: "메모",
+    memoPlaceholder: "구매한 곳, 교환 희망 등 메모를 남겨 보세요",
+    add: "추가하기",
+    save: "저장하기",
+    delete: "삭제",
+    saveFailed: "저장하지 못했어요",
+    deleteFailed: "삭제하지 못했어요",
   },
   notice: {
     title: "공지사항",
