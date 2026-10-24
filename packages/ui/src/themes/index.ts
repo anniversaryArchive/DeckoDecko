@@ -3,7 +3,7 @@ import { peachCream } from "./peachCream";
 
 /**
  * 테마 목록. 새 테마를 추가하려면
- *   1. 이 폴더에 `<이름>.ts` 를 만들어 Theme 의 colors · shadows 를 모두 채운다 (빠진 역할은 타입 오류로 잡힌다).
+ *   1. 이 폴더에 `<이름>.ts` 를 만들어 Theme 의 colors · shadows · folders 를 모두 채운다 (빠진 역할은 타입 오류로 잡힌다).
  *      새 원색이 필요하면 tokens.ts 의 palette 에 추가한다.
  *   2. 아래 themes 에 한 줄 추가한다.
  * 화면 코드 · 컴포넌트는 바꾸지 않는다. 역할 이름이 부족하면 ThemeColors 에 역할을 추가하고 모든 테마를 채운다.
