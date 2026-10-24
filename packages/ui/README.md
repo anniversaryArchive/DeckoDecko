@@ -96,6 +96,7 @@ import { BottomSheet, Button, Card, Chip, Input, Segment } from "@deckodecko/ui/
 | `BottomSheet` | `open` · `onClose` 로 연다. `title`, `closeLabel`(넘기면 닫기 버튼). 열고 닫을 때 0.45초 동안 올라오고 내려간다                                                                                                 | 내용에 맞춤           |
 
 - 글자는 모두 props 로 받는다. 컴포넌트 안에 한글을 적지 않는다 (닫기 버튼의 읽기 이름도 `closeLabel` 로).
+- 시트 위에 시트를 띄우면 아래 시트는 내려갔다가 위 시트가 닫히면 다시 올라온다. 위 시트의 뒤 배경으로 둘 다 닫으려면 위 시트에 `onBackdropPress` 를 넘겨 두 시트의 `open` 을 모두 false 로 바꾼다.
 - `BottomSheet` 는 `@gorhom/bottom-sheet` 를 감싼 것이다. 앱 루트에 `GestureHandlerRootView` 와 `BottomSheetModalProvider` 가 있어야 한다 (`apps/mobile/app/_layout.tsx`). 시트 안의 `Input` 은 키보드가 올라오면 시트도 같이 올라간다.
 - `onClose` 는 사용자가 닫았을 때(끌기 · 뒤 배경 · 닫기 버튼 · Android 뒤로가기)만 불린다. 화면이 `open={false}` 로 닫거나 화면이 사라질 때는 불리지 않는다.
 - 시트에서 다른 화면으로 이동할 때는 **먼저 `open` 을 `false` 로 바꾼다.** 시트 Provider 가 앱 루트에 있어서, 열린 채로 이동하면 시트가 새 화면 위에 남는다.

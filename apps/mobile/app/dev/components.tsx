@@ -307,6 +307,10 @@ function Catalog() {
       <FolderSelectSheet
         open={folderSheetOpen}
         onClose={() => setFolderSheetOpen(false)}
+        onCloseAll={() => {
+          setFolderSheetOpen(false);
+          setSheetOpen(false);
+        }}
         selectedFolderId={pickedFolder?.id}
         onSelect={(id) => {
           setFolderId(id);
