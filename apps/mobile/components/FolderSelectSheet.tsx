@@ -39,8 +39,10 @@ const LIST_MAX_HEIGHT_RATIO = 0.3;
 
 type Props = {
   open: boolean;
-  /** 뒤로 · 아래로 끌기 · 뒤 배경으로 닫았을 때. 여기서 open 을 false 로 바꾼다 */
+  /** 뒤로 · 아래로 끌기 · Android 뒤로가기로 닫았을 때. 여기서 open 을 false 로 바꿔 아이템 시트로 돌아간다 */
   onClose: () => void;
+  /** 뒤 배경을 눌렀을 때. 이 시트와 아이템 시트의 open 을 모두 false 로 바꿔 한 번에 닫는다 */
+  onCloseAll: () => void;
   /** 지금 고른 폴더 (아이템 시트의 값) */
   selectedFolderId: string | undefined;
   /** 목록에서 폴더를 골랐을 때. 값을 바꾸고 open 을 false 로 바꿔 아이템 시트로 돌아간다 */
@@ -48,7 +50,13 @@ type Props = {
 };
 
 /** 아이템 시트에서 여는 폴더 선택 시트 (시안 B_FolderSheet). 새 폴더는 목록에 더하기만 하고, 고르는 건 목록에서 한다. */
-export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }: Props) {
+export function FolderSelectSheet({
+  open,
+  onClose,
+  onCloseAll,
+  selectedFolderId,
+  onSelect,
+}: Props) {
   const { t } = useTranslation();
   const { colors, folders: folderColors } = useTheme();
   const { height } = useWindowDimensions();
@@ -62,7 +70,7 @@ export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }:
   const scrollToNew = useRef(false);
 
   return (
-    <BottomSheet open={open} onClose={onClose}>
+    <BottomSheet open={open} onClose={onClose} onBackdropPress={onCloseAll}>
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <IconButton size={HEADER_BUTTON_SIZE} label={t("common.back")} onPress={onClose}>
           <Ionicons name="chevron-back" size={HEADER_ICON_SIZE} color={colors.textMuted} />
