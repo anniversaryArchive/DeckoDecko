@@ -2,7 +2,7 @@ import { Redirect } from "expo-router";
 import { useState, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 
-import { useFolders } from "@deckodecko/core/react";
+import { useFolders, useGachaList, useItems } from "@deckodecko/core/react";
 import {
   border,
   gutter,
@@ -27,6 +27,7 @@ import {
 } from "@deckodecko/ui/native";
 
 import { FolderSelectSheet } from "@/components/FolderSelectSheet";
+import { ItemSheet } from "@/components/ItemSheet";
 
 /** 색 견본 한 칸의 크기 */
 const SWATCH = 36;
@@ -273,6 +274,13 @@ function Catalog() {
         <Button variant="outline" onPress={() => setFolderSheetOpen(true)}>
           {`폴더 선택 시트 열기 (지금: ${pickedFolderName})`}
         </Button>
+      </Section>
+
+      <Section
+        title="ItemSheet"
+        note="앱 컴포넌트 · 로컬 DB 기록. 홈 목록의 첫 가챠에 남긴다. 수정은 그 가챠의 가장 최근 기록"
+      >
+        <ItemSheetDemo />
       </Section>
 
       <BottomSheet
@@ -613,6 +621,36 @@ function ColorPair({ surface, on }: { surface: ColorRole; on: ColorRole }) {
           {on} {formatColor(colors[on])}
         </Text>
       </View>
+    </View>
+  );
+}
+
+/** ItemSheet 견본: 추가 · 수정 시트를 연다. 저장하면 기록 수 · 최근 기록이 바로 바뀐다 */
+function ItemSheetDemo() {
+  const gacha = useGachaList(1);
+  const gachaId = gacha.data?.[0]?.id;
+  const items = useItems({ gachaId });
+  const latest = gachaId ? items.data?.[0] : undefined;
+  const [sheet, setSheet] = useState<"add" | "edit" | null>(null);
+
+  if (!gachaId) return <Text color="textMuted">가챠 목록을 불러오는 중…</Text>;
+  return (
+    <View style={{ gap: space[8] }}>
+      <Text variant="captionSm" color="textMuted">
+        {`가챠: ${gacha.data?.[0]?.nameKo ?? gacha.data?.[0]?.name} · 기록 ${items.data?.length ?? 0}개`}
+      </Text>
+      <Button variant="outline" onPress={() => setSheet("add")}>
+        추가 시트 열기
+      </Button>
+      <Button variant="outline" disabled={!latest} onPress={() => setSheet("edit")}>
+        {latest ? `수정 시트 열기 (${latest.type} · ${latest.name})` : "수정 시트 열기 (기록 없음)"}
+      </Button>
+      <ItemSheet
+        open={sheet !== null}
+        onClose={() => setSheet(null)}
+        gachaId={gachaId}
+        itemId={sheet === "edit" ? latest?.id : undefined}
+      />
     </View>
   );
 }
