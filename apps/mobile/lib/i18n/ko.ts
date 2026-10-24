@@ -22,6 +22,9 @@ export const ko = {
     taxIncluded: "(세금 포함)",
     released: "{{month}} 발매",
     itemTotal: "전 {{total}}",
+    close: "닫기",
+    // 토스트(ToastProvider)의 iOS 화면 읽기 안내. 동작 결과를 적는다 (제스처 이름은 VoiceOver 가 붙인다)
+    closeToastHint: "알림을 닫아요",
   },
   home: {
     title: "홈",

@@ -27,6 +27,7 @@ export const peachCream = {
     getMark: palette.sageMid,
     inverse: palette.ink,
     onInverse: palette.white,
+    onInverseMuted: palette.mist,
     scrim: palette.inkScrim,
   },
   shadows: {

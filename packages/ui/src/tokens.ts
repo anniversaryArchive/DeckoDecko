@@ -25,6 +25,8 @@ export const palette = {
   /** ink 42% — 시트 · 다이얼로그 뒤 배경 */
   inkScrim: "rgba(43, 38, 34, 0.42)",
   stone: "#7A7068",
+  /** 어두운 면(토스트) 위 보조 글자 */
+  mist: "#D9CFC8",
   pebble: "#A89C93",
   stoneLight: "#C9BDB4",
 } as const;
@@ -77,6 +79,8 @@ export type ThemeColors = {
   /** 반전 면 (토스트) / 그 위 글자 */
   inverse: string;
   onInverse: string;
+  /** 반전 면 위 보조 글자 (토스트 설명) */
+  onInverseMuted: string;
   /** 시트 · 다이얼로그 뒤를 덮는 반투명 배경 */
   scrim: string;
 };

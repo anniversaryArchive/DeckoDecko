@@ -23,6 +23,7 @@
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
+    "react-native-worklets": "0.10.1",
     "typescript": "~6.0.3"
   },
   "peerDependencies": {
@@ -31,7 +32,8 @@
     "react-native": "*",
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
-    "react-native-safe-area-context": "*"
+    "react-native-safe-area-context": "*",
+    "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
     "@gorhom/bottom-sheet": {
@@ -47,6 +49,9 @@
       "optional": true
     },
     "react-native-safe-area-context": {
+      "optional": true
+    },
+    "react-native-worklets": {
       "optional": true
     }
   }

@@ -15,10 +15,12 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
+import { ToastProvider } from "@deckodecko/ui/native";
 
 import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
 import { i18n, pickLanguage } from "@/lib/i18n";
@@ -34,6 +36,7 @@ void SplashScreen.preventAutoHideAsync();
  */
 export default function RootLayout() {
   useLocalDbMigrations();
+  const { t } = useTranslation();
 
   // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.ja · fonts.latin 과 같아야 한다.
   const [loaded, error] = useFonts({
@@ -65,14 +68,17 @@ export default function RootLayout() {
   if (!ready) return null;
 
   // 바텀 시트(@deckodecko/ui/native 의 BottomSheet)는 제스처 루트와 시트 Provider 안에서만 열린다.
+  // 토스트(useToast)는 머리글 · 시트 위에 겹치도록 둘을 감싼 ToastProvider 가 그린다.
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
         {/* 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다 */}
         <CoreProvider repositories={repositories}>
-          <BottomSheetModalProvider>
-            <RootStack />
-          </BottomSheetModalProvider>
+          <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
+            <BottomSheetModalProvider>
+              <RootStack />
+            </BottomSheetModalProvider>
+          </ToastProvider>
         </CoreProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
