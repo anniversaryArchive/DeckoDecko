@@ -232,6 +232,7 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       animationConfigs={animationConfigs}
       // 기기의 "동작 줄이기"가 켜져 있어도 애니메이션으로 연다. 라이브러리가 애니메이션 없이 열려고 하면 시트가 아예 나타나지 않는다
       // (@gorhom/bottom-sheet 5.2 · 이슈 #1560). iOS 의 시트도 동작 줄이기와 상관없이 올라온다.
+      // TODO: 라이브러리가 이슈 #1560 을 고치면 이 줄을 지운다.
       overrideReduceMotion={ReduceMotion.Never}
       enablePanDownToClose
       enableDynamicSizing
