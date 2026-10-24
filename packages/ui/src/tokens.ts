@@ -96,6 +96,28 @@ export type ThemeShadows = {
   popover: string;
 };
 
+/** 폴더 아이콘 한 벌. 면(fill)과 선(stroke) */
+export type FolderColor = { fill: string; stroke: string };
+
+/**
+ * 폴더 아이콘 색. 기본 폴더는 한 색으로 고정, 나머지 폴더는 목록 순서대로 cycle 을 돌려 쓴다.
+ * 몇 가지 색을 어떤 순서로 돌릴지는 테마가 정한다 (피치 크림은 피치 · 세이지 번갈아).
+ */
+export type ThemeFolders = {
+  default: FolderColor;
+  cycle: readonly [FolderColor, ...FolderColor[]];
+};
+
+/** 폴더 아이콘 색. index 는 기본 폴더를 뺀 목록에서의 순서(0부터) */
+export function folderColor(
+  folders: ThemeFolders,
+  folder: { isDefault: boolean },
+  index: number
+): FolderColor {
+  if (folder.isDefault) return folders.default;
+  return folders.cycle[index % folders.cycle.length]!;
+}
+
 export type Theme = {
   /** 설정 화면 등에 보일 이름 */
   name: string;
@@ -103,6 +125,7 @@ export type Theme = {
   scheme: "light" | "dark";
   colors: ThemeColors;
   shadows: ThemeShadows;
+  folders: ThemeFolders;
 };
 
 /**

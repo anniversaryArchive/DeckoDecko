@@ -20,11 +20,11 @@ const { colors } = useTheme();
 - `src/native/`: React Native 컴포넌트 (`Text` …). **`@deckodecko/ui/native`** 로 따로 내보낸다. 백오피스는 react-native 가 없으므로 이 입구를 import 하지 않는다.
   - 이 입구를 쓰는 앱은 `react-native` · `@gorhom/bottom-sheet` · `react-native-gesture-handler` · `react-native-reanimated` · `react-native-safe-area-context` 를 **모두** 설치해야 한다. `Text` 만 써도 마찬가지다 (`Input` 이 시트 라이브러리를 import 하고, 입구 하나로 같이 내보내기 때문).
   - `package.json` 에는 이 라이브러리들이 선택(optional) peer 로 적혀 있다. 기본 입구(`@deckodecko/ui`)만 쓰는 백오피스에는 필요 없어서다. peer 설정은 입구별로 나눌 수 없다.
-- 테마마다 달라지는 것은 **색(`colors`)과 그림자(`shadows`)** 뿐이다. 글꼴 · 크기 · 간격 · 모서리는 공통.
+- 테마마다 달라지는 것은 **색(`colors`), 그림자(`shadows`), 폴더 아이콘 색(`folders`)** 뿐이다. 글꼴 · 크기 · 간격 · 모서리는 공통.
 
 ### 새 테마 추가
 
-1. `src/themes/<이름>.ts` 를 만들고 `colors` · `shadows` 를 모두 채운다. 빠진 역할이 있으면 타입 오류가 난다. 새 원색은 `palette` 에 추가.
+1. `src/themes/<이름>.ts` 를 만들고 `colors` · `shadows` · `folders` 를 모두 채운다. 빠진 역할이 있으면 타입 오류가 난다. 새 원색은 `palette` 에 추가.
 2. `src/themes/index.ts` 의 `themes` 에 한 줄 추가.
 3. 화면 · 컴포넌트 코드는 바꾸지 않는다. 역할이 부족하면 `ThemeColors` 에 역할을 추가하고 **모든 테마**에 값을 채운다.
 4. 어두운 테마면 `scheme: "dark"` (상태 바 글자가 밝아진다).
@@ -35,14 +35,15 @@ const { colors } = useTheme();
 
 ### 공통 토큰
 
-| 토큰         | 쓰는 법                                                       | 비고                                                                             |
-| ------------ | ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `typography` | `typography.body.fontSize`, `.lineHeight`                     | "종류 + 크기" (`headingLg`, `titleSm`, `caption` …)                              |
-| `space`      | `space[12]`, 화면 좌우 여백은 `gutter`                        | 시안이 2px 단위라 값이 곧 키. 없는 값은 가까운 단계로                            |
-| `radius`     | `radius.card`, 둥근 버튼 · 칩은 `radius.full`                 | 끝까지 둥근 것(정사각형이면 원형)은 모두 `full`                                  |
-| `border`     | `border.default`(1.5), `border.divider`(1)                    |                                                                                  |
-| `shadows`    | RN `boxShadow: theme.shadows.toast`, 웹 `var(--shadow-toast)` | 테마마다 다름. CSS 문자열이라 양쪽에서 씀 (RN New Architecture)                  |
-| `fonts`      | 직접 쓰지 않음. 앱은 `Text`, 웹은 `fonts.web` 스택            | `sans`(Noto Sans KR) · `ja`(Noto Sans JP) · `latin`(Inter) 의 굵기별 family 이름 |
+| 토큰         | 쓰는 법                                                          | 비고                                                                             |
+| ------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `typography` | `typography.body.fontSize`, `.lineHeight`                        | "종류 + 크기" (`headingLg`, `titleSm`, `caption` …)                              |
+| `space`      | `space[12]`, 화면 좌우 여백은 `gutter`                           | 시안이 2px 단위라 값이 곧 키. 없는 값은 가까운 단계로                            |
+| `radius`     | `radius.card`, 둥근 버튼 · 칩은 `radius.full`                    | 끝까지 둥근 것(정사각형이면 원형)은 모두 `full`                                  |
+| `border`     | `border.default`(1.5), `border.divider`(1)                       |                                                                                  |
+| `shadows`    | RN `boxShadow: theme.shadows.toast`, 웹 `var(--shadow-toast)`    | 테마마다 다름. CSS 문자열이라 양쪽에서 씀 (RN New Architecture)                  |
+| `folders`    | `folderColor(theme.folders, folder, index)` → `{ fill, stroke }` | 테마마다 다름. 기본 폴더는 고정 색, 나머지는 `cycle` 을 목록 순서대로 돌림       |
+| `fonts`      | 직접 쓰지 않음. 앱은 `Text`, 웹은 `fonts.web` 스택               | `sans`(Noto Sans KR) · `ja`(Noto Sans JP) · `latin`(Inter) 의 굵기별 family 이름 |
 
 글자 토큰의 줄 높이는 글자 크기의 1.25배 이상으로 둔다. Inter 의 기본 높이가 글자 크기의 1.21배라서, 이보다 작으면 RN 이 `( ) $ @ |` 같은 특수문자의 위아래를 자른다.
 

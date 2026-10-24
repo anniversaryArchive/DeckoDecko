@@ -11,7 +11,7 @@ import {
   useIsFolderNameTaken,
   useItemCountsByFolder,
 } from "@deckodecko/core/react";
-import { border, radius, space, useTheme } from "@deckodecko/ui";
+import { border, folderColor, radius, space, useTheme, type FolderColor } from "@deckodecko/ui";
 import {
   BottomSheet,
   Button,
@@ -49,10 +49,12 @@ type Props = {
 /** 아이템 시트에서 여는 폴더 선택 시트 (시안 B_FolderSheet). 새 폴더는 목록에 더하기만 하고, 고르는 건 목록에서 한다. */
 export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }: Props) {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, folders: folderColors } = useTheme();
   const { height } = useWindowDimensions();
   const folders = useFolders();
   const counts = useItemCountsByFolder();
+  // 폴더 색은 기본 폴더를 뺀 목록 순서로 돌린다
+  const userFolderIds = (folders.data ?? []).filter((f) => !f.isDefault).map((f) => f.id);
   const inputRef = useRef<TextInput>(null);
   const listRef = useRef<ScrollView>(null);
   // 새 폴더를 만든 뒤 목록이 다시 그려지면 맨 아래(새 폴더)로 내린다
@@ -105,6 +107,7 @@ export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }:
             <FolderRow
               key={folder.id}
               folder={folder}
+              color={folderColor(folderColors, folder, userFolderIds.indexOf(folder.id))}
               count={counts.data?.[folder.id] ?? 0}
               selected={folder.id === selectedFolderId}
               onPress={() => onSelect(folder.id)}
@@ -125,11 +128,13 @@ export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }:
 
 function FolderRow({
   folder,
+  color,
   count,
   selected,
   onPress,
 }: {
   folder: Folder;
+  color: FolderColor;
   count: number;
   selected: boolean;
   onPress: () => void;
@@ -154,11 +159,16 @@ function FolderRow({
         opacity: pressed ? PRESSED_OPACITY : 1,
       })}
     >
-      <Ionicons
-        name={selected ? "folder" : "folder-outline"}
-        size={FOLDER_ICON_SIZE}
-        color={selected ? colors.accent : colors.textMuted}
-      />
+      {/* 면과 선을 다른 색으로 그리려고 채운 아이콘 위에 선 아이콘을 겹친다 */}
+      <View>
+        <Ionicons name="folder" size={FOLDER_ICON_SIZE} color={color.fill} />
+        <Ionicons
+          name="folder-outline"
+          size={FOLDER_ICON_SIZE}
+          color={color.stroke}
+          style={{ position: "absolute" }}
+        />
+      </View>
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text variant="bodyStrong" color={selected ? "accent" : "text"} numberOfLines={1}>
           {folder.isDefault ? t("folder.defaultName") : folder.name}
