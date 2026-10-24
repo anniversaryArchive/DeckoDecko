@@ -17,7 +17,7 @@ insert into "public"."anime" (id, jp_title, kr_title, en_title, kr_sub_title, ty
 select setval(pg_get_serial_sequence('public.anime', 'id'), (select max(id) from "public"."anime"));
 
 -- ─────────────────────────────────────────────
--- 2. gacha (가챠) — gacha.id 는 자동 번호가 없어서 직접 넣는다
+-- 2. gacha (가챠) — id 는 자동 번호(identity)지만 화면 확인용으로 고정 id 를 넣고, 아래에서 시퀀스를 맞춘다
 -- ─────────────────────────────────────────────
 insert into "public"."gacha" (id, anime_id, name, name_kr, price, image_link) values
   ( 1, 1, '星の森 ラバーマスコット',            '별의 숲 러버 마스코트',         400, 'https://placehold.co/400x400?text=G01'),

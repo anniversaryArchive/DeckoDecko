@@ -21,7 +21,7 @@ const list = await repositories.gacha.listGacha();
 | 경로                    | 내용                                                                                                                 | React |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------- | ----- |
 | `src/supabase.ts`       | `createSupabaseClient(url, publishableKey)`. 환경변수는 호출하는 쪽이 넘김                                           | 없음  |
-| `src/database.types.ts` | Supabase 생성 타입. `pnpm --filter @deckodecko/core gen:types` 로 갱신                                               | 없음  |
+| `src/database.types.ts` | Supabase 생성 타입. `supabase/README.md` 의 gen types 절차로 갱신                                                    | 없음  |
 | `src/types.ts`          | 도메인 타입 (`Gacha`, `GachaDetail`, `GachaItem`, `Media`)                                                           | 없음  |
 | `src/repositories/`     | `GachaRepository` 인터페이스와 구현 (`memory`, 2주차에 `supabase`)                                                   | 없음  |
 | `src/queryKeys.ts`      | React Query 키 규칙                                                                                                  | 없음  |
