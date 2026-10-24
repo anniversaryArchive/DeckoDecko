@@ -21,6 +21,7 @@ import {
   Text,
 } from "@deckodecko/ui/native";
 
+import { FolderIcon } from "@/components/FolderIcon";
 import { formatFolderItemCount } from "@/lib/i18n";
 
 /** 머리글 원형 버튼 지름 */
@@ -159,16 +160,7 @@ function FolderRow({
         opacity: pressed ? PRESSED_OPACITY : 1,
       })}
     >
-      {/* 면과 선을 다른 색으로 그리려고 채운 아이콘 위에 선 아이콘을 겹친다 */}
-      <View>
-        <Ionicons name="folder" size={FOLDER_ICON_SIZE} color={color.fill} />
-        <Ionicons
-          name="folder-outline"
-          size={FOLDER_ICON_SIZE}
-          color={color.stroke}
-          style={{ position: "absolute" }}
-        />
-      </View>
+      <FolderIcon size={FOLDER_ICON_SIZE} color={color} />
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text variant="bodyStrong" color={selected ? "accent" : "text"} numberOfLines={1}>
           {folder.isDefault ? t("folder.defaultName") : folder.name}
