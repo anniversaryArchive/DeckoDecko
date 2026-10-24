@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useRef, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, useWindowDimensions, View, type TextInput } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 import type { Folder } from "@deckodecko/core";
 import {
@@ -34,7 +34,7 @@ const FOLDER_ICON_SIZE = 22;
 /** 선택된 행 오른쪽 체크 */
 const CHECK_SIZE = 20;
 /** 폴더가 많을 때 목록이 차지하는 최대 높이 (화면 높이 대비). 넘치면 목록만 스크롤한다 */
-const LIST_MAX_HEIGHT_RATIO = 0.4;
+const LIST_MAX_HEIGHT_RATIO = 0.3;
 
 type Props = {
   open: boolean;
@@ -42,11 +42,11 @@ type Props = {
   onClose: () => void;
   /** 지금 고른 폴더 (아이템 시트의 값) */
   selectedFolderId: string | undefined;
-  /** 폴더를 고르거나 새로 만들었을 때. 값을 바꾸고 open 을 false 로 바꿔 아이템 시트로 돌아간다 */
+  /** 목록에서 폴더를 골랐을 때. 값을 바꾸고 open 을 false 로 바꿔 아이템 시트로 돌아간다 */
   onSelect: (folderId: string) => void;
 };
 
-/** 아이템 시트에서 여는 폴더 선택 시트 (시안 B_FolderSheet). 목록에서 고르거나 새 폴더를 만들어 바로 고른다. */
+/** 아이템 시트에서 여는 폴더 선택 시트 (시안 B_FolderSheet). 새 폴더는 목록에 더하기만 하고, 고르는 건 목록에서 한다. */
 export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -54,6 +54,9 @@ export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }:
   const folders = useFolders();
   const counts = useItemCountsByFolder();
   const inputRef = useRef<TextInput>(null);
+  const listRef = useRef<ScrollView>(null);
+  // 새 폴더를 만든 뒤 목록이 다시 그려지면 맨 아래(새 폴더)로 내린다
+  const scrollToNew = useRef(false);
 
   return (
     <BottomSheet open={open} onClose={onClose}>
@@ -87,9 +90,16 @@ export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }:
       {folders.isError ? (
         <Text color="textMuted">{t("common.loadFailed")}</Text>
       ) : (
-        <BottomSheetScrollView
+        // BottomSheetScrollView 는 쓰지 않는다. 시트 높이를 목록 높이로 덮어써서 머리글 · 입력창이 잘린다 (@gorhom/bottom-sheet 5.2)
+        <ScrollView
           style={{ maxHeight: height * LIST_MAX_HEIGHT_RATIO, flexGrow: 0 }}
+          ref={listRef}
           contentContainerStyle={{ gap: space[8] }}
+          onContentSizeChange={() => {
+            if (!scrollToNew.current) return;
+            scrollToNew.current = false;
+            listRef.current?.scrollToEnd();
+          }}
         >
           {folders.data?.map((folder) => (
             <FolderRow
@@ -100,10 +110,15 @@ export function FolderSelectSheet({ open, onClose, selectedFolderId, onSelect }:
               onPress={() => onSelect(folder.id)}
             />
           ))}
-        </BottomSheetScrollView>
+        </ScrollView>
       )}
 
-      <NewFolderForm inputRef={inputRef} onCreated={onSelect} />
+      <NewFolderForm
+        inputRef={inputRef}
+        onCreated={() => {
+          scrollToNew.current = true;
+        }}
+      />
     </BottomSheet>
   );
 }
@@ -157,13 +172,13 @@ function FolderRow({
   );
 }
 
-/** 이름 입력 + 만들기. 같은 이름이 있으면 만들기를 막고, 만들면 그 폴더를 고른다 */
+/** 이름 입력 + 만들기. 같은 이름이 있으면 만들기를 막는다 */
 function NewFolderForm({
   inputRef,
   onCreated,
 }: {
   inputRef: RefObject<TextInput | null>;
-  onCreated: (folderId: string) => void;
+  onCreated: () => void;
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
@@ -177,9 +192,9 @@ function NewFolderForm({
   const submit = async () => {
     if (!canCreate) return;
     try {
-      const folder = await create.mutateAsync(name);
+      await create.mutateAsync(name);
       setName("");
-      onCreated(folder.id);
+      onCreated();
     } catch {
       // 안내는 create.error 로 아래에 보인다
     }
