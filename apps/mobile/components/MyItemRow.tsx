@@ -23,10 +23,9 @@ type Props = {
 
 /**
  * 가챠 상세 "내 아이템" 카드 안의 한 줄. 썸네일 · 이름 · 보조 줄 · WISH/GET 태그.
- * 썸네일은 사진 저장 방식(3주차 앱 내부 복사)이 정해지기 전이라 종류 색 면만 둔다.
- * 태그 원탭 전환(WISH ↔ GET)은 3주차 몫이라 지금은 표시만 한다.
- * 추가 · 삭제되면 행이 서서히 나타나거나 사라지고, 아래 행들은 밀려나며 자리를 옮긴다.
- * 기기의 "동작 줄이기"가 켜져 있으면 Reanimated 가 움직임 없이 바로 바꾼다 (기본값 ReduceMotion.System).
+ * 썸네일은 사진을 앱 안에 복사해 두는 방식이 생기기 전이라 종류 색 면만 둔다 (item.thumbnail 은 사진첩 assetId).
+ * 태그는 표시만 한다. 원탭 WISH ↔ GET 전환은 아직 없다.
+ * 추가 · 삭제되면 행이 페이드되고 아래 행이 자리를 옮긴다. 기기의 "동작 줄이기"를 따른다 (Reanimated 기본값 ReduceMotion.System).
  */
 export function MyItemRow({ item, detail, last, onPress }: Props) {
   const { colors } = useTheme();

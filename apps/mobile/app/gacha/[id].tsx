@@ -33,7 +33,6 @@ const STATUS_BAR_FADE_DISTANCE = 60;
 /**
  * 가챠 상세. 스택 헤더 없이 히어로 이미지 + 기본 정보 + 이 가챠 소장률 + 내 아이템, 아래에 아이템 추가 버튼.
  * 뒤로 버튼은 로딩 · 에러 상태에서도 보이도록 화면 위에 띄운다.
- * 내 아이템 · 소장률은 로컬 기록 훅(items)을 쓰므로, 시트에서 기록을 추가 · 수정하면 쓰기 훅의 invalidate 로 바로 다시 그려진다.
  */
 export default function GachaDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -61,13 +60,9 @@ export default function GachaDetailScreen() {
   );
 }
 
-// TODO(#141): 여경 담당 아이템 시트가 들어오면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
-function openAddItemSheet(_gachaId: string) {
-  // 추가 시트 (gachaId 를 넘겨 이 가챠에 기록)
-}
-function openEditItemSheet(_itemId: string) {
-  // 수정 시트 (기록 id)
-}
+// TODO(혜진): 아이템 추가 · 수정 시트가 병합되면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
+function openAddItemSheet(_gachaId: string) {}
+function openEditItemSheet(_itemId: string) {}
 
 function DetailContent({ gacha }: { gacha: GachaDetail }) {
   const { t } = useTranslation();
@@ -77,8 +72,7 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
   // 가격 뒤에 붙는 보조 문구: "(세금 포함) · 전 6종". 가격이 없으면 종 수만.
   const priceTail = joinDot([pricePerPlay != null ? t("common.taxIncluded") : null, itemTotal]);
 
-  // 상태 표시줄 뒤 배경. 히어로가 보이는 동안은 투명하고, 히어로가 상태 표시줄 밑으로 올라가면 화면 배경색으로 덮어 글자와 겹치지 않게 한다.
-  // 히어로는 상태 표시줄 뒤까지 깔려 있어서 GACHA_HERO_HEIGHT 만큼 스크롤하면 아래 끝이 상태 표시줄 아래 선에 닿는다.
+  // 히어로가 상태 표시줄 뒤까지 깔려 있어 GACHA_HERO_HEIGHT 만큼 스크롤하면 히어로 끝이 상태 표시줄 아래 선에 닿는다
   const scrollY = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((e) => {
     scrollY.value = e.contentOffset.y;
@@ -184,7 +178,7 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
 /** 이 가챠 소장률: 가진(GET) 수 / 라인업(gacha_items) 종 수 */
 function DetailCollection({ gacha }: { gacha: GachaDetail }) {
   const counts = useItemCounts(gacha.id);
-  // 개수를 읽는 동안은 0 으로 둔다 (로컬 DB 라 금방 끝난다). 실패해도 바는 0 으로 보이고 목록 쪽에서 다시 시도를 안내한다.
+  // 읽는 중 · 실패면 0 으로 그린다. 다시 시도 안내는 아래 목록의 QueryState 가 한다
   const collection = gachaCollection(counts.data ?? { wish: 0, get: 0 }, gacha.items.length);
   return <GachaCollectionCard collection={collection} />;
 }
