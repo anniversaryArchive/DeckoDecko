@@ -1,10 +1,19 @@
 "use client";
 
-import { keepPreviousData, skipToken, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  skipToken,
+  useInfiniteQuery,
+  useQuery,
+  type InfiniteData,
+} from "@tanstack/react-query";
 
+import { flattenPages, nextPageOffset } from "../pagination";
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
-import { GACHA_DEFAULTS } from "../repositories/gacha";
+import { GACHA_DEFAULTS, resolveGachaFilter } from "../repositories/gacha";
+import type { GachaFilter, GachaSort } from "../repositories/gacha";
+import type { Gacha, Page } from "../types";
 
 /** 홈 "새로 나왔어요" */
 export function useGachaList(limit: number = GACHA_DEFAULTS.listLimit) {
@@ -46,6 +55,38 @@ export function useGachaSearch(keyword: string, options?: { limit?: number; offs
     queryKey: queryKeys.gacha.search(trimmed, offset, limit),
     queryFn: trimmed ? () => gacha.searchGacha({ keyword: trimmed, offset, limit }) : skipToken,
     // 검색어를 비우면 이전 결과도 지운다 (keepPreviousData 는 꺼진 쿼리에도 마지막 결과를 돌려준다)
+    placeholderData: trimmed ? keepPreviousData : undefined,
+  });
+}
+
+// select 를 모듈 밖에 두어 참조가 같게 유지한다 (React Query 가 결과를 재사용해 목록이 매번 다시 그려지지 않는다)
+function selectSearchPages(data: InfiniteData<Page<Gacha>, number>): Page<Gacha> {
+  return flattenPages(data.pages);
+}
+
+/**
+ * 검색 결과 무한 스크롤 (기본 10개씩). data 는 받은 페이지를 이은 { items, total } 이고 total 은 필터까지 적용한 전체 개수.
+ * 다음 페이지는 fetchNextPage, 남았는지는 hasNextPage. 빈 검색어는 요청하지 않는다.
+ * 검색어 · 필터 · 정렬을 바꾸면 새 결과가 올 때까지 이전 결과를 들고 있다 (isPlaceholderData). 그동안 보일지는 화면이 정한다.
+ */
+export function useGachaSearchPages(
+  keyword: string,
+  options?: { filter?: GachaFilter; sort?: GachaSort; pageSize?: number }
+) {
+  const { gacha } = useRepositories();
+  const trimmed = keyword.trim();
+  const filter = resolveGachaFilter(options?.filter);
+  const sort = options?.sort ?? GACHA_DEFAULTS.searchSort;
+  const pageSize = options?.pageSize ?? GACHA_DEFAULTS.searchPageSize;
+  return useInfiniteQuery({
+    queryKey: queryKeys.gacha.searchPages(trimmed, filter, sort, pageSize),
+    queryFn: trimmed
+      ? ({ pageParam }) =>
+          gacha.searchGacha({ keyword: trimmed, filter, sort, offset: pageParam, limit: pageSize })
+      : skipToken,
+    initialPageParam: 0,
+    getNextPageParam: (_lastPage, allPages) => nextPageOffset(allPages),
+    select: selectSearchPages,
     placeholderData: trimmed ? keepPreviousData : undefined,
   });
 }

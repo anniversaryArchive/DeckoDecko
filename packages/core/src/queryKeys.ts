@@ -1,3 +1,4 @@
+import type { GachaSort, ResolvedGachaFilter } from "./repositories/gacha";
 import type { ItemType } from "./types";
 
 /**
@@ -15,6 +16,13 @@ export const queryKeys = {
     detail: (id: string) => ["gacha", "detail", id] as const,
     search: (keyword: string, offset: number, limit: number) =>
       ["gacha", "search", keyword, offset, limit] as const,
+    /** 검색 결과 무한 스크롤. 캐시 모양(페이지 묶음)이 search 와 달라서 용도를 나눈다. 필터는 resolveGachaFilter 를 거친 값 */
+    searchPages: (
+      keyword: string,
+      filter: ResolvedGachaFilter,
+      sort: GachaSort,
+      pageSize: number
+    ) => ["gacha", "searchPages", keyword, filter, sort, pageSize] as const,
   },
   notice: {
     all: ["notice"] as const,
