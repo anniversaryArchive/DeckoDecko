@@ -8,7 +8,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { BackHandler, Keyboard, Platform, View } from "react-native";
-import { Easing } from "react-native-reanimated";
+import { Easing, ReduceMotion } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "../theme";
@@ -53,7 +53,6 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
   const insets = useSafeAreaInsets();
   const ref = useRef<BottomSheetModal>(null);
   // 라이브러리 기본값(iOS 스프링)은 Reanimated 4 에서 거의 순간이동처럼 보여서, 시간이 정해진 움직임으로 바꾼다.
-  // 기기의 "동작 줄이기"가 켜져 있으면 라이브러리가 애니메이션 없이 바로 열고 닫는다. 접근성 설정을 따르려고 일부러 그대로 둔다.
   // 천천히 출발해 천천히 멈추는 곡선. 감속만 하는 곡선(cubic-out 등)은 처음 0.1초에 거의 다 움직여 "뿅" 하고 나타나 보인다.
   const animationConfigs = useBottomSheetTimingConfigs({
     duration: DURATION,
@@ -207,7 +206,7 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
       accessible={false}
       accessibilityLabel={null}
       accessibilityRole={null}
-      // 다 열렸을 때 온다. 동작 줄이기가 켜져 애니메이션 없이 열릴 때도 온다.
+      // 다 열렸을 때 온다.
       onChange={(index) => {
         if (index >= 0) markShown();
       }}
@@ -231,6 +230,10 @@ export function BottomSheet({ open, onClose, title, closeLabel, children }: Bott
         }
       }}
       animationConfigs={animationConfigs}
+      // 기기의 "동작 줄이기"가 켜져 있어도 애니메이션으로 연다. 라이브러리가 애니메이션 없이 열려고 하면 시트가 아예 나타나지 않는다
+      // (@gorhom/bottom-sheet 5.2 · 이슈 #1560). iOS 의 시트도 동작 줄이기와 상관없이 올라온다.
+      // TODO: 라이브러리가 이슈 #1560 을 고치면 이 줄을 지운다.
+      overrideReduceMotion={ReduceMotion.Never}
       enablePanDownToClose
       enableDynamicSizing
       keyboardBehavior="interactive"
