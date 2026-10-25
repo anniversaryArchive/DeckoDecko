@@ -241,8 +241,10 @@ export function describeLocalRepositories(
 
       it("기본 폴더 · 없는 id · 빈 이름으로는 이름을 바꾸지 않는다", async () => {
         const folder = await repos.folders.createFolder("가방");
-        await expect(repos.folders.renameFolder((await defaultFolder()).id, "x")).rejects.toThrow();
-        await expect(repos.folders.renameFolder("nope", "x")).rejects.toThrow();
+        await expect(repos.folders.renameFolder((await defaultFolder()).id, "x")).rejects.toThrow(
+          "The default folder cannot be renamed"
+        );
+        await expect(repos.folders.renameFolder("nope", "x")).rejects.toThrow("folder not found");
         await expect(repos.folders.renameFolder(folder.id, " ")).rejects.toThrow();
         expect((await repos.folders.listFolders()).map((f) => f.name)).toEqual(["", "가방"]);
       });

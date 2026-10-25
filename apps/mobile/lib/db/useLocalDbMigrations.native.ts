@@ -9,7 +9,8 @@ import { db, enableForeignKeys } from "./client.native";
 /**
  * 앱 시작 시 로컬 DB 마이그레이션을 한 번 돌리고, 끝나면 외래 키 검사를 켠다. 루트 레이아웃에서 호출하고, 끝날 때까지 화면을 띄우지 않는다.
  * success 는 외래 키를 켠 뒤에 true 가 된다 (마이그레이션 직후에 화면을 띄우면 자식 effect 의 쿼리가 외래 키를 켜기 전에 돈다).
- * 실패하면 console.error 로 남긴다. TODO: 실패 화면은 아직 없다.
+ * 실패하면 console.error 로 남긴다.
+ * TODO(혜진): 마이그레이션 실패 화면. 지금은 앱을 그대로 띄우고 로컬 기록 훅만 에러가 된다.
  */
 export function useLocalDbMigrations() {
   const { success, error } = useMigrations(db, migrations);

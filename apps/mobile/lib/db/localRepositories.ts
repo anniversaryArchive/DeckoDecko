@@ -138,15 +138,15 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
       },
 
       async renameFolder(id, name) {
-        const folder = await getFolder(id);
-        if (!folder) throw new Error(`folder not found: ${id}`);
-        if (folder.isDefault) throw new Error("The default folder cannot be renamed");
+        // 기본 폴더 조건을 UPDATE 안에 넣어 확인과 수정을 한 문장으로 한다
         const [row] = await db
           .update(folders)
           .set({ name: cleanName(name) })
-          .where(eq(folders.id, id))
+          .where(and(eq(folders.id, id), eq(folders.isDefault, false)))
           .returning();
-        return row!;
+        if (row) return row;
+        if (await getFolder(id)) throw new Error("The default folder cannot be renamed");
+        throw new Error(`folder not found: ${id}`);
       },
 
       async deleteFolder(id) {

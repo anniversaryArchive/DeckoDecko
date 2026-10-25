@@ -438,7 +438,7 @@ function ProgressBarDemo() {
             소장률 (GET / 종 수)
           </Text>
           <Text variant="headingLg" color="accent">
-            {Math.round(rate * 100)}%
+            {Math.floor(rate * 100)}%
           </Text>
         </View>
         <ProgressBar variant="summary" value={rate} accessibilityLabel="소장률" />
