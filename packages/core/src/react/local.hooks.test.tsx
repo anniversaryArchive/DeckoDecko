@@ -311,4 +311,14 @@ describe("collectionRate", () => {
     expect(collectionRate({ wish: 1, get: 2 })).toBe(66);
     expect(collectionRate({ wish: 0, get: 3 })).toBe(100);
   });
+
+  it("부동소수 오차로 한 칸 덜 나오지 않는다 (전체 1–200 개를 정수 나눗셈과 비교)", () => {
+    expect(collectionRate({ wish: 21, get: 29 })).toBe(58);
+    for (let total = 1; total <= 200; total++) {
+      for (let get = 0; get <= total; get++) {
+        const expected = (get * 100 - ((get * 100) % total)) / total;
+        expect(collectionRate({ wish: total - get, get })).toBe(expected);
+      }
+    }
+  });
 });
