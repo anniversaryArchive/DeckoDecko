@@ -36,7 +36,6 @@ describe("행 → 도메인 매핑", () => {
       titleJa: "星の森",
       titleEn: "Forest of Stars",
       kind: "anime",
-      imageUrl: null,
     });
   });
 

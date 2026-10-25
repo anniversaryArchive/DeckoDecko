@@ -27,7 +27,6 @@ export function toMedia(row: AnimeRow): Media {
     titleJa: row.jp_title,
     titleEn: row.en_title,
     kind: toMediaKind(row.type),
-    imageUrl: null, // anime 테이블에 이미지 컬럼이 아직 없다
   };
 }
 
