@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, useWindowDimensions, View, type TextInput } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-import type { Folder } from "@deckodecko/core";
+import { normalizeName, type Folder } from "@deckodecko/core";
 import {
   useCreateFolder,
   useFolders,
@@ -194,12 +194,15 @@ function NewFolderForm({
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const taken = useIsFolderNameTaken(name);
+  const takenQuery = useIsFolderNameTaken(name);
   const create = useCreateFolder();
 
   const filled = name.trim().length > 0;
+  // 기본 폴더는 DB 이름이 비어 있어 저장소 검사로는 표시 이름과의 중복을 못 잡는다
+  const takenByDefault = normalizeName(name) === normalizeName(t("folder.defaultName"));
+  const taken = takenByDefault || takenQuery.data === true;
   // 중복 검사 결과가 오기 전에는 만들지 않는다 (저장소는 중복을 막지 않는다)
-  const canCreate = filled && taken.data === false && !create.isPending;
+  const canCreate = filled && !takenByDefault && takenQuery.data === false && !create.isPending;
 
   const submit = async () => {
     if (!canCreate) return;
@@ -213,7 +216,7 @@ function NewFolderForm({
   };
 
   const message =
-    filled && taken.data
+    filled && taken
       ? { text: t("folder.nameTaken"), color: "accent" as const }
       : create.isError
         ? { text: t("folder.createFailed"), color: "accent" as const }
