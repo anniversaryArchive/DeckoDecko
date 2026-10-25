@@ -212,6 +212,12 @@ describe("createSupabaseGachaRepository", () => {
     expect(requests[0]!.searchParams.get("id")).toBe("eq.999");
   });
 
+  it("상세: 안전한 정수를 넘는 id 는 요청하지 않고 null", async () => {
+    const { repo, requests } = fakeRepository(() => ({ body: [] }));
+    await expect(repo.getGacha("99999999999999999999")).resolves.toBeNull();
+    expect(requests).toHaveLength(0);
+  });
+
   it("검색: 빈 검색어는 요청하지 않는다", async () => {
     const { repo, requests } = fakeRepository(() => ({ body: [] }));
     await expect(repo.searchGacha({ keyword: "   " })).resolves.toEqual({ items: [], total: 0 });
@@ -260,6 +266,19 @@ describe("createSupabaseGachaRepository", () => {
     await expect(repo.searchGacha({ keyword: "숲", offset: 40 })).resolves.toEqual({
       items: [],
       total: 3,
+    });
+  });
+
+  it("검색: 마지막 페이지 너머에서 개수 헤더도 없으면 전체 0", async () => {
+    const { repo } = fakeRepository((url) => {
+      if (url.pathname.endsWith("/anime")) return { body: [] };
+      return url.searchParams.has("offset")
+        ? { status: 416, body: { code: "PGRST103", message: "Requested range not satisfiable" } }
+        : { body: [] };
+    });
+    await expect(repo.searchGacha({ keyword: "숲", offset: 40 })).resolves.toEqual({
+      items: [],
+      total: 0,
     });
   });
 
