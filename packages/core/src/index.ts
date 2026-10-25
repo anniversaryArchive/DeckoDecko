@@ -6,9 +6,31 @@
  *   "./mocks"        : 개발 · 테스트용 목 데이터.
  * 화면은 repository 와 훅만 쓴다. Supabase 클라이언트(2주차)는 여기서 export 하지 않는다.
  */
-export type { Gacha, GachaDetail, GachaItem, Media, MediaKind, Page } from "./types";
+export type {
+  Folder,
+  Gacha,
+  GachaDetail,
+  GachaItem,
+  Item,
+  ItemCounts,
+  ItemType,
+  Media,
+  MediaKind,
+  Page,
+} from "./types";
 export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repositories/gacha";
 export { GACHA_DEFAULTS } from "./repositories/gacha";
-export type { Repositories } from "./repositories";
+export type {
+  CreateItemInput,
+  ItemNameQuery,
+  ItemRepository,
+  ListItemsParams,
+  UpdateItemInput,
+} from "./repositories/items";
+export type { FolderRepository } from "./repositories/folders";
+export type { LocalRepositories, Repositories } from "./repositories";
+export { cleanName, normalizeName } from "./name";
+export { createMemoryLocalRepositories } from "./repositories/local.memory";
+export { collectionRate } from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
 export { queryKeys } from "./queryKeys";

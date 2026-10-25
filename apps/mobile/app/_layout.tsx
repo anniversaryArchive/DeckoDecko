@@ -16,17 +16,19 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
 import { ToastProvider } from "@deckodecko/ui/native";
 
+import { StateMessage } from "@/components/StateMessage";
 import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
 import { i18n, pickLanguage } from "@/lib/i18n";
 import { repositories } from "@/lib/repositories";
 
-// 글꼴을 다 불러올 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
+// 글꼴과 로컬 DB 마이그레이션이 끝날 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
 void SplashScreen.preventAutoHideAsync();
 
 /**
@@ -35,7 +37,9 @@ void SplashScreen.preventAutoHideAsync();
  * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
  */
 export default function RootLayout() {
-  useLocalDbMigrations();
+  const localDb = useLocalDbMigrations();
+  // 실패하면 스플래시를 내리고 앱 대신 실패 화면을 띄운다 (LocalDbFailed)
+  const localDbDone = localDb.success || localDb.error !== undefined;
   const { t } = useTranslation();
 
   // 키 이름이 곧 fontFamily 이름이다. @deckodecko/ui 의 fonts.sans · fonts.ja · fonts.latin 과 같아야 한다.
@@ -51,7 +55,7 @@ export default function RootLayout() {
     Inter_700Bold,
   });
   // 실패해도 앱은 띄운다. 등록되지 않은 글꼴은 시스템 글꼴로 보인다.
-  const ready = loaded || error !== null;
+  const ready = (loaded || error !== null) && localDbDone;
 
   // 앱을 쓰는 중에 기기 언어를 바꾸면 따라간다 (Android 는 앱을 다시 띄우지 않고 바뀔 수 있다)
   const locales = useLocales();
@@ -72,16 +76,36 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
-        {/* 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다 */}
-        <CoreProvider repositories={repositories}>
-          <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
-            <BottomSheetModalProvider>
-              <RootStack />
-            </BottomSheetModalProvider>
-          </ToastProvider>
-        </CoreProvider>
+        {localDb.success ? (
+          // 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다
+          <CoreProvider repositories={repositories}>
+            <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
+              <BottomSheetModalProvider>
+                <RootStack />
+              </BottomSheetModalProvider>
+            </ToastProvider>
+          </CoreProvider>
+        ) : (
+          <LocalDbFailed retrying={localDb.retrying} onRetry={localDb.retry} />
+        )}
       </ThemeProvider>
     </GestureHandlerRootView>
+  );
+}
+
+/** 로컬 DB 를 준비하지 못했을 때 앱 대신 보이는 화면. 기록을 저장할 수 없으므로 탐색 화면도 띄우지 않는다. */
+function LocalDbFailed({ retrying, onRetry }: { retrying: boolean; onRetry: () => void }) {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StateMessage
+        fill
+        message={t("startup.localDbFailed")}
+        loading={retrying}
+        onRetry={retrying ? undefined : onRetry}
+      />
+    </View>
   );
 }
 
