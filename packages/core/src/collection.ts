@@ -1,3 +1,4 @@
+// 소장 상태 계산 (홈 소장률 · 3주차 가챠별 소장률). 화면에 보일 문자열은 i18n 헬퍼가 만든다.
 import type { ItemCounts } from "./types";
 
 /**
