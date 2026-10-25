@@ -138,6 +138,14 @@ export const ko = {
     delete: "삭제",
     saveFailed: "저장하지 못했어요",
     deleteFailed: "삭제하지 못했어요",
+    // 삭제 확인 시트
+    deleteTitle: "이 아이템을 삭제할까요?",
+    deleteMessage: "사진과 메모도 함께 지워지고,\n삭제한 뒤에는 되돌릴 수 없어요.",
+    // GET 기록을 지울 때만 보인다. <bold> 는 화면의 Trans 가 굵은 Text 로 바꾼다
+    deleteCountChange:
+      "이 가챠의 소장 수가 <bold>{{from, number}} → {{to, number}}</bold>로 바뀌어요.",
+    wishBadge: "WISH",
+    getBadge: "GET",
   },
   notice: {
     title: "공지사항",

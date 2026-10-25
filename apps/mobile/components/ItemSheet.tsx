@@ -7,7 +7,6 @@ import { ActionSheetIOS, Alert, Image, Keyboard, Platform, Pressable, View } fro
 import type { Item, ItemType } from "@deckodecko/core";
 import {
   useCreateItem,
-  useDeleteItem,
   useFolders,
   useIsItemNameTaken,
   useItem,
@@ -18,6 +17,7 @@ import { BottomSheet, Button, Input, PRESSED_OPACITY, Segment, Text } from "@dec
 
 import { FolderIcon } from "@/components/FolderIcon";
 import { FolderSelectSheet } from "@/components/FolderSelectSheet";
+import { ItemDeleteSheet } from "@/components/ItemDeleteSheet";
 import { formatDate } from "@/lib/i18n";
 
 /** 사진 칸 (정사각형) */
@@ -36,7 +36,7 @@ const FOLDER_ICON_SIZE = 20;
 const CHEVRON_SIZE = 18;
 /** 수정 시트의 삭제 버튼 폭 */
 const DELETE_WIDTH = 110;
-/** 키보드가 내려갔다는 알림이 오지 않을 때 폴더 선택 시트를 열기까지 기다리는 최대 시간(ms) */
+/** 키보드가 내려갔다는 알림이 오지 않을 때 위 시트(폴더 선택 · 삭제 확인)를 열기까지 기다리는 최대 시간(ms) */
 const KEYBOARD_HIDE_TIMEOUT = 500;
 
 type Form = {
@@ -73,7 +73,8 @@ type Props = {
 
 /**
  * 상세에서 여는 아이템 추가 · 수정 시트 (시안 B_ItemSheet · B_ItemSheetEdit).
- * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록. 폴더는 폴더 선택 시트(시트 위에 시트)에서 고른다.
+ * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록.
+ * 폴더 선택 · 삭제 확인은 이 시트 위에 여는 시트다 (시안 B_FolderSheet · B_ItemDelete).
  */
 export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
   const { t } = useTranslation();
@@ -81,14 +82,15 @@ export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
   const folders = useFolders();
   const [form, setForm] = useState<Form>(EMPTY_FORM);
   const [folderSheetOpen, setFolderSheetOpen] = useState(false);
+  const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
   // 키보드가 내려가길 기다리는 중이면, 그 기다림을 취소하는 함수. 여러 번 눌러도 한 번만 기다린다.
   const cancelPendingOpen = useRef<(() => void) | null>(null);
 
-  // 키보드를 먼저 내리고, 다 내려간 뒤에 폴더 선택 시트를 연다.
+  // 키보드를 먼저 내리고, 다 내려간 뒤에 위 시트를 연다.
   // 키보드가 떠 있을 때 열면 iOS 에서 라이브러리가 새 시트를 키보드 높이만큼 뺀 자리로 보내 시트가 보이지 않는다 (@gorhom/bottom-sheet 5.2).
-  const openFolders = useCallback(() => {
+  const openOver = useCallback((show: () => void) => {
     if (!Keyboard.isVisible()) {
-      setFolderSheetOpen(true);
+      show();
       return;
     }
     if (cancelPendingOpen.current) return;
@@ -99,7 +101,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
     };
     const finish = () => {
       cancel();
-      setFolderSheetOpen(true);
+      show();
     };
     const sub = Keyboard.addListener("keyboardDidHide", finish);
     const timer = setTimeout(finish, KEYBOARD_HIDE_TIMEOUT);
@@ -152,7 +154,8 @@ export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
             item={editingItem}
             form={form}
             onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
-            onOpenFolders={openFolders}
+            onOpenFolders={() => openOver(() => setFolderSheetOpen(true))}
+            onDelete={() => openOver(() => setDeleteSheetOpen(true))}
             onDone={onClose}
           />
         ) : (
@@ -176,6 +179,18 @@ export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
           setFolderSheetOpen(false);
         }}
       />
+
+      {editingItem ? (
+        <ItemDeleteSheet
+          open={deleteSheetOpen}
+          onClose={() => setDeleteSheetOpen(false)}
+          onDeleted={() => {
+            setDeleteSheetOpen(false);
+            onClose();
+          }}
+          item={editingItem}
+        />
+      ) : null}
     </>
   );
 }
@@ -186,6 +201,7 @@ function ItemForm({
   form,
   onChange,
   onOpenFolders,
+  onDelete,
   onDone,
 }: {
   gachaId: string;
@@ -194,16 +210,17 @@ function ItemForm({
   form: Form;
   onChange: (patch: Partial<Form>) => void;
   onOpenFolders: () => void;
+  /** 삭제를 눌렀을 때. 삭제 확인 시트를 연다 */
+  onDelete: () => void;
   onDone: () => void;
 }) {
   const { t } = useTranslation();
   const taken = useIsItemNameTaken(gachaId, form.name, item?.id);
   const create = useCreateItem();
   const update = useUpdateItem();
-  const remove = useDeleteItem();
 
   const filled = form.name.trim().length > 0;
-  const busy = create.isPending || update.isPending || remove.isPending;
+  const busy = create.isPending || update.isPending;
   // 중복 검사 결과가 오기 전에는 저장하지 않는다 (저장소는 중복을 막지 않는다)
   const canSave = filled && taken.data === false && !busy;
 
@@ -238,17 +255,6 @@ function ItemForm({
     }
   };
 
-  // TODO(여경): 삭제 확인 시안이 나오면 확인을 받은 뒤 지운다. 지금은 누르면 바로 지운다.
-  const deleteItem = async () => {
-    if (!item || busy) return;
-    try {
-      await remove.mutateAsync(item.id);
-      onDone();
-    } catch {
-      // 안내는 remove.error 로 버튼 위에 보인다
-    }
-  };
-
   const nameMessage =
     filled && taken.data
       ? { text: t("item.nameTaken"), color: "accent" as const }
@@ -262,11 +268,7 @@ function ItemForm({
           }
         : { text: t("item.nameHint"), color: "textMuted" as const };
 
-  const failure = remove.isError
-    ? t("item.deleteFailed")
-    : create.isError || update.isError
-      ? t("item.saveFailed")
-      : null;
+  const failure = create.isError || update.isError ? t("item.saveFailed") : null;
 
   return (
     <>
@@ -317,7 +319,7 @@ function ItemForm({
           <Button
             variant="secondary"
             disabled={busy}
-            onPress={deleteItem}
+            onPress={onDelete}
             style={{ width: DELETE_WIDTH }}
           >
             {t("item.delete")}

@@ -116,6 +116,12 @@ export const en: Messages = {
     delete: "Delete",
     saveFailed: "Couldn't save",
     deleteFailed: "Couldn't delete",
+    deleteTitle: "Delete this item?",
+    deleteMessage: "Its photo and memo will be deleted too.\nThis can't be undone.",
+    deleteCountChange:
+      "Owned count for this gacha goes <bold>{{from, number}} → {{to, number}}</bold>.",
+    wishBadge: "WISH",
+    getBadge: "GET",
   },
   notice: {
     title: "Notices",
