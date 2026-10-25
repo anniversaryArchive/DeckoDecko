@@ -40,6 +40,13 @@ export const ko = {
     submit: "검색",
     clear: "검색어 지우기",
     popularTitle: "인기 검색 굿즈",
+    recentSearchesTitle: "최근 검색어",
+    recentGachaTitle: "최근 본 굿즈",
+    clearAll: "전체 삭제",
+    // "전체 삭제" 버튼의 읽기 이름 (두 섹션에 같은 글자의 버튼이 있어서 무엇을 지우는지 붙인다)
+    clearRecentSearches: "최근 검색어 전체 삭제",
+    clearRecentGacha: "최근 본 굿즈 전체 삭제",
+    removeRecentSearch: "{{keyword}} 삭제",
     // <bold> 는 화면의 Trans 가 굵은 Text 로 바꾼다
     resultCount_one: "총 <bold>{{count, number}}</bold>개",
     resultCount_other: "총 <bold>{{count, number}}</bold>개",

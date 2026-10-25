@@ -4,7 +4,7 @@ import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { GachaDetail } from "@deckodecko/core";
-import { useGacha } from "@deckodecko/core/react";
+import { useGacha, useRecordRecentGacha } from "@deckodecko/core/react";
 import { gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Text } from "@deckodecko/ui/native";
 
@@ -23,6 +23,8 @@ export default function GachaDetailScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const gacha = useGacha(id);
+  // 들어올 때마다 최근 본 굿즈(검색 탭)에 남긴다
+  useRecordRecentGacha(id);
 
   return (
     <View style={{ flex: 1 }}>
