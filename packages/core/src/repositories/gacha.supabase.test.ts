@@ -1,17 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { createSupabaseClient } from "../supabase";
-import {
-  createSupabaseGachaRepository,
-  toGacha,
-  toGachaDetail,
-  toIlikeValue,
-  toMedia,
-  toReleaseMonth,
-  type AnimeRow,
-  type GachaDetailRow,
-  type GachaSummaryRow,
-} from "./gacha.supabase";
+import { createSupabaseGachaRepository } from "./gacha.supabase";
+import { toGacha, toGachaDetail, toMedia, toReleaseMonth } from "./gacha.supabase.mappers";
+import { toIlikeValue } from "./gacha.supabase.params";
+import type { AnimeRow, GachaDetailRow, GachaSummaryRow } from "./gacha.supabase.rows";
 
 const forest: AnimeRow = {
   id: 1,
