@@ -16,12 +16,14 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { CoreProvider } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
 import { ToastProvider } from "@deckodecko/ui/native";
 
+import { StateMessage } from "@/components/StateMessage";
 import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
 import { i18n, pickLanguage } from "@/lib/i18n";
 import { repositories } from "@/lib/repositories";
@@ -36,7 +38,7 @@ void SplashScreen.preventAutoHideAsync();
  */
 export default function RootLayout() {
   const localDb = useLocalDbMigrations();
-  // 실패해도 앱은 띄운다 (로컬 기록 훅만 에러 상태가 된다). 웹은 바로 실패로 끝난다.
+  // 실패하면 스플래시를 내리고 앱 대신 실패 화면을 띄운다 (LocalDbFailed)
   const localDbDone = localDb.success || localDb.error !== undefined;
   const { t } = useTranslation();
 
@@ -74,16 +76,36 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
-        {/* 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다 */}
-        <CoreProvider repositories={repositories}>
-          <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
-            <BottomSheetModalProvider>
-              <RootStack />
-            </BottomSheetModalProvider>
-          </ToastProvider>
-        </CoreProvider>
+        {localDb.success ? (
+          // 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다
+          <CoreProvider repositories={repositories}>
+            <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
+              <BottomSheetModalProvider>
+                <RootStack />
+              </BottomSheetModalProvider>
+            </ToastProvider>
+          </CoreProvider>
+        ) : (
+          <LocalDbFailed retrying={localDb.retrying} onRetry={localDb.retry} />
+        )}
       </ThemeProvider>
     </GestureHandlerRootView>
+  );
+}
+
+/** 로컬 DB 를 준비하지 못했을 때 앱 대신 보이는 화면. 기록을 저장할 수 없으므로 탐색 화면도 띄우지 않는다. */
+function LocalDbFailed({ retrying, onRetry }: { retrying: boolean; onRetry: () => void }) {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StateMessage
+        fill
+        message={t("startup.localDbFailed")}
+        loading={retrying}
+        onRetry={retrying ? undefined : onRetry}
+      />
+    </View>
   );
 }
 
