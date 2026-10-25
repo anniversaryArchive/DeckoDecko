@@ -55,9 +55,11 @@ Supabase 는 팀 공용 계정으로 로그인하고, Expo `deckodecko` org 에 
 pnpm exec supabase migration new <설명>      # supabase/migrations/<시각>_<설명>.sql 생성
 # SQL 작성
 pnpm exec supabase db push --dry-run         # dev 에 적용될 파일 확인
-pnpm exec supabase db push                   # dev 에 적용
-pnpm --filter @deckodecko/core gen:types     # 생성 타입 갱신 (gen types --linked + prettier)
+pnpm db:push                                 # dev 에 적용 + 생성 타입 갱신
+git add supabase/migrations packages/core/src/database.types.ts   # 마이그레이션과 타입을 같은 커밋에
 ```
+
+- `pnpm db:push` 는 `supabase db push` 뒤에 `gen:types`(gen types --linked + prettier)를 돌린다. 타입만 다시 만들 때는 `pnpm --filter @deckodecko/core gen:types`.
 
 - 생성 타입은 `packages/core/src/database.types.ts` 에 둔다. 손으로 고치지 않고 마이그레이션을 바꿀 때마다 다시 만든다.
 - `gen:types` 는 생성 뒤 prettier 를 돌린다. 생성 출력은 prettier 모양이 아니라 그대로 두면 CI format:check 에서 막힌다.
