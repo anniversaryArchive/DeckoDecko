@@ -7,3 +7,12 @@
 export { CoreProvider, useRepositories } from "./provider";
 export { createQueryClient } from "./queryClient";
 export { useGacha, useGachaList, useGachaSearch, usePopularGacha } from "./gacha.hooks";
+export {
+  useAddRecentSearch,
+  useClearRecentGacha,
+  useClearRecentSearches,
+  useRecentGacha,
+  useRecentSearches,
+  useRecordRecentGacha,
+  useRemoveRecentSearch,
+} from "./recent.hooks";

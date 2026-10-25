@@ -11,4 +11,19 @@ export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repo
 export { GACHA_DEFAULTS } from "./repositories/gacha";
 export type { Repositories } from "./repositories";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
+export type { RecentRepository } from "./repositories/recent";
+export {
+  RECENT_LIMIT,
+  normalizeKeyword,
+  truncateKeyword,
+  parseRecent,
+  pushRecent,
+  removeRecent,
+} from "./repositories/recent";
+export type { KeyValueStorage } from "./repositories/recent.storage";
+export {
+  createMemoryKeyValueStorage,
+  createStorageRecentRepository,
+} from "./repositories/recent.storage";
 export { queryKeys } from "./queryKeys";
+export { storageKeys, type StorageKey } from "./storageKeys";
