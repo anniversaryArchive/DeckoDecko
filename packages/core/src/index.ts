@@ -29,7 +29,7 @@ export type {
 } from "./repositories/items";
 export type { FolderRepository } from "./repositories/folders";
 export type { LocalRepositories, Repositories } from "./repositories";
-export { cleanName, normalizeName } from "./repositories/name";
+export { cleanName, normalizeName } from "./name";
 export { createMemoryLocalRepositories } from "./repositories/local.memory";
 export { collectionRate } from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";

@@ -2,9 +2,9 @@
 
 import { skipToken, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { normalizeName } from "../name";
 import { queryKeys } from "../queryKeys";
 import type { CreateItemInput, ListItemsParams, UpdateItemInput } from "../repositories/items";
-import { normalizeName } from "../repositories/name";
 import type { ItemType } from "../types";
 import { useLocalRepositories } from "./provider";
 

@@ -1,7 +1,7 @@
 import type { LocalRepositories } from ".";
 import type { Folder, Item } from "../types";
 import type { ListItemsParams } from "./items";
-import { cleanName, normalizeName } from "./name";
+import { cleanName, normalizeName } from "../name";
 
 /**
  * 메모리 안에서 도는 items · folders 저장소. 훅 테스트와 웹 미리보기(로컬 DB 가 없음)에 쓴다.

@@ -4,7 +4,7 @@ import { skipToken, useMutation, useQuery, useQueryClient } from "@tanstack/reac
 
 import { queryKeys } from "../queryKeys";
 import { useLocalRepositories } from "./provider";
-import { normalizeName } from "../repositories/name";
+import { normalizeName } from "../name";
 
 /** 폴더 목록 (sequence 순, 기본 폴더가 맨 앞) */
 export function useFolders() {
