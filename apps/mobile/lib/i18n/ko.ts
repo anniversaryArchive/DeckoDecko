@@ -53,12 +53,29 @@ export const ko = {
   detail: {
     title: "가챠 상세",
     notFound: "없는 가챠예요 (id: {{id}})",
+    collectionTitle: "이 가챠 소장률",
+    // 큰 숫자(가진 수) 뒤에 붙는 보조 문구: "3 / 6 · 50%"
+    collectionOwned: "{{count, number}}",
+    collectionRest: " / {{total, number}} · {{rate, number}}%",
+    // 소장률 바 전체의 화면 읽기 이름
+    collectionLabel: "{{total, number}}종 중 {{count, number}}종 소장, {{rate, number}}%",
+    collectionGet: "GET {{count, number}}",
+    collectionWish: "WISH {{count, number}}",
+    collectionMissing: "미등록 {{count, number}}",
+    noLineup: "아직 라인업 정보가 없어요",
+    myItems: "내 아이템 {{count, number}}",
+    myItemsEmpty: "아직 기록한 아이템이 없어요.\n아이템 추가로 WISH · GET 을 남겨 보세요.",
+    hasMemo: "메모 있음",
+    addItem: "아이템 추가",
   },
   goods: {
     title: "내 굿즈",
     empty: "아직 저장된 가챠가 없어요.",
   },
-  folder: {},
+  folder: {
+    // 기본 폴더는 name 이 비어 있어 이 문구로 보인다
+    defaultName: "기본 폴더",
+  },
   notice: {},
   settings: {},
   feedback: {},
