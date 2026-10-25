@@ -102,6 +102,7 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
         return row;
       },
 
+      // TODO(혜진): 3주차에 사진을 앱 폴더로 옮기면 기록을 지울 때 사진 파일도 같이 지운다
       async deleteItem(id) {
         await db.delete(items).where(eq(items.id, id));
       },
@@ -129,7 +130,7 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
 
       async createFolder(name) {
         const id = newId();
-        // MAX(sequence)+1 을 한 문장으로 계산해 넣는다 (목록 길이로 세면 중복될 수 있다, 기획서 8.2)
+        // MAX(sequence)+1 을 한 문장으로 계산해 넣는다 (목록 길이로 세면 중복될 수 있다)
         await db.run(sql`
           INSERT INTO ${folders} (${sql.identifier(folders.id.name)}, ${sql.identifier(folders.name.name)}, ${sql.identifier(folders.sequence.name)})
           SELECT ${id}, ${cleanName(name)}, COALESCE(MAX(${folders.sequence}), -1) + 1 FROM ${folders}

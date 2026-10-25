@@ -40,6 +40,6 @@ export interface ItemRepository {
   updateItem(id: string, input: UpdateItemInput): Promise<Item>;
   /** 없는 id 면 아무 일도 하지 않는다 */
   deleteItem(id: string): Promise<void>;
-  /** 같은 가챠 안에서만 검사한다 (기획서 8.2). 비교 기준은 normalizeName */
+  /** 같은 가챠 안에서만 검사한다. 비교 기준은 normalizeName */
   isItemNameTaken(query: ItemNameQuery): Promise<boolean>;
 }
