@@ -56,13 +56,13 @@ pnpm exec supabase migration new <설명>      # supabase/migrations/<시각>_<�
 # SQL 작성
 pnpm exec supabase db push --dry-run         # dev 에 적용될 파일 확인
 pnpm exec supabase db push                   # dev 에 적용
-pnpm exec supabase gen types typescript --linked > packages/core/src/database.types.ts
-pnpm exec prettier --write packages/core/src/database.types.ts   # 생성 출력은 prettier 모양이 아니라 CI format:check 에서 막힌다
+pnpm --filter @deckodecko/core gen:types     # 생성 타입 갱신 (gen types --linked + prettier)
 ```
 
 - 생성 타입은 `packages/core/src/database.types.ts` 에 둔다. 손으로 고치지 않고 마이그레이션을 바꿀 때마다 다시 만든다.
-- 아직 dev 에 push 하지 않은 마이그레이션의 타입은 로컬 DB(`supabase start` 후)에서 만든다: `--linked` 대신 `--local`.
-- Windows PowerShell 5.1 의 `>` 는 UTF-16 으로 저장하고, `Out-File -Encoding utf8` 은 파일 앞에 BOM 을 붙인다 (prettier 는 BOM 을 지우지 않는다). PowerShell 7 이상에서 `| Out-File -Encoding utf8NoBOM packages/core/src/database.types.ts` 를 쓰거나, Git Bash · WSL 에서 위 명령을 그대로 실행한다.
+- `gen:types` 는 생성 뒤 prettier 를 돌린다. 생성 출력은 prettier 모양이 아니라 그대로 두면 CI format:check 에서 막힌다.
+- 아직 dev 에 push 하지 않은 마이그레이션의 타입은 로컬 DB(`supabase start` 후)에서 만든다: `pnpm exec supabase gen types typescript --local > packages/core/src/database.types.ts` 후 `pnpm exec prettier --write packages/core/src/database.types.ts`.
+- Windows PowerShell 에서 위의 `--local` 명령을 직접 칠 때: 5.1 의 `>` 는 UTF-16 으로 저장하고, `Out-File -Encoding utf8` 은 파일 앞에 BOM 을 붙인다 (prettier 는 BOM 을 지우지 않는다). PowerShell 7 이상의 `| Out-File -Encoding utf8NoBOM packages/core/src/database.types.ts` 를 쓰거나 Git Bash · WSL 에서 실행한다.
 - 이미 push 된 마이그레이션 파일은 고치지 않는다. 바꿀 게 있으면 새 마이그레이션을 추가한다.
 - prod 적용은 출시 준비 때 따로 정한다 (dev 에서 검증된 마이그레이션만).
 
