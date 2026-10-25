@@ -1,7 +1,7 @@
 import type { Notice } from "../types";
 
 /**
- * 개발용 목 공지. Supabase 공지 저장소(#142) 전까지 홈 공지 띠가 이 데이터로 돈다.
+ * 개발용 목 공지. Supabase 공지 저장소가 생기기 전까지 홈 공지 띠가 이 데이터로 돈다.
  * 고정 공지 2개(홈 띠에 보임)와 고정 아닌 공지 1개(목록에만 보임). 프로덕션 번들에는 import 하지 않는다.
  */
 export const mockNotices: Notice[] = [

@@ -19,10 +19,10 @@ export type ListNoticesParams = {
 /**
  * 공지 읽기. 쓰기는 백오피스 서버 쪽에서만 한다 (AGENTS.md 보안).
  *   지금: createMemoryNoticeRepository (목 데이터)
- *   다음: createSupabaseNoticeRepository (notice 테이블, #142)
+ *   다음: createSupabaseNoticeRepository (notice 테이블)
  */
 export interface NoticeRepository {
-  /** 고정 공지 먼저, 그 안에서 · 그 다음은 최신순. fixedOnly 면 고정 공지만 최신순 (홈 공지 띠) */
+  /** 고정 공지 먼저, 각각 최신순. fixedOnly 면 고정 공지만 최신순 (홈 공지 띠) */
   listNotices(params?: ListNoticesParams): Promise<Notice[]>;
   getNotice(id: string): Promise<Notice | null>; // 없으면 null
 }

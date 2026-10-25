@@ -32,7 +32,7 @@ const RATE_EASING = Easing.bezier(0.4, 0, 0.2, 1);
 
 /**
  * 홈 "내 굿즈 소장률" 카드. 로컬 DB 의 WISH · GET 개수(전체)로 소장률을 계산한다.
- * 개수 쿼리는 items 쿼리 키 아래에 있어서, 어디서든 기록을 추가 · 전환 · 삭제하면(#138 쓰기 훅의 invalidate) 바로 다시 그려진다.
+ * 개수 쿼리는 items 쿼리 키 아래에 있어서, 어디서든 기록을 추가 · 전환 · 삭제하면(쓰기 훅이 items 키를 무효화) 바로 다시 그려진다.
  */
 export function CollectionRateCard() {
   const { t } = useTranslation();

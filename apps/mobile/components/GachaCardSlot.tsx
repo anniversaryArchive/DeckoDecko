@@ -13,7 +13,7 @@ type Props = {
 };
 
 /**
- * 가챠 한 종을 #139 GoodsCard 로 그린다. 누르면 상세로 간다.
+ * 가챠 한 종을 GoodsCard 로 그린다. 누르면 상세로 간다.
  * 이름은 GoodsCard 가 들어오기 전 자리 표시였을 때 그대로다 (다른 브랜치가 이 이름으로 import 한다).
  */
 export function GachaCardSlot({ gacha, layout }: Props) {

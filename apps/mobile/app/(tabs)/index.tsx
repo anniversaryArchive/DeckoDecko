@@ -103,7 +103,7 @@ function NewArrivalsSection() {
   );
 }
 
-/** "지금 인기": 최근 10일 조회 상위 5개. 인기 RPC(#137) 전까지는 목 저장소가 정한 순서다. */
+/** "지금 인기": 최근 10일 조회 상위 5개. 인기 RPC 가 생기기 전까지는 목 저장소가 정한 순서다. */
 function PopularSection() {
   const { t } = useTranslation();
   const popular = usePopularGacha(HOME_LIST_LIMIT);
