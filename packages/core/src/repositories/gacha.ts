@@ -30,6 +30,8 @@ export interface GachaRepository {
   listGacha(params?: ListGachaParams): Promise<Gacha[]>; // 최신순 목록 (홈 "새로 나왔어요")
   /** 인기순 목록 (홈 "지금 인기"), 기본 10개. 3주차 RPC 전까지는 구현이 정렬 기준을 정한다 */
   listPopularGacha(limit?: number): Promise<Gacha[]>;
+  /** 여러 가챠를 한 번에 (검색 "최근 본 굿즈"). 받은 id 순서대로 돌려주고, 없는 id 는 뺀다 */
+  listGachaByIds(ids: readonly string[]): Promise<Gacha[]>;
   getGacha(id: string): Promise<GachaDetail | null>; // 없으면 null
   /** 결과와 전체 개수를 같이 돌려준다 (결과 화면의 "N개") */
   searchGacha(params: SearchGachaParams): Promise<Page<Gacha>>;

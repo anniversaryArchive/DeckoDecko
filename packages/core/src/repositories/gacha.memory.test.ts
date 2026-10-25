@@ -165,6 +165,29 @@ describe("createMemoryGachaRepository", () => {
     });
   });
 
+  describe("listGachaByIds", () => {
+    it("받은 id 순서대로 돌려준다 (seed 순서와 무관)", async () => {
+      const repo = createMemoryGachaRepository([gacha("a"), gacha("b"), gacha("c")]);
+      expect(ids(await repo.listGachaByIds(["c", "a"]))).toEqual(["c", "a"]);
+    });
+
+    it("없는 id 는 빼고 나머지 순서는 유지", async () => {
+      const repo = createMemoryGachaRepository([gacha("a"), gacha("b")]);
+      expect(ids(await repo.listGachaByIds(["b", "nope", "a"]))).toEqual(["b", "a"]);
+    });
+
+    it("빈 목록이면 빈 배열", async () => {
+      const repo = createMemoryGachaRepository([gacha("a")]);
+      expect(await repo.listGachaByIds([])).toEqual([]);
+    });
+
+    it("라인업 없이 요약만 돌려준다", async () => {
+      const repo = createMemoryGachaRepository([gacha("a", {}, 2)]);
+      const [found] = await repo.listGachaByIds(["a"]);
+      expect(found).not.toHaveProperty("items");
+    });
+  });
+
   describe("getGacha", () => {
     it("id 가 맞는 가챠를 라인업까지 포함해 돌려준다", async () => {
       const repo = createMemoryGachaRepository([gacha("a"), gacha("b", {}, 2)]);
