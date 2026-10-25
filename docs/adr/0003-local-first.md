@@ -31,8 +31,8 @@
 | `items` · `folders` (로컬 기록, `LocalRepositories`) | `repositories/items.ts` · `folders.ts` | 앱: `lib/db/localRepositories.ts` (drizzle). core 에는 테스트 · 웹 미리보기용 메모리 구현 |
 
 - 앱은 `lib/repositories.ts` 에서 둘을 묶어 `CoreProvider` 에 넘긴다. 백오피스의 저장소 묶음(`apps/admin/lib/repositories.ts`)에는 `gacha` 만 있다 (`Repositories` 에서 로컬 쪽은 `Partial`). 화면은 core 의 훅만 쓰고, 기록이 기기에 있는지 서버에 있는지 모른다.
-- 나중에 서버로 옮길 수 있게 로컬 스키마를 서버 테이블과 같은 모양으로 둔다: id 는 UUID 텍스트, 시각은 ISO 8601 UTC, 기본 폴더는 id 가 아니라 `is_default` 로 찾는다.
-- 기록(items · folders)은 서버에 저장하지 않는다. 서버로 나가는 것은 익명 기기 UUID 를 붙인 조회 로그 · 요청 · 문의(feedback, 첨부 사진 포함), 오류 수집(Sentry) 이벤트, 1.1 사진 인식 때 보내는 사진이다.
+- 나중에 서버로 옮길 수 있게 로컬 스키마를 서버 테이블과 같은 모양으로 둔다: id 는 UUID 텍스트, 시각은 ISO 8601 UTC, 기본 폴더는 id 가 아니라 `is_default` 로 찾는다. 다만 로컬 `items.gacha_id` 는 text, 서버 `gacha.id` 는 bigint 라서 서버로 옮길 때 형 변환이 필요하다.
+- 기록(items · folders)은 서버에 저장하지 않는다. 서버로 나가는 것은 익명 기기 UUID 를 붙인 조회 로그 · 가챠 등록 요청 · 문의(feedback, 첨부 사진 포함), 오류 수집(Sentry) 이벤트, 1.1 사진 인식 때 보내는 사진이다.
 
 ## 이유
 
