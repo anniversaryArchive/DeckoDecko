@@ -7,5 +7,6 @@ import type { ItemCounts } from "./types";
  */
 export function collectionRate(counts: ItemCounts): number {
   const total = counts.wish + counts.get;
-  return total === 0 ? 0 : Math.floor((counts.get / total) * 100);
+  // 나누기를 먼저 하면 부동소수 오차로 한 칸 덜 나온다 (29 ÷ 50 × 100 = 57.99… → 57)
+  return total === 0 ? 0 : Math.floor((counts.get * 100) / total);
 }
