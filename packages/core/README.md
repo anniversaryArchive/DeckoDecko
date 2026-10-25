@@ -43,7 +43,7 @@ const repositories = { gacha: createSupabaseGachaRepository(client) };
 - 행(snake_case) → 도메인 타입 매핑은 `<도메인>.supabase.ts` 안에서만 한다.
 - 실패(네트워크 · PostgREST 에러)는 throw 해서 훅의 error 상태로 보낸다. 빈 결과는 빈 배열 · `null` 이다.
 - 재시도는 React Query 가 맡는다 (클라이언트의 postgrest 재시도는 껐다).
-- 앱은 `EXPO_PUBLIC_DATA_SOURCE=mock` 이면 메모리 저장소를 쓴다 (`apps/mobile/lib/repositories.ts`).
+- 앱은 개발 빌드에서 `EXPO_PUBLIC_DATA_SOURCE=mock` 이면 메모리 저장소를 쓴다 (`apps/mobile/lib/repositories.ts`).
 
 ## 새 도메인 추가
 

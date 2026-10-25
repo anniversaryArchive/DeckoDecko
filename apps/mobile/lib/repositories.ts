@@ -11,13 +11,14 @@ import { mockCatalog } from "@deckodecko/core/mocks";
  * 화면은 훅만 쓰고, 데이터가 목 데이터에서 오는지 Supabase 에서 오는지는 여기서만 정한다.
  *
  * 기본은 Supabase (EXPO_PUBLIC_SUPABASE_URL · EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY, publishable key 만).
- * EXPO_PUBLIC_DATA_SOURCE=mock 이면 목 데이터(메모리 저장소)를 쓴다. 네트워크 없이 화면을 볼 때 쓴다.
+ * 개발 빌드에서 EXPO_PUBLIC_DATA_SOURCE=mock 이면 목 데이터(메모리 저장소)를 쓴다. 네트워크 없이 화면을 볼 때 쓴다.
+ * 출시 빌드는 이 값을 무시한다 (EAS 환경변수에 mock 이 잘못 들어가도 실제 데이터를 쓰게).
  * 개발 중에 Supabase 값이 없으면 경고를 남기고 목 데이터로 돈다. 개발 빌드가 아니면 바로 실패시킨다.
  *
  * process.env.EXPO_PUBLIC_* 는 번들 때 값으로 바뀌므로 구조 분해하지 않고 하나씩 적는다.
  */
 function createRepositories(): Repositories {
-  if (process.env.EXPO_PUBLIC_DATA_SOURCE === "mock") return createMockRepositories();
+  if (__DEV__ && process.env.EXPO_PUBLIC_DATA_SOURCE === "mock") return createMockRepositories();
 
   const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
