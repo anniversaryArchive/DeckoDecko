@@ -1,4 +1,4 @@
-// 소장 상태 계산 (홈 소장률 · 3주차 가챠별 소장률). 화면에 보일 문자열은 i18n 헬퍼가 만든다.
+// 소장 상태 계산 (홈 소장률 · 가챠 상세 소장률). 화면에 보일 문자열은 i18n 헬퍼가 만든다.
 import type { ItemCounts } from "./types";
 
 /**
@@ -21,7 +21,7 @@ export type GachaCollection = {
   wish: number;
   /** 아직 기록하지 않은 종 수 */
   missing: number;
-  /** get ÷ total × 100, 정수 버림. 라인업이 없으면 0 */
+  /** get × 100 ÷ total, 정수 버림. 라인업이 없으면 0 */
   rate: number;
 };
 
@@ -39,6 +39,7 @@ export function gachaCollection(counts: ItemCounts, lineupTotal: number): GachaC
     get,
     wish,
     missing: total - get - wish,
-    rate: total === 0 ? 0 : Math.floor((get / total) * 100),
+    // collectionRate 와 같은 이유로 곱하기 먼저
+    rate: total === 0 ? 0 : Math.floor((get * 100) / total),
   };
 }

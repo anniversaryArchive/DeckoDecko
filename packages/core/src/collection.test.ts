@@ -17,6 +17,8 @@ describe("gachaCollection", () => {
     expect(gachaCollection({ get: 1, wish: 0 }, 3).rate).toBe(33);
     expect(gachaCollection({ get: 2, wish: 0 }, 3).rate).toBe(66);
     expect(gachaCollection({ get: 6, wish: 0 }, 6).rate).toBe(100);
+    // 나누기를 먼저 하면 57.99… → 57 이 된다
+    expect(gachaCollection({ get: 29, wish: 0 }, 50).rate).toBe(58);
   });
 
   it("기록이 없으면 모두 미등록, 0%", () => {
