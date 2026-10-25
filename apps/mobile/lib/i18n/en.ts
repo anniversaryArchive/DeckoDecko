@@ -54,6 +54,26 @@ export const en: Messages = {
     resultCount_other: "<bold>{{count, number}}</bold> results",
     noResult: "No results for '{{keyword}}'",
     noResultHint: "Try part of the title or item name.\nThis gacha may not be listed yet.",
+    requestRegistration: "Request this gacha",
+    filter: {
+      all: "All",
+      new: "New",
+      upcoming: "Coming soon",
+      media: "Series",
+      price: "Price",
+    },
+    priceRange: {
+      any: "Any price",
+      upTo: "Up to {{price}}",
+      between: "{{min}} – {{max}}",
+      from: "{{price}} and up",
+    },
+    sortTitle: "Sort",
+    sort: {
+      release: "Release date",
+      priceAsc: "Price: low to high",
+      priceDesc: "Price: high to low",
+    },
   },
   detail: {
     title: "Gacha details",

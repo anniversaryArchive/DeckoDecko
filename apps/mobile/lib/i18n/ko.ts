@@ -67,6 +67,29 @@ export const ko = {
     resultCount_other: "총 <bold>{{count, number}}</bold>개",
     noResult: "'{{keyword}}' 결과가 없어요",
     noResultHint: "작품명이나 상품명 일부만 입력해 보세요.\n아직 등록되지 않은 가챠일 수도 있어요.",
+    // 등록 요청 화면이 생기기 전까지 버튼은 자리만 있고 눌리지 않는다.
+    requestRegistration: "이 가챠 등록 요청하기",
+    // 결과 위 필터 칩. 전체 · 신상품 · 발매 예정은 하나만 고르고, 작품 · 가격은 시트에서 고른다.
+    filter: {
+      all: "전체",
+      new: "신상품",
+      upcoming: "발매 예정",
+      media: "작품",
+      price: "가격",
+    },
+    // 가격 시트의 범위. 값은 포맷 헬퍼(formatPrice)로 만든 문자열을 넣는다.
+    priceRange: {
+      any: "가격 전체",
+      upTo: "{{price}} 이하",
+      between: "{{min}} ~ {{max}}",
+      from: "{{price}} 이상",
+    },
+    sortTitle: "정렬",
+    sort: {
+      release: "발매일순",
+      priceAsc: "가격 낮은순",
+      priceDesc: "가격 높은순",
+    },
   },
   detail: {
     title: "가챠 상세",
