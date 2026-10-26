@@ -26,6 +26,10 @@ export const ko = {
     // 토스트(ToastProvider)의 iOS 화면 읽기 안내. 동작 결과를 적는다 (제스처 이름은 VoiceOver 가 붙인다)
     closeToastHint: "알림을 닫아요",
   },
+  startup: {
+    // 로컬 DB 마이그레이션 실패 (루트 레이아웃의 실패 화면)
+    localDbFailed: "내 굿즈 기록을 불러오지 못했어요.\n다시 시도해 주세요.",
+  },
   home: {
     title: "홈",
     collectionRate: "내 굿즈 소장률",
