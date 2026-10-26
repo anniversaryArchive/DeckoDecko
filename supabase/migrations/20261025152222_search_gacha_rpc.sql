@@ -29,18 +29,13 @@ grant execute on function "public"."search_normalize"(text) to "anon", "authenti
 
 -- ─────────────────────────────────────────────
 -- 3. 검색용 인덱스 (trigram GIN: like '%...%' 부분 일치를 돕는다)
---    별칭(text[])은 배열을 immutable 로 이어 붙일 수 없어 인덱스를 달지 않는다. 작품 수가 적어 괜찮다.
+--    가챠 이름에만 단다. 작품은 수가 적어 작품명 · 별칭을 인덱스 없이 훑는다
+--    (별칭 text[] 는 인덱스 식에 못 넣고, 같은 OR 에 있으면 작품명 인덱스도 쓰이지 않는다).
 -- ─────────────────────────────────────────────
 create index "gacha_name_search_idx"
   on "public"."gacha" using gin (("public"."search_normalize"("name")) "extensions"."gin_trgm_ops");
 create index "gacha_name_kr_search_idx"
   on "public"."gacha" using gin (("public"."search_normalize"("name_kr")) "extensions"."gin_trgm_ops");
-create index "anime_kr_title_search_idx"
-  on "public"."anime" using gin (("public"."search_normalize"("kr_title")) "extensions"."gin_trgm_ops");
-create index "anime_jp_title_search_idx"
-  on "public"."anime" using gin (("public"."search_normalize"("jp_title")) "extensions"."gin_trgm_ops");
-create index "anime_en_title_search_idx"
-  on "public"."anime" using gin (("public"."search_normalize"("en_title")) "extensions"."gin_trgm_ops");
 
 -- ─────────────────────────────────────────────
 -- 4. 검색 RPC
@@ -81,7 +76,7 @@ as $$
       "public"."search_normalize"(keyword) as needle,
       '%' || replace(replace(replace("public"."search_normalize"(keyword), '\', '\\'), '%', '\%'), '_', '\_') || '%' as pattern
   ),
-  -- 작품명 · 별칭이 맞는 작품 (별칭은 인덱스가 없지만 작품 수가 적다)
+  -- 작품명 · 별칭이 맞는 작품 (작품 수가 적어 인덱스 없이 훑는다)
   matched_anime as (
     select a.id
     from "public"."anime" a, q
