@@ -23,6 +23,7 @@ import {
 
 import { FolderIcon } from "@/components/FolderIcon";
 import { formatFolderItemCount } from "@/lib/i18n";
+import { languages } from "@/lib/i18n/types";
 
 /** 머리글 원형 버튼 지름 */
 const HEADER_BUTTON_SIZE = 36;
@@ -198,8 +199,10 @@ function NewFolderForm({
   const create = useCreateFolder();
 
   const filled = name.trim().length > 0;
-  // 기본 폴더는 DB 이름이 비어 있어 저장소 검사로는 표시 이름과의 중복을 못 잡는다
-  const takenByDefault = normalizeName(name) === normalizeName(t("folder.defaultName"));
+  // 기본 폴더는 DB 이름이 비어 있어 저장소 검사로는 못 잡는다. 언어를 바꿔도 겹치지 않게 모든 언어의 표시 이름과 비교한다
+  const takenByDefault = languages.some(
+    (lng) => normalizeName(name) === normalizeName(t("folder.defaultName", { lng }))
+  );
   const taken = takenByDefault || takenQuery.data === true;
   // 중복 검사 결과가 오기 전에는 만들지 않는다 (저장소는 중복을 막지 않는다)
   const canCreate = filled && !takenByDefault && takenQuery.data === false && !create.isPending;
