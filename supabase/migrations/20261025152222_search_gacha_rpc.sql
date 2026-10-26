@@ -24,6 +24,7 @@ as $$
 $$;
 
 revoke all on function "public"."search_normalize"(text) from public;
+-- service_role · postgres 는 Supabase 기본 권한으로 남는다 (백오피스가 gacha 에 넣을 때 인덱스 식 계산에 필요).
 grant execute on function "public"."search_normalize"(text) to "anon", "authenticated";
 
 -- ─────────────────────────────────────────────
@@ -46,10 +47,10 @@ create index "anime_en_title_search_idx"
 --    - 가챠 이름(원문 · 한국어) 또는 작품명(한 · 일 · 영) · 별칭에 부분 일치한 가챠를 최신순으로 돌려준다.
 --    - total_count 는 페이지와 상관없는 전체 개수다. 모든 행에 같은 값이 들어 있다.
 --      offset 이 전체를 넘어 빈 페이지가 되면 행이 없으니 total_count 도 못 받는다 (호출하는 쪽이 offset 0 으로 다시 센다).
---    - limit 은 1~100 으로 맞추고(기본 20), offset 은 0 이상으로 맞춘다.
+--    - limit · offset 은 메모리 저장소와 같다: 1 미만 · null 이면 기본 20, offset 은 0 미만 · null 이면 0. limit 상한은 100.
 --    - 빈 검색어는 결과 없음. LIKE 특수문자(% _ \)는 글자 그대로 찾는다.
 --    - security invoker(기본)라 anon 이 읽을 수 있는 행만 나온다 (RLS 그대로).
---    - 컬럼 타입을 ::bigint 등으로 맞추는 건 returns table 과 정확히 같아야 하는 SQL 함수 규칙 때문이다.
+--    - trigram 은 3글자부터 인덱스가 걸러 준다. 1~2글자 검색은 거의 전체를 훑는다.
 -- ─────────────────────────────────────────────
 create or replace function "public"."search_gacha_with_anime"(
   keyword      text,
@@ -80,16 +81,13 @@ as $$
       "public"."search_normalize"(keyword) as needle,
       '%' || replace(replace(replace("public"."search_normalize"(keyword), '\', '\\'), '%', '\%'), '_', '\_') || '%' as pattern
   ),
-  hits as (
-    select g.*, a.kr_title, a.jp_title, a.en_title, a.type as anime_type
-    from "public"."gacha" g
-    left join "public"."anime" a on a.id = g.anime_id
-    cross join q
+  -- 작품명 · 별칭이 맞는 작품 (별칭은 인덱스가 없지만 작품 수가 적다)
+  matched_anime as (
+    select a.id
+    from "public"."anime" a, q
     where q.needle <> ''
       and (
-        "public"."search_normalize"(g.name)    like q.pattern
-        or "public"."search_normalize"(g.name_kr)  like q.pattern
-        or "public"."search_normalize"(a.kr_title) like q.pattern
+        "public"."search_normalize"(a.kr_title) like q.pattern
         or "public"."search_normalize"(a.jp_title) like q.pattern
         or "public"."search_normalize"(a.en_title) like q.pattern
         or exists (
@@ -97,25 +95,41 @@ as $$
           where "public"."search_normalize"(alias) like q.pattern
         )
       )
+  ),
+  -- gacha · anime 컬럼을 한 OR 에 섞으면 조인 뒤 필터가 되어 인덱스를 못 쓴다. 따로 찾아 합친다.
+  ids as (
+    select g.id
+    from "public"."gacha" g, q
+    where q.needle <> ''
+      and (
+        "public"."search_normalize"(g.name) like q.pattern
+        or "public"."search_normalize"(g.name_kr) like q.pattern
+      )
+    union
+    select g.id
+    from "public"."gacha" g
+    where g.anime_id in (select ma.id from matched_anime ma)
   )
   select
-    h.id::bigint,
-    h.name::text,
-    h.name_kr::text,
-    h.image_link::text,
-    h.price::bigint,
-    h.release_month,
-    h.anime_id::bigint,
-    h.kr_title::text,
-    h.jp_title::text,
-    h.en_title::text,
-    h.anime_type::text,
-    (select count(*) from "public"."gacha_items" gi where gi.gacha_id = h.id) as item_count,
+    g.id,
+    g.name,
+    g.name_kr,
+    g.image_link,
+    g.price,
+    g.release_month,
+    g.anime_id,
+    a.kr_title,
+    a.jp_title,
+    a.en_title,
+    a.type::text, -- varchar -> returns table 의 text
+    (select count(*) from "public"."gacha_items" gi where gi.gacha_id = g.id) as item_count,
     count(*) over () as total_count
-  from hits h
-  order by h.created_at desc nulls last, h.id desc
-  limit least(greatest(coalesce(limit_count, 20), 1), 100)
-  offset greatest(coalesce(offset_count, 0), 0)
+  from ids
+  join "public"."gacha" g on g.id = ids.id
+  left join "public"."anime" a on a.id = g.anime_id
+  order by g.created_at desc nulls last, g.id desc
+  limit case when limit_count >= 1 then least(limit_count, 100) else 20 end
+  offset case when offset_count >= 0 then offset_count else 0 end
 $$;
 
 revoke all on function "public"."search_gacha_with_anime"(text, int, int) from public;
