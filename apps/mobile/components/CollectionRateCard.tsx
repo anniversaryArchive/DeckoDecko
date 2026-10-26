@@ -58,15 +58,15 @@ export function CollectionRateCard() {
 function CollectionRate({ counts }: { counts: ItemCounts }) {
   const { t } = useTranslation();
   const rate = collectionRate(counts);
-  const shown = useAnimatedRate(rate);
+  const displayRate = useAnimatedRate(rate);
   return (
     <View style={{ gap: space[12] }}>
       <View
         style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" }}
       >
-        {/* 읽기 프로그램은 오르는 중간값 대신 최종값을 읽는다 */}
+        {/* 스크린 리더는 숫자가 오르는 중에도 최종 값을 읽는다 */}
         <Text variant="displayLg" color="accent" accessibilityLabel={formatPercent(rate)}>
-          {formatPercent(shown)}
+          {formatPercent(displayRate)}
         </Text>
         <View style={{ flexDirection: "row", gap: space[6], paddingBottom: space[6] }}>
           <CountChip
@@ -83,19 +83,19 @@ function CollectionRate({ counts }: { counts: ItemCounts }) {
       </View>
       <ProgressBar
         variant="summary"
-        value={shown / 100}
+        value={displayRate / 100}
         accessibilityLabel={t("home.collectionRate")}
       />
     </View>
   );
 }
 
-/** 소장률을 따라 오르는 정수. 숫자와 막대가 이 값 하나를 그려야 JS 가 바쁠 때(Android 시작 직후)도 둘이 어긋나지 않는다. */
+/** 애니메이션 중 지금 화면에 보일 소장률(0 → rate 정수). 막대만 UI 스레드 값으로 그리면 Android 시작 직후처럼 JS 가 바쁠 때 숫자가 막대보다 늦어서, 숫자와 막대가 이 값 하나를 같이 쓴다. */
 function useAnimatedRate(rate: number): number {
   // 켜져 있는데 0 에서 출발하면 첫 프레임에 0% 가 잠깐 보인다
   const start = useReducedMotion() ? rate : 0;
   const progress = useSharedValue(start);
-  const [shown, setShown] = useState(start);
+  const [displayRate, setDisplayRate] = useState(start);
 
   useEffect(() => {
     progress.value = withTiming(rate, {
@@ -110,11 +110,11 @@ function useAnimatedRate(rate: number): number {
   useAnimatedReaction(
     () => Math.round(progress.value),
     (now, previous) => {
-      if (now !== previous) scheduleOnRN(setShown, now);
+      if (now !== previous) scheduleOnRN(setDisplayRate, now);
     }
   );
 
-  return shown;
+  return displayRate;
 }
 
 /** 오른쪽 위 "내 굿즈 보기 ›" → 내 굿즈 탭 */

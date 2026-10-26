@@ -14,7 +14,7 @@ function byFixedThenLatest(a: Notice, b: Notice): number {
 }
 
 /**
- * 메모리 안의 배열로 동작하는 공지 저장소. Supabase 저장소가 생기기 전까지 앱 · 백오피스, 그리고 테스트에 쓴다.
+ * 메모리 안의 배열로 동작하는 공지 저장소. Supabase 저장소가 생기기 전까지 앱(목 데이터)과 테스트에 쓴다.
  * 데이터는 호출하는 쪽이 넘긴다 (개발용 목 데이터: @deckodecko/core/mocks 의 mockNotices).
  */
 export function createMemoryNoticeRepository(seed: readonly Notice[]): NoticeRepository {
