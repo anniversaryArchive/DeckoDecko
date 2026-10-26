@@ -8,7 +8,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./react": "./src/react/index.ts",
-    "./mocks": "./src/mocks/index.ts"
+    "./mocks": "./src/mocks/index.ts",
+    "./testing": "./src/testing/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -22,9 +23,12 @@
   },
   "devDependencies": {
     "@deckodecko/eslint-config": "workspace:*",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "~19.2.2",
     "eslint": "^9.39.0",
+    "happy-dom": "^21.0.4",
     "react": "19.2.3",
+    "react-dom": "19.2.3",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
   },

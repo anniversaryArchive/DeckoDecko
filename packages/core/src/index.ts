@@ -7,10 +7,32 @@
  * 화면은 repository 와 훅만 쓴다. Supabase 는 클라이언트를 만드는 함수만 내보내고(앱 · 백오피스의 저장소 조립용),
  * 만든 클라이언트 인스턴스는 저장소에만 넘긴다.
  */
-export type { Gacha, GachaDetail, GachaItem, Media, MediaKind, Page } from "./types";
+export type {
+  Folder,
+  Gacha,
+  GachaDetail,
+  GachaItem,
+  Item,
+  ItemCounts,
+  ItemType,
+  Media,
+  MediaKind,
+  Page,
+} from "./types";
 export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repositories/gacha";
 export { GACHA_DEFAULTS } from "./repositories/gacha";
-export type { Repositories } from "./repositories";
+export type {
+  CreateItemInput,
+  ItemNameQuery,
+  ItemRepository,
+  ListItemsParams,
+  UpdateItemInput,
+} from "./repositories/items";
+export type { FolderRepository } from "./repositories/folders";
+export type { LocalRepositories, Repositories } from "./repositories";
+export { cleanName, normalizeName } from "./name";
+export { createMemoryLocalRepositories } from "./repositories/local.memory";
+export { collectionRate } from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
 export { createSupabaseGachaRepository } from "./repositories/gacha.supabase";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";

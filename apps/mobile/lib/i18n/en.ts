@@ -19,6 +19,9 @@ export const en: Messages = {
     close: "Close",
     closeToastHint: "Dismisses the alert.",
   },
+  startup: {
+    localDbFailed: "Couldn't load your saved goods.\nPlease try again.",
+  },
   home: {
     title: "Home",
     collectionRate: "My collection",
