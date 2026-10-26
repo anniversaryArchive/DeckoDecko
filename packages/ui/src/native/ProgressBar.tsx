@@ -14,7 +14,7 @@ const SEGMENT_HEIGHT = 8;
 const LEGEND_DOT = 8;
 /** 칸이 이보다 많으면 칸 사이를 좁힌다 (칸이 너무 가늘어지지 않게) */
 const DENSE_SEGMENTS = 20;
-/** 칸 색이 바뀌는 데 걸리는 시간(ms). 시안에 없어서 정했다 */
+/** 칸 색이 바뀌는 데 걸리는 시간(ms) */
 const SEGMENT_COLOR_DURATION = 250;
 
 type CommonProps = {

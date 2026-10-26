@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -14,8 +14,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { gachaCollection, type GachaDetail, type Item } from "@deckodecko/core";
 import { useFolders, useGacha, useItemCounts, useItems } from "@deckodecko/core/react";
-import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
-import { Button, Card, PRESSED_OPACITY, Text, useToast } from "@deckodecko/ui/native";
+import { gutter, radius, space, useTheme } from "@deckodecko/ui";
+import { Button, Card, Text, useToast } from "@deckodecko/ui/native";
 
 import { GachaCollectionCard } from "@/components/GachaCollectionCard";
 import { GACHA_HERO_HEIGHT, GachaHero } from "@/components/GachaHero";
@@ -27,10 +27,6 @@ import { joinDot, useGachaDisplay } from "@/hooks/useGachaDisplay";
 
 /** 아이템 추가 버튼의 + 아이콘 */
 const ADD_ICON_SIZE = 20;
-/** 사진 인식 버튼 지름. 옆 아이템 추가 버튼(Button lg) 높이와 같다 */
-const AI_SCAN_SIZE = 54;
-/** 사진 인식 버튼의 카메라 아이콘 */
-const AI_SCAN_ICON_SIZE = 22;
 /** 히어로 아래 끝이 상태 표시줄에 닿기 전 이만큼(px) 스크롤하는 동안 상태 표시줄 배경이 서서히 불투명해진다 */
 const STATUS_BAR_FADE_DISTANCE = 60;
 
@@ -195,24 +191,13 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
           paddingBottom: insets.bottom + space[12],
         }}
       >
-        <Pressable
+        <HeaderIconButton
+          icon="camera-outline"
+          variant="accent"
+          size="lg"
+          label={t("detail.aiScan")}
           onPress={() => openAiScan(gacha.id)}
-          accessibilityRole="button"
-          accessibilityLabel={t("detail.aiScan")}
-          style={({ pressed }) => ({
-            width: AI_SCAN_SIZE,
-            height: AI_SCAN_SIZE,
-            borderRadius: radius.full,
-            borderWidth: border.default,
-            borderColor: colors.primary,
-            backgroundColor: colors.surface,
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: pressed ? PRESSED_OPACITY : 1,
-          })}
-        >
-          <Ionicons name="camera-outline" size={AI_SCAN_ICON_SIZE} color={colors.accent} />
-        </Pressable>
+        />
         <Button
           icon={<Ionicons name="add" size={ADD_ICON_SIZE} color={colors.onPrimary} />}
           onPress={openAdd}
