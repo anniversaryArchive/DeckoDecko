@@ -67,7 +67,7 @@ export const en: Messages = {
     empty: "No saved gacha yet.",
   },
   folder: {
-    defaultName: "Default folder",
+    defaultName: "Default",
   },
   notice: {},
   settings: {},
