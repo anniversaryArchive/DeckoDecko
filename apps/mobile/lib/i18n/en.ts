@@ -55,6 +55,9 @@ export const en: Messages = {
     noResult: "No results for '{{keyword}}'",
     noResultHint: "Try part of the title or item name.\nThis gacha may not be listed yet.",
     requestRegistration: "Request this gacha",
+    noFilteredResult: "No results match your filters",
+    noFilteredResultHint: "Try changing or resetting the filters.",
+    resetFilters: "Reset filters",
     filter: {
       all: "All",
       new: "New",

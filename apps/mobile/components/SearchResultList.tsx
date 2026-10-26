@@ -35,7 +35,8 @@ const EMPTY_FADE_DURATION = 200;
 type Sheet = "sort" | "price" | null;
 
 /**
- * 검색 결과: 필터 칩 · 총 개수 · 정렬 · 무한 스크롤(10개씩) 목록. 결과가 없으면 가운데 안내.
+ * 검색 결과: 필터 칩 · 총 개수 · 정렬 · 무한 스크롤(10개씩) 목록. 결과가 없으면 가운데 안내
+ * (필터가 걸려 있으면 필터 초기화, 아니면 등록 요청).
  * 칩 "전체 · 신상품 · 발매 예정" 은 발매 시기(하나만 고름), 작품 · 가격은 시트에서 고른다.
  * 필터 · 정렬은 검색어를 바꿔도 유지하고, 검색어를 비워 이 목록이 사라지면 처음으로 돌아간다.
  */
@@ -50,6 +51,13 @@ export function SearchResultList({ keyword }: { keyword: string }) {
   const filter: GachaFilter = { release, priceMin, priceMax };
   const priceRange = findPriceRange(filter);
   const hasPrice = priceMin != null || priceMax != null;
+  const hasFilter = release !== "all" || hasPrice;
+  // 정렬은 결과 수를 바꾸지 않으므로 그대로 둔다
+  const resetFilter = () => {
+    setRelease("all");
+    setPriceMin(null);
+    setPriceMax(null);
+  };
   const search = useGachaSearchPages(keyword, { filter, sort });
   // 새 검색어 · 필터 · 정렬을 불러오는 동안에는 이전 조건의 결과 · 개수를 보이지 않는다 (목록이 비면 QueryState 가 로딩을 그린다)
   const result = search.isPlaceholderData ? undefined : search.data;
@@ -155,18 +163,37 @@ export function SearchResultList({ keyword }: { keyword: string }) {
             isEmpty={(page) => page.items.length === 0}
             empty={
               <Animated.View entering={FadeIn.duration(EMPTY_FADE_DURATION)} style={{ flex: 1 }}>
-                <EmptyState
-                  icon="search"
-                  title={t("search.noResult", { keyword })}
-                  description={t("search.noResultHint")}
-                  action={
-                    // TODO(혜진): 등록 요청 화면이 생기면 연결한다. 그 전까지는 자리만 두고 누를 수 없다.
-                    // Button 은 기본으로 왼쪽(alignSelf: flex-start)에 붙어서 가운데로 둔다
-                    <Button variant="outline" size="md" disabled style={{ alignSelf: "center" }}>
-                      {t("search.requestRegistration")}
-                    </Button>
-                  }
-                />
+                {hasFilter ? (
+                  // 필터 때문에 0개면 미등록 가챠가 아니므로 등록 요청 대신 필터를 풀게 한다
+                  <EmptyState
+                    icon="filter"
+                    title={t("search.noFilteredResult")}
+                    description={t("search.noFilteredResultHint")}
+                    action={
+                      <Button
+                        variant="outline"
+                        size="md"
+                        onPress={resetFilter}
+                        style={{ alignSelf: "center" }}
+                      >
+                        {t("search.resetFilters")}
+                      </Button>
+                    }
+                  />
+                ) : (
+                  <EmptyState
+                    icon="search"
+                    title={t("search.noResult", { keyword })}
+                    description={t("search.noResultHint")}
+                    action={
+                      // TODO(혜진): 등록 요청 화면이 생기면 연결한다. 그 전까지는 자리만 두고 누를 수 없다.
+                      // Button 은 기본으로 왼쪽(alignSelf: flex-start)에 붙어서 가운데로 둔다
+                      <Button variant="outline" size="md" disabled style={{ alignSelf: "center" }}>
+                        {t("search.requestRegistration")}
+                      </Button>
+                    }
+                  />
+                )}
               </Animated.View>
             }
           >

@@ -69,6 +69,10 @@ export const ko = {
     noResultHint: "작품명이나 상품명 일부만 입력해 보세요.\n아직 등록되지 않은 가챠일 수도 있어요.",
     // 등록 요청 화면이 생기기 전까지 버튼은 자리만 있고 눌리지 않는다.
     requestRegistration: "이 가챠 등록 요청하기",
+    // 필터 때문에 0개일 때. 등록 요청 대신 필터를 풀게 한다.
+    noFilteredResult: "조건에 맞는 결과가 없어요",
+    noFilteredResultHint: "필터를 바꾸거나 초기화해 보세요.",
+    resetFilters: "필터 초기화",
     // 결과 위 필터 칩. 전체 · 신상품 · 발매 예정은 하나만 고르고, 작품 · 가격은 시트에서 고른다.
     filter: {
       all: "전체",
