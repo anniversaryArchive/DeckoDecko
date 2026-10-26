@@ -5,7 +5,13 @@ import type { ReactNode } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { gachaCollection } from "../collection";
-import { useCreateItem, useItemCounts, useItems, useSetItemType } from "./items.hooks";
+import {
+  useCreateItem,
+  useDeleteItem,
+  useItemCounts,
+  useItems,
+  useSetItemType,
+} from "./items.hooks";
 import { CoreProvider } from "./provider";
 import { createMemoryGachaRepository } from "../repositories/gacha.memory";
 import { createMemoryLocalRepositories } from "../repositories/local.memory";
@@ -85,6 +91,63 @@ describe("가챠 상세의 내 아이템 · 소장률", () => {
         result.current.setType.mutateAsync({ id: "missing", type: "WISH" })
       ).rejects.toThrow();
     });
+    expect(result.current.counts.data).toEqual({ wish: 0, get: 1 });
+  });
+
+  it("기록을 삭제하면 그 가챠의 목록과 소장률에서 바로 빠진다", async () => {
+    const { result } = renderHook(
+      () => ({
+        list: useItems({ gachaId: "g1" }),
+        counts: useItemCounts("g1"),
+        create: useCreateItem(),
+        remove: useDeleteItem(),
+      }),
+      { wrapper: setup() }
+    );
+    await waitFor(() => expect(result.current.counts.isSuccess).toBe(true));
+
+    let id = "";
+    await act(async () => {
+      id = (await result.current.create.mutateAsync({ gachaId: "g1", type: "GET", name: "a" })).id;
+      await result.current.create.mutateAsync({ gachaId: "g1", type: "WISH", name: "b" });
+    });
+    await waitFor(() => expect(result.current.list.data).toHaveLength(2));
+
+    await act(async () => {
+      await result.current.remove.mutateAsync(id);
+    });
+    await waitFor(() => expect(result.current.list.data).toHaveLength(1));
+    expect(result.current.list.data?.[0]?.name).toBe("b");
+    expect(result.current.counts.data).toEqual({ wish: 1, get: 0 });
+    expect(gachaCollection(result.current.counts.data!, 6).rate).toBe(0);
+  });
+
+  it("추가가 실패하면(없는 폴더) 목록 · 소장률은 그대로다", async () => {
+    const { result } = renderHook(
+      () => ({
+        list: useItems({ gachaId: "g1" }),
+        counts: useItemCounts("g1"),
+        create: useCreateItem(),
+      }),
+      { wrapper: setup() }
+    );
+    await waitFor(() => expect(result.current.counts.isSuccess).toBe(true));
+    await act(async () => {
+      await result.current.create.mutateAsync({ gachaId: "g1", type: "GET", name: "a" });
+    });
+    await waitFor(() => expect(result.current.list.data).toHaveLength(1));
+
+    await act(async () => {
+      await expect(
+        result.current.create.mutateAsync({
+          gachaId: "g1",
+          type: "WISH",
+          name: "b",
+          folderId: "missing",
+        })
+      ).rejects.toThrow();
+    });
+    expect(result.current.list.data).toHaveLength(1);
     expect(result.current.counts.data).toEqual({ wish: 0, get: 1 });
   });
 });
