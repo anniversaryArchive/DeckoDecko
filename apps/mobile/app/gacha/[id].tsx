@@ -23,8 +23,8 @@ export default function GachaDetailScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const gacha = useGacha(id);
-  // 들어올 때마다 최근 본 굿즈(검색 탭)에 남긴다
-  useRecordRecentGacha(id);
+  // 없는 가챠(잘못된 링크)가 최근 본 굿즈 자리를 차지하지 않게, 불러온 가챠의 id 로 남긴다
+  useRecordRecentGacha(gacha.data?.id);
 
   return (
     <View style={{ flex: 1 }}>

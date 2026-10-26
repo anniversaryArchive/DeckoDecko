@@ -72,6 +72,7 @@ export function useClearRecentSearches() {
 
 /**
  * 가챠 상세에 들어갈 때 id 를 최근 본 가챠로 기록한다 (상세 화면에서 한 번 부른다).
+ * 주소의 id 가 아니라 불러온 가챠의 id 를 넘긴다 (없는 가챠는 남기지 않게). 불러오기 전 · 없으면 undefined.
  * id 가 바뀔 때마다 기록하고, 비어 있으면 아무것도 하지 않는다. 실패해도 화면에는 알리지 않는다.
  */
 export function useRecordRecentGacha(id: string | undefined) {
