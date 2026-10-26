@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 
@@ -19,15 +20,18 @@ type Props = {
   /** 마지막 행이면 아래 구분선을 그리지 않는다 */
   last: boolean;
   onPress: () => void;
+  /** WISH · GET 태그를 눌렀을 때 */
+  onToggleType: () => void;
 };
 
 /**
  * 가챠 상세 "내 아이템" 카드 안의 한 줄. 썸네일 · 이름 · 보조 줄 · WISH/GET 태그.
  * 썸네일은 사진을 앱 안에 복사해 두는 방식이 생기기 전이라 종류 색 면만 둔다 (item.thumbnail 은 사진첩 assetId).
- * 태그는 표시만 한다. 원탭 WISH ↔ GET 전환은 아직 없다.
+ * 태그는 따로 누르는 버튼이다 (onToggleType). 아직 전환은 연결되지 않았다.
  * 추가 · 삭제되면 행이 페이드되고 아래 행이 자리를 옮긴다. 기기의 "동작 줄이기"를 따른다 (Reanimated 기본값 ReduceMotion.System).
  */
-export function MyItemRow({ item, detail, last, onPress }: Props) {
+export function MyItemRow({ item, detail, last, onPress, onToggleType }: Props) {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const isGet = item.type === "GET";
   return (
@@ -72,21 +76,24 @@ export function MyItemRow({ item, detail, last, onPress }: Props) {
           )}
         </View>
       </Pressable>
-      <View
-        importantForAccessibility="no-hide-descendants"
-        accessibilityElementsHidden
-        style={{
+      <Pressable
+        onPress={onToggleType}
+        accessibilityRole="button"
+        accessibilityLabel={t("detail.toggleLabel", { name: item.name, type: item.type })}
+        hitSlop={space[8]}
+        style={({ pressed }) => ({
           height: TAG_HEIGHT,
           paddingHorizontal: space[12],
           borderRadius: radius.full,
           justifyContent: "center",
           backgroundColor: isGet ? colors.getSurface : colors.wishSurface,
-        }}
+          opacity: pressed ? PRESSED_OPACITY : 1,
+        })}
       >
         <Text variant="captionSm" weight="bold" color={isGet ? "onGet" : "onWish"}>
           {item.type}
         </Text>
-      </View>
+      </Pressable>
     </Animated.View>
   );
 }

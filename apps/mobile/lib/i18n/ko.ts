@@ -67,6 +67,12 @@ export const ko = {
     myItemsEmpty: "아직 기록한 아이템이 없어요.\n아이템 추가로 WISH · GET 을 남겨 보세요.",
     hasMemo: "메모 있음",
     addItem: "아이템 추가",
+    aiScan: "사진으로 인식해서 추가",
+    toggleHint: "태그를 누르면 WISH ↔ GET",
+    // 태그 버튼의 화면 읽기 이름. type 은 WISH · GET
+    toggleLabel: "{{name}} 상태 전환, 현재 {{type}}",
+    saveFailed: "저장하지 못했어요",
+    reopenSheet: "다시 열기",
   },
   goods: {
     title: "내 굿즈",

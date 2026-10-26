@@ -56,6 +56,11 @@ export const en: Messages = {
     myItemsEmpty: "No items recorded yet.\nTap Add item to save a WISH or GET.",
     hasMemo: "Has memo",
     addItem: "Add item",
+    aiScan: "Add by scanning a photo",
+    toggleHint: "Tap a tag to switch WISH ↔ GET",
+    toggleLabel: "Switch {{name}}, currently {{type}}",
+    saveFailed: "Couldn't save",
+    reopenSheet: "Reopen",
   },
   goods: {
     title: "My Goods",
