@@ -48,6 +48,13 @@ describe("createStorageRecentRepository", () => {
       expect(await repo.addSearch("숲속 친구들")).toEqual(["숲속 친구들"]);
     });
 
+    it("대소문자만 다른 검색어는 하나로 묶고, 마지막에 입력한 모양을 맨 앞에 남긴다", async () => {
+      const { repo } = setup();
+      await repo.addSearch("LUNA");
+      await repo.addSearch("고양이");
+      expect(await repo.addSearch("luna")).toEqual(["luna", "고양이"]);
+    });
+
     it("공백뿐인 검색어는 기록하지 않고 저장소에 쓰지도 않는다", async () => {
       const { repo, storage } = setup();
       await repo.addSearch("a");

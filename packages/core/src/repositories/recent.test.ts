@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  keywordKey,
   normalizeKeyword,
   parseRecent,
   pushRecent,
@@ -53,8 +54,27 @@ describe("pushRecent", () => {
     expect(list).toEqual(["a", "b"]);
   });
 
-  it("대소문자가 다르면 다른 값으로 본다", () => {
+  it("key 를 안 넘기면 대소문자가 다른 값은 다른 항목 (가챠 id 용)", () => {
     expect(pushRecent(["Luna"], "luna")).toEqual(["luna", "Luna"]);
+  });
+
+  it("key 가 같으면 같은 항목으로 보고 새로 넣은 모양을 남긴다", () => {
+    expect(pushRecent(["a", "LUNA", "b"], "luna", RECENT_LIMIT, keywordKey)).toEqual([
+      "luna",
+      "a",
+      "b",
+    ]);
+  });
+});
+
+describe("keywordKey", () => {
+  it("대소문자 · 전각/반각 차이를 없앤다", () => {
+    expect(keywordKey("LUNA")).toBe(keywordKey("luna"));
+    expect(keywordKey("ＬＵＮＡ")).toBe(keywordKey("luna"));
+  });
+
+  it("한글 · 일본어는 그대로", () => {
+    expect(keywordKey("루나 ルナ")).toBe("루나 ルナ");
   });
 });
 

@@ -8,14 +8,16 @@ export const RECENT_LIMIT = 10;
 
 /**
  * 맨 앞에 넣는다. 이미 있으면 원래 자리에서 빼고 맨 앞으로 옮기고, limit 개를 넘으면 오래된 것(뒤)부터 버린다.
- * 받은 배열은 바꾸지 않는다.
+ * key 가 같으면 같은 항목으로 보고, 새로 넣은 value 의 모양을 남긴다. 받은 배열은 바꾸지 않는다.
  */
 export function pushRecent(
   list: readonly string[],
   value: string,
-  limit: number = RECENT_LIMIT
+  limit: number = RECENT_LIMIT,
+  key: (v: string) => string = (v) => v
 ): string[] {
-  return [value, ...list.filter((v) => v !== value)].slice(0, limit);
+  const k = key(value);
+  return [value, ...list.filter((v) => key(v) !== k)].slice(0, limit);
 }
 
 /** value 와 같은 항목을 뺀다. 없으면 같은 내용의 새 배열. */
@@ -46,6 +48,11 @@ export function parseRecent(raw: string | null, limit: number = RECENT_LIMIT): s
 /** 검색어를 기록용으로 다듬는다. 앞뒤 공백을 지우고 안쪽 연속 공백은 한 칸으로. 빈 문자열이면 기록하지 않는다. */
 export function normalizeKeyword(keyword: string): string {
   return keyword.trim().replace(/\s+/g, " ");
+}
+
+/** 같은 검색어인지 볼 때 쓰는 값. 검색처럼 대소문자 · 전각/반각 차이는 같은 검색어로 본다. */
+export function keywordKey(keyword: string): string {
+  return keyword.normalize("NFKC").toLowerCase();
 }
 
 /** 칩처럼 좁은 자리에 보일 검색어. max 글자(이모지 등 두 칸짜리도 한 글자)를 넘으면 잘라서 "…" 를 붙인다. */

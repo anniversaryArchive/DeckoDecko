@@ -1,5 +1,12 @@
 import { storageKeys, type StorageKey } from "../storageKeys";
-import { normalizeKeyword, parseRecent, pushRecent, removeRecent } from "./recent";
+import {
+  keywordKey,
+  normalizeKeyword,
+  parseRecent,
+  pushRecent,
+  RECENT_LIMIT,
+  removeRecent,
+} from "./recent";
 import type { RecentRepository } from "./recent";
 
 /**
@@ -74,7 +81,9 @@ export function createStorageRecentRepository(storage: KeyValueStorage): RecentR
     addSearch(keyword) {
       const value = normalizeKeyword(keyword);
       if (!value) return serial(() => read(storageKeys.recentSearches));
-      return update(storageKeys.recentSearches, (list) => pushRecent(list, value));
+      return update(storageKeys.recentSearches, (list) =>
+        pushRecent(list, value, RECENT_LIMIT, keywordKey)
+      );
     },
     removeSearch: (keyword) =>
       update(storageKeys.recentSearches, (list) => removeRecent(list, keyword)),
