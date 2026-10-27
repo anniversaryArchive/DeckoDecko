@@ -10,9 +10,13 @@
 -- 1. 개수만 세는 함수 (security definer)
 --    anon 은 gacha_view_log 를 읽을 수 없어서 이 함수만 소유자 권한으로 센다.
 --    가챠 · 작품은 읽지 않는다. definer 로 조인하면 그 테이블의 RLS(나중에 생길 숨김 정책 등)까지 건너뛴다.
---    돌려주는 건 가챠 id 별 개수뿐이라 device_id 는 밖으로 나가지 않는다.
+--    API 에 노출되지 않는 private 스키마에 둔다. 아래 RPC 안에서만 부른다.
 -- ─────────────────────────────────────────────
-create or replace function "public"."count_gacha_views"()
+create schema if not exists "private";
+revoke all on schema "private" from public;
+grant usage on schema "private" to "anon", "authenticated";
+
+create or replace function "private"."count_gacha_views"()
 returns table (
   gacha_id   bigint,
   view_count bigint
@@ -28,8 +32,8 @@ as $$
   group by l.gacha_id
 $$;
 
-revoke all on function "public"."count_gacha_views"() from public;
-grant execute on function "public"."count_gacha_views"() to "anon", "authenticated";
+revoke all on function "private"."count_gacha_views"() from public;
+grant execute on function "private"."count_gacha_views"() to "anon", "authenticated";
 
 -- ─────────────────────────────────────────────
 -- 2. 인기 RPC (security invoker, 기본)
@@ -69,11 +73,11 @@ as $$
     a.type::text, -- varchar -> returns table 의 text
     (select count(*) from "public"."gacha_items" gi where gi.gacha_id = g.id) as item_count,
     v.view_count
-  from "public"."count_gacha_views"() v
+  from "private"."count_gacha_views"() v
   join "public"."gacha" g on g.id = v.gacha_id
   left join "public"."anime" a on a.id = g.anime_id
   order by v.view_count desc, g.created_at desc nulls last, g.id desc
-  limit least(greatest(coalesce(limit_count, 10), 1), 50)
+  limit case when limit_count >= 1 then least(limit_count, 50) else 10 end -- 잘못된 값이면 기본 10
 $$;
 
 revoke all on function "public"."get_top_gacha_views"(int) from public;
