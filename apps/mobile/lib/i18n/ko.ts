@@ -79,8 +79,20 @@ export const ko = {
     empty: "아직 저장된 가챠가 없어요.",
   },
   folder: {
-    // 기본 폴더는 name 이 비어 있어 이 문구로 보인다
+    // 폴더 선택 시트 (아이템 시트에서 연다)
+    selectTitle: "폴더 선택",
+    // 기본 폴더는 DB 에 이름이 비어 있어 이 문구로 보인다
     defaultName: "기본 폴더",
+    // 포맷 헬퍼(formatFolderItemCount)가 쓴다
+    itemCount_one: "아이템 {{count, number}}개",
+    itemCount_other: "아이템 {{count, number}}개",
+    newFolder: "새 폴더",
+    createLabel: "새 폴더 만들기",
+    namePlaceholder: "폴더 이름",
+    create: "만들기",
+    nameHint: "같은 이름의 폴더는 만들 수 없어요",
+    nameTaken: "이미 같은 이름의 폴더가 있어요",
+    createFailed: "폴더를 만들지 못했어요",
   },
   notice: {},
   settings: {},
