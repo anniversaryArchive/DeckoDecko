@@ -69,6 +69,8 @@ type Props = {
   gachaId: string;
   /** 넘기면 그 기록을 고치는 수정 시트, 생략하면 추가 시트. 열 때의 값을 쓴다 */
   itemId?: string;
+  /** 저장에 실패하면 시트를 닫은 뒤 부른다. reason 은 토스트 둘째 줄에 쓸 문구 (시안 B_DetailToast) */
+  onSaveFailed: (reason: string) => void;
 };
 
 /**
@@ -76,7 +78,7 @@ type Props = {
  * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록.
  * 폴더 선택 · 삭제 확인은 이 시트 위에 여는 시트다 (시안 B_FolderSheet · B_ItemDelete).
  */
-export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
+export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Props) {
   const { t } = useTranslation();
   const item = useItem(itemId);
   const folders = useFolders();
@@ -120,7 +122,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
   const [wasOpen, setWasOpen] = useState(open);
   const [filled, setFilled] = useState(false);
   const [editingItem, setEditingItem] = useState<Item>();
-  // 열 때마다 입력 영역을 새로 그린다. 지난번 저장 · 삭제 실패 안내가 남지 않게
+  // 열 때마다 입력 영역을 새로 그린다. 지난번 저장 요청 상태가 남지 않게
   const [session, setSession] = useState(0);
   if (open !== wasOpen) {
     setWasOpen(open);
@@ -157,6 +159,10 @@ export function ItemSheet({ open, onClose, gachaId, itemId }: Props) {
             onOpenFolders={() => openOver(() => setFolderSheetOpen(true))}
             onDelete={() => openOver(() => setDeleteSheetOpen(true))}
             onDone={onClose}
+            onSaveFailed={(reason) => {
+              onClose();
+              onSaveFailed(reason);
+            }}
           />
         ) : (
           <Text color="textMuted">
@@ -203,6 +209,7 @@ function ItemForm({
   onOpenFolders,
   onDelete,
   onDone,
+  onSaveFailed,
 }: {
   gachaId: string;
   /** 수정 중인 기록. 추가 시트면 없다 */
@@ -213,6 +220,7 @@ function ItemForm({
   /** 삭제를 눌렀을 때. 삭제 확인 시트를 연다 */
   onDelete: () => void;
   onDone: () => void;
+  onSaveFailed: (reason: string) => void;
 }) {
   const { t } = useTranslation();
   const taken = useIsItemNameTaken(gachaId, form.name, item?.id);
@@ -251,7 +259,7 @@ function ItemForm({
       }
       onDone();
     } catch {
-      // 안내는 mutation 의 error 로 버튼 위에 보인다
+      onSaveFailed(t("item.saveFailedReason"));
     }
   };
 
@@ -267,8 +275,6 @@ function ItemForm({
             color: "textMuted" as const,
           }
         : { text: t("item.nameHint"), color: "textMuted" as const };
-
-  const failure = create.isError || update.isError ? t("item.saveFailed") : null;
 
   return (
     <>
@@ -307,12 +313,6 @@ function ItemForm({
         placeholder={t("item.memoPlaceholder")}
         multiline
       />
-
-      {failure ? (
-        <Text variant="captionSm" color="accent" accessibilityLiveRegion="polite">
-          {failure}
-        </Text>
-      ) : null}
 
       {item ? (
         <View style={{ flexDirection: "row", gap: space[10] }}>

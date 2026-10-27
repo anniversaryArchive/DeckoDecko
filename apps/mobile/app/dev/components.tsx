@@ -906,6 +906,7 @@ function ItemSheetDemo() {
   const items = useItems({ gachaId });
   const latest = gachaId ? items.data?.[0] : undefined;
   const [sheet, setSheet] = useState<"add" | "edit" | null>(null);
+  const toast = useToast();
 
   if (!gachaId) return <Text color="textMuted">가챠 목록을 불러오는 중…</Text>;
   return (
@@ -924,6 +925,15 @@ function ItemSheetDemo() {
         onClose={() => setSheet(null)}
         gachaId={gachaId}
         itemId={sheet === "edit" ? latest?.id : undefined}
+        onSaveFailed={(reason) => {
+          const reopen = sheet;
+          toast.show({
+            title: SAVE_FAILED.title,
+            message: reason,
+            actionLabel: "다시 열기",
+            onAction: () => setSheet(reopen),
+          });
+        }}
       />
     </View>
   );

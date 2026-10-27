@@ -136,7 +136,8 @@ export const ko = {
     add: "추가하기",
     save: "저장하기",
     delete: "삭제",
-    saveFailed: "저장하지 못했어요",
+    // 저장 실패 토스트의 둘째 줄 (토스트는 시트를 연 화면이 띄운다)
+    saveFailedReason: "잠시 뒤 다시 시도해 주세요.",
     deleteFailed: "삭제하지 못했어요",
     // 삭제 확인 시트
     deleteTitle: "이 아이템을 삭제할까요?",

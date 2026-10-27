@@ -114,7 +114,7 @@ export const en: Messages = {
     add: "Add",
     save: "Save",
     delete: "Delete",
-    saveFailed: "Couldn't save",
+    saveFailedReason: "Please try again in a moment.",
     deleteFailed: "Couldn't delete",
     deleteTitle: "Delete this item?",
     deleteMessage: "Its photo and memo will be deleted too.\nThis can't be undone.",
