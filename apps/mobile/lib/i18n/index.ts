@@ -29,6 +29,7 @@ void i18n.use(initReactI18next).init({
 export { i18n };
 export {
   formatDate,
+  formatFolderItemCount,
   formatItemCount,
   formatMonth,
   formatNumber,

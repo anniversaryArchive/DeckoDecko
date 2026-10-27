@@ -7,3 +7,7 @@ packages:
 # 실행을 허용할 패키지만 여기에 적는다. 새 경고가 뜨면 왜 필요한지 확인하고 추가한다.
 onlyBuiltDependencies:
   - unrs-resolver # eslint-config-next 가 쓰는 네이티브 모듈 리졸버
+
+# 라이브러리 버그를 고친 패치. 라이브러리를 올릴 때 아직 필요한지 확인하고, 필요 없으면 지운다 (patches/README.md).
+patchedDependencies:
+  "@gorhom/bottom-sheet@5.2.14": patches/@gorhom__bottom-sheet@5.2.14.patch
