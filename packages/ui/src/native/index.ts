@@ -8,6 +8,7 @@ export { Card, type CardProps } from "./Card";
 export { Chip, type ChipProps } from "./Chip";
 export { GoodsCard, type GoodsCardBadge, type GoodsCardProps } from "./GoodsCard";
 export { AlertIcon, ChevronDownIcon, CloseIcon, type LineIconProps } from "./icons";
+export { IconButton, type IconButtonProps } from "./IconButton";
 export { Input, type InputProps } from "./Input";
 export { DISABLED_OPACITY, PRESSED_OPACITY } from "./pressable";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar";

@@ -1,0 +1,58 @@
+diff --git a/lib/commonjs/components/bottomSheetModal/BottomSheetModal.js b/lib/commonjs/components/bottomSheetModal/BottomSheetModal.js
+index ee51e76824b2ac36661a1dc2eb41d90726fd22d4..d1368ff720ed4f8521093528b531b6341b011675 100644
+--- a/lib/commonjs/components/bottomSheetModal/BottomSheetModal.js
++++ b/lib/commonjs/components/bottomSheetModal/BottomSheetModal.js
+@@ -315,7 +315,13 @@ function BottomSheetModalComponent(props, ref) {
+     }
+     currentIndexRef.current = _index;
+     nextIndexRef.current = null;
+-    statusRef.current = _index === -1 ? _constants.MODAL_STATUS.MINIMIZED : _constants.MODAL_STATUS.PRESENTED;
++    // [DeckoDecko 패치] 내려 두는 중(minimize) · 닫는 중(dismiss)이면 그 상태를 지킨다.
++    // 덮어쓰면 뒤이어 오는 onClose 가 MINIMIZED 를 '닫힘'으로 보고 아래 시트를 없앤다 (시트 위에 시트를 닫으면 둘 다 사라짐).
++    if (_index !== -1) {
++      statusRef.current = _constants.MODAL_STATUS.PRESENTED;
++    } else if (statusRef.current !== _constants.MODAL_STATUS.MINIMIZING && statusRef.current !== _constants.MODAL_STATUS.DISMISSING) {
++      statusRef.current = _constants.MODAL_STATUS.MINIMIZED;
++    }
+     if (_providedOnChange) {
+       _providedOnChange(_index, _position, _type);
+     }
+diff --git a/lib/module/components/bottomSheetModal/BottomSheetModal.js b/lib/module/components/bottomSheetModal/BottomSheetModal.js
+index 94fabdb5fd49cbd7deb0e971f9bf6b3ca3639010..3ebc65833664d62f8ddb1668517c9d5a12b1ce21 100644
+--- a/lib/module/components/bottomSheetModal/BottomSheetModal.js
++++ b/lib/module/components/bottomSheetModal/BottomSheetModal.js
+@@ -308,7 +308,13 @@ function BottomSheetModalComponent(props, ref) {
+     }
+     currentIndexRef.current = _index;
+     nextIndexRef.current = null;
+-    statusRef.current = _index === -1 ? MODAL_STATUS.MINIMIZED : MODAL_STATUS.PRESENTED;
++    // [DeckoDecko 패치] 내려 두는 중(minimize) · 닫는 중(dismiss)이면 그 상태를 지킨다.
++    // 덮어쓰면 뒤이어 오는 onClose 가 MINIMIZED 를 '닫힘'으로 보고 아래 시트를 없앤다 (시트 위에 시트를 닫으면 둘 다 사라짐).
++    if (_index !== -1) {
++      statusRef.current = MODAL_STATUS.PRESENTED;
++    } else if (statusRef.current !== MODAL_STATUS.MINIMIZING && statusRef.current !== MODAL_STATUS.DISMISSING) {
++      statusRef.current = MODAL_STATUS.MINIMIZED;
++    }
+     if (_providedOnChange) {
+       _providedOnChange(_index, _position, _type);
+     }
+diff --git a/src/components/bottomSheetModal/BottomSheetModal.tsx b/src/components/bottomSheetModal/BottomSheetModal.tsx
+index 2954b3f4282e28c1973ab88f479eb2d7889913c5..810e98e9d1b96691f1a031a753bdec99fd0b092e 100644
+--- a/src/components/bottomSheetModal/BottomSheetModal.tsx
++++ b/src/components/bottomSheetModal/BottomSheetModal.tsx
+@@ -432,8 +432,13 @@ function BottomSheetModalComponent<T = never>(
+       currentIndexRef.current = _index;
+       nextIndexRef.current = null;
+ 
+-      statusRef.current =
+-        _index === -1 ? MODAL_STATUS.MINIMIZED : MODAL_STATUS.PRESENTED;
++      // [DeckoDecko 패치] 내려 두는 중(minimize) · 닫는 중(dismiss)이면 그 상태를 지킨다.
++      // 덮어쓰면 뒤이어 오는 onClose 가 MINIMIZED 를 '닫힘'으로 보고 아래 시트를 없앤다 (시트 위에 시트를 닫으면 둘 다 사라짐).
++      if (_index !== -1) {
++        statusRef.current = MODAL_STATUS.PRESENTED;
++      } else if (statusRef.current !== MODAL_STATUS.MINIMIZING && statusRef.current !== MODAL_STATUS.DISMISSING) {
++        statusRef.current = MODAL_STATUS.MINIMIZED;
++      }
+ 
+       if (_providedOnChange) {
+         _providedOnChange(_index, _position, _type);

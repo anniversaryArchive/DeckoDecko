@@ -1,8 +1,10 @@
-export { border, fonts, gutter, palette, radius, space, typography } from "./tokens";
+export { border, folderColor, fonts, gutter, palette, radius, space, typography } from "./tokens";
 export type {
+  FolderColor,
   FontWeightName,
   Theme,
   ThemeColors,
+  ThemeFolders,
   ThemeShadows,
   TypeStyle,
   TypographyName,

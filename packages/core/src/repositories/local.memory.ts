@@ -52,6 +52,12 @@ export function createMemoryLocalRepositories(): LocalRepositories {
         };
       },
 
+      async countItemsByFolder() {
+        const counts: Record<string, number> = {};
+        for (const i of items) counts[i.folderId] = (counts[i.folderId] ?? 0) + 1;
+        return counts;
+      },
+
       async createItem(input) {
         const folderId = input.folderId ?? defaultFolder().id;
         requireFolder(folderId);
