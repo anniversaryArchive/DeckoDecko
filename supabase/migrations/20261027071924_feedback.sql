@@ -37,6 +37,10 @@ create table "public"."feedback" (
 create index "feedback_device_uuid_created_at_idx"
   on "public"."feedback"(device_uuid, created_at desc);
 
+-- 작품을 지울 때(on delete set null) feedback 을 다 훑지 않게
+create index "feedback_media_id_idx"
+  on "public"."feedback"(media_id);
+
 alter table "public"."feedback" enable row level security;
 
 -- 정책 없음 + 권한 회수: anon · authenticated 는 아래 함수로만 다룬다
@@ -77,7 +81,8 @@ begin
     raise exception 'device_uuid is required' using errcode = '22004';
   end if;
 
-  perform pg_advisory_xact_lock(hashtextextended(p_device_uuid::text, 0));
+  -- 잠금 키는 DB 전체가 같이 쓰므로, 다른 잠금과 겹치지 않게 'feedback:' 을 앞에 붙인다
+  perform pg_advisory_xact_lock(hashtextextended('feedback:' || p_device_uuid::text, 0));
 
   if (select count(*) from public.feedback f
       where f.device_uuid = p_device_uuid and f.created_at >= today_start) >= daily_limit then
