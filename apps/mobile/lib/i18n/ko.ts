@@ -127,6 +127,7 @@ export const ko = {
     nameLabel: "아이템 이름",
     nameHint: "같은 이름의 아이템이 있으면 알려드려요",
     nameTaken: "이 가챠에 같은 이름의 아이템이 있어요",
+    nameCheckFailed: "이름을 확인하지 못했어요. 이름을 다시 입력해 보세요",
     // 수정 시트의 이름 아래 안내. date 는 포맷 헬퍼(formatDate)로 만든 문자열
     registered: "{{date}} 등록",
     registeredWithPhoto: "{{date}} 등록 · 사진 1장",

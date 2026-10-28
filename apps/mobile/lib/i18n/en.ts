@@ -106,6 +106,7 @@ export const en: Messages = {
     nameLabel: "Item name",
     nameHint: "We'll let you know if the name is already used",
     nameTaken: "This gacha already has an item with this name",
+    nameCheckFailed: "Couldn't check the name. Try typing it again",
     registered: "Added {{date}}",
     registeredWithPhoto: "Added {{date}} · 1 photo",
     folderLabel: "Folder",

@@ -251,15 +251,18 @@ function ItemForm({
   const nameMessage =
     filled && taken.data
       ? { text: t("item.nameTaken"), color: "accent" as const }
-      : item
-        ? {
-            // 사진 수는 지금 입력 기준 (사진을 지우면 바로 빠진다)
-            text: t(form.thumbnail ? "item.registeredWithPhoto" : "item.registered", {
-              date: formatDate(new Date(item.createdAt)),
-            }),
-            color: "textMuted" as const,
-          }
-        : { text: t("item.nameHint"), color: "textMuted" as const };
+      : filled && taken.isError
+        ? // 검사가 실패하면 저장 버튼이 꺼진 채라 이유를 알린다. 이름을 바꾸면 다시 검사한다
+          { text: t("item.nameCheckFailed"), color: "accent" as const }
+        : item
+          ? {
+              // 사진 수는 지금 입력 기준 (사진을 지우면 바로 빠진다)
+              text: t(form.thumbnail ? "item.registeredWithPhoto" : "item.registered", {
+                date: formatDate(new Date(item.createdAt)),
+              }),
+              color: "textMuted" as const,
+            }
+          : { text: t("item.nameHint"), color: "textMuted" as const };
 
   return (
     <>
