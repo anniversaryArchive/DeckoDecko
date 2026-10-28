@@ -35,6 +35,8 @@ export interface ItemRepository {
   listItems(params?: ListItemsParams): Promise<Item[]>;
   getItem(id: string): Promise<Item | null>;
   countItems(params?: { gachaId?: string }): Promise<ItemCounts>;
+  /** 폴더 id → 기록 수 (WISH · GET 합). 기록이 없는 폴더는 빠진다 */
+  countItemsByFolder(): Promise<Record<string, number>>;
   createItem(input: CreateItemInput): Promise<Item>;
   /** 없는 id 면 던진다. WISH ↔ GET 전환도 이것으로 한다 ({ type }) */
   updateItem(id: string, input: UpdateItemInput): Promise<Item>;

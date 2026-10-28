@@ -5,14 +5,16 @@
 
 export type MediaKind = "anime" | "game" | "character";
 
-/** 작품 (애니 · 게임 · 캐릭터). 가챠가 속한 단위이고 검색 필터 · 상세 상단 칩에 보인다. */
+/**
+ * 작품 (애니 · 게임 · 캐릭터). 가챠가 속한 단위이고 검색 필터 · 상세 상단 칩에 보인다.
+ * 작품 이미지는 DB 에 컬럼이 없어 두지 않는다 (#160).
+ */
 export type Media = {
   id: string;
   title: string; // 한국어 이름
   titleJa: string | null;
   titleEn: string | null;
   kind: MediaKind | null;
-  imageUrl: string | null;
 };
 
 /** 가챠 한 종의 라인업 아이템. WISH / GET 기록의 기본 단위. */
@@ -45,6 +47,16 @@ export type GachaDetail = Gacha & {
 export type Page<T> = {
   items: T[];
   total: number;
+};
+
+/** 공지사항 (운영자가 백오피스에서 작성). 홈 공지 띠 · 공지 목록 · 상세에 보인다. */
+export type Notice = {
+  id: string;
+  title: string;
+  content: string; // DB 칼럼 이름은 body
+  /** 고정 공지. 목록 맨 위에 오고, 홈 공지 띠는 고정 공지만 보인다 (DB is_fixed) */
+  isFixed: boolean;
+  createdAt: string; // ISO 8601 UTC
 };
 
 /** WISH = 갖고 싶음, GET = 가졌음. 목록 · 상세에서 원탭으로 바꾼다 (useSetItemType). */

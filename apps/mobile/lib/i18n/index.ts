@@ -27,4 +27,12 @@ void i18n.use(initReactI18next).init({
 });
 
 export { i18n };
-export { formatDate, formatItemCount, formatMonth, formatPrice } from "./format";
+export {
+  formatDate,
+  formatFolderItemCount,
+  formatItemCount,
+  formatMonth,
+  formatNumber,
+  formatPercent,
+  formatPrice,
+} from "./format";

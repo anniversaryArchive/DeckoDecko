@@ -7,12 +7,14 @@
 export { CoreProvider, useLocalRepositories, useRepositories } from "./provider";
 export { createQueryClient } from "./queryClient";
 export { useGacha, useGachaList, useGachaSearch, usePopularGacha } from "./gacha.hooks";
+export { useHomeNotices, useNotice, useNotices } from "./notice.hooks";
 export {
   useCreateItem,
   useDeleteItem,
   useIsItemNameTaken,
   useItem,
   useItemCounts,
+  useItemCountsByFolder,
   useItems,
   useSetItemType,
   useUpdateItem,
@@ -24,3 +26,12 @@ export {
   useIsFolderNameTaken,
   useRenameFolder,
 } from "./folders.hooks";
+export {
+  useAddRecentSearch,
+  useClearRecentGacha,
+  useClearRecentSearches,
+  useRecentGacha,
+  useRecentSearches,
+  useRecordRecentGacha,
+  useRemoveRecentSearch,
+} from "./recent.hooks";

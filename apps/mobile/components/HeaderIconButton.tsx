@@ -5,24 +5,29 @@ import { Pressable, type StyleProp, type ViewStyle } from "react-native";
 import { border, radius, useTheme } from "@deckodecko/ui";
 import { PRESSED_OPACITY } from "@deckodecko/ui/native";
 
-/** 화면 위쪽 원형 버튼 지름 (홈 검색, 상세 뒤로) */
-const SIZE = 44;
+/** 버튼 지름. md: 화면 위쪽 (홈 검색, 상세 뒤로), lg: 옆의 Button lg 와 높이를 맞출 때 (상세 사진 인식) */
+const SIZE = { md: 44, lg: 54 } as const;
 /** 버튼 안 아이콘 */
-const ICON_SIZE = 20;
+const ICON_SIZE = { md: 20, lg: 22 } as const;
 
 type Props = {
   icon: ComponentProps<typeof Ionicons>["name"];
   /** 화면 읽기 프로그램이 읽을 이름 */
   label: string;
   onPress: () => void;
-  /** outline: 바탕 위 흰 면 + 테두리 (홈), surface: 사진 위 흰 면 (상세) */
-  variant: "outline" | "surface";
+  /**
+   * outline: 바탕 위 흰 면 + 테두리 (홈), surface: 사진 위 흰 면 (상세),
+   * accent: 흰 면 + 포인트 테두리 · 포인트 아이콘 (상세 사진 인식)
+   */
+  variant: "outline" | "surface" | "accent";
+  /** 생략하면 md */
+  size?: keyof typeof SIZE;
   /** 배치용 (위치) */
   style?: StyleProp<ViewStyle>;
 };
 
-/** 화면 위쪽에 두는 원형 아이콘 버튼. */
-export function HeaderIconButton({ icon, label, onPress, variant, style }: Props) {
+/** 아이콘 하나를 담은 원형 버튼. */
+export function HeaderIconButton({ icon, label, onPress, variant, size = "md", style }: Props) {
   const { colors } = useTheme();
   return (
     <Pressable
@@ -31,8 +36,8 @@ export function HeaderIconButton({ icon, label, onPress, variant, style }: Props
       accessibilityLabel={label}
       style={({ pressed }) => [
         {
-          width: SIZE,
-          height: SIZE,
+          width: SIZE[size],
+          height: SIZE[size],
           borderRadius: radius.full,
           alignItems: "center",
           justifyContent: "center",
@@ -40,10 +45,15 @@ export function HeaderIconButton({ icon, label, onPress, variant, style }: Props
           opacity: pressed ? PRESSED_OPACITY : 1,
         },
         variant === "outline" && { borderWidth: border.default, borderColor: colors.line },
+        variant === "accent" && { borderWidth: border.default, borderColor: colors.primary },
         style,
       ]}
     >
-      <Ionicons name={icon} size={ICON_SIZE} color={colors.text} />
+      <Ionicons
+        name={icon}
+        size={ICON_SIZE[size]}
+        color={variant === "accent" ? colors.accent : colors.text}
+      />
     </Pressable>
   );
 }
