@@ -11,7 +11,6 @@ const starry: Media = {
   titleJa: "星の森",
   titleEn: "Starry Forest",
   kind: "anime",
-  imageUrl: null,
 };
 
 const noJaEn: Media = {
@@ -20,7 +19,6 @@ const noJaEn: Media = {
   titleJa: null,
   titleEn: null,
   kind: null,
-  imageUrl: null,
 };
 
 function gacha(
@@ -162,6 +160,29 @@ describe("createMemoryGachaRepository", () => {
       const repo = createMemoryGachaRepository([gacha("a", {}, 1), gacha("b", {}, 5)]);
       await repo.listPopularGacha();
       expect(ids(await repo.listGacha())).toEqual(["a", "b"]);
+    });
+  });
+
+  describe("listGachaByIds", () => {
+    it("받은 id 순서대로 돌려준다 (seed 순서와 무관)", async () => {
+      const repo = createMemoryGachaRepository([gacha("a"), gacha("b"), gacha("c")]);
+      expect(ids(await repo.listGachaByIds(["c", "a"]))).toEqual(["c", "a"]);
+    });
+
+    it("없는 id 는 빼고 나머지 순서는 유지", async () => {
+      const repo = createMemoryGachaRepository([gacha("a"), gacha("b")]);
+      expect(ids(await repo.listGachaByIds(["b", "nope", "a"]))).toEqual(["b", "a"]);
+    });
+
+    it("빈 목록이면 빈 배열", async () => {
+      const repo = createMemoryGachaRepository([gacha("a")]);
+      expect(await repo.listGachaByIds([])).toEqual([]);
+    });
+
+    it("라인업 없이 요약만 돌려준다", async () => {
+      const repo = createMemoryGachaRepository([gacha("a", {}, 2)]);
+      const [found] = await repo.listGachaByIds(["a"]);
+      expect(found).not.toHaveProperty("items");
     });
   });
 

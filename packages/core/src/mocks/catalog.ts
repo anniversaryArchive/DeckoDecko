@@ -13,7 +13,6 @@ const media = {
     titleJa: "星の森",
     titleEn: "Starry Forest",
     kind: "anime",
-    imageUrl: null,
   },
   catCafe: {
     id: "m-cat-cafe",
@@ -21,7 +20,6 @@ const media = {
     titleJa: "ねこカフェ日記",
     titleEn: "Cat Cafe Diary",
     kind: "anime",
-    imageUrl: null,
   },
 } satisfies Record<string, Media>;
 

@@ -3,8 +3,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "@deckodecko/ui";
 
-/** 히어로 이미지 높이 (위 safe area 제외) */
-const HEIGHT = 300;
+/** 히어로 이미지 높이 (위 safe area 제외). 상세의 상태 표시줄 배경이 이 높이를 기준으로 나타난다 */
+export const GACHA_HERO_HEIGHT = 300;
 /** 아래 모서리. 시안 값 36 은 radius 토큰(sheet 28)보다 커서 이 컴포넌트 상수로 둔다. */
 const BOTTOM_RADIUS = 36;
 
@@ -15,7 +15,7 @@ export function GachaHero({ imageUrl }: { imageUrl: string | null }) {
   return (
     <View
       style={{
-        height: HEIGHT + insets.top,
+        height: GACHA_HERO_HEIGHT + insets.top,
         backgroundColor: colors.accentSoft,
         borderBottomLeftRadius: BOTTOM_RADIUS,
         borderBottomRightRadius: BOTTOM_RADIUS,
