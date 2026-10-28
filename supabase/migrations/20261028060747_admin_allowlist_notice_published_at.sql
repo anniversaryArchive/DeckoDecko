@@ -23,20 +23,24 @@ revoke all on table "public"."admin_allowlist" from "anon", "authenticated";
 
 -- ─────────────────────────────────────────────
 -- 2. notice.published_at: 게시 시각 (예약 게시)
+--    게시 시각을 아직 정하지 않은 비공개 초안은 null 이다. 기본값은 두지 않는다.
+--    게시 상태로 만들 때는 백오피스가 now() 나 예약 시각을 넣는다.
 -- ─────────────────────────────────────────────
 alter table "public"."notice"
   add column "published_at" timestamptz;
 
--- 기존 공지는 만든 시각으로 채운다. updated_at 이 바뀌지 않게 트리거를 잠시 끈다.
+-- 기존 공지는 게시된 것만 만든 시각으로 채운다. 비공개 공지는 null 로 둔다.
+-- updated_at 이 바뀌지 않게 트리거를 잠시 끈다.
 alter table "public"."notice" disable trigger "notice_set_updated_at";
-update "public"."notice" set "published_at" = "created_at";
+update "public"."notice" set "published_at" = "created_at" where "is_published";
 alter table "public"."notice" enable trigger "notice_set_updated_at";
 
+-- 게시 상태면 게시 시각이 꼭 있다
 alter table "public"."notice"
-  alter column "published_at" set default now(),
-  alter column "published_at" set not null;
+  add constraint "notice_published_at_required"
+  check (not is_published or published_at is not null);
 
--- 앱은 게시를 켰고 게시 시각이 지난 공지만 본다
+-- 앱은 게시를 켰고 게시 시각이 지난 공지만 본다 (published_at 이 null 이면 false 라 안 보인다)
 drop policy "notice_select_published" on "public"."notice";
 create policy "notice_select_published" on "public"."notice"
   for select to "anon", "authenticated"

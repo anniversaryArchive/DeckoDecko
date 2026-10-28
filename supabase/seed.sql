@@ -71,10 +71,11 @@ cross join lateral generate_series(1, 4 + (g.id % 3)::int) as n;
 -- ─────────────────────────────────────────────
 -- 4. notice (공지)
 -- ─────────────────────────────────────────────
-insert into "public"."notice" (title, body, is_published, created_at, updated_at) values
+-- 게시된 공지는 published_at 이 있어야 한다 (notice_published_at_required). 만든 시각과 같게 넣는다.
+insert into "public"."notice" (title, body, is_published, published_at, created_at, updated_at) values
   ('가챠 탐색대 1.0 오픈 안내',
    '가챠 탐색대가 새로워졌어요! 갖고 싶은 가챠는 WISH, 뽑은 가챠는 GET으로 기록해 보세요.',
-   true, now() - interval '2 days', now() - interval '2 days'),
+   true, now() - interval '2 days', now() - interval '2 days', now() - interval '2 days'),
   ('11월 신규 가챠 업데이트',
    '11월 신규 가챠 20종을 추가했어요. 홈 화면 NEW 표시를 확인해 주세요.',
-   true, now() - interval '1 day', now() - interval '1 day');
+   true, now() - interval '1 day', now() - interval '1 day', now() - interval '1 day');
