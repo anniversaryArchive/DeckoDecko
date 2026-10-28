@@ -3,7 +3,7 @@
 --
 -- - 기간: 오늘(한국 시간)을 포함한 최근 10일. viewed_on 이 한국 날짜라 같은 기준이다.
 -- - 순서: 조회 수 많은 순 -> 최신 가챠 -> id. 조회가 0인 가챠는 나오지 않는다.
--- - 결과 모양은 search_gacha_with_anime 와 같다 (total_count 대신 view_count). 앱 매핑을 같이 쓴다.
+-- - 결과는 가챠 칸 + 작품 칸(anime_*) + item_count + view_count. 칸을 바꾸면 앱 매핑도 같이 바꾼다.
 -- - 집계는 gacha_view_log_viewed_on_gacha_id_idx (viewed_on, gacha_id) 를 쓴다. 새 인덱스는 만들지 않는다.
 
 -- ─────────────────────────────────────────────

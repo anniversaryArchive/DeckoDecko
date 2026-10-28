@@ -221,6 +221,24 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      get_top_gacha_views: {
+        Args: { limit_count?: number };
+        Returns: {
+          anime_en_title: string;
+          anime_id: number;
+          anime_jp_title: string;
+          anime_kr_title: string;
+          anime_type: string;
+          id: number;
+          image_link: string;
+          item_count: number;
+          name: string;
+          name_kr: string;
+          price: number;
+          release_month: string;
+          view_count: number;
+        }[];
+      };
       log_gacha_view: {
         Args: { p_device_id: string; p_gacha_id: number };
         Returns: undefined;
