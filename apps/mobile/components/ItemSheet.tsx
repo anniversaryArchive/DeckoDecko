@@ -97,7 +97,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   const [filled, setFilled] = useState(false);
   // 저장 · 삭제 뒤 기록이 다시 불려도 닫히는 동안 내용이 바뀌지 않게 채울 때의 기록을 들고 있다
   const [editingItem, setEditingItem] = useState<Item>();
-  // 저장에 실패해 닫은 입력. for 는 기록 id (추가 시트면 "")
+  // 저장에 실패해 닫은 입력. for 는 기록 id (추가 시트면 `add:${gachaId}`)
   const [draft, setDraft] = useState<{ for: string; form: Form }>();
   // 열 때마다 입력 영역을 새로 그린다. 지난번 저장 요청 상태가 남지 않게
   const [session, setSession] = useState(0);
@@ -111,7 +111,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   if (open && !filled && (!itemId || (item.data && !item.isFetching))) {
     setFilled(true);
     setEditingItem(item.data ?? undefined);
-    const kept = draft?.for === (itemId ?? "") ? draft.form : undefined;
+    const kept = draft?.for === (itemId ?? `add:${gachaId}`) ? draft.form : undefined;
     setDraft(undefined);
     setForm(kept ?? (item.data ? formFromItem(item.data) : EMPTY_FORM));
   }
@@ -138,7 +138,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
             onDelete={() => setDeleteSheetOpen(true)}
             onDone={onClose}
             onSaveFailed={(reason) => {
-              setDraft({ for: editingItem?.id ?? "", form });
+              setDraft({ for: editingItem?.id ?? `add:${gachaId}`, form });
               onClose();
               onSaveFailed(reason);
             }}
