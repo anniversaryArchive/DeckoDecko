@@ -212,6 +212,32 @@ describe("createSupabaseGachaRepository", () => {
     expect(requests).toHaveLength(0);
   });
 
+  it("id 로 여러 개: 한 번에 요청하고 받은 id 순서대로, 없는 id 는 뺀다", async () => {
+    const rows = [summaryRow({ id: 3 }), summaryRow({ id: 7 })];
+    const { repo, requests } = fakeRepository(() => ({ body: rows }));
+    const list = await repo.listGachaByIds(["7", "999", "3"]);
+    expect(list.map((g) => g.id)).toEqual(["7", "3"]);
+    expect(requests).toHaveLength(1);
+    expect(requests[0]!.searchParams.get("id")).toBe("in.(7,999,3)");
+  });
+
+  it("id 로 여러 개: 숫자가 아닌 id 는 요청에서 빼고, 남는 게 없으면 요청하지 않는다", async () => {
+    const { repo, requests } = fakeRepository(() => ({ body: [] }));
+    await expect(repo.listGachaByIds([])).resolves.toEqual([]);
+    await expect(repo.listGachaByIds(["m-1", "007"])).resolves.toEqual([]);
+    expect(requests).toHaveLength(0);
+    await repo.listGachaByIds(["m-1", "5"]);
+    expect(requests[0]!.searchParams.get("id")).toBe("in.(5)");
+  });
+
+  it("id 로 여러 개: 실패는 throw", async () => {
+    const { repo } = fakeRepository(() => ({
+      status: 500,
+      body: { message: "boom", code: "XX000", details: null, hint: null },
+    }));
+    await expect(repo.listGachaByIds(["1"])).rejects.toThrow("[gacha.listGachaByIds] boom");
+  });
+
   it("검색: 빈 검색어는 요청하지 않는다", async () => {
     const { repo, requests } = fakeRepository(() => ({ body: [] }));
     await expect(repo.searchGacha({ keyword: "   " })).resolves.toEqual({ items: [], total: 0 });

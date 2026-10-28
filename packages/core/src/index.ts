@@ -38,6 +38,21 @@ export { cleanName, normalizeName } from "./name";
 export { createMemoryLocalRepositories } from "./repositories/local.memory";
 export { collectionRate, gachaCollection, type GachaCollection } from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
+export type { RecentRepository } from "./repositories/recent";
+export {
+  RECENT_LIMIT,
+  normalizeKeyword,
+  truncateKeyword,
+  parseRecent,
+  pushRecent,
+  removeRecent,
+} from "./repositories/recent";
+export type { KeyValueStorage } from "./repositories/recent.storage";
+export {
+  createMemoryKeyValueStorage,
+  createStorageRecentRepository,
+} from "./repositories/recent.storage";
 export { createSupabaseGachaRepository } from "./repositories/gacha.supabase";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";
 export { queryKeys } from "./queryKeys";
+export { storageKeys, type StorageKey } from "./storageKeys";
