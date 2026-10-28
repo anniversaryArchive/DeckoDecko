@@ -1,14 +1,9 @@
 import type { Gacha, GachaDetail } from "../types";
-import { GACHA_DEFAULTS } from "./gacha";
+import { count, GACHA_DEFAULTS } from "./gacha";
 import type { GachaRepository, ListGachaParams, SearchGachaParams } from "./gacha";
 
 function normalize(s: string): string {
   return s.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
-}
-
-/** min 이상의 정수가 아니면(음수 · 소수 · NaN 등) 기본값. limit 은 1, offset 은 0 부터 받는다. */
-function count(n: number | undefined, fallback: number, min = 1): number {
-  return n !== undefined && Number.isInteger(n) && n >= min ? n : fallback;
 }
 
 function toSummary(detail: GachaDetail): Gacha {

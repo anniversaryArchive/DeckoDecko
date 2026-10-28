@@ -23,16 +23,27 @@ const list = await repositories.gacha.listGacha();
 | `src/supabase.ts`       | `createSupabaseClient(url, publishableKey)`. 환경변수는 호출하는 쪽이 넘김                                           | 없음  |
 | `src/database.types.ts` | Supabase 생성 타입. `supabase/README.md` 의 gen types 절차로 갱신                                                    | 없음  |
 | `src/types.ts`          | 도메인 타입 (`Gacha`, `GachaDetail`, `GachaItem`, `Media`)                                                           | 없음  |
-| `src/repositories/`     | `GachaRepository` 인터페이스와 구현 (`memory`, 2주차에 `supabase`)                                                   | 없음  |
+| `src/repositories/`     | `GachaRepository` 인터페이스와 구현 (`memory` · `supabase`)                                                          | 없음  |
 | `src/queryKeys.ts`      | React Query 키 규칙                                                                                                  | 없음  |
 | `src/mocks/`            | 개발 · 테스트용 목 카탈로그 (`@deckodecko/core/mocks`). 앱 · 백오피스 · 테스트가 공유                                | 없음  |
 | `src/react/`            | `CoreProvider`, 도메인별 훅 `<도메인>.hooks.ts` (`useGachaList` · `usePopularGacha` · `useGacha` · `useGachaSearch`) | 있음  |
 
 엔트리가 둘인 이유: `@deckodecko/core` 는 React 가 없어 Next.js 서버 컴포넌트 · 스크립트에서 import 해도 되고, `@deckodecko/core/react` 는 클라이언트 전용이다.
 
-## Supabase 연결 (2주차)
+## Supabase 연결
 
-스키마(#114)가 들어오면 `src/supabase.ts`(publishable key 클라이언트 팩토리), `src/database.types.ts`(생성 타입, `supabase gen types typescript`), `src/repositories/gacha.supabase.ts` 를 같이 넣는다. 환경변수는 이 패키지가 읽지 않고 앱 · 백오피스가 넘긴다. secret key(`sb_secret_...`)는 어디서도 이 패키지에 넣지 않는다.
+```ts
+import { createSupabaseClient, createSupabaseGachaRepository } from "@deckodecko/core";
+
+const client = createSupabaseClient(url, publishableKey); // publishable key 만
+const repositories = { gacha: createSupabaseGachaRepository(client) };
+```
+
+- 환경변수는 이 패키지가 읽지 않고 앱 · 백오피스가 넘긴다. secret key(`sb_secret_...`)는 어디서도 이 패키지에 넣지 않는다.
+- 행(snake_case) → 도메인 타입 매핑은 `<도메인>.supabase.ts` 안에서만 한다.
+- 실패(네트워크 · PostgREST 에러)는 throw 해서 훅의 error 상태로 보낸다. 빈 결과는 빈 배열 · `null` 이다.
+- 재시도는 React Query 가 맡는다 (클라이언트의 postgrest 재시도는 껐다).
+- 앱은 개발 빌드에서 `EXPO_PUBLIC_DATA_SOURCE=mock` 이면 메모리 저장소를 쓴다 (`apps/mobile/lib/repositories.ts`).
 
 ## 새 도메인 추가
 

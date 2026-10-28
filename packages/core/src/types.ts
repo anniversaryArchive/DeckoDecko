@@ -5,14 +5,16 @@
 
 export type MediaKind = "anime" | "game" | "character";
 
-/** 작품 (애니 · 게임 · 캐릭터). 가챠가 속한 단위이고 검색 필터 · 상세 상단 칩에 보인다. */
+/**
+ * 작품 (애니 · 게임 · 캐릭터). 가챠가 속한 단위이고 검색 필터 · 상세 상단 칩에 보인다.
+ * 작품 이미지는 DB 에 컬럼이 없어 두지 않는다 (#160).
+ */
 export type Media = {
   id: string;
   title: string; // 한국어 이름
   titleJa: string | null;
   titleEn: string | null;
   kind: MediaKind | null;
-  imageUrl: string | null;
 };
 
 /** 가챠 한 종의 라인업 아이템. WISH / GET 기록의 기본 단위. */
