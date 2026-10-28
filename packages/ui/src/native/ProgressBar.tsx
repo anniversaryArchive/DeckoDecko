@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { useTheme } from "../theme";
 import { radius, space, type ThemeColors } from "../tokens";
@@ -12,6 +14,8 @@ const SEGMENT_HEIGHT = 8;
 const LEGEND_DOT = 8;
 /** 칸이 이보다 많으면 칸 사이를 좁힌다 (칸이 너무 가늘어지지 않게) */
 const DENSE_SEGMENTS = 20;
+/** 칸 색이 바뀌는 데 걸리는 시간(ms) */
+const SEGMENT_COLOR_DURATION = 250;
 
 type CommonProps = {
   /** 화면 읽기 프로그램이 읽을 이름 ("내 굿즈 소장률") */
@@ -125,16 +129,17 @@ function SegmentBar({
   );
 }
 
+// 기록을 추가하거나 WISH ↔ GET 을 바꾸면 칸 색이 서서히 바뀐다. "동작 줄이기"가 켜져 있으면 withTiming 이 바로 바꾼다
 function Segment({ color }: { color: keyof ThemeColors }) {
   const { colors } = useTheme();
+  const background = useSharedValue(colors[color]);
+  useEffect(() => {
+    background.value = withTiming(colors[color], { duration: SEGMENT_COLOR_DURATION });
+  }, [background, colors, color]);
+  const animated = useAnimatedStyle(() => ({ backgroundColor: background.value }));
   return (
-    <View
-      style={{
-        flex: 1,
-        height: SEGMENT_HEIGHT,
-        borderRadius: radius.bar,
-        backgroundColor: colors[color],
-      }}
+    <Animated.View
+      style={[{ flex: 1, height: SEGMENT_HEIGHT, borderRadius: radius.bar }, animated]}
     />
   );
 }

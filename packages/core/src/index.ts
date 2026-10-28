@@ -32,7 +32,7 @@ export type { FolderRepository } from "./repositories/folders";
 export type { LocalRepositories, Repositories } from "./repositories";
 export { cleanName, normalizeName } from "./name";
 export { createMemoryLocalRepositories } from "./repositories/local.memory";
-export { collectionRate } from "./collection";
+export { collectionRate, gachaCollection, type GachaCollection } from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
 export { createSupabaseGachaRepository } from "./repositories/gacha.supabase";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";
