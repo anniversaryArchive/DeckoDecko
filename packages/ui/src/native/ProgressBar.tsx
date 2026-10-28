@@ -25,6 +25,8 @@ export type ProgressBarProps =
       variant: "summary";
       /** 채운 비율 0 – 1. 밖의 값은 잘라 낸다 */
       value: number;
+      /** 화면 읽기 프로그램이 읽을 비율 0 – 1. value 를 애니메이션할 때 최종 값을 넘긴다. 없으면 value */
+      accessibilityNow?: number;
     })
   | (CommonProps & {
       /** 아이템 하나가 한 칸. GET → WISH → 미등록 순으로 칠한다 (가챠 상세) */
@@ -50,16 +52,17 @@ export function ProgressBar(props: ProgressBarProps) {
 
 function SummaryBar({
   value,
+  accessibilityNow = value,
   accessibilityLabel,
   style,
 }: Extract<ProgressBarProps, { variant: "summary" }>) {
   const { colors } = useTheme();
-  const ratio = Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
+  const ratio = clampRatio(value);
   return (
     <View
       accessibilityRole="progressbar"
       accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{ min: 0, max: 100, now: Math.round(ratio * 100) }}
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(clampRatio(accessibilityNow) * 100) }}
       style={[
         {
           height: SUMMARY_HEIGHT,
@@ -156,4 +159,8 @@ function LegendItem({ color, label }: { color: keyof ThemeColors; label: string 
       </Text>
     </View>
   );
+}
+
+function clampRatio(value: number): number {
+  return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
 }

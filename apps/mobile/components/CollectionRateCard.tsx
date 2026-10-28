@@ -84,6 +84,7 @@ function CollectionRate({ counts }: { counts: ItemCounts }) {
       <ProgressBar
         variant="summary"
         value={displayRate / 100}
+        accessibilityNow={rate / 100}
         accessibilityLabel={t("home.collectionRate")}
       />
     </View>
