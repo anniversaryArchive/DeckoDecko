@@ -1,9 +1,9 @@
 import type { DeckoSupabaseClient } from "../supabase";
 import { count, GACHA_DEFAULTS } from "./gacha";
 import type { GachaRepository, ListGachaParams, SearchGachaParams } from "./gacha";
-import { toGacha, toGachaDetail } from "./gacha.supabase.mappers";
+import { toGacha, toGachaDetail, toGachaFromRpc } from "./gacha.supabase.mappers";
 import { ilikeAny, toDbId } from "./gacha.supabase.params";
-import { DETAIL_SELECT, SUMMARY_SELECT } from "./gacha.supabase.rows";
+import { DETAIL_SELECT, SUMMARY_SELECT, type GachaRpcRow } from "./gacha.supabase.rows";
 
 /** offset 이 전체 개수를 넘으면 PostgREST 가 416(PGRST103)을 준다. 에러가 아니라 빈 페이지로 본다. */
 const RANGE_NOT_SATISFIABLE = "PGRST103";
@@ -18,8 +18,8 @@ function fail(action: string, error: PostgrestErrorLike): never {
 /**
  * Supabase(PostgREST) 로 읽는 가챠 저장소. 계약은 GachaRepository 와 같다.
  *   - 최신순: created_at → id 내림차순.
- *   - 인기: 임시. 집계 RPC(#137, get_top_gacha_views) 전까지 오래 등록된 순(id 오름차순)이라 실제 인기와 상관없다.
- *     조회 로그는 anon 이 읽을 수 없어 클라이언트에서 집계하지 않는다. RPC 가 오면 이 함수의 호출만 바꾼다.
+ *   - 인기: RPC get_top_gacha_views. 최근 10일 조회 수가 많은 순이고, 조회가 없는 가챠는 빠진다 (그래서 limit 보다 적을 수 있다).
+ *     조회 로그는 anon 이 읽을 수 없어 서버가 센다.
  *   - 검색: RPC(#136) 전까지 ilike. 가챠 이름(원문 · 한국어) 또는 작품명(한 · 일 · 영)에 부분 일치, 대소문자 무시.
  * 행 타입 · select 는 gacha.supabase.rows, 행 → 도메인 매핑은 gacha.supabase.mappers, 요청 값 만들기는 gacha.supabase.params.
  */
@@ -61,12 +61,13 @@ export function createSupabaseGachaRepository(client: DeckoSupabaseClient): Gach
     },
 
     async listPopularGacha(limit?: number) {
-      const { data, error } = await gachaTable()
-        .select(SUMMARY_SELECT)
-        .order("id", { ascending: true })
-        .limit(count(limit, GACHA_DEFAULTS.popularLimit));
+      // 상한(50)은 RPC 가 건다
+      const { data, error } = await client.rpc("get_top_gacha_views", {
+        limit_count: count(limit, GACHA_DEFAULTS.popularLimit),
+      });
       if (error) fail("listPopularGacha", error);
-      return data.map(toGacha);
+      const rows: GachaRpcRow[] = data;
+      return rows.map(toGachaFromRpc);
     },
 
     async listGachaByIds(ids: readonly string[]) {

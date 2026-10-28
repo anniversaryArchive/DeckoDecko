@@ -2,9 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import { createSupabaseClient } from "../supabase";
 import { createSupabaseGachaRepository } from "./gacha.supabase";
-import { toGacha, toGachaDetail, toMedia, toReleaseMonth } from "./gacha.supabase.mappers";
+import {
+  toGacha,
+  toGachaDetail,
+  toGachaFromRpc,
+  toMedia,
+  toReleaseMonth,
+} from "./gacha.supabase.mappers";
 import { toIlikeValue } from "./gacha.supabase.params";
-import type { AnimeRow, GachaDetailRow, GachaSummaryRow } from "./gacha.supabase.rows";
+import type { AnimeRow, GachaDetailRow, GachaRpcRow, GachaSummaryRow } from "./gacha.supabase.rows";
 
 const forest: AnimeRow = {
   id: 1,
@@ -24,6 +30,25 @@ function summaryRow(overrides: Partial<GachaSummaryRow> = {}): GachaSummaryRow {
     release_month: "2026-10-01",
     anime: forest,
     gacha_items: [{ count: 5 }],
+    ...overrides,
+  };
+}
+
+/** RPC 의 평평한 행. summaryRow() 와 같은 가챠 · 작품이다. */
+function popularRow(overrides: Partial<GachaRpcRow> = {}): GachaRpcRow {
+  return {
+    id: 3,
+    name: "星の森 ミニフィギュア",
+    name_kr: "별의 숲 미니 피규어",
+    image_link: "https://example.com/g3.png",
+    price: 500,
+    release_month: "2026-10-01",
+    anime_id: forest.id,
+    anime_kr_title: forest.kr_title,
+    anime_jp_title: forest.jp_title,
+    anime_en_title: forest.en_title,
+    anime_type: forest.type,
+    item_count: 5,
     ...overrides,
   };
 }
@@ -65,6 +90,25 @@ describe("행 → 도메인 매핑", () => {
 
   it("작품 · 라인업이 없으면 media null, itemCount 0", () => {
     const gacha = toGacha(summaryRow({ anime: null, gacha_items: [] }));
+    expect(gacha.media).toBeNull();
+    expect(gacha.itemCount).toBe(0);
+  });
+
+  it("RPC 행: 평평한 작품 칸을 묶어 select 로 받은 것과 같은 모양으로", () => {
+    expect(toGachaFromRpc(popularRow())).toEqual(toGacha(summaryRow()));
+  });
+
+  it("RPC 행: 작품이 없으면(left join null) media null, 라인업 수가 없으면 0", () => {
+    const gacha = toGachaFromRpc(
+      popularRow({
+        anime_id: null,
+        anime_kr_title: null,
+        anime_jp_title: null,
+        anime_en_title: null,
+        anime_type: null,
+        item_count: null,
+      })
+    );
     expect(gacha.media).toBeNull();
     expect(gacha.itemCount).toBe(0);
   });
@@ -155,13 +199,35 @@ describe("createSupabaseGachaRepository", () => {
     expect(requests.map((r) => r.searchParams.get("limit"))).toEqual(["20", "20", "20"]);
   });
 
-  it("인기: id 오름차순(임시)으로 limit 만큼, 기본 10개", async () => {
-    const { repo, requests } = fakeRepository(() => ({ body: [summaryRow()] }));
-    await expect(repo.listPopularGacha(3)).resolves.toEqual([toGacha(summaryRow())]);
+  it("인기: RPC get_top_gacha_views 에 limit 을 넘기고, 기본 10개", async () => {
+    const bodies: unknown[] = [];
+    const urls: string[] = [];
+    const fakeFetch: typeof fetch = async (input, init) => {
+      urls.push(input instanceof Request ? input.url : String(input));
+      bodies.push(JSON.parse(String(init?.body ?? "null")));
+      return new Response(JSON.stringify([popularRow()]), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    };
+    const client = createSupabaseClient("http://localhost:54321", "sb_publishable_test", {
+      fetch: fakeFetch,
+    });
+    const repo = createSupabaseGachaRepository(client);
+
+    await expect(repo.listPopularGacha(3)).resolves.toEqual([toGachaFromRpc(popularRow())]);
     await repo.listPopularGacha();
-    expect(requests[0]!.searchParams.get("order")).toBe("id.asc");
-    expect(requests[0]!.searchParams.get("limit")).toBe("3");
-    expect(requests[1]!.searchParams.get("limit")).toBe("10");
+    await repo.listPopularGacha(0);
+    expect(new URL(urls[0]!).pathname).toBe("/rest/v1/rpc/get_top_gacha_views");
+    expect(bodies).toEqual([{ limit_count: 3 }, { limit_count: 10 }, { limit_count: 10 }]);
+  });
+
+  it("인기: 실패는 throw", async () => {
+    const { repo } = fakeRepository(() => ({
+      status: 500,
+      body: { message: "boom", code: "XX000", details: null, hint: null },
+    }));
+    await expect(repo.listPopularGacha()).rejects.toThrow("[gacha.listPopularGacha] boom");
   });
 
   it("상세: 라인업까지 받아 도메인 타입으로", async () => {
