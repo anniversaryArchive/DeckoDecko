@@ -339,7 +339,13 @@ function PhotoPicker({
   const { colors } = useTheme();
 
   const pick = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"] });
+    let result: ImagePicker.ImagePickerResult;
+    try {
+      result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"] });
+    } catch {
+      // 선택기를 열지 못하면 사진을 그대로 둔다. 다시 누르면 된다
+      return;
+    }
     const picked = result.canceled ? undefined : result.assets[0];
     // TODO(혜진): 3주차에 고른 사진을 앱 폴더로 복사하고 그 주소를 저장한다
     if (picked) onChange(picked.uri);
