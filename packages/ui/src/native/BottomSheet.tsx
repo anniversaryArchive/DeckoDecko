@@ -270,10 +270,7 @@ export function BottomSheet({
           return;
         }
         // 화면이 닫았는데 닫히는 동안 다시 열렸다. 그 요청대로 다시 연다.
-        if (openRef.current) {
-          presented.current = true;
-          ref.current?.present();
-        }
+        if (openRef.current) present();
       }}
       animationConfigs={animationConfigs}
       // 기기의 "동작 줄이기"가 켜져 있어도 애니메이션으로 연다. 라이브러리가 애니메이션 없이 열려고 하면 시트가 아예 나타나지 않는다
