@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { useTheme } from "../theme";
 import { radius, space, type ThemeColors } from "../tokens";
@@ -12,6 +14,8 @@ const SEGMENT_HEIGHT = 8;
 const LEGEND_DOT = 8;
 /** 칸이 이보다 많으면 칸 사이를 좁힌다 (칸이 너무 가늘어지지 않게) */
 const DENSE_SEGMENTS = 20;
+/** 칸 색이 바뀌는 데 걸리는 시간(ms) */
+const SEGMENT_COLOR_DURATION = 250;
 
 type CommonProps = {
   /** 화면 읽기 프로그램이 읽을 이름 ("내 굿즈 소장률") */
@@ -25,6 +29,8 @@ export type ProgressBarProps =
       variant: "summary";
       /** 채운 비율 0 – 1. 밖의 값은 잘라 낸다 */
       value: number;
+      /** 화면 읽기 프로그램이 읽을 비율 0 – 1. value 를 애니메이션할 때 최종 값을 넘긴다. 없으면 value */
+      accessibilityNow?: number;
     })
   | (CommonProps & {
       /** 아이템 하나가 한 칸. GET → WISH → 미등록 순으로 칠한다 (가챠 상세) */
@@ -50,16 +56,17 @@ export function ProgressBar(props: ProgressBarProps) {
 
 function SummaryBar({
   value,
+  accessibilityNow = value,
   accessibilityLabel,
   style,
 }: Extract<ProgressBarProps, { variant: "summary" }>) {
   const { colors } = useTheme();
-  const ratio = Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
+  const ratio = clampRatio(value);
   return (
     <View
       accessibilityRole="progressbar"
       accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{ min: 0, max: 100, now: Math.round(ratio * 100) }}
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(clampRatio(accessibilityNow) * 100) }}
       style={[
         {
           height: SUMMARY_HEIGHT,
@@ -125,16 +132,17 @@ function SegmentBar({
   );
 }
 
+// 기록을 추가하거나 WISH ↔ GET 을 바꾸면 칸 색이 서서히 바뀐다. "동작 줄이기"가 켜져 있으면 withTiming 이 바로 바꾼다
 function Segment({ color }: { color: keyof ThemeColors }) {
   const { colors } = useTheme();
+  const background = useSharedValue(colors[color]);
+  useEffect(() => {
+    background.value = withTiming(colors[color], { duration: SEGMENT_COLOR_DURATION });
+  }, [background, colors, color]);
+  const animated = useAnimatedStyle(() => ({ backgroundColor: background.value }));
   return (
-    <View
-      style={{
-        flex: 1,
-        height: SEGMENT_HEIGHT,
-        borderRadius: radius.bar,
-        backgroundColor: colors[color],
-      }}
+    <Animated.View
+      style={[{ flex: 1, height: SEGMENT_HEIGHT, borderRadius: radius.bar }, animated]}
     />
   );
 }
@@ -156,4 +164,8 @@ function LegendItem({ color, label }: { color: keyof ThemeColors; label: string 
       </Text>
     </View>
   );
+}
+
+function clampRatio(value: number): number {
+  return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
 }

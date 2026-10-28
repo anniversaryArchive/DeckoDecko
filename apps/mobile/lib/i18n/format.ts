@@ -15,6 +15,21 @@ export function formatItemCount(count: number): string {
   return i18n.t("common.itemCount", { count });
 }
 
+/** 단위 없는 숫자. 천 단위 구분 기호를 언어에 맞게 넣는다. ko · en "1,234" */
+export function formatNumber(value: number): string {
+  return new Intl.NumberFormat(i18n.language).format(value);
+}
+
+/** 퍼센트(0–100 정수). ko · en "64%" */
+export function formatPercent(value: number): string {
+  return i18n.t("common.percent", { value });
+}
+
+/** 폴더 안 기록 수. ko "아이템 12개" · en "12 items" */
+export function formatFolderItemCount(count: number): string {
+  return i18n.t("folder.itemCount", { count });
+}
+
 /** 발매 월 "YYYY-MM". ko "2026년 10월" · en "Oct 2026". 형식이 다르면 받은 그대로 돌려준다. */
 export function formatMonth(yearMonth: string): string {
   const match = /^(\d{4})-(\d{2})$/.exec(yearMonth);

@@ -69,12 +69,12 @@ from "public"."gacha" g
 cross join lateral generate_series(1, 4 + (g.id % 3)::int) as n;
 
 -- ─────────────────────────────────────────────
--- 4. notice (공지)
+-- 4. notice (공지). 고정 공지만 앱 홈 공지 띠에 보인다
 -- ─────────────────────────────────────────────
-insert into "public"."notice" (title, body, is_published, created_at, updated_at) values
+insert into "public"."notice" (title, body, is_published, is_fixed, created_at, updated_at) values
   ('가챠 탐색대 1.0 오픈 안내',
    '가챠 탐색대가 새로워졌어요! 갖고 싶은 가챠는 WISH, 뽑은 가챠는 GET으로 기록해 보세요.',
-   true, now() - interval '2 days', now() - interval '2 days'),
+   true, true, now() - interval '2 days', now() - interval '2 days'),
   ('11월 신규 가챠 업데이트',
    '11월 신규 가챠 20종을 추가했어요. 홈 화면 NEW 표시를 확인해 주세요.',
-   true, now() - interval '1 day', now() - interval '1 day');
+   true, false, now() - interval '1 day', now() - interval '1 day');
