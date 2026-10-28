@@ -11,6 +11,7 @@ export const queryKeys = {
     all: ["gacha"] as const,
     list: (limit: number) => ["gacha", "list", limit] as const,
     popular: (limit: number) => ["gacha", "popular", limit] as const,
+    byIds: (ids: readonly string[]) => ["gacha", "byIds", ids] as const,
     detail: (id: string) => ["gacha", "detail", id] as const,
     search: (keyword: string, offset: number, limit: number) =>
       ["gacha", "search", keyword, offset, limit] as const,
@@ -31,5 +32,11 @@ export const queryKeys = {
     list: () => ["folders", "list"] as const,
     nameTaken: (name: string, excludeId: string | null) =>
       ["folders", "nameTaken", name, excludeId] as const,
+  },
+  // 기기의 최근 기록. 쓰기 훅이 바뀐 목록으로 캐시를 바로 바꾼다.
+  recent: {
+    all: ["recent"] as const,
+    searches: () => ["recent", "searches"] as const,
+    gachaIds: () => ["recent", "gachaIds"] as const,
   },
 } as const;

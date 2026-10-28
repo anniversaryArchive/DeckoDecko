@@ -25,3 +25,12 @@ export {
   useIsFolderNameTaken,
   useRenameFolder,
 } from "./folders.hooks";
+export {
+  useAddRecentSearch,
+  useClearRecentGacha,
+  useClearRecentSearches,
+  useRecentGacha,
+  useRecentSearches,
+  useRecordRecentGacha,
+  useRemoveRecentSearch,
+} from "./recent.hooks";

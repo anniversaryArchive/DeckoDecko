@@ -69,6 +69,16 @@ export function createSupabaseGachaRepository(client: DeckoSupabaseClient): Gach
       return data.map(toGacha);
     },
 
+    async listGachaByIds(ids: readonly string[]) {
+      const dbIds = ids.map(toDbId).filter((n) => n !== null);
+      if (dbIds.length === 0) return [];
+      const { data, error } = await gachaTable().select(SUMMARY_SELECT).in("id", dbIds);
+      if (error) fail("listGachaByIds", error);
+      // in() 은 순서를 지키지 않아서 받은 id 순서로 다시 세운다
+      const byId = new Map(data.map((row) => [String(row.id), toGacha(row)]));
+      return ids.flatMap((id) => byId.get(id) ?? []);
+    },
+
     async getGacha(id: string) {
       const dbId = toDbId(id);
       if (dbId === null) return null;

@@ -1,6 +1,7 @@
 import type { FolderRepository } from "./folders";
 import type { GachaRepository } from "./gacha";
 import type { ItemRepository } from "./items";
+import type { RecentRepository } from "./recent";
 
 /** 기기 로컬 기록 저장소. 앱만 넘긴다 (백오피스는 사용자 기기의 기록을 읽지 않는다). */
 export type LocalRepositories = {
@@ -16,4 +17,9 @@ export type LocalRepositories = {
  */
 export type Repositories = {
   gacha: GachaRepository;
+  /**
+   * 최근 검색어 · 최근 본 가챠 (기기 키-값 저장소, recent.storage.ts). 앱만 넘긴다.
+   * 백오피스는 사용자 기기의 기록을 쓰지 않으므로 선택으로 둔다. 넘기지 않고 최근 기록 훅을 쓰면 훅이 던진다.
+   */
+  recent?: RecentRepository;
 } & Partial<LocalRepositories>;

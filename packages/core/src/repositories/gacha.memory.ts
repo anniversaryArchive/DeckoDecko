@@ -32,6 +32,13 @@ export function createMemoryGachaRepository(seed: readonly GachaDetail[]): Gacha
         .map(toSummary);
     },
 
+    async listGachaByIds(ids: readonly string[]) {
+      return ids.flatMap((id) => {
+        const found = all.find((g) => g.id === id);
+        return found ? [toSummary(found)] : [];
+      });
+    },
+
     async getGacha(id: string) {
       return all.find((g) => g.id === id) ?? null;
     },
