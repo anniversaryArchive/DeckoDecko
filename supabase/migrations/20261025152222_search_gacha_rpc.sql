@@ -12,6 +12,7 @@ create extension if not exists pg_trgm with schema extensions;
 -- ─────────────────────────────────────────────
 -- 2. 검색용 정규화 함수
 --    인덱스 식에 쓰려면 immutable 이어야 한다. 쿼리와 인덱스가 같은 함수를 써야 인덱스를 탄다.
+--    이 함수의 규칙을 바꾸면 gacha_name_search_idx · gacha_name_kr_search_idx 를 다시 만든다 (기존 인덱스 값은 그대로 남는다).
 -- ─────────────────────────────────────────────
 create or replace function "public"."search_normalize"(value text)
 returns text
