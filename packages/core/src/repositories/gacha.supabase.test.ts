@@ -320,7 +320,11 @@ describe("createSupabaseGachaRepository", () => {
 });
 
 describe("createSupabaseClient", () => {
-  it("secret key 를 넘기면 만들지 않는다", () => {
-    expect(() => createSupabaseClient("http://localhost:54321", "sb_secret_xxx")).toThrow();
+  it.each([
+    ["secret key", "sb_secret_xxx"],
+    ["legacy service_role · anon (JWT)", "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.x"],
+    ["빈 값", ""],
+  ])("publishable key 가 아니면 만들지 않는다: %s", (_kind, key) => {
+    expect(() => createSupabaseClient("http://localhost:54321", key)).toThrow("publishable key");
   });
 });

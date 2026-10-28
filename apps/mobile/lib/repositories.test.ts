@@ -4,6 +4,8 @@ const SUPABASE_ENV = {
   EXPO_PUBLIC_SUPABASE_URL: "http://localhost:54321",
   EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test",
 };
+// 셸에 export 해 둔 값이 있어도 "값 없음" 을 확인하도록 빈 값으로 덮는다.
+const NO_SUPABASE_ENV = { EXPO_PUBLIC_SUPABASE_URL: "", EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "" };
 
 // repositories.ts 는 import 할 때 환경변수를 읽어 저장소를 만든다. 경우마다 모듈을 새로 불러온다.
 async function loadRepositories(env: Record<string, string>, dev = true) {
@@ -47,7 +49,6 @@ describe("앱 저장소 묶음", () => {
 
     expect(await usesSupabase(repositories)).toBe(supabase);
     expect(repositories.folders).toBeDefined();
-    if (!repositories.items) throw new Error("items 저장소가 없다");
     const created = await repositories.items.createItem({
       gachaId: "1",
       type: "WISH",
@@ -60,7 +61,10 @@ describe("앱 저장소 묶음", () => {
   });
 
   it("개발 빌드에서 Supabase 값이 없으면 목 데이터로 돈다", async () => {
-    const repositories = await loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "" });
+    const repositories = await loadRepositories({
+      EXPO_PUBLIC_DATA_SOURCE: "",
+      ...NO_SUPABASE_ENV,
+    });
 
     expect(await usesSupabase(repositories)).toBe(false);
     expect(console.warn).toHaveBeenCalledOnce();
@@ -76,8 +80,8 @@ describe("앱 저장소 묶음", () => {
   });
 
   it("출시 빌드에서 Supabase 값이 없으면 시작할 때 실패한다", async () => {
-    await expect(loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "" }, false)).rejects.toThrow(
-      "EXPO_PUBLIC_SUPABASE_URL"
-    );
+    await expect(
+      loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "", ...NO_SUPABASE_ENV }, false)
+    ).rejects.toThrow("EXPO_PUBLIC_SUPABASE_URL");
   });
 });

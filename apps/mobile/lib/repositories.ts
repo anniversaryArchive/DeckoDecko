@@ -40,4 +40,4 @@ function createMockRepositories(): AppRepositories {
 // Repositories 는 로컬 기록이 Partial 이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
 type AppRepositories = Repositories & LocalRepositories;
 
-export const repositories: Repositories = createRepositories();
+export const repositories: AppRepositories = createRepositories();
