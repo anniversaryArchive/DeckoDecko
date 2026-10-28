@@ -45,7 +45,7 @@ export function createSupabaseGachaRepository(client: DeckoSupabaseClient): Gach
     const { count: total, error } = await gachaTable()
       .select("id", { count: "exact", head: true })
       .or(filter);
-    if (error) fail("searchGacha", error);
+    if (error) fail("searchGacha.count", error);
     return total ?? 0;
   }
 
@@ -96,6 +96,7 @@ export function createSupabaseGachaRepository(client: DeckoSupabaseClient): Gach
         .order("id", { ascending: false })
         .range(offset, offset + limit - 1);
 
+      // 무한 스크롤은 total 에서 멈추므로, 여기는 검색 중에 결과가 줄었을 때만 온다. 그래서 개수를 다시 센다.
       if (error?.code === RANGE_NOT_SATISFIABLE) {
         return { items: [], total: await countOnly(filter) };
       }

@@ -313,7 +313,9 @@ describe("createSupabaseGachaRepository", () => {
         ? { status: 416, body: { code: "PGRST103", message: "Requested range not satisfiable" } }
         : boom;
     });
-    await expect(headFails.repo.searchGacha({ keyword: "숲", offset: 40 })).rejects.toThrow(Error);
+    await expect(headFails.repo.searchGacha({ keyword: "숲", offset: 40 })).rejects.toThrow(
+      "[gacha.searchGacha.count] boom"
+    );
   });
 });
 
