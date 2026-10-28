@@ -14,7 +14,7 @@
 -- ─────────────────────────────────────────────
 create schema if not exists "private";
 revoke all on schema "private" from public;
-grant usage on schema "private" to "anon", "authenticated";
+grant usage on schema "private" to "anon", "authenticated", "service_role";
 
 create or replace function "private"."count_gacha_views"()
 returns table (
@@ -33,7 +33,7 @@ as $$
 $$;
 
 revoke all on function "private"."count_gacha_views"() from public;
-grant execute on function "private"."count_gacha_views"() to "anon", "authenticated";
+grant execute on function "private"."count_gacha_views"() to "anon", "authenticated", "service_role";
 
 -- ─────────────────────────────────────────────
 -- 2. 인기 RPC (security invoker, 기본)
@@ -81,4 +81,4 @@ as $$
 $$;
 
 revoke all on function "public"."get_top_gacha_views"(int) from public;
-grant execute on function "public"."get_top_gacha_views"(int) to "anon", "authenticated";
+grant execute on function "public"."get_top_gacha_views"(int) to "anon", "authenticated", "service_role";
