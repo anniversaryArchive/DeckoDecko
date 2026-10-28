@@ -33,8 +33,8 @@ export function toMedia(row: AnimeRow): Media {
 function toGachaBase(row: GachaBaseRow, itemCount: number): Gacha {
   return {
     id: String(row.id),
-    // 레거시 데이터는 원문 이름이 빈 행이 있다. 한국어 이름으로 채우고 둘 다 없으면 빈 문자열.
-    name: row.name ?? row.name_kr ?? "",
+    // 레거시 데이터는 원문 이름이 null · 빈 문자열인 행이 있다. 한국어 이름으로 채운다.
+    name: row.name?.trim() || row.name_kr?.trim() || "",
     nameKo: row.name_kr,
     imageUrl: row.image_link,
     media: row.anime ? toMedia(row.anime) : null,

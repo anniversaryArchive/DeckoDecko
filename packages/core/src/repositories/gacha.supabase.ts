@@ -1,8 +1,8 @@
 import type { DeckoSupabaseClient } from "../supabase";
-import { GACHA_DEFAULTS } from "./gacha";
+import { count, GACHA_DEFAULTS } from "./gacha";
 import type { GachaRepository, ListGachaParams, SearchGachaParams } from "./gacha";
 import { toGacha, toGachaDetail } from "./gacha.supabase.mappers";
-import { count, ilikeAny, toDbId } from "./gacha.supabase.params";
+import { ilikeAny, toDbId } from "./gacha.supabase.params";
 import { DETAIL_SELECT, SUMMARY_SELECT } from "./gacha.supabase.rows";
 
 /** offset 이 전체 개수를 넘으면 PostgREST 가 416(PGRST103)을 준다. 에러가 아니라 빈 페이지로 본다. */
@@ -26,10 +26,7 @@ function fail(action: string, error: PostgrestErrorLike): never {
 export function createSupabaseGachaRepository(client: DeckoSupabaseClient): GachaRepository {
   const gachaTable = () => client.from("gacha");
 
-  /**
-   * 검색 조건: 이름 ilike 또는 작품명이 맞는 작품.
-   * PostgREST 가 부모 · 자식 컬럼을 한 or() 로 못 묶어서, 맞는 작품 id 를 먼저 받아 anime_id.in 으로 넣는다.
-   */
+  // PostgREST 는 가챠 · 작품 컬럼을 한 or() 로 못 묶어서, 맞는 작품 id 를 먼저 받아 anime_id.in 으로 넣는다.
   async function searchFilter(keyword: string): Promise<string> {
     const { data, error } = await client
       .from("anime")

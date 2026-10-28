@@ -26,8 +26,3 @@ export function toDbId(id: string): number | null {
   const n = Number(id);
   return Number.isSafeInteger(n) ? n : null;
 }
-
-/** min 이상의 정수가 아니면(음수 · 소수 · NaN 등) 기본값. 메모리 구현과 같은 규칙. */
-export function count(n: number | undefined, fallback: number, min = 1): number {
-  return n !== undefined && Number.isInteger(n) && n >= min ? n : fallback;
-}

@@ -72,6 +72,8 @@ describe("행 → 도메인 매핑", () => {
   it("원문 이름이 비면 한국어 이름, 둘 다 없으면 빈 문자열", () => {
     expect(toGacha(summaryRow({ name: null })).name).toBe("별의 숲 미니 피규어");
     expect(toGacha(summaryRow({ name: null, name_kr: null })).name).toBe("");
+    expect(toGacha(summaryRow({ name: "" })).name).toBe("별의 숲 미니 피규어");
+    expect(toGacha(summaryRow({ name: "  ", name_kr: "" })).name).toBe("");
   });
 
   it("상세: 라인업을 sort_order → id 순으로 세우고 1부터 번호를 매긴다", () => {
