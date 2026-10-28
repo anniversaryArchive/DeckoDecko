@@ -16,6 +16,12 @@ export const queryKeys = {
     search: (keyword: string, offset: number, limit: number) =>
       ["gacha", "search", keyword, offset, limit] as const,
   },
+  notice: {
+    all: ["notice"] as const,
+    list: (limit: number) => ["notice", "list", limit] as const,
+    home: (limit: number) => ["notice", "home", limit] as const,
+    detail: (id: string) => ["notice", "detail", id] as const,
+  },
   items: {
     all: ["items"] as const,
     // 거르지 않는 조건은 null

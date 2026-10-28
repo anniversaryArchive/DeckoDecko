@@ -9,6 +9,7 @@ export const en: Messages = {
     price: "¥{{value, number}}",
     itemCount_one: "{{count, number}} item",
     itemCount_other: "{{count, number}} items",
+    percent: "{{value, number}}%",
     appName: "DeckoDecko",
     back: "Back",
     last10Days: "Last 10 days",
@@ -25,6 +26,11 @@ export const en: Messages = {
   home: {
     title: "Home",
     collectionRate: "My collection",
+    viewGoods: "View my goods",
+    getCount: "GET {{value}}",
+    wishCount: "WISH {{value}}",
+    noticeBadge: "Notice",
+    noticeAll: "See all notices",
     newArrivals: "New arrivals",
     newBadge: "NEW",
     popular: "Trending now",
@@ -85,7 +91,10 @@ export const en: Messages = {
     nameTaken: "A folder with this name already exists",
     createFailed: "Couldn't create the folder",
   },
-  notice: {},
+  notice: {
+    title: "Notices",
+    comingSoon: "Notices are coming soon.",
+  },
   settings: {},
   feedback: {},
 };

@@ -191,6 +191,7 @@ export type Database = {
           body: string;
           created_at: string;
           id: number;
+          is_fixed: boolean;
           is_published: boolean;
           title: string;
           updated_at: string;
@@ -199,6 +200,7 @@ export type Database = {
           body: string;
           created_at?: string;
           id?: number;
+          is_fixed?: boolean;
           is_published?: boolean;
           title: string;
           updated_at?: string;
@@ -207,6 +209,7 @@ export type Database = {
           body?: string;
           created_at?: string;
           id?: number;
+          is_fixed?: boolean;
           is_published?: boolean;
           title?: string;
           updated_at?: string;

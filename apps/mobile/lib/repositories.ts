@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   createMemoryGachaRepository,
+  createMemoryNoticeRepository,
   createSupabaseClient,
   createSupabaseGachaRepository,
   createStorageRecentRepository,
@@ -9,7 +10,7 @@ import {
   type RecentRepository,
   type Repositories,
 } from "@deckodecko/core";
-import { mockCatalog } from "@deckodecko/core/mocks";
+import { mockCatalog, mockNotices } from "@deckodecko/core/mocks";
 
 import { localRepositories } from "./db/local";
 
@@ -34,6 +35,7 @@ function createRepositories(): AppRepositories {
   return {
     gacha: createSupabaseGachaRepository(client),
     recent,
+    ...devNotice(),
     ...localRepositories,
   };
 }
@@ -42,8 +44,14 @@ function createMockRepositories(): AppRepositories {
   return {
     gacha: createMemoryGachaRepository(mockCatalog),
     recent,
+    ...devNotice(),
     ...localRepositories,
   };
+}
+
+// Supabase 공지 저장소가 생기기 전까지 공지는 개발 빌드에서만 목 데이터다. 출시 빌드는 공지를 빼서 홈 공지 띠가 숨는다.
+function devNotice(): Pick<Repositories, "notice"> {
+  return __DEV__ ? { notice: createMemoryNoticeRepository(mockNotices) } : {};
 }
 
 // Repositories 는 로컬 기록 · recent 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.

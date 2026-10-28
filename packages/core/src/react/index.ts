@@ -7,6 +7,7 @@
 export { CoreProvider, useLocalRepositories, useRepositories } from "./provider";
 export { createQueryClient } from "./queryClient";
 export { useGacha, useGachaList, useGachaSearch, usePopularGacha } from "./gacha.hooks";
+export { useHomeNotices, useNotice, useNotices } from "./notice.hooks";
 export {
   useCreateItem,
   useDeleteItem,

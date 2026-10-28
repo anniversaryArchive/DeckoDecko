@@ -14,6 +14,8 @@ export const ko = {
     // 기기에 Intl.PluralRules 가 없으면 i18next 가 count=1 에 _one 을 고르므로 지우지 않는다.
     itemCount_one: "{{count, number}}종",
     itemCount_other: "{{count, number}}종",
+    // formatPercent 가 쓴다
+    percent: "{{value, number}}%",
     appName: "가챠 탐색대",
     back: "뒤로",
     last10Days: "최근 10일",
@@ -33,6 +35,12 @@ export const ko = {
   home: {
     title: "홈",
     collectionRate: "내 굿즈 소장률",
+    viewGoods: "내 굿즈 보기",
+    // 소장률 카드의 개수 칩. 값은 formatNumber 로 만든 문자열을 넣는다
+    getCount: "GET {{value}}",
+    wishCount: "WISH {{value}}",
+    noticeBadge: "공지",
+    noticeAll: "공지 전체보기",
     newArrivals: "새로 나왔어요",
     newBadge: "NEW",
     popular: "지금 인기",
@@ -101,7 +109,11 @@ export const ko = {
     nameTaken: "이미 같은 이름의 폴더가 있어요",
     createFailed: "폴더를 만들지 못했어요",
   },
-  notice: {},
+  notice: {
+    title: "공지사항",
+    // 공지 목록 화면이 생기기 전까지 자리에 보이는 문구
+    comingSoon: "공지 목록은 준비 중이에요.",
+  },
   settings: {},
   feedback: {},
 } as const;
