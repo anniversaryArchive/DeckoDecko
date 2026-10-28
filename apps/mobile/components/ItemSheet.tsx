@@ -92,7 +92,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   const [folderSheetOpen, setFolderSheetOpen] = useState(false);
   const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
 
-  // 열릴 때마다 한 번 입력을 채운다. 캐시가 오래됐을 수 있어 수정은 다시 불러오기가 끝난 뒤에 채운다
+  // 열릴 때마다 한 번 입력을 채운다. 수정은 기록을 다시 불러오는 중이면 끝난 뒤에 채운다
   const [wasOpen, setWasOpen] = useState(open);
   const [filled, setFilled] = useState(false);
   // 저장 · 삭제 뒤 기록이 다시 불려도 닫히는 동안 내용이 바뀌지 않게 채울 때의 기록을 들고 있다
