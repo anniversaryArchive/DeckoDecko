@@ -11,7 +11,7 @@ import {
   useIsFolderNameTaken,
   useItemCountsByFolder,
 } from "@deckodecko/core/react";
-import { border, folderColor, radius, space, useTheme, type FolderColor } from "@deckodecko/ui";
+import { border, radius, space, useTheme, type FolderColor } from "@deckodecko/ui";
 import {
   BottomSheet,
   Button,
@@ -21,9 +21,11 @@ import {
   Text,
 } from "@deckodecko/ui/native";
 
-import { FolderIcon } from "@/components/FolderIcon";
+import { FolderIcon, folderIconColor } from "@/components/FolderIcon";
+import { folderName } from "@/lib/displayName";
 import { formatFolderItemCount } from "@/lib/i18n";
 import { languages } from "@/lib/i18n/types";
+import { NAME_CHECK_DELAY, useDebouncedValue } from "@/lib/useDebouncedValue";
 
 /** 머리글 원형 버튼 지름 */
 const HEADER_BUTTON_SIZE = 36;
@@ -63,8 +65,6 @@ export function FolderSelectSheet({
   const { height } = useWindowDimensions();
   const folders = useFolders();
   const counts = useItemCountsByFolder();
-  // 폴더 색은 기본 폴더를 뺀 목록 순서로 돌린다
-  const userFolderIds = (folders.data ?? []).filter((f) => !f.isDefault).map((f) => f.id);
   const inputRef = useRef<TextInput>(null);
   const listRef = useRef<ScrollView>(null);
   // 새 폴더를 만든 뒤 목록이 다시 그려지면 맨 아래(새 폴더)로 내린다
@@ -119,7 +119,7 @@ export function FolderSelectSheet({
             <FolderRow
               key={folder.id}
               folder={folder}
-              color={folderColor(folderColors, folder, userFolderIds.indexOf(folder.id))}
+              color={folderIconColor(folderColors, folders.data ?? [], folder)}
               count={counts.data?.[folder.id] ?? 0}
               selected={folder.id === selectedFolderId}
               onPress={() => onSelect(folder.id)}
@@ -174,7 +174,7 @@ function FolderRow({
       <FolderIcon size={FOLDER_ICON_SIZE} color={color} />
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text variant="bodyStrong" color={selected ? "accent" : "text"} numberOfLines={1}>
-          {folder.isDefault ? t("folder.defaultName") : folder.name}
+          {folderName(folder, t)}
         </Text>
         <Text variant="captionSm" color="textMuted">
           {formatFolderItemCount(count)}
@@ -195,7 +195,8 @@ function NewFolderForm({
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const takenQuery = useIsFolderNameTaken(name);
+  const checkedName = useDebouncedValue(name, NAME_CHECK_DELAY);
+  const takenQuery = useIsFolderNameTaken(checkedName);
   const create = useCreateFolder();
 
   const filled = name.trim().length > 0;
@@ -204,8 +205,13 @@ function NewFolderForm({
     (lng) => normalizeName(name) === normalizeName(t("folder.defaultName", { lng }))
   );
   const taken = takenByDefault || takenQuery.data === true;
-  // 중복 검사 결과가 오기 전에는 만들지 않는다 (저장소는 중복을 막지 않는다)
-  const canCreate = filled && !takenByDefault && takenQuery.data === false && !create.isPending;
+  // 지금 이름의 중복 검사 결과가 오기 전에는 만들지 않는다 (저장소는 중복을 막지 않는다)
+  const canCreate =
+    filled &&
+    !takenByDefault &&
+    checkedName === name &&
+    takenQuery.data === false &&
+    !create.isPending;
 
   const submit = async () => {
     if (!canCreate) return;

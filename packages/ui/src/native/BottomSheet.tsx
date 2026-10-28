@@ -27,6 +27,8 @@ const CLOSE_ICON_SIZE = 14;
 const DURATION = 450;
 /** iOS 에서 키보드가 내려가기 시작했다는 알림이 오지 않을 때 시트를 닫기까지 기다리는 최대 시간(ms) */
 const KEYBOARD_HIDE_TIMEOUT = 300;
+/** 키보드가 내려갔다는 알림이 오지 않을 때 시트를 열기까지 기다리는 최대 시간(ms) */
+const KEYBOARD_HIDDEN_TIMEOUT = 500;
 
 export type BottomSheetProps = {
   /** 열려 있는지. 화면의 상태로 연다 */
@@ -51,6 +53,7 @@ export type BottomSheetProps = {
 /**
  * 아래에서 올라오는 시트. @gorhom/bottom-sheet 의 BottomSheetModal 을 시안 모양으로 감쌌다.
  * 높이는 내용에 맞춘다. 안에 넣은 Input 은 키보드가 올라오면 시트도 같이 올라간다.
+ * 키보드가 떠 있을 때 열면 키보드를 먼저 내리고 다 내려간 뒤에 연다 (시트 위에 시트를 열 때 등).
  * 앱 루트에 GestureHandlerRootView 와 BottomSheetModalProvider 가 있어야 한다 (apps/mobile/app/_layout.tsx).
  */
 export function BottomSheet({
@@ -92,6 +95,34 @@ export function BottomSheet({
   const [contentHeight, setContentHeight] = useState<number>();
   // iOS 에서 키보드가 내려가기 시작하길 기다리는 중이면, 그 기다림을 취소하는 함수. 닫기를 여러 번 눌러도 한 번만 기다린다.
   const cancelPendingClose = useRef<(() => void) | null>(null);
+  // 키보드가 다 내려가길 기다렸다가 열려는 중이면, 그 기다림을 취소하는 함수
+  const cancelPendingOpen = useRef<(() => void) | null>(null);
+
+  // 키보드가 떠 있을 때 열면 iOS 에서 라이브러리가 시트를 키보드 높이만큼 뺀 자리로 보내 보이지 않는다 (@gorhom/bottom-sheet 5.2)
+  const present = useCallback(() => {
+    const show = () => {
+      presented.current = true;
+      ref.current?.present();
+    };
+    if (!Keyboard.isVisible()) {
+      show();
+      return;
+    }
+    if (cancelPendingOpen.current) return;
+    const cancel = () => {
+      sub.remove();
+      clearTimeout(timer);
+      cancelPendingOpen.current = null;
+    };
+    const finish = () => {
+      cancel();
+      show();
+    };
+    const sub = Keyboard.addListener("keyboardDidHide", finish);
+    const timer = setTimeout(finish, KEYBOARD_HIDDEN_TIMEOUT);
+    cancelPendingOpen.current = cancel;
+    Keyboard.dismiss();
+  }, []);
 
   // 키보드가 열려 있으면 키보드와 시트가 같이 내려가게 한다.
   // 시트만 닫으면 시트가 먼저 내려가고, 키보드는 그 위에 남아 있다가 입력창이 사라진 뒤에야 늦게 내려간다.
@@ -126,8 +157,7 @@ export function BottomSheet({
   useEffect(() => {
     if (open) {
       if (!presented.current) {
-        presented.current = true;
-        ref.current?.present();
+        present();
       } else if (closedByParent.current && !shown.current) {
         // 다 열리기 전에 미뤄 둔 닫기가 있었다. 다시 열렸으니 닫기를 버린다.
         closedByParent.current = false;
@@ -137,12 +167,15 @@ export function BottomSheet({
         closedByParent.current = false;
       }
       // 이미 닫히는 중에 다시 열렸으면 닫힘이 끝난 뒤(onDismiss) 다시 연다.
+    } else if (cancelPendingOpen.current) {
+      // 키보드를 기다리느라 아직 열기 전이다. 열지 않는다.
+      cancelPendingOpen.current();
     } else if (presented.current && !closedByParent.current) {
       closedByParent.current = true;
       // 아직 다 열리기 전이면 닫기를 미뤄 두고, 다 열리면(markShown) 닫는다.
       if (shown.current) requestClose();
     }
-  }, [open, requestClose]);
+  }, [open, present, requestClose]);
 
   // 시트가 다 열렸다. 그 전에 화면이 닫으라고 했거나 사용자가 뒤로가기를 눌렀으면 이제 닫는다.
   const markShown = useCallback(() => {
@@ -158,6 +191,7 @@ export function BottomSheet({
     () => () => {
       unmounted.current = true;
       cancelPendingClose.current?.();
+      cancelPendingOpen.current?.();
     },
     []
   );

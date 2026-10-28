@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Image, View } from "react-native";
 
@@ -8,7 +8,7 @@ import { useDeleteItem, useFolders, useGacha, useItemCounts } from "@deckodecko/
 import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { Button, BottomSheet, Text } from "@deckodecko/ui/native";
 
-import { gachaName } from "@/lib/displayName";
+import { folderName, gachaName } from "@/lib/displayName";
 
 /** 위쪽 휴지통 원 지름 */
 const ICON_CIRCLE_SIZE = 56;
@@ -78,7 +78,9 @@ export function ItemDeleteSheet({ open, onClose, onDeleted, item }: Props) {
 
       <ItemSummary item={item} />
 
-      {item.type === "GET" ? <OwnedCountChange gachaId={item.gachaId} /> : null}
+      {item.type === "GET" ? (
+        <OwnedCountChange gachaId={item.gachaId} hold={remove.isPending || remove.isSuccess} />
+      ) : null}
 
       {remove.isError ? (
         <Text variant="captionSm" color="accent" accessibilityLiveRegion="polite">
@@ -105,9 +107,11 @@ function ItemSummary({ item }: { item: Item }) {
   const gacha = useGacha(item.gachaId);
   const folders = useFolders();
   const folder = folders.data?.find((f) => f.id === item.folderId);
-  const folderName = folder ? (folder.isDefault ? t("folder.defaultName") : folder.name) : null;
   // 불러오기 전이거나 카탈로그에 없는 가챠면 그 조각만 뺀다
-  const subtitle = [gacha.data ? gachaName(gacha.data, i18n.language) : null, folderName]
+  const subtitle = [
+    gacha.data ? gachaName(gacha.data, i18n.language) : null,
+    folder ? folderName(folder, t) : null,
+  ]
     .filter((part): part is string => !!part)
     .join(" · ");
   const get = item.type === "GET";
@@ -176,11 +180,20 @@ function ItemSummary({ item }: { item: Item }) {
 }
 
 /** GET 기록을 지울 때만: "이 가챠의 소장 수가 2 → 1로 바뀌어요." */
-function OwnedCountChange({ gachaId }: { gachaId: string }) {
+function OwnedCountChange({
+  gachaId,
+  hold,
+}: {
+  gachaId: string;
+  /** 지우는 중 · 지운 뒤. 삭제가 반영된 소장 수로 바뀌지 않게 보이던 숫자를 그대로 둔다 */
+  hold: boolean;
+}) {
   const { colors } = useTheme();
   const counts = useItemCounts(gachaId);
-  if (!counts.data) return null;
-  const from = counts.data.get;
+  const [from, setFrom] = useState<number>();
+  const latest = counts.data?.get;
+  if (!hold && latest !== undefined && latest !== from) setFrom(latest);
+  if (from === undefined) return null;
 
   return (
     <View

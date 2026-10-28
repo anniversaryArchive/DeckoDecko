@@ -1,10 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActionSheetIOS, Alert, Image, Keyboard, Platform, Pressable, View } from "react-native";
+import { ActionSheetIOS, Alert, Image, Platform, Pressable, View } from "react-native";
 
-import type { Item, ItemType } from "@deckodecko/core";
+import type { Folder, Item, ItemType } from "@deckodecko/core";
 import {
   useCreateItem,
   useFolders,
@@ -12,13 +12,15 @@ import {
   useItem,
   useUpdateItem,
 } from "@deckodecko/core/react";
-import { border, folderColor, radius, space, useTheme } from "@deckodecko/ui";
+import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { BottomSheet, Button, Input, PRESSED_OPACITY, Segment, Text } from "@deckodecko/ui/native";
 
-import { FolderIcon } from "@/components/FolderIcon";
+import { FolderIcon, folderIconColor } from "@/components/FolderIcon";
 import { FolderSelectSheet } from "@/components/FolderSelectSheet";
 import { ItemDeleteSheet } from "@/components/ItemDeleteSheet";
+import { folderName } from "@/lib/displayName";
 import { formatDate } from "@/lib/i18n";
+import { NAME_CHECK_DELAY, useDebouncedValue } from "@/lib/useDebouncedValue";
 
 /** 사진 칸 (정사각형) */
 const PHOTO_SIZE = 88;
@@ -36,8 +38,6 @@ const FOLDER_ICON_SIZE = 20;
 const CHEVRON_SIZE = 18;
 /** 수정 시트의 삭제 버튼 폭 */
 const DELETE_WIDTH = 110;
-/** 키보드가 내려갔다는 알림이 오지 않을 때 위 시트(폴더 선택 · 삭제 확인)를 열기까지 기다리는 최대 시간(ms) */
-const KEYBOARD_HIDE_TIMEOUT = 500;
 
 type Form = {
   type: ItemType;
@@ -50,6 +50,11 @@ type Form = {
 };
 
 const EMPTY_FORM: Form = { type: "WISH", name: "", folderId: undefined, thumbnail: null, memo: "" };
+
+/** 고른 폴더. 고르지 않았거나 그새 지워졌으면 기본 폴더 */
+function pickedFolder(folders: readonly Folder[] | undefined, folderId: string | undefined) {
+  return folders?.find((f) => f.id === folderId) ?? folders?.find((f) => f.isDefault);
+}
 
 function formFromItem(item: Item): Form {
   return {
@@ -76,6 +81,7 @@ type Props = {
 /**
  * 상세에서 여는 아이템 추가 · 수정 시트 (시안 B_ItemSheet · B_ItemSheetEdit).
  * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록.
+ * 저장에 실패해 닫혔으면 같은 시트(같은 기록 · 추가)를 다시 열 때 그 입력을 이어서 보여 준다.
  * 폴더 선택 · 삭제 확인은 이 시트 위에 여는 시트다 (시안 B_FolderSheet · B_ItemDelete).
  */
 export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Props) {
@@ -85,43 +91,14 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   const [form, setForm] = useState<Form>(EMPTY_FORM);
   const [folderSheetOpen, setFolderSheetOpen] = useState(false);
   const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
-  // 키보드가 내려가길 기다리는 중이면, 그 기다림을 취소하는 함수. 여러 번 눌러도 한 번만 기다린다.
-  const cancelPendingOpen = useRef<(() => void) | null>(null);
 
-  // 키보드를 먼저 내리고, 다 내려간 뒤에 위 시트를 연다.
-  // 키보드가 떠 있을 때 열면 iOS 에서 라이브러리가 새 시트를 키보드 높이만큼 뺀 자리로 보내 시트가 보이지 않는다 (@gorhom/bottom-sheet 5.2).
-  const openOver = useCallback((show: () => void) => {
-    if (!Keyboard.isVisible()) {
-      show();
-      return;
-    }
-    if (cancelPendingOpen.current) return;
-    const cancel = () => {
-      sub.remove();
-      clearTimeout(timer);
-      cancelPendingOpen.current = null;
-    };
-    const finish = () => {
-      cancel();
-      show();
-    };
-    const sub = Keyboard.addListener("keyboardDidHide", finish);
-    const timer = setTimeout(finish, KEYBOARD_HIDE_TIMEOUT);
-    cancelPendingOpen.current = cancel;
-    Keyboard.dismiss();
-  }, []);
-
-  // 기다리는 동안 시트가 닫히거나 화면을 나가면 열지 않는다
-  useEffect(() => {
-    if (!open) cancelPendingOpen.current?.();
-  }, [open]);
-  useEffect(() => () => cancelPendingOpen.current?.(), []);
-
-  // 열릴 때마다 한 번 입력을 채운다. 수정은 기록을 불러온 뒤에 채운다.
-  // 채울 때의 기록을 따로 들고 있어서, 저장 · 삭제 뒤 기록이 다시 불려도 닫히는 동안 내용이 바뀌지 않는다.
+  // 열릴 때마다 한 번 입력을 채운다. 캐시가 오래됐을 수 있어 수정은 다시 불러오기가 끝난 뒤에 채운다
   const [wasOpen, setWasOpen] = useState(open);
   const [filled, setFilled] = useState(false);
+  // 저장 · 삭제 뒤 기록이 다시 불려도 닫히는 동안 내용이 바뀌지 않게 채울 때의 기록을 들고 있다
   const [editingItem, setEditingItem] = useState<Item>();
+  // 저장에 실패해 닫은 입력. for 는 기록 id (추가 시트면 "")
+  const [draft, setDraft] = useState<{ for: string; form: Form }>();
   // 열 때마다 입력 영역을 새로 그린다. 지난번 저장 요청 상태가 남지 않게
   const [session, setSession] = useState(0);
   if (open !== wasOpen) {
@@ -131,15 +108,16 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
       setSession((n) => n + 1);
     }
   }
-  if (open && !filled && (!itemId || item.data)) {
+  if (open && !filled && (!itemId || (item.data && !item.isFetching))) {
     setFilled(true);
     setEditingItem(item.data ?? undefined);
-    setForm(item.data ? formFromItem(item.data) : EMPTY_FORM);
+    const kept = draft?.for === (itemId ?? "") ? draft.form : undefined;
+    setDraft(undefined);
+    setForm(kept ?? (item.data ? formFromItem(item.data) : EMPTY_FORM));
   }
 
   // 열 때 정한 모드를 닫힐 때까지 유지한다. 닫는 동안 화면이 itemId 를 지워도 제목 · 버튼이 바뀌지 않는다
   const editing = filled ? editingItem !== undefined : itemId !== undefined;
-  const defaultFolderId = folders.data?.find((f) => f.isDefault)?.id;
 
   return (
     <>
@@ -156,10 +134,11 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
             item={editingItem}
             form={form}
             onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
-            onOpenFolders={() => openOver(() => setFolderSheetOpen(true))}
-            onDelete={() => openOver(() => setDeleteSheetOpen(true))}
+            onOpenFolders={() => setFolderSheetOpen(true)}
+            onDelete={() => setDeleteSheetOpen(true)}
             onDone={onClose}
             onSaveFailed={(reason) => {
+              setDraft({ for: editingItem?.id ?? "", form });
               onClose();
               onSaveFailed(reason);
             }}
@@ -179,7 +158,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
           setFolderSheetOpen(false);
           onClose();
         }}
-        selectedFolderId={form.folderId ?? defaultFolderId}
+        selectedFolderId={pickedFolder(folders.data, form.folderId)?.id}
         onSelect={(folderId) => {
           setForm((prev) => ({ ...prev, folderId }));
           setFolderSheetOpen(false);
@@ -188,6 +167,8 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
 
       {editingItem ? (
         <ItemDeleteSheet
+          // 열 때마다 지난번 삭제 요청 상태를 비운다
+          key={session}
           open={deleteSheetOpen}
           onClose={() => setDeleteSheetOpen(false)}
           onDeleted={() => {
@@ -223,18 +204,22 @@ function ItemForm({
   onSaveFailed: (reason: string) => void;
 }) {
   const { t } = useTranslation();
-  const taken = useIsItemNameTaken(gachaId, form.name, item?.id);
+  const checkedName = useDebouncedValue(form.name, NAME_CHECK_DELAY);
+  const taken = useIsItemNameTaken(gachaId, checkedName, item?.id);
+  const folders = useFolders();
   const create = useCreateItem();
   const update = useUpdateItem();
 
   const filled = form.name.trim().length > 0;
   const busy = create.isPending || update.isPending;
-  // 중복 검사 결과가 오기 전에는 저장하지 않는다 (저장소는 중복을 막지 않는다)
-  const canSave = filled && taken.data === false && !busy;
+  // 지금 이름의 중복 검사 결과가 오기 전에는 저장하지 않는다 (저장소는 중복을 막지 않는다)
+  const canSave = filled && checkedName === form.name && taken.data === false && !busy;
 
   const save = async () => {
     if (!canSave) return;
     const memo = form.memo.trim() || null;
+    // 폴더 행에 보이는 폴더로 저장한다
+    const folderId = pickedFolder(folders.data, form.folderId)?.id ?? form.folderId;
     try {
       if (item) {
         await update.mutateAsync({
@@ -242,7 +227,7 @@ function ItemForm({
           input: {
             type: form.type,
             name: form.name,
-            folderId: form.folderId,
+            folderId,
             thumbnail: form.thumbnail,
             memo,
           },
@@ -252,7 +237,7 @@ function ItemForm({
           gachaId,
           type: form.type,
           name: form.name,
-          folderId: form.folderId,
+          folderId,
           thumbnail: form.thumbnail,
           memo,
         });
@@ -341,7 +326,7 @@ function ItemForm({
  * 사진 칸. 비어 있으면 누를 때 시스템 사진 선택기를 연다.
  * 사진이 있으면 바꾸기 · 지우기를 고르게 한다 (iOS 액션 시트, Android 알림창). 시안에는 바꾸기만 있다.
  * 선택기는 운영체제가 띄우고 고른 사진만 앱에 넘겨서 사진첩 권한을 요청하지 않는다 (iOS PHPicker · Android Photo Picker).
- * 넘겨받은 주소는 선택기가 만든 임시 복사본이다. 앱 폴더로 옮겨 오래 두는 건 3주차 작업이다.
+ * 넘겨받은 주소는 선택기가 만든 임시 복사본이라 OS 가 지울 수 있다.
  */
 function PhotoPicker({
   uri,
@@ -356,6 +341,7 @@ function PhotoPicker({
   const pick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"] });
     const picked = result.canceled ? undefined : result.assets[0];
+    // TODO(혜진): 3주차에 고른 사진을 앱 폴더로 복사하고 그 주소를 저장한다
     if (picked) onChange(picked.uri);
   };
 
@@ -438,10 +424,8 @@ function FolderRow({ folderId, onPress }: { folderId: string | undefined; onPres
   const { t } = useTranslation();
   const { colors, folders: folderColors } = useTheme();
   const folders = useFolders();
-  const list = folders.data ?? [];
-  const folder = list.find((f) => f.id === folderId) ?? list.find((f) => f.isDefault);
-  const userFolderIds = list.filter((f) => !f.isDefault).map((f) => f.id);
-  const name = folder ? (folder.isDefault ? t("folder.defaultName") : folder.name) : "";
+  const folder = pickedFolder(folders.data, folderId);
+  const name = folder ? folderName(folder, t) : "";
 
   return (
     <Pressable
@@ -464,7 +448,7 @@ function FolderRow({ folderId, onPress }: { folderId: string | undefined; onPres
       {folder ? (
         <FolderIcon
           size={FOLDER_ICON_SIZE}
-          color={folderColor(folderColors, folder, userFolderIds.indexOf(folder.id))}
+          color={folderIconColor(folderColors, folders.data ?? [], folder)}
         />
       ) : null}
       <View style={{ flex: 1, minWidth: 0 }}>
