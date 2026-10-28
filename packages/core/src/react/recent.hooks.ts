@@ -95,14 +95,21 @@ type QueryPart<T> = { data: T | undefined; isLoading: boolean; isError: boolean 
 /**
  * 저장된 id 목록 쿼리와 가챠 목록 쿼리를 하나의 결과로 합친다 (useRecentGacha 안쪽, 테스트용으로 뺐다).
  * 둘 중 하나라도 불러오는 중이면 isLoading, 실패하면 isError. id 가 없으면 목록 쿼리와 상관없이 빈 목록.
+ * 목록은 지금 id 목록에 있는 가챠만 남긴다.
  */
-export function combineRecentGacha<T>(
+export function combineRecentGacha<T extends { id: string }>(
   ids: QueryPart<readonly string[]>,
   list: QueryPart<T[]>
 ): QueryPart<T[]> {
+  const idSet = new Set(ids.data);
   return {
-    // 전체 삭제 직후에는 목록 쿼리가 이전 목록(keepPreviousData)을 들고 있어서 id 쪽을 먼저 본다
-    data: ids.data === undefined ? undefined : ids.data.length === 0 ? [] : list.data,
+    // 목록 쿼리의 이전 목록(keepPreviousData)은 지운 기록을 품을 수 있어(전체 삭제 뒤 placeholder 가 이어짐) 지금 id 로 거른다
+    data:
+      ids.data === undefined
+        ? undefined
+        : ids.data.length === 0
+          ? []
+          : list.data?.filter((g) => idSet.has(g.id)),
     isLoading: ids.isLoading || list.isLoading,
     isError: ids.isError || list.isError,
   };
