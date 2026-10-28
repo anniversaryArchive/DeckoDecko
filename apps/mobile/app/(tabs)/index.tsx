@@ -67,12 +67,20 @@ function HomeHeader() {
       <Text variant="headingSm" accessibilityRole="header">
         {t("common.appName")}
       </Text>
-      <HeaderIconButton
-        icon="search"
-        variant="outline"
-        label={t("search.title")}
-        onPress={() => router.push("/search")}
-      />
+      <View style={{ flexDirection: "row", gap: space[8] }}>
+        <HeaderIconButton
+          icon="search"
+          variant="outline"
+          label={t("search.title")}
+          onPress={() => router.push("/search")}
+        />
+        <HeaderIconButton
+          icon="settings-outline"
+          variant="outline"
+          label={t("settings.title")}
+          onPress={() => router.push("/settings")}
+        />
+      </View>
     </View>
   );
 }

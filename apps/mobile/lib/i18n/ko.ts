@@ -227,6 +227,12 @@ export const ko = {
     // 공지 목록 화면이 생기기 전까지 자리에 보이는 문구
     comingSoon: "공지 목록은 준비 중이에요.",
   },
-  settings: {},
+  settings: {
+    title: "설정",
+    language: "언어",
+    comingSoon: "준비 중",
+    languageHint:
+      "가챠 이름은 선택한 언어로 보여주고, 번역이 없으면 원래 이름(일본어)으로 표시해요.",
+  },
   feedback: {},
 } as const;

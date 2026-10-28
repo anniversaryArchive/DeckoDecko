@@ -183,6 +183,12 @@ export const en: Messages = {
     title: "Notices",
     comingSoon: "Notices are coming soon.",
   },
-  settings: {},
+  settings: {
+    title: "Settings",
+    language: "Language",
+    comingSoon: "Coming soon",
+    languageHint:
+      "Gacha names are shown in your language, or in the original Japanese if there's no translation.",
+  },
   feedback: {},
 };
