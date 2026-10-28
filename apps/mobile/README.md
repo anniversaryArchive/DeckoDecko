@@ -15,6 +15,16 @@ pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 �
 - `app/(tabs)/` 홈 · 내 굿즈 · 검색 탭, `app/gacha/[id].tsx` 상세 스택.
 - 아이콘·스플래시·글꼴은 여경이 `packages/ui` 작업과 함께 붙인다. 디자인 토큰은 `@deckodecko/ui` 에서 가져온다.
 
+## 데이터 소스
+
+`lib/repositories.ts` 가 저장소 묶음을 만들어 루트 레이아웃의 CoreProvider 에 넘긴다. 화면은 훅만 쓰고, 데이터가 어디서 오는지는 이 파일에서만 정한다.
+
+- 가챠 카탈로그는 기본이 Supabase (`EXPO_PUBLIC_SUPABASE_URL` · `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, publishable key 만).
+- 개발 빌드에서 `EXPO_PUBLIC_DATA_SOURCE=mock` 이면 목 데이터(메모리 저장소). 출시 빌드는 이 값을 무시한다 (EAS 환경변수에 mock 이 잘못 들어가도 실제 데이터를 쓰게).
+- Supabase 값이 비어 있으면 개발 빌드는 경고 후 목 데이터로 돌고, 출시 빌드는 시작할 때 실패한다.
+- WISH / GET 기록 · 폴더는 어느 모드든 기기 로컬 DB (아래 "로컬 DB"). 두 모드의 반환값에 `...localRepositories` 를 모두 넣는다.
+- 로컬 Supabase(`supabase start`)로 띄우려면 `.env.development.local` 에 로컬 URL · 키를 넣는다. Expo SDK 57 은 `.env.local` 을 번들에 바로 넣어서 셸 환경변수로 덮어쓸 수 없다. Android 는 `adb reverse tcp:54321 tcp:54321` 도 필요하다.
+
 ## 문구 (i18n)
 
 1. 화면에 보이는 글자는 `lib/i18n/ko.ts` 에 키를 먼저 만들고 `en.ts` 에 같은 키를 채운다. 한쪽만 있으면 타입 오류가 난다.

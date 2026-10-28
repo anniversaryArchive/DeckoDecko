@@ -14,9 +14,11 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "gen:types": "supabase gen types typescript --linked > database.types.tmp || { rm -f database.types.tmp; exit 1; }; mv database.types.tmp src/database.types.ts && prettier --write src/database.types.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "@tanstack/react-query": "^5.104.2"
   },
   "devDependencies": {

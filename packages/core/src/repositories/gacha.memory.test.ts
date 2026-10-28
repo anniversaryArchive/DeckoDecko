@@ -11,7 +11,6 @@ const starry: Media = {
   titleJa: "星の森",
   titleEn: "Starry Forest",
   kind: "anime",
-  imageUrl: null,
 };
 
 const noJaEn: Media = {
@@ -20,7 +19,6 @@ const noJaEn: Media = {
   titleJa: null,
   titleEn: null,
   kind: null,
-  imageUrl: null,
 };
 
 function gacha(

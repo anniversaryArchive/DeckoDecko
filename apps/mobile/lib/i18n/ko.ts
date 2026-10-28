@@ -60,6 +60,26 @@ export const ko = {
   detail: {
     title: "가챠 상세",
     notFound: "없는 가챠예요 (id: {{id}})",
+    collectionTitle: "이 가챠 소장률",
+    collectionOwned: "{{count, number}}",
+    // 큰 숫자(가진 수) 뒤에 붙는 보조 문구: "3 / 6 · 50%"
+    collectionRest: " / {{total, number}} · {{rate, number}}%",
+    // 소장률 바 전체의 화면 읽기 이름
+    collectionLabel: "{{total, number}}종 중 {{count, number}}종 소장, {{rate, number}}%",
+    collectionGet: "GET {{count, number}}",
+    collectionWish: "WISH {{count, number}}",
+    collectionMissing: "미등록 {{count, number}}",
+    noLineup: "아직 라인업 정보가 없어요",
+    myItems: "내 아이템 {{count, number}}",
+    myItemsEmpty: "아직 기록한 아이템이 없어요.\n아이템 추가로 WISH · GET 을 남겨 보세요.",
+    hasMemo: "메모 있음",
+    addItem: "아이템 추가",
+    aiScan: "사진으로 인식해서 추가",
+    toggleHint: "태그를 누르면 WISH ↔ GET",
+    // 태그 버튼의 화면 읽기 이름. type 은 WISH · GET
+    toggleLabel: "{{name}} 상태 전환, 현재 {{type}}",
+    saveFailed: "저장하지 못했어요",
+    reopenSheet: "다시 열기",
   },
   goods: {
     title: "내 굿즈",

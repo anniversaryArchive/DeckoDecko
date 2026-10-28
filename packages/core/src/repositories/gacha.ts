@@ -11,6 +11,11 @@ export const GACHA_DEFAULTS = {
   searchOffset: 0,
 } as const;
 
+/** GACHA_DEFAULTS 의 규칙대로 limit · offset 을 고른다. 두 구현이 같이 쓴다 (한쪽만 고치면 페이지 동작이 갈린다). */
+export function count(n: number | undefined, fallback: number, min = 1): number {
+  return n !== undefined && Number.isInteger(n) && n >= min ? n : fallback;
+}
+
 export type ListGachaParams = {
   limit?: number; // 기본 20
 };
