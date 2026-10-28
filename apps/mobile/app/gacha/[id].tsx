@@ -6,6 +6,7 @@ import { View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
+  LayoutAnimationConfig,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -13,7 +14,13 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { gachaCollection, type GachaDetail, type Item } from "@deckodecko/core";
-import { useFolders, useGacha, useItemCounts, useItems } from "@deckodecko/core/react";
+import {
+  useFolders,
+  useGacha,
+  useItemCounts,
+  useItems,
+  useSetItemType,
+} from "@deckodecko/core/react";
 import { gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Button, Card, Text, useToast } from "@deckodecko/ui/native";
 
@@ -61,7 +68,7 @@ export default function GachaDetailScreen() {
 }
 
 type SheetCallbacks = {
-  /** 시트가 저장에 실패하고 닫힐 때 부른다. reason 은 토스트 둘째 줄 ("같은 이름의 아이템이 이미 있어요") */
+  /** 시트가 저장에 실패하고 닫힐 때 부른다. reason 은 토스트 둘째 줄 ("잠시 뒤 다시 시도해 주세요.") */
   onSaveFailed: (reason: string) => void;
 };
 
@@ -70,8 +77,27 @@ function openAddItemSheet(_gachaId: string, _callbacks: SheetCallbacks) {}
 function openEditItemSheet(_itemId: string, _callbacks: SheetCallbacks) {}
 // TODO(혜진): 사진 인식 화면이 생기면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
 function openAiScan(_gachaId: string) {}
-// TODO(혜진): WISH ↔ GET 원탭 전환을 useSetItemType 으로 연결한다. 그 전까지는 눌러도 아무 일도 없다.
-function toggleItemType(_item: Item) {}
+
+/** 태그 원탭 전환 (WISH ↔ GET). 실패하면 토스트의 "다시 시도"로 한 번 더 바꿔 본다 */
+function useToggleItemType() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const setType = useSetItemType();
+  function toggle(item: Item) {
+    setType.mutate(
+      { id: item.id, type: item.type === "GET" ? "WISH" : "GET" },
+      {
+        onError: () =>
+          toast.show({
+            title: t("detail.saveFailed"),
+            actionLabel: t("common.retry"),
+            onAction: () => toggle(item),
+          }),
+      }
+    );
+  }
+  return toggle;
+}
 
 /** 시트 저장 실패 토스트. "다시 열기"를 누르면 reopen 으로 시트를 다시 연다 */
 function useSaveFailedToast() {
@@ -212,10 +238,14 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
 
 /** 이 가챠 소장률: 가진(GET) 수 / 라인업(gacha_items) 종 수 */
 function DetailCollection({ gacha }: { gacha: GachaDetail }) {
+  const { t } = useTranslation();
   const counts = useItemCounts(gacha.id);
-  // 읽는 중 · 실패면 0 으로 그린다. 다시 시도 안내는 아래 목록의 QueryState 가 한다
-  const collection = gachaCollection(counts.data ?? { wish: 0, get: 0 }, gacha.items.length);
-  return <GachaCollectionCard collection={collection} />;
+  // 개수를 읽기 전에 0 으로 그리면 값이 올 때 칸 색 애니메이션이 돌아 방금 추가한 것처럼 보인다
+  return (
+    <QueryState query={counts} empty={<StateMessage message={t("common.loadFailed")} />}>
+      {(data) => <GachaCollectionCard collection={gachaCollection(data, gacha.items.length)} />}
+    </QueryState>
+  );
 }
 
 /** 내 아이템: 이 가챠의 WISH · GET 기록 (최근에 추가한 것부터) */
@@ -224,6 +254,7 @@ function MyItems({ gachaId }: { gachaId: string }) {
   const items = useItems({ gachaId });
   const folderName = useFolderName();
   const showSaveFailed = useSaveFailedToast();
+  const toggleType = useToggleItemType();
   const count = items.data?.length ?? 0;
   function openEdit(itemId: string) {
     openEditItemSheet(itemId, {
@@ -252,16 +283,19 @@ function MyItems({ gachaId }: { gachaId: string }) {
       >
         {(list) => (
           <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>
-            {list.map((item, i) => (
-              <MyItemRow
-                key={item.id}
-                item={item}
-                detail={joinDot([folderName(item), item.memo ? t("detail.hasMemo") : null])}
-                last={i === list.length - 1}
-                onPress={() => openEdit(item.id)}
-                onToggleType={() => toggleItemType(item)}
-              />
-            ))}
+            {/* 화면을 열 때는 행을 페이드하지 않고, 그 뒤에 추가된 행만 페이드한다 */}
+            <LayoutAnimationConfig skipEntering>
+              {list.map((item, i) => (
+                <MyItemRow
+                  key={item.id}
+                  item={item}
+                  detail={joinDot([folderName(item), item.memo ? t("detail.hasMemo") : null])}
+                  last={i === list.length - 1}
+                  onPress={() => openEdit(item.id)}
+                  onToggleType={() => toggleType(item)}
+                />
+              ))}
+            </LayoutAnimationConfig>
           </Card>
         )}
       </QueryState>

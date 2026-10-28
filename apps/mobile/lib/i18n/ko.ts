@@ -54,8 +54,8 @@ export const ko = {
     title: "가챠 상세",
     notFound: "없는 가챠예요 (id: {{id}})",
     collectionTitle: "이 가챠 소장률",
-    // 큰 숫자(가진 수) 뒤에 붙는 보조 문구: "3 / 6 · 50%"
     collectionOwned: "{{count, number}}",
+    // 큰 숫자(가진 수) 뒤에 붙는 보조 문구: "3 / 6 · 50%"
     collectionRest: " / {{total, number}} · {{rate, number}}%",
     // 소장률 바 전체의 화면 읽기 이름
     collectionLabel: "{{total, number}}종 중 {{count, number}}종 소장, {{rate, number}}%",
