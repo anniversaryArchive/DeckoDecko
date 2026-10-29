@@ -13,13 +13,22 @@ import {
   useUpdateItem,
 } from "@deckodecko/core/react";
 import { border, radius, space, useTheme } from "@deckodecko/ui";
-import { BottomSheet, Button, Input, PRESSED_OPACITY, Segment, Text } from "@deckodecko/ui/native";
+import {
+  BottomSheet,
+  Button,
+  Input,
+  PRESSED_OPACITY,
+  Segment,
+  Text,
+  useToast,
+} from "@deckodecko/ui/native";
 
 import { FolderIcon, folderIconColor } from "@/components/FolderIcon";
 import { FolderSelectSheet } from "@/components/FolderSelectSheet";
 import { ItemDeleteSheet } from "@/components/ItemDeleteSheet";
 import { folderName } from "@/lib/displayName";
 import { formatDate } from "@/lib/i18n";
+import { deletePhoto, photoUri, savePhoto } from "@/lib/photos";
 import { NAME_CHECK_DELAY, useDebouncedValue } from "@/lib/useDebouncedValue";
 
 /** 사진 칸 (정사각형) */
@@ -44,7 +53,7 @@ type Form = {
   name: string;
   /** 비어 있으면 기본 폴더 */
   folderId: string | undefined;
-  /** 고른 사진의 파일 주소 */
+  /** 저장된 기록의 items.thumbnail 그대로이거나, 새로 고른 사진의 임시 주소 (저장할 때 앱 폴더로 복사한다) */
   thumbnail: string | null;
   memo: string;
 };
@@ -204,14 +213,16 @@ function ItemForm({
   onSaveFailed: (reason: string) => void;
 }) {
   const { t } = useTranslation();
+  const toast = useToast();
   const checkedName = useDebouncedValue(form.name, NAME_CHECK_DELAY);
   const taken = useIsItemNameTaken(gachaId, checkedName, item?.id);
   const folders = useFolders();
   const create = useCreateItem();
   const update = useUpdateItem();
+  const [savingPhoto, setSavingPhoto] = useState(false);
 
   const filled = form.name.trim().length > 0;
-  const busy = create.isPending || update.isPending;
+  const busy = savingPhoto || create.isPending || update.isPending;
   // 지금 이름의 중복 검사 결과가 오기 전에는 저장하지 않는다 (저장소는 중복을 막지 않는다)
   const canSave = filled && checkedName === form.name && taken.data === false && !busy;
 
@@ -220,17 +231,29 @@ function ItemForm({
     const memo = form.memo.trim() || null;
     // 폴더 행에 보이는 폴더로 저장한다
     const folderId = pickedFolder(folders.data, form.folderId)?.id ?? form.folderId;
+    const previous = item?.thumbnail ?? null;
+
+    // 새로 고른 사진만 앱 폴더로 복사한다. 실패해도 기록은 저장한다 (새 기록은 사진 없이, 수정은 예전 사진 그대로)
+    let thumbnail = form.thumbnail;
+    let copied: string | null = null;
+    let photoFailed = false;
+    if (thumbnail && thumbnail !== previous) {
+      setSavingPhoto(true);
+      try {
+        thumbnail = copied = await savePhoto(thumbnail);
+      } catch {
+        thumbnail = previous;
+        photoFailed = true;
+      } finally {
+        setSavingPhoto(false);
+      }
+    }
+
     try {
       if (item) {
         await update.mutateAsync({
           id: item.id,
-          input: {
-            type: form.type,
-            name: form.name,
-            folderId,
-            thumbnail: form.thumbnail,
-            memo,
-          },
+          input: { type: form.type, name: form.name, folderId, thumbnail, memo },
         });
       } else {
         await create.mutateAsync({
@@ -238,13 +261,22 @@ function ItemForm({
           type: form.type,
           name: form.name,
           folderId,
-          thumbnail: form.thumbnail,
+          thumbnail,
           memo,
         });
       }
-      onDone();
     } catch {
+      // 기록에 들어가지 못한 사본은 지운다. 다시 열면 남겨 둔 입력의 원래 사진으로 다시 복사한다
+      deletePhoto(copied);
       onSaveFailed(t("item.saveFailedReason"));
+      return;
+    }
+    onDone();
+    if (photoFailed) {
+      toast.show({
+        title: t("item.photoSaveFailed"),
+        message: t(item ? "item.photoSaveFailedKept" : "item.photoSaveFailedAdded"),
+      });
     }
   };
 
@@ -329,7 +361,7 @@ function ItemForm({
  * 사진 칸. 비어 있으면 누를 때 시스템 사진 선택기를 연다.
  * 사진이 있으면 바꾸기 · 지우기를 고르게 한다 (iOS 액션 시트, Android 알림창). 시안에는 바꾸기만 있다.
  * 선택기는 운영체제가 띄우고 고른 사진만 앱에 넘겨서 사진첩 권한을 요청하지 않는다 (iOS PHPicker · Android Photo Picker).
- * 넘겨받은 주소는 선택기가 만든 임시 복사본이라 OS 가 지울 수 있다.
+ * 넘겨받은 주소는 선택기가 만든 임시 복사본이다. 앱 폴더로 복사하는 건 저장할 때다 (ItemForm 의 save).
  */
 function PhotoPicker({
   uri,
@@ -399,7 +431,11 @@ function PhotoPicker({
     >
       {uri ? (
         <>
-          <Image source={{ uri }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+          <Image
+            source={{ uri: photoUri(uri) }}
+            style={{ width: "100%", height: "100%" }}
+            resizeMode="cover"
+          />
           <View
             style={{
               position: "absolute",

@@ -117,6 +117,9 @@ export const en: Messages = {
     delete: "Delete",
     saveFailedReason: "Please try again in a moment.",
     deleteFailed: "Couldn't delete",
+    photoSaveFailed: "Couldn't save the photo",
+    photoSaveFailedAdded: "Added without a photo. You can add it again from Edit.",
+    photoSaveFailedKept: "Saved without changing the photo.",
     deleteTitle: "Delete this item?",
     deleteMessage: "Its photo and memo will be deleted too.\nThis can't be undone.",
     deleteCountChange:
