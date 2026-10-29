@@ -9,7 +9,7 @@ export { createQueryClient } from "./queryClient";
 export {
   useGacha,
   useGachaList,
-  useGachaSearch,
+  useGachaSearchPages,
   useGachasByIds,
   usePopularGacha,
 } from "./gacha.hooks";

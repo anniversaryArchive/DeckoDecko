@@ -152,27 +152,28 @@ function GoodsEmpty() {
       icon="albums-outline"
       title={t("goods.emptyTitle")}
       description={t("goods.emptyDescription")}
-    >
-      <View style={{ alignItems: "center", gap: space[14] }}>
-        <Button
-          size="md"
-          icon={<Ionicons name="search" size={FIND_ICON_SIZE} color={colors.onPrimary} />}
-          onPress={() => router.navigate("/search")}
-        >
-          {t("goods.findGacha")}
-        </Button>
-        <Pressable
-          onPress={() => router.navigate("/")}
-          accessibilityRole="link"
-          hitSlop={space[8]}
-          style={({ pressed }) => ({ opacity: pressed ? PRESSED_OPACITY : 1 })}
-        >
-          <Text variant="label" weight="regular" color="textMuted">
-            {t("goods.browseHome")}
-          </Text>
-        </Pressable>
-      </View>
-    </EmptyState>
+      action={
+        <View style={{ alignItems: "center", gap: space[14] }}>
+          <Button
+            size="md"
+            icon={<Ionicons name="search" size={FIND_ICON_SIZE} color={colors.onPrimary} />}
+            onPress={() => router.navigate("/search")}
+          >
+            {t("goods.findGacha")}
+          </Button>
+          <Pressable
+            onPress={() => router.navigate("/")}
+            accessibilityRole="link"
+            hitSlop={space[8]}
+            style={({ pressed }) => ({ opacity: pressed ? PRESSED_OPACITY : 1 })}
+          >
+            <Text variant="label" weight="regular" color="textMuted">
+              {t("goods.browseHome")}
+            </Text>
+          </Pressable>
+        </View>
+      }
+    />
   );
 }
 

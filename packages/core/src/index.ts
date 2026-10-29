@@ -24,8 +24,22 @@ export type {
 export type { ListNoticesParams, NoticeRepository } from "./repositories/notice";
 export { NOTICE_DEFAULTS } from "./repositories/notice";
 export { createMemoryNoticeRepository } from "./repositories/notice.memory";
-export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repositories/gacha";
-export { GACHA_DEFAULTS } from "./repositories/gacha";
+export type {
+  GachaFilter,
+  GachaReleaseFilter,
+  GachaRepository,
+  GachaSort,
+  ListGachaParams,
+  ReleaseStatus,
+  ResolvedGachaFilter,
+  SearchGachaParams,
+} from "./repositories/gacha";
+export {
+  GACHA_DEFAULTS,
+  releaseStatus,
+  resolveGachaFilter,
+  toYearMonth,
+} from "./repositories/gacha";
 export type {
   CreateItemInput,
   ItemNameQuery,
