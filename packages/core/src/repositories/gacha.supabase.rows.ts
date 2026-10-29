@@ -22,3 +22,26 @@ export type GachaItemRow = Pick<
   "id" | "gacha_id" | "name" | "name_kr" | "image_link" | "sort_order"
 >;
 export type GachaDetailRow = GachaBaseRow & { gacha_items: GachaItemRow[] };
+
+/**
+ * RPC(get_top_gacha_views · search_gacha_with_anime)가 돌려주는 한 행. 가챠 칸과 작품 칸(anime_*)이 평평하게 온다.
+ * 생성 타입은 returns table 칸을 모두 not null 로 적지만, 작품은 left join 이라 작품이 없는 가챠는 anime_* 가 null 이고
+ * 가챠 칸도 테이블에서 null 을 허용한다. 그래서 여기서는 null 을 허용해 받는다.
+ */
+export type GachaRpcRow = {
+  id: number;
+  name: string | null;
+  name_kr: string | null;
+  image_link: string | null;
+  price: number | null;
+  release_month: string | null;
+  anime_id: number | null;
+  anime_kr_title: string | null;
+  anime_jp_title: string | null;
+  anime_en_title: string | null;
+  anime_type: string | null;
+  item_count: number | null;
+};
+
+/** 검색 RPC 의 한 행. 칸은 GachaRpcRow 와 같고, 필터까지 적용한 전체 개수(total_count)가 모든 행에 같은 값으로 붙는다. */
+export type GachaSearchRpcRow = GachaRpcRow & { total_count: number | null };

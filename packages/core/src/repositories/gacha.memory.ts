@@ -45,7 +45,8 @@ const comparators: Record<GachaSort, (a: Gacha, b: Gacha) => number> = {
 /**
  * 메모리 안의 배열로 동작하는 저장소. 목 데이터 화면(1주차), 테스트, 스토리북 성격의 개발 화면에 쓴다.
  * 데이터는 이 저장소가 갖지 않고 호출하는 쪽이 넘긴다 (개발용 목 데이터: @deckodecko/core/mocks).
- * 목록은 받은 순서를 최신순으로 본다. 검색은 가챠 이름(한 · 일) · 작품명(한 · 일 · 영) 부분 일치, 공백 · 대소문자 · 전각 무시.
+ * 목록은 받은 순서를 최신순으로 본다. 검색은 가챠 이름(한 · 일) · 작품명(한 · 일 · 영) · 작품 별칭 부분 일치, 공백 · 대소문자 · 전각 무시.
+ * 검색 규칙(정규화 · 필터 · 정렬 · limit 상한 100)은 Supabase 의 검색 RPC(search_gacha_with_anime)와 같다.
  */
 export function createMemoryGachaRepository(
   seed: readonly GachaDetail[],
@@ -79,7 +80,10 @@ export function createMemoryGachaRepository(
     },
 
     async searchGacha(params: SearchGachaParams) {
-      const limit = count(params.limit, GACHA_DEFAULTS.searchLimit);
+      const limit = Math.min(
+        count(params.limit, GACHA_DEFAULTS.searchLimit),
+        GACHA_DEFAULTS.searchLimitMax
+      );
       const offset = count(params.offset, GACHA_DEFAULTS.searchOffset, 0);
       const filter = resolveGachaFilter(params.filter);
       const compare = comparators[params.sort ?? GACHA_DEFAULTS.searchSort] ?? comparators.release;
@@ -88,7 +92,14 @@ export function createMemoryGachaRepository(
       if (!q) return { items: [], total: 0 };
       const hits = all
         .filter((g) =>
-          [g.name, g.nameKo, g.media?.title, g.media?.titleJa, g.media?.titleEn]
+          [
+            g.name,
+            g.nameKo,
+            g.media?.title,
+            g.media?.titleJa,
+            g.media?.titleEn,
+            ...(g.media?.aliases ?? []),
+          ]
             .filter((v): v is string => typeof v === "string")
             .some((v) => normalize(v).includes(q))
         )

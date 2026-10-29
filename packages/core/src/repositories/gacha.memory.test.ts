@@ -228,6 +228,20 @@ describe("createMemoryGachaRepository", () => {
       }
     });
 
+    it("작품 별칭으로도 찾는다 (공백 · 대소문자 · 전각 무시는 같다)", async () => {
+      const aliased = createMemoryGachaRepository([
+        gacha("forest3", { media: { ...starry, aliases: ["별숲", "SF"] } }),
+        gacha("cat"),
+      ]);
+      for (const keyword of ["별숲", "별 숲", "sf", "ＳＦ"]) {
+        expect(ids((await aliased.searchGacha({ keyword })).items), keyword).toEqual(["forest3"]);
+      }
+      // 별칭이 없는 작품(aliases 생략)은 그대로 작품명으로만 찾는다
+      expect((await createMemoryGachaRepository(seed).searchGacha({ keyword: "별숲" })).total).toBe(
+        0
+      );
+    });
+
     it("대소문자를 무시한다", async () => {
       const repo = createMemoryGachaRepository(seed);
       for (const keyword of ["vol.3", "VOL.3", "starry forest", "STARRY"]) {
@@ -331,6 +345,13 @@ describe("createMemoryGachaRepository", () => {
           expect(page.items, String(limit)).toHaveLength(20);
           expect(page.total, String(limit)).toBe(25);
         }
+      });
+
+      it("limit 은 100 까지만 (검색 RPC 와 같은 상한)", async () => {
+        const big = createMemoryGachaRepository(many(120, { name: "マスコット" }));
+        const page = await big.searchGacha({ keyword: "マスコット", limit: 150 });
+        expect(page.items).toHaveLength(100);
+        expect(page.total).toBe(120);
       });
 
       it("offset 이 0 이상의 정수가 아니면 처음부터", async () => {
