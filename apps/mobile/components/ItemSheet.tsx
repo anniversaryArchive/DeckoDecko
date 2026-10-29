@@ -110,6 +110,8 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   const [draft, setDraft] = useState<{ for: string; form: Form }>();
   // 열 때마다 입력 영역을 새로 그린다. 지난번 저장 요청 상태가 남지 않게
   const [session, setSession] = useState(0);
+  // 저장 중에는 시트를 닫지 못하게 한다. 닫아도 저장은 계속돼서 닫기가 취소처럼 보이지 않고, 다시 열면 늦게 끝난 저장이 새 시트를 닫는다
+  const [saving, setSaving] = useState(false);
   if (open !== wasOpen) {
     setWasOpen(open);
     if (open) {
@@ -135,6 +137,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
         onClose={onClose}
         title={editing ? t("item.editTitle") : t("item.addTitle")}
         closeLabel={t("common.close")}
+        dismissible={!saving}
       >
         {filled ? (
           <ItemForm
@@ -142,6 +145,8 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
             gachaId={gachaId}
             item={editingItem}
             form={form}
+            saving={saving}
+            onSavingChange={setSaving}
             onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
             onOpenFolders={() => setFolderSheetOpen(true)}
             onDelete={() => setDeleteSheetOpen(true)}
@@ -195,6 +200,8 @@ function ItemForm({
   gachaId,
   item,
   form,
+  saving,
+  onSavingChange,
   onChange,
   onOpenFolders,
   onDelete,
@@ -205,6 +212,9 @@ function ItemForm({
   /** 수정 중인 기록. 추가 시트면 없다 */
   item: Item | undefined;
   form: Form;
+  /** 저장(사진 복사 + 기록 저장) 중인지. 그동안 입력과 버튼을 막는다 */
+  saving: boolean;
+  onSavingChange: (saving: boolean) => void;
   onChange: (patch: Partial<Form>) => void;
   onOpenFolders: () => void;
   /** 삭제를 눌렀을 때. 삭제 확인 시트를 연다 */
@@ -219,15 +229,22 @@ function ItemForm({
   const folders = useFolders();
   const create = useCreateItem();
   const update = useUpdateItem();
-  const [savingPhoto, setSavingPhoto] = useState(false);
 
   const filled = form.name.trim().length > 0;
-  const busy = savingPhoto || create.isPending || update.isPending;
   // 지금 이름의 중복 검사 결과가 오기 전에는 저장하지 않는다 (저장소는 중복을 막지 않는다)
-  const canSave = filled && checkedName === form.name && taken.data === false && !busy;
+  const canSave = filled && checkedName === form.name && taken.data === false && !saving;
 
   const save = async () => {
     if (!canSave) return;
+    onSavingChange(true);
+    try {
+      await submit();
+    } finally {
+      onSavingChange(false);
+    }
+  };
+
+  const submit = async () => {
     const memo = form.memo.trim() || null;
     // 폴더 행에 보이는 폴더로 저장한다
     const folderId = pickedFolder(folders.data, form.folderId)?.id ?? form.folderId;
@@ -238,14 +255,11 @@ function ItemForm({
     let copied: string | null = null;
     let photoFailed = false;
     if (thumbnail && thumbnail !== previous) {
-      setSavingPhoto(true);
       try {
         thumbnail = copied = await savePhoto(thumbnail);
       } catch {
         thumbnail = previous;
         photoFailed = true;
-      } finally {
-        setSavingPhoto(false);
       }
     }
 
@@ -300,7 +314,9 @@ function ItemForm({
     <>
       <Segment
         value={form.type}
-        onChange={(type) => onChange({ type })}
+        onChange={(type) => {
+          if (!saving) onChange({ type });
+        }}
         accessibilityLabel={t("item.typeLabel")}
         options={[
           { value: "WISH", label: t("item.wish") },
@@ -309,12 +325,17 @@ function ItemForm({
       />
 
       <View style={{ flexDirection: "row", alignItems: "center", gap: space[12] }}>
-        <PhotoPicker uri={form.thumbnail} onChange={(thumbnail) => onChange({ thumbnail })} />
+        <PhotoPicker
+          uri={form.thumbnail}
+          disabled={saving}
+          onChange={(thumbnail) => onChange({ thumbnail })}
+        />
         <View style={{ flex: 1, gap: space[6] }}>
           <Input
             label={t("item.nameLabel")}
             value={form.name}
             onChangeText={(name) => onChange({ name })}
+            editable={!saving}
             clearLabel={t("common.clear")}
             returnKeyType="done"
           />
@@ -324,12 +345,13 @@ function ItemForm({
         </View>
       </View>
 
-      <FolderRow folderId={form.folderId} onPress={onOpenFolders} />
+      <FolderRow folderId={form.folderId} disabled={saving} onPress={onOpenFolders} />
 
       <Input
         label={t("item.memoLabel")}
         value={form.memo}
         onChangeText={(memo) => onChange({ memo })}
+        editable={!saving}
         placeholder={t("item.memoPlaceholder")}
         multiline
       />
@@ -338,7 +360,7 @@ function ItemForm({
         <View style={{ flexDirection: "row", gap: space[10] }}>
           <Button
             variant="secondary"
-            disabled={busy}
+            disabled={saving}
             onPress={onDelete}
             style={{ width: DELETE_WIDTH }}
           >
@@ -365,9 +387,11 @@ function ItemForm({
  */
 function PhotoPicker({
   uri,
+  disabled,
   onChange,
 }: {
   uri: string | null;
+  disabled: boolean;
   onChange: (uri: string | null) => void;
 }) {
   const { t } = useTranslation();
@@ -382,7 +406,6 @@ function PhotoPicker({
       return;
     }
     const picked = result.canceled ? undefined : result.assets[0];
-    // TODO(혜진): 3주차에 고른 사진을 앱 폴더로 복사하고 그 주소를 저장한다
     if (picked) onChange(picked.uri);
   };
 
@@ -412,6 +435,7 @@ function PhotoPicker({
   return (
     <Pressable
       onPress={uri ? showOptions : pick}
+      disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={uri ? t("item.photoOptions") : t("item.addPhoto")}
       style={({ pressed }) => ({
@@ -465,7 +489,15 @@ function PhotoPicker({
 }
 
 /** 지금 고른 폴더. 누르면 폴더 선택 시트를 연다 */
-function FolderRow({ folderId, onPress }: { folderId: string | undefined; onPress: () => void }) {
+function FolderRow({
+  folderId,
+  disabled,
+  onPress,
+}: {
+  folderId: string | undefined;
+  disabled: boolean;
+  onPress: () => void;
+}) {
   const { t } = useTranslation();
   const { colors, folders: folderColors } = useTheme();
   const folders = useFolders();
@@ -475,6 +507,7 @@ function FolderRow({ folderId, onPress }: { folderId: string | undefined; onPres
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={`${t("item.folderLabel")}, ${name}`}
       style={({ pressed }) => ({

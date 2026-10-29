@@ -117,7 +117,6 @@ export function createLocalRepositories(
         return row;
       },
 
-      // TODO(혜진): 3주차에 사진을 앱 폴더로 옮기면 기록을 지울 때 사진 파일도 같이 지운다
       async deleteItem(id) {
         const [row] = await db.delete(items).where(eq(items.id, id)).returning();
         if (row?.thumbnail) deletePhoto(row.thumbnail);

@@ -47,6 +47,11 @@ export type BottomSheetProps = {
    * 시트 위에 띄운 시트에서 아래 시트까지 한 번에 닫을 때 쓴다. 생략하면 이 시트만 닫고 onClose 를 부른다.
    */
   onBackdropPress?: () => void;
+  /**
+   * false 면 사용자가 닫지 못한다 (아래로 끌기 · 뒤 배경 · 닫기 버튼 · Android 뒤로가기). 기본 true.
+   * 저장 중처럼 잠깐 막을 때 쓴다. 화면이 open 을 false 로 바꿔 닫는 건 막지 않는다.
+   */
+  dismissible?: boolean;
   children: ReactNode;
 };
 
@@ -62,6 +67,7 @@ export function BottomSheet({
   title,
   closeLabel,
   onBackdropPress,
+  dismissible = true,
   children,
 }: BottomSheetProps) {
   const { colors } = useTheme();
@@ -80,6 +86,8 @@ export function BottomSheet({
   // 화면이 마지막으로 넘긴 open. 닫힘이 끝났을 때 그사이 다시 열렸는지 본다.
   const openRef = useRef(open);
   openRef.current = open;
+  const dismissibleRef = useRef(dismissible);
+  dismissibleRef.current = dismissible;
   // 이번 닫힘을 화면이 시작했는지 (open 을 false 로 바꿈). 그때는 onClose 를 부르지 않는다.
   const closedByParent = useRef(false);
   // 시트가 다 열렸는지 (onChange). 그 전의 닫기 요청은 미뤄 뒀다가 다 열리면 닫는다.
@@ -154,6 +162,11 @@ export function BottomSheet({
     Keyboard.dismiss();
   }, []);
 
+  // 사용자가 닫으려 할 때 (뒤 배경 · 닫기 버튼 · 뒤로가기). 막혀 있으면 무시한다
+  const closeByUser = useCallback(() => {
+    if (dismissibleRef.current) requestClose();
+  }, [requestClose]);
+
   useEffect(() => {
     if (open) {
       if (!presented.current) {
@@ -201,6 +214,7 @@ export function BottomSheet({
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       if (!presented.current) return false;
+      if (!dismissibleRef.current) return true;
       // 열리는 중에는 아직 닫을 수 없어서, 다 열리면 닫도록 미뤄 둔다
       if (shown.current) requestClose();
       else closedByUserBeforeShown.current = true;
@@ -218,7 +232,10 @@ export function BottomSheet({
         opacity={1}
         // 라이브러리가 바로 닫지 않게 제자리(0)로 두고, 키보드부터 내리는 requestClose 로 닫는다
         pressBehavior={0}
-        onPress={onBackdropPress ?? requestClose}
+        onPress={() => {
+          if (!dismissibleRef.current) return;
+          (onBackdropPress ?? requestClose)();
+        }}
         style={[props.style, { backgroundColor: colors.scrim }]}
       />
     ),
@@ -277,7 +294,7 @@ export function BottomSheet({
       // (@gorhom/bottom-sheet 5.2 · 이슈 #1560). iOS 의 시트도 동작 줄이기와 상관없이 올라온다.
       // TODO: 라이브러리가 이슈 #1560 을 고치면 이 줄을 지운다.
       overrideReduceMotion={ReduceMotion.Never}
-      enablePanDownToClose
+      enablePanDownToClose={dismissible}
       enableDynamicSizing
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
@@ -324,7 +341,7 @@ export function BottomSheet({
                 <View style={{ flex: 1 }} />
               )}
               {closeLabel ? (
-                <IconButton size={CLOSE_SIZE} label={closeLabel} onPress={requestClose}>
+                <IconButton size={CLOSE_SIZE} label={closeLabel} onPress={closeByUser}>
                   <CloseIcon size={CLOSE_ICON_SIZE} />
                 </IconButton>
               ) : null}
