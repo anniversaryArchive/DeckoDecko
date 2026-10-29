@@ -1,3 +1,4 @@
+import type { GachaSort, ResolvedGachaFilter } from "./repositories/gacha";
 import type { ItemType } from "./types";
 
 /**
@@ -13,8 +14,14 @@ export const queryKeys = {
     popular: (limit: number) => ["gacha", "popular", limit] as const,
     byIds: (ids: readonly string[]) => ["gacha", "byIds", ids] as const,
     detail: (id: string) => ["gacha", "detail", id] as const,
-    search: (keyword: string, offset: number, limit: number) =>
-      ["gacha", "search", keyword, offset, limit] as const,
+    /** 검색 결과 무한 스크롤. 필터는 resolveGachaFilter 를 거친 값, month 는 신상품 · 발매 예정의 기준 달(toYearMonth) */
+    searchPages: (
+      keyword: string,
+      filter: ResolvedGachaFilter,
+      sort: GachaSort,
+      pageSize: number,
+      month: string
+    ) => ["gacha", "searchPages", keyword, filter, sort, pageSize, month] as const,
   },
   notice: {
     all: ["notice"] as const,
