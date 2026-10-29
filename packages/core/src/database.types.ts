@@ -33,6 +33,24 @@ export type Database = {
   };
   public: {
     Tables: {
+      admin_allowlist: {
+        Row: {
+          created_at: string;
+          email: string;
+          name: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          email: string;
+          name?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          email?: string;
+          name?: string | null;
+        };
+        Relationships: [];
+      };
       anime: {
         Row: {
           aliases: string[];
@@ -252,6 +270,7 @@ export type Database = {
           id: number;
           is_fixed: boolean;
           is_published: boolean;
+          published_at: string | null;
           title: string;
           updated_at: string;
         };
@@ -261,6 +280,7 @@ export type Database = {
           id?: number;
           is_fixed?: boolean;
           is_published?: boolean;
+          published_at?: string | null;
           title: string;
           updated_at?: string;
         };
@@ -270,6 +290,7 @@ export type Database = {
           id?: number;
           is_fixed?: boolean;
           is_published?: boolean;
+          published_at?: string | null;
           title?: string;
           updated_at?: string;
         };
