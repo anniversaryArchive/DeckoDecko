@@ -21,6 +21,8 @@ export const en: Messages = {
     close: "Close",
     clear: "Clear",
     closeToastHint: "Dismisses the alert.",
+    offline: "You're offline",
+    offlineLoad: "This will load once you're back online.",
   },
   startup: {
     localDbFailed: "Couldn't load your saved goods.\nPlease try again.",

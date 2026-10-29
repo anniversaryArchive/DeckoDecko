@@ -19,17 +19,21 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { CoreProvider } from "@deckodecko/core/react";
+import { CoreProvider, useIsOnline } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
 import { ToastProvider } from "@deckodecko/ui/native";
 
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { StateMessage } from "@/components/StateMessage";
 import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
 import { i18n, pickLanguage } from "@/lib/i18n";
+import { watchNetworkState } from "@/lib/network";
 import { repositories } from "@/lib/repositories";
 
 // 글꼴과 로컬 DB 마이그레이션이 끝날 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
 void SplashScreen.preventAutoHideAsync();
+// 첫 쿼리보다 먼저 연결 상태를 듣기 시작한다
+watchNetworkState();
 
 /**
  * 루트 레이아웃. 탭 그룹 하나와 가챠 상세 스택 하나로 시작한다.
@@ -79,11 +83,14 @@ export default function RootLayout() {
         {localDb.success ? (
           // 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다
           <CoreProvider repositories={repositories}>
-            <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
-              <BottomSheetModalProvider>
-                <RootStack />
-              </BottomSheetModalProvider>
-            </ToastProvider>
+            {/* 토스트가 배너를 가리지 않게 배너를 토스트 바깥에 둔다 (토스트는 배너 아래부터 자리를 잡는다) */}
+            <OfflineBanner>
+              <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
+                <BottomSheetModalProvider>
+                  <RootStack />
+                </BottomSheetModalProvider>
+              </ToastProvider>
+            </OfflineBanner>
           </CoreProvider>
         ) : (
           <LocalDbFailed retrying={localDb.retrying} onRetry={localDb.retry} />
@@ -109,11 +116,19 @@ function LocalDbFailed({ retrying, onRetry }: { retrying: boolean; onRetry: () =
   );
 }
 
+// StatusBar 는 앱에 이것 하나만 둔다 (둘이면 마운트 순서로 승부가 갈린다). 오프라인이면 뒤가 배너(inverse)라 글자색을 뒤집는다
+function AppStatusBar() {
+  const { scheme } = useTheme();
+  const online = useIsOnline();
+  const darkBehind = (scheme === "dark") === online;
+  return <StatusBar style={darkBehind ? "light" : "dark"} />;
+}
+
 function RootStack() {
-  const { scheme, colors } = useTheme();
+  const { colors } = useTheme();
   return (
     <>
-      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+      <AppStatusBar />
       <Stack
         screenOptions={{
           headerTintColor: colors.text,

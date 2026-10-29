@@ -127,7 +127,7 @@ function PopularSearches() {
 function SearchResults({ keyword }: { keyword: string }) {
   const { t } = useTranslation();
   const search = useGachaSearch(keyword);
-  // 새 검색어를 불러오는 동안에는 이전 검색어의 결과 · 개수를 보이지 않는다 (목록이 비면 QueryState 가 로딩을 그린다)
+  // 새 검색어를 불러오는 동안에는 이전 검색어의 결과 · 개수를 보이지 않는다 (목록이 비면 QueryState 가 로딩 · 오프라인 안내를 그린다)
   const result = search.isPlaceholderData ? undefined : search.data;
 
   return (

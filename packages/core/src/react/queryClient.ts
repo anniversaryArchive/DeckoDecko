@@ -17,3 +17,9 @@ export function createQueryClient(): QueryClient {
     },
   });
 }
+
+/**
+ * 기기 안에 저장하는 데이터(WISH · GET 기록 · 폴더 · 최근 기록)의 쿼리 · 쓰기 훅에 펼쳐 넣는다.
+ * 기본값(networkMode "online")이면 오프라인에서 로컬 저장까지 멈춰서, 네트워크와 상관없이 늘 실행하게 한다.
+ */
+export const localNetworkMode = { networkMode: "always" } as const;
