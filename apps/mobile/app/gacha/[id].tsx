@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -33,6 +33,7 @@ import { MyItemRow } from "@/components/MyItemRow";
 import { QueryState } from "@/components/QueryState";
 import { StateMessage } from "@/components/StateMessage";
 import { joinDot, useGachaDisplay } from "@/hooks/useGachaDisplay";
+import { goBackOrHome } from "@/lib/routes";
 
 /** 아이템 추가 버튼의 + 아이콘 */
 const ADD_ICON_SIZE = 20;
@@ -64,7 +65,7 @@ export default function GachaDetailScreen() {
         icon="chevron-back"
         variant="surface"
         label={t("common.back")}
-        onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
+        onPress={goBackOrHome}
         style={{ position: "absolute", top: insets.top + space[16], left: space[20] }}
       />
     </View>

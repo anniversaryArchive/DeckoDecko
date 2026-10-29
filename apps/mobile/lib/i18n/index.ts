@@ -34,14 +34,18 @@ export function followDeviceLanguage(locales: readonly Locale[]): void {
   if (i18n.language !== next) void i18n.changeLanguage(next);
 }
 
-/** 설정에서 언어를 고른다. 앱을 다시 켜도 이 언어로 시작한다. */
+/**
+ * 설정에서 언어를 고른다. 앱을 다시 켜도 이 언어로 시작한다.
+ * 지금 보이는 언어를 다시 고르면 아무것도 하지 않는다 (앱 전체가 다시 그려지지 않고, 기기 언어를 따르던 상태도 그대로다).
+ */
 export function chooseLanguage(language: Language): void {
+  if (i18n.resolvedLanguage === language) return;
   saveLanguagePreference(language);
   void i18n.changeLanguage(language);
 }
 
 export { i18n };
-export { languageOptions, languages, type Language } from "./types";
+export { isLanguage, languages, type Language } from "./types";
 export {
   formatDate,
   formatShortDate,

@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,12 +7,20 @@ import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Card, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
 import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIconButton";
-import { chooseLanguage, languageOptions } from "@/lib/i18n";
+import { chooseLanguage, isLanguage, type Language } from "@/lib/i18n";
+import { goBackOrHome } from "@/lib/routes";
 
 /** 목록 한 줄 높이 */
 const ROW_HEIGHT = 50;
 /** 고른 언어 옆 체크 */
 const CHECK_SIZE = 20;
+
+/** 언어 목록. 이름은 그 언어로 적어서 어느 언어로 보든 같다. comingSoon 은 번역 전이라 고를 수 없다. */
+const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSoon?: true }[] = [
+  { code: "ko", name: "한국어" },
+  { code: "en", name: "English" },
+  { code: "ja", name: "日本語", comingSoon: true },
+];
 
 /** 설정 (시안 B_Settings). 1.0 은 언어만 고른다. 홈 머리글의 설정 버튼으로 들어온다. */
 export default function SettingsScreen() {
@@ -35,7 +42,7 @@ export default function SettingsScreen() {
           icon="chevron-back"
           variant="outline"
           label={t("common.back")}
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
+          onPress={goBackOrHome}
         />
         <Text variant="titleLg" accessibilityRole="header">
           {t("settings.title")}
@@ -72,16 +79,16 @@ function LanguageSection() {
       </Text>
       <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>
         <View accessibilityRole="radiogroup" accessibilityLabel={t("settings.language")}>
-          {languageOptions.map((option, i) => {
+          {LANGUAGE_OPTIONS.map((option, i) => {
             const selected = option.code === i18n.resolvedLanguage;
             const disabled = option.comingSoon === true;
-            const last = i === languageOptions.length - 1;
+            const last = i === LANGUAGE_OPTIONS.length - 1;
             return (
               <Pressable
                 key={option.code}
                 disabled={disabled}
                 onPress={() => {
-                  if (option.code !== "ja") chooseLanguage(option.code);
+                  if (isLanguage(option.code)) chooseLanguage(option.code);
                 }}
                 accessibilityRole="radio"
                 accessibilityState={{ checked: selected, disabled }}

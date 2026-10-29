@@ -187,8 +187,7 @@ export const en: Messages = {
     title: "Settings",
     language: "Language",
     comingSoon: "Coming soon",
-    languageHint:
-      "Gacha names are shown in your language, or in the original Japanese if there's no translation.",
+    languageHint: "Gacha names are shown in their original Japanese.",
   },
   feedback: {},
 };

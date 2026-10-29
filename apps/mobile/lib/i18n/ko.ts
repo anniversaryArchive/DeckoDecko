@@ -232,7 +232,7 @@ export const ko = {
     language: "언어",
     comingSoon: "준비 중",
     languageHint:
-      "가챠 이름은 선택한 언어로 보여주고, 번역이 없으면 원래 이름(일본어)으로 표시해요.",
+      "한국어를 고르면 한국어 이름(없으면 일본어 원래 이름)으로, 다른 언어는 일본어 원래 이름으로 보여요.",
   },
   feedback: {},
 } as const;
