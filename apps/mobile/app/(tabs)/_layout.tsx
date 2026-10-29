@@ -3,7 +3,6 @@ import { Tabs } from "expo-router";
 import { useEffect, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard, Platform, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { space, useTheme } from "@deckodecko/ui";
 import { TabBar } from "@deckodecko/ui/native";
@@ -38,9 +37,8 @@ export default function TabsLayout() {
  * 공용 TabBar 를 탭 내비게이션에 잇는다 (시안 B_Home 의 떠 있는 알약형).
  * 화면 위에 겹치지 않고 화면 아래에 자리를 차지하므로, 탭 화면은 아래 여백을 따로 두지 않는다.
  */
-function AppTabBar({ state, descriptors, navigation }: TabBarRenderProps) {
+function AppTabBar({ state, descriptors, navigation, insets }: TabBarRenderProps) {
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const keyboardVisible = useKeyboardVisible();
   // Android 는 키보드가 화면을 줄여 바가 키보드 바로 위로 올라오므로 숨긴다 (iOS 는 키보드가 바를 덮는다)
   if (keyboardVisible) return null;
