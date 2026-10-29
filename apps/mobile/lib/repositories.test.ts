@@ -1,4 +1,11 @@
+import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// expo-crypto 는 react-native 를, AsyncStorage 는 window.localStorage 를 찾아서 node 에서 돌지 않는다
+vi.mock("expo-crypto", () => ({ randomUUID }));
+vi.mock("@react-native-async-storage/async-storage", async () => ({
+  default: (await import("@deckodecko/core")).createMemoryKeyValueStorage(),
+}));
 
 const SUPABASE_ENV = {
   EXPO_PUBLIC_SUPABASE_URL: "http://localhost:54321",
@@ -57,6 +64,21 @@ describe("앱 저장소 묶음", () => {
     expect(await repositories.items.getItem(created.id)).toMatchObject({
       gachaId: "1",
       type: "WISH",
+    });
+  });
+
+  it("Supabase 모드: 상세 조회 로그는 기기 UUID 와 함께 RPC 로 보내고, 같은 날 같은 가챠는 한 번만 보낸다", async () => {
+    const repositories = await loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "", ...SUPABASE_ENV });
+
+    await repositories.viewLog.logGachaView("7");
+    await repositories.viewLog.logGachaView("7");
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    const [url, init] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toContain("localhost:54321/rest/v1/rpc/log_gacha_view");
+    expect(JSON.parse(String(init?.body))).toEqual({
+      p_gacha_id: 7,
+      p_device_id: expect.stringMatching(/^[0-9a-f-]{36}$/),
     });
   });
 

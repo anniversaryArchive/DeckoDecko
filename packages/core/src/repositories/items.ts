@@ -37,6 +37,8 @@ export interface ItemRepository {
   countItems(params?: { gachaId?: string }): Promise<ItemCounts>;
   /** 폴더 id → 기록 수 (WISH · GET 합). 기록이 없는 폴더는 빠진다 */
   countItemsByFolder(): Promise<Record<string, number>>;
+  /** 가챠 id → WISH · GET 개수 (가챠별 소장률). 기록이 없는 가챠는 빠진다 */
+  countItemsByGacha(): Promise<Record<string, ItemCounts>>;
   createItem(input: CreateItemInput): Promise<Item>;
   /** 없는 id 면 던진다. WISH ↔ GET 전환도 이것으로 한다 ({ type }) */
   updateItem(id: string, input: UpdateItemInput): Promise<Item>;

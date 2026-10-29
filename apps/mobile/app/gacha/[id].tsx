@@ -19,6 +19,7 @@ import {
   useGacha,
   useItemCounts,
   useItems,
+  useLogGachaView,
   useRecordRecentGacha,
   useSetItemType,
 } from "@deckodecko/core/react";
@@ -51,6 +52,7 @@ export default function GachaDetailScreen() {
   const gacha = useGacha(id);
   // 없는 가챠(잘못된 링크)가 최근 본 굿즈 자리를 차지하지 않게, 불러온 가챠의 id 로 남긴다
   useRecordRecentGacha(gacha.data?.id);
+  useLogGachaView(gacha.data?.id);
 
   return (
     <View style={{ flex: 1 }}>

@@ -43,3 +43,29 @@ export function gachaCollection(counts: ItemCounts, lineupTotal: number): GachaC
     rate: total === 0 ? 0 : Math.floor((get * 100) / total),
   };
 }
+
+/** 가챠 하나의 소장률 (useGachaCollections) */
+export type GachaCollectionRate = {
+  /** 이 가챠의 기록 수 그대로. 라인업 수로 자르지 않는다 */
+  counts: ItemCounts;
+  /** 라인업 수로 자른 소장 현황. 라인업 수를 모르거나(카탈로그에 없는 가챠) 0 이면 null */
+  collection: GachaCollection | null;
+};
+
+/**
+ * 가챠 id 마다 로컬 기록 수와 원격 라인업 수를 합쳐 소장률을 만든다. ids 에 있는 가챠만, 기록이 없어도 넣는다.
+ * lineups 는 가챠 id → 가챠 (useGachasByIds). 빠진 id 는 라인업 수를 모르는 것으로 본다.
+ */
+export function gachaCollectionRates(
+  ids: readonly string[],
+  countsByGacha: Readonly<Record<string, ItemCounts>>,
+  lineups: ReadonlyMap<string, { itemCount: number | null }>
+): Record<string, GachaCollectionRate> {
+  return Object.fromEntries(
+    ids.map((id) => {
+      const counts = countsByGacha[id] ?? { wish: 0, get: 0 };
+      const lineup = lineups.get(id)?.itemCount;
+      return [id, { counts, collection: lineup ? gachaCollection(counts, lineup) : null }] as const;
+    })
+  );
+}
