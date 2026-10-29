@@ -114,9 +114,14 @@ grant execute on function "public"."submit_feedback"(uuid, text, text, text, big
 
 -- ─────────────────────────────────────────────
 -- 3. 내 문의: list_my_feedback
---    그 기기 UUID 의 문의만, 최신순 50건. admin_note(내부 메모)와 device_uuid 는 돌려주지 않는다.
+--    그 기기 UUID 의 문의만, 최신순. admin_note(내부 메모)와 device_uuid 는 돌려주지 않는다.
+--    limit · offset 은 검색 RPC 와 같은 규칙: limit 은 1 미만 · null 이면 기본 20, 상한 50. offset 은 0 미만 · null 이면 0.
 -- ─────────────────────────────────────────────
-create or replace function "public"."list_my_feedback"(p_device_uuid uuid)
+create or replace function "public"."list_my_feedback"(
+  p_device_uuid uuid,
+  p_limit       int default 20,
+  p_offset      int default 0
+)
 returns table (
   id             bigint,
   kind           text,
@@ -140,8 +145,9 @@ as $$
   from public.feedback f
   where f.device_uuid = p_device_uuid
   order by f.created_at desc, f.id desc
-  limit 50
+  limit case when p_limit >= 1 then least(p_limit, 50) else 20 end
+  offset case when p_offset >= 0 then p_offset else 0 end
 $$;
 
-revoke all on function "public"."list_my_feedback"(uuid) from public;
-grant execute on function "public"."list_my_feedback"(uuid) to "anon", "authenticated";
+revoke all on function "public"."list_my_feedback"(uuid, int, int) from public;
+grant execute on function "public"."list_my_feedback"(uuid, int, int) to "anon", "authenticated";
