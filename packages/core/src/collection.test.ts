@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { gachaCollection } from "./collection";
+import { gachaCollection, gachaCollectionRates } from "./collection";
 
 describe("gachaCollection", () => {
   it("가진 수 / 전체 종, 나머지는 WISH · 미등록으로 나눈다", () => {
@@ -84,5 +84,43 @@ describe("gachaCollection", () => {
       missing: 0,
       rate: 50,
     });
+  });
+});
+
+describe("gachaCollectionRates", () => {
+  const lineups = (entries: Record<string, number | null>) =>
+    new Map(Object.entries(entries).map(([id, itemCount]) => [id, { itemCount }]));
+
+  it("ids 의 가챠마다 기록 수와 라인업으로 소장률을 만들고, 기록이 없는 가챠도 넣는다", () => {
+    const rates = gachaCollectionRates(
+      ["g1", "g2"],
+      { g1: { wish: 1, get: 3 }, other: { wish: 0, get: 9 } },
+      lineups({ g1: 6, g2: 5 })
+    );
+    expect(Object.keys(rates)).toEqual(["g1", "g2"]);
+    expect(rates.g1).toEqual({
+      counts: { wish: 1, get: 3 },
+      collection: gachaCollection({ wish: 1, get: 3 }, 6),
+    });
+    expect(rates.g1!.collection!.rate).toBe(50);
+    expect(rates.g2).toEqual({
+      counts: { wish: 0, get: 0 },
+      collection: gachaCollection({ wish: 0, get: 0 }, 5),
+    });
+  });
+
+  it("GET 이 라인업보다 많으면 소장률은 100 에서 멈추고, counts 는 그대로 둔다", () => {
+    const { g1 } = gachaCollectionRates(["g1"], { g1: { wish: 0, get: 7 } }, lineups({ g1: 6 }));
+    expect(g1!.counts.get).toBe(7);
+    expect(g1!.collection!.rate).toBe(100);
+  });
+
+  it("라인업 수를 모르거나(카탈로그에 없음 · null) 0 이면 collection 은 null", () => {
+    const counts = { g1: { wish: 0, get: 1 }, g2: { wish: 0, get: 1 }, g3: { wish: 0, get: 1 } };
+    const rates = gachaCollectionRates(["g1", "g2", "g3"], counts, lineups({ g2: null, g3: 0 }));
+    expect(rates.g1!.collection).toBeNull();
+    expect(rates.g2!.collection).toBeNull();
+    expect(rates.g3!.collection).toBeNull();
+    expect(rates.g1!.counts).toEqual({ wish: 0, get: 1 });
   });
 });

@@ -1,16 +1,21 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { randomUUID } from "expo-crypto";
 
 import {
   createMemoryGachaRepository,
   createMemoryNoticeRepository,
+  createMemoryViewLogRepository,
+  createStorageDeviceId,
   createSupabaseClient,
   createSupabaseGachaRepository,
   createStoragePreferencesRepository,
   createStorageRecentRepository,
+  createSupabaseViewLogRepository,
   type LocalRepositories,
   type PreferencesRepository,
   type RecentRepository,
   type Repositories,
+  type ViewLogRepository,
 } from "@deckodecko/core";
 import { mockCatalog, mockNotices } from "@deckodecko/core/mocks";
 
@@ -39,6 +44,10 @@ function createRepositories(): AppRepositories {
     gacha: createSupabaseGachaRepository(client),
     recent,
     preferences,
+    viewLog: createSupabaseViewLogRepository(
+      client,
+      createStorageDeviceId(AsyncStorage, randomUUID)
+    ),
     ...devNotice(),
     ...localRepositories,
   };
@@ -49,6 +58,7 @@ function createMockRepositories(): AppRepositories {
     gacha: createMemoryGachaRepository(mockCatalog),
     recent,
     preferences,
+    viewLog: createMemoryViewLogRepository(),
     ...devNotice(),
     ...localRepositories,
   };
@@ -59,8 +69,12 @@ function devNotice(): Pick<Repositories, "notice"> {
   return __DEV__ ? { notice: createMemoryNoticeRepository(mockNotices) } : {};
 }
 
-// Repositories 는 로컬 기록 · recent · preferences 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
+// Repositories 는 로컬 기록 · recent · preferences · viewLog 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
 type AppRepositories = Repositories &
-  LocalRepositories & { recent: RecentRepository; preferences: PreferencesRepository };
+  LocalRepositories & {
+    recent: RecentRepository;
+    preferences: PreferencesRepository;
+    viewLog: ViewLogRepository;
+  };
 
 export const repositories: AppRepositories = createRepositories();

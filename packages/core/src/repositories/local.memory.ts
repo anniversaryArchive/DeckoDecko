@@ -1,6 +1,7 @@
 import type { LocalRepositories } from ".";
 import type { Folder, Item } from "../types";
 import type { ListItemsParams } from "./items";
+import { toItemCounts, toItemCountsBy } from "../itemCounts";
 import { cleanName, normalizeName } from "../name";
 
 /**
@@ -45,17 +46,17 @@ export function createMemoryLocalRepositories(): LocalRepositories {
       },
 
       async countItems(params) {
-        const hits = items.filter((i) => matches(i, params));
-        return {
-          wish: hits.filter((i) => i.type === "WISH").length,
-          get: hits.filter((i) => i.type === "GET").length,
-        };
+        return toItemCounts(items.filter((i) => matches(i, params)));
       },
 
       async countItemsByFolder() {
         const counts: Record<string, number> = {};
         for (const i of items) counts[i.folderId] = (counts[i.folderId] ?? 0) + 1;
         return counts;
+      },
+
+      async countItemsByGacha() {
+        return toItemCountsBy(items, (i) => i.gachaId);
       },
 
       async createItem(input) {

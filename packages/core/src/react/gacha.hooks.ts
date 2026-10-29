@@ -7,7 +7,7 @@ import {
   useQuery,
   type InfiniteData,
 } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import { flattenPages, nextPageOffset } from "../pagination";
 import { queryKeys } from "../queryKeys";
@@ -104,4 +104,17 @@ export function useGachasByIds(ids: readonly string[]) {
 
 function toGachaMap(list: Gacha[]): Map<string, Gacha> {
   return new Map(list.map((g) => [g.id, g]));
+}
+
+/**
+ * 가챠 상세에 들어갈 때 조회 로그를 남긴다 (상세 화면에서 한 번 부른다). useRecordRecentGacha 처럼 불러온 가챠의 id 를 넘긴다.
+ * 같은 날 같은 가챠는 저장소가 한 번만 보낸다. 실패해도 화면에는 알리지 않는다 (다음 진입 때 다시 보낸다).
+ * CoreProvider 에 viewLog 가 없으면 아무것도 하지 않는다.
+ */
+export function useLogGachaView(id: string | undefined) {
+  const { viewLog } = useRepositories();
+  useEffect(() => {
+    if (!id || !viewLog) return;
+    viewLog.logGachaView(id).catch(() => undefined);
+  }, [id, viewLog]);
 }

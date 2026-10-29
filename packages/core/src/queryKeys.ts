@@ -37,6 +37,7 @@ export const queryKeys = {
     detail: (id: string) => ["items", "detail", id] as const,
     counts: (gachaId: string | null) => ["items", "counts", gachaId] as const,
     countsByFolder: () => ["items", "countsByFolder"] as const,
+    countsByGacha: () => ["items", "countsByGacha"] as const,
     nameTaken: (gachaId: string, name: string, excludeId: string | null) =>
       ["items", "nameTaken", gachaId, name, excludeId] as const,
   },

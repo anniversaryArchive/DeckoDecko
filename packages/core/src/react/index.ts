@@ -12,8 +12,10 @@ export {
   useGachaList,
   useGachaSearchPages,
   useGachasByIds,
+  useLogGachaView,
   usePopularGacha,
 } from "./gacha.hooks";
+export { useGachaCollections } from "./gachaCollection.hooks";
 export { useHomeNotices, useNotice, useNotices } from "./notice.hooks";
 export {
   useCreateItem,

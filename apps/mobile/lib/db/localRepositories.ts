@@ -1,6 +1,8 @@
 import {
   cleanName,
   normalizeName,
+  toItemCounts,
+  toItemCountsBy,
   type Folder,
   type Item,
   type ListItemsParams,
@@ -61,8 +63,7 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .from(items)
           .where(itemFilter({ gachaId: params?.gachaId }))
           .groupBy(items.type);
-        const of = (type: Item["type"]) => rows.find((r) => r.type === type)?.n ?? 0;
-        return { wish: of("WISH"), get: of("GET") };
+        return toItemCounts(rows);
       },
 
       async countItemsByFolder() {
@@ -71,6 +72,14 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .from(items)
           .groupBy(items.folderId);
         return Object.fromEntries(rows.map((r) => [r.folderId, r.n]));
+      },
+
+      async countItemsByGacha() {
+        const rows = await db
+          .select({ gachaId: items.gachaId, type: items.type, n: count() })
+          .from(items)
+          .groupBy(items.gachaId, items.type);
+        return toItemCountsBy(rows, (r) => r.gachaId);
       },
 
       async createItem(input) {
