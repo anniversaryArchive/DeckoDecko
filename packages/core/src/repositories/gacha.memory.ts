@@ -1,5 +1,5 @@
 import type { Gacha, GachaDetail } from "../types";
-import { count, GACHA_DEFAULTS, resolveGachaFilter, toYearMonth } from "./gacha";
+import { count, GACHA_DEFAULTS, releaseStatus, resolveGachaFilter, toYearMonth } from "./gacha";
 import type {
   GachaRepository,
   GachaRepositoryOptions,
@@ -19,8 +19,7 @@ function toSummary(detail: GachaDetail): Gacha {
 }
 
 function matchesFilter(g: Gacha, filter: ResolvedGachaFilter, thisMonth: string): boolean {
-  if (filter.release === "new" && g.releaseMonth !== thisMonth) return false;
-  if (filter.release === "upcoming" && !(g.releaseMonth != null && g.releaseMonth > thisMonth)) {
+  if (filter.release !== "all" && releaseStatus(g.releaseMonth, thisMonth) !== filter.release) {
     return false;
   }
   if (filter.mediaId != null && g.media?.id !== filter.mediaId) return false;

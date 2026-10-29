@@ -25,6 +25,9 @@ export const ko = {
     released: "{{month}} 발매",
     itemTotal: "전 {{total}}",
     cancel: "취소",
+    // 카드 사진 위 배지 (이번 달 발매 · 다음 달 이후 발매)
+    badgeNew: "NEW",
+    badgeUpcoming: "발매 예정",
     close: "닫기",
     // 입력창 지우기 버튼 (화면 읽기 프로그램이 읽는다)
     clear: "지우기",
@@ -69,6 +72,10 @@ export const ko = {
     noResultHint: "작품명이나 상품명 일부만 입력해 보세요.\n아직 등록되지 않은 가챠일 수도 있어요.",
     // 등록 요청 화면이 생기기 전까지 버튼은 자리만 있고 눌리지 않는다.
     requestRegistration: "이 가챠 등록 요청하기",
+    // 결과 없음의 추천 검색어 칩 위 문구 (인기 가챠의 작품명)
+    suggestionTitle: "이렇게 검색해 보세요",
+    // 결과를 볼 때 제목 옆. 신상품 · 발매 예정의 기준일 (date 는 formatDate)
+    asOf: "{{date}} 기준",
     // 필터 때문에 0개일 때. 등록 요청 대신 필터를 풀게 한다.
     noFilteredResult: "조건에 맞는 결과가 없어요",
     noFilteredResultHint: "필터를 바꾸거나 초기화해 보세요.",

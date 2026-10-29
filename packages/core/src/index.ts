@@ -32,7 +32,12 @@ export type {
   ResolvedGachaFilter,
   SearchGachaParams,
 } from "./repositories/gacha";
-export { GACHA_DEFAULTS, resolveGachaFilter, toYearMonth } from "./repositories/gacha";
+export {
+  GACHA_DEFAULTS,
+  releaseStatus,
+  resolveGachaFilter,
+  toYearMonth,
+} from "./repositories/gacha";
 export { flattenPages, nextPageOffset } from "./pagination";
 export type {
   CreateItemInput,

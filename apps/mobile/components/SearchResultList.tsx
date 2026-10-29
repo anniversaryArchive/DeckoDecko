@@ -4,7 +4,7 @@ import { FlatList, Pressable, ScrollView, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import type { GachaFilter, GachaReleaseFilter, GachaSort } from "@deckodecko/core";
-import { useGachaSearchPages } from "@deckodecko/core/react";
+import { useGachaSearchPages, usePopularGacha } from "@deckodecko/core/react";
 import { gutter, space } from "@deckodecko/ui";
 import { Button, ChevronDownIcon, Chip, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
@@ -13,6 +13,7 @@ import { GachaCardSlot } from "@/components/GachaCardSlot";
 import { OptionSheet } from "@/components/OptionSheet";
 import { QueryState } from "@/components/QueryState";
 import { StateMessage } from "@/components/StateMessage";
+import { mediaTitle } from "@/lib/displayName";
 import {
   findPriceRange,
   PRICE_RANGES,
@@ -31,6 +32,8 @@ const END_REACHED_THRESHOLD = 0.5;
 const ANY_PRICE = "any";
 /** 결과 없음 안내가 나타나는 시간(ms). 로딩 문구에서 갑자기 바뀌지 않게. "동작 줄이기"가 켜져 있으면 Reanimated 가 건너뛴다 */
 const EMPTY_FADE_DURATION = 200;
+/** 결과 없음의 추천 검색어 칩 수 */
+const SUGGESTION_COUNT = 3;
 
 type Sheet = "sort" | "price" | null;
 
@@ -39,8 +42,15 @@ type Sheet = "sort" | "price" | null;
  * (필터가 걸려 있으면 필터 초기화, 아니면 등록 요청).
  * 칩 "전체 · 신상품 · 발매 예정" 은 발매 시기(하나만 고름), 작품 · 가격은 시트에서 고른다.
  * 필터 · 정렬은 검색어를 바꿔도 유지하고, 검색어를 비워 이 목록이 사라지면 처음으로 돌아간다.
+ * onSearch: 결과 없음의 추천 검색어 칩을 눌렀을 때 그 검색어로 다시 검색한다.
  */
-export function SearchResultList({ keyword }: { keyword: string }) {
+export function SearchResultList({
+  keyword,
+  onSearch,
+}: {
+  keyword: string;
+  onSearch: (keyword: string) => void;
+}) {
   const { t } = useTranslation();
   const [release, setRelease] = useState<GachaReleaseFilter>("all");
   const [priceMin, setPriceMin] = useState<number | null>(null);
@@ -186,11 +196,18 @@ export function SearchResultList({ keyword }: { keyword: string }) {
                     title={t("search.noResult", { keyword })}
                     description={t("search.noResultHint")}
                     action={
-                      // TODO(혜진): 등록 요청 화면이 생기면 연결한다. 그 전까지는 자리만 두고 누를 수 없다.
-                      // Button 은 기본으로 왼쪽(alignSelf: flex-start)에 붙어서 가운데로 둔다
-                      <Button variant="outline" size="md" disabled style={{ alignSelf: "center" }}>
-                        {t("search.requestRegistration")}
-                      </Button>
+                      <View style={{ alignItems: "center", gap: space[18] }}>
+                        <SuggestedSearches onSelect={onSearch} />
+                        {/* TODO(혜진): 등록 요청 화면이 생기면 연결한다. 그 전까지는 자리만 두고 누를 수 없다. */}
+                        <Button
+                          variant="outline"
+                          size="md"
+                          disabled
+                          style={{ alignSelf: "center" }}
+                        >
+                          {t("search.requestRegistration")}
+                        </Button>
+                      </View>
                     }
                   />
                 )}
@@ -233,6 +250,35 @@ export function SearchResultList({ keyword }: { keyword: string }) {
           setSheet(null);
         }}
       />
+    </View>
+  );
+}
+
+/** 결과 없음의 "이렇게 검색해 보세요": 인기 가챠의 작품명을 겹치지 않게 앞에서부터. 작품명이 하나도 없으면 그리지 않는다. */
+function SuggestedSearches({ onSelect }: { onSelect: (keyword: string) => void }) {
+  const { t, i18n } = useTranslation();
+  const popular = usePopularGacha();
+  const titles = [
+    ...new Set(
+      (popular.data ?? []).flatMap((g) => (g.media ? [mediaTitle(g.media, i18n.language)] : []))
+    ),
+  ].slice(0, SUGGESTION_COUNT);
+  if (titles.length === 0) return null;
+
+  return (
+    <View style={{ alignItems: "center", gap: space[8] }}>
+      <Text variant="caption" color="textMuted">
+        {t("search.suggestionTitle")}
+      </Text>
+      <View
+        style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: space[8] }}
+      >
+        {titles.map((title) => (
+          <Chip key={title} onPress={() => onSelect(title)}>
+            {title}
+          </Chip>
+        ))}
+      </View>
     </View>
   );
 }

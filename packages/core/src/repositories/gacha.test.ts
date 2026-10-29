@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveGachaFilter, toYearMonth } from "./gacha";
+import { releaseStatus, resolveGachaFilter, toYearMonth } from "./gacha";
 
 describe("resolveGachaFilter", () => {
   const empty = { release: "all", mediaId: null, priceMin: null, priceMax: null };
@@ -40,5 +40,15 @@ describe("toYearMonth", () => {
     expect(toYearMonth(new Date(2026, 0, 1))).toBe("2026-01");
     expect(toYearMonth(new Date(2026, 9, 31, 23, 59))).toBe("2026-10");
     expect(toYearMonth(new Date(2026, 11, 31))).toBe("2026-12");
+  });
+});
+
+describe("releaseStatus", () => {
+  it("이번 달은 new, 다음 달 이후는 upcoming, 지난 달 · 모름은 null", () => {
+    expect(releaseStatus("2026-10", "2026-10")).toBe("new");
+    expect(releaseStatus("2026-11", "2026-10")).toBe("upcoming");
+    expect(releaseStatus("2027-01", "2026-12")).toBe("upcoming");
+    expect(releaseStatus("2026-09", "2026-10")).toBeNull();
+    expect(releaseStatus(null, "2026-10")).toBeNull();
   });
 });

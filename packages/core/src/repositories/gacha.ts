@@ -70,6 +70,19 @@ export function toYearMonth(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
+/**
+ * 발매월이 기준 달(toYearMonth)에 비해 어디쯤인지. 신상품 · 발매 예정 필터와 카드 배지가 같이 쓴다.
+ * new: 이번 달 발매, upcoming: 다음 달 이후. 지난 발매 · 발매월 모름은 null.
+ */
+export function releaseStatus(
+  releaseMonth: string | null | undefined,
+  thisMonth: string
+): "new" | "upcoming" | null {
+  if (releaseMonth == null) return null;
+  if (releaseMonth === thisMonth) return "new";
+  return releaseMonth > thisMonth ? "upcoming" : null;
+}
+
 /** 저장소를 만들 때의 선택 사항 (메모리 · Supabase 구현 공통). */
 export type GachaRepositoryOptions = {
   /** 신상품 · 발매 예정의 기준 시각. 테스트에서 고정한다. 기본은 호출할 때의 현재 시각 */

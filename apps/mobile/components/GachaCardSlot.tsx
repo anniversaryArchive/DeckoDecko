@@ -1,7 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { Image } from "react-native";
 
-import type { Gacha } from "@deckodecko/core";
-import { GoodsCard } from "@deckodecko/ui/native";
+import { releaseStatus, toYearMonth, type Gacha } from "@deckodecko/core";
+import { GoodsCard, type GoodsCardBadge } from "@deckodecko/ui/native";
 
 import { joinDot, useGachaDisplay } from "@/hooks/useGachaDisplay";
 import { openGacha } from "@/lib/routes";
@@ -14,10 +15,19 @@ type Props = {
 
 /**
  * 가챠 한 종을 GoodsCard 로 그린다. 누르면 상세로 간다.
+ * 이번 달 발매면 "NEW", 다음 달 이후면 "발매 예정" 배지 (검색 필터의 신상품 · 발매 예정과 같은 기준, 기기 시간).
  * 이름은 GoodsCard 가 들어오기 전 자리 표시였을 때 그대로다 (다른 브랜치가 이 이름으로 import 한다).
  */
 export function GachaCardSlot({ gacha, layout }: Props) {
+  const { t } = useTranslation();
   const display = useGachaDisplay(gacha);
+  const status = releaseStatus(gacha.releaseMonth, toYearMonth(new Date()));
+  const badge: GoodsCardBadge | null =
+    status === "new"
+      ? { label: t("common.badgeNew"), tone: "accent" }
+      : status === "upcoming"
+        ? { label: t("common.badgeUpcoming"), tone: "get" }
+        : null;
   const common = {
     image: gacha.imageUrl ? (
       <Image
@@ -29,6 +39,7 @@ export function GachaCardSlot({ gacha, layout }: Props) {
     ) : null,
     caption: display.media,
     title: display.name,
+    badge,
     onPress: () => openGacha(gacha.id),
   };
   return layout === "horizontal" ? (

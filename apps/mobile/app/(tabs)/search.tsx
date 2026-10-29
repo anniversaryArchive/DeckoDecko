@@ -20,6 +20,7 @@ import { SearchResultList } from "@/components/SearchResultList";
 import { SectionHeader } from "@/components/SectionHeader";
 import { StateMessage } from "@/components/StateMessage";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { formatDate } from "@/lib/i18n";
 
 /**
  * 검색. 상단(제목 + 입력창)은 고정이고, 아래 영역이 검색어 유무에 따라 검색 전 화면(최근 기록 · 인기) ↔ 결과 목록으로 바뀐다.
@@ -46,7 +47,7 @@ export default function SearchScreen() {
     Keyboard.dismiss();
   };
   const submit = () => search(input);
-  // 최근 검색어 칩: 입력창을 그 검색어로 채우고 바로 검색한다
+  // 최근 검색어 · 추천 검색어 칩: 입력창을 그 검색어로 채우고 바로 검색한다
   const searchRecent = (text: string) => {
     setInput(text);
     search(text);
@@ -62,14 +63,24 @@ export default function SearchScreen() {
           gap: space[14],
         }}
       >
-        <Text variant="headingMd" accessibilityRole="header">
-          {t("search.title")}
-        </Text>
+        <View
+          style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
+        >
+          <Text variant="headingMd" accessibilityRole="header">
+            {t("search.title")}
+          </Text>
+          {/* 신상품 · 발매 예정 · NEW 배지가 오늘(기기 시간) 기준이라 결과를 볼 때만 알린다 */}
+          {keyword ? (
+            <Text variant="caption" color="textMuted">
+              {t("search.asOf", { date: formatDate(new Date()) })}
+            </Text>
+          ) : null}
+        </View>
         <SearchBar value={input} onChangeText={setInput} onSubmit={submit} />
       </View>
 
       {keyword ? (
-        <SearchResultList keyword={keyword} />
+        <SearchResultList keyword={keyword} onSearch={searchRecent} />
       ) : (
         <BeforeSearch onSelectRecent={searchRecent} />
       )}
