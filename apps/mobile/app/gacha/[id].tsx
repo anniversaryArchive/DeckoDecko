@@ -91,18 +91,17 @@ function useToggleItemType() {
   function toggle(item: Item) {
     if (pending.current.has(item.id)) return;
     pending.current.add(item.id);
-    setType.mutate(
-      { id: item.id, type: item.type === "GET" ? "WISH" : "GET" },
-      {
-        onSettled: () => pending.current.delete(item.id),
-        onError: () =>
-          toast.show({
-            title: t("detail.saveFailed"),
-            actionLabel: t("common.retry"),
-            onAction: () => toggle(item),
-          }),
-      }
-    );
+    // mutate 의 두 번째 인자 콜백은 마지막 호출 것만 불려서, 기록마다 따로 끝나는 mutateAsync 를 쓴다
+    setType
+      .mutateAsync({ id: item.id, type: item.type === "GET" ? "WISH" : "GET" })
+      .catch(() =>
+        toast.show({
+          title: t("detail.saveFailed"),
+          actionLabel: t("common.retry"),
+          onAction: () => toggle(item),
+        })
+      )
+      .finally(() => pending.current.delete(item.id));
   }
   return toggle;
 }
