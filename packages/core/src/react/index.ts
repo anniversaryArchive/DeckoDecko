@@ -6,6 +6,7 @@
  */
 export { CoreProvider, useLocalRepositories, useRepositories } from "./provider";
 export { createQueryClient } from "./queryClient";
+export { setOnlineListener, useIsOnline } from "./network";
 export {
   useGacha,
   useGachaList,

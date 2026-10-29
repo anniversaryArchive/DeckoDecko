@@ -36,6 +36,9 @@ export const ko = {
     clear: "지우기",
     // 토스트(ToastProvider)의 iOS 화면 읽기 안내. 동작 결과를 적는다 (제스처 이름은 VoiceOver 가 붙인다)
     closeToastHint: "알림을 닫아요",
+    // 오프라인: 화면 위 배너 한 줄, 캐시가 없는 화면의 안내 (QueryState). 배너가 늘 같이 떠서 안내는 "오프라인"을 다시 말하지 않는다
+    offline: "오프라인 상태예요",
+    offlineLoad: "인터넷에 연결되면 자동으로 불러와요.",
   },
   startup: {
     // 로컬 DB 마이그레이션 실패 (루트 레이아웃의 실패 화면)
