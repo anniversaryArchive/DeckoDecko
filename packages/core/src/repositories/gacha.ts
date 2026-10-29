@@ -8,6 +8,8 @@ export const GACHA_DEFAULTS = {
   listLimit: 20,
   popularLimit: 10,
   searchLimit: 20,
+  /** 검색 한 번에 받는 최대 개수. 검색 RPC 와 같은 상한 */
+  searchLimitMax: 100,
   searchOffset: 0,
   /** 검색 결과 무한 스크롤의 한 페이지 */
   searchPageSize: 10,
@@ -96,17 +98,17 @@ export type ListGachaParams = {
 };
 
 export type SearchGachaParams = {
-  keyword: string; // 가챠 이름(한 · 일) · 작품명을 함께 검색한다
+  keyword: string; // 가챠 이름(한 · 일) · 작품명(한 · 일 · 영) · 작품 별칭을 함께 검색한다
   filter?: GachaFilter;
   sort?: GachaSort; // 기본 release
-  limit?: number; // 기본 20
+  limit?: number; // 기본 20, 상한 100 (넘으면 100)
   offset?: number; // 기본 0
 };
 
 /**
  * 가챠 카탈로그 읽기. 화면은 이 인터페이스의 훅(./react)만 쓰고 구현을 모른다.
  *   1주차: createMemoryGachaRepository (앱의 목 데이터)
- *   2주차: createSupabaseGachaRepository (Supabase, 검색 · 인기는 3주차 RPC 로 교체)
+ *   2주차: createSupabaseGachaRepository (Supabase. 검색 · 인기는 RPC)
  */
 export interface GachaRepository {
   listGacha(params?: ListGachaParams): Promise<Gacha[]>; // 최신순 목록 (홈 "새로 나왔어요")
