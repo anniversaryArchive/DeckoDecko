@@ -16,5 +16,6 @@
 node -e 'require("sharp")(process.argv[1]).resize(+process.argv[2]).flatten().png().toFile(process.argv[1].replace(".svg", ".png"))' splash.svg 512
 ```
 
-- `splash` 에 투명한 곳이 있으면 `expo-splash-screen` 이 크기를 줄일 때 반투명 가장자리가 검게 변해 회색 테두리가 보인다.
+- `splash` 에 투명한 곳이 있으면 `expo-splash-screen` 이 이미지를 다시 만들 때 반투명 가장자리가 검게 변해 회색 테두리가 보인다. SVG 맨 앞의 배경 사각형은 지우지 않는다 (`.flatten()` 은 투명한 곳을 검정으로 채운다).
+- PNG 는 sharp 0.35.5 로 만들었다. mobile 의존성이 아니라 `apps/admin` 의 `next` 를 통해 들어온다.
 - 브랜드 색은 `app.json`(`adaptiveIcon.backgroundColor` · 스플래시 `backgroundColor`), 이 폴더의 SVG, `packages/ui/src/tokens.ts`(`cream` · `blush` 등)에 따로 적혀 있다. 하나를 바꾸면 나머지도 같이 고친다.
