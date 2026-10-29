@@ -6,6 +6,7 @@ import { queryKeys } from "../queryKeys";
 import type { PreferencesRepository } from "../repositories/preferences";
 import type { GoodsViewMode } from "../types";
 import { useRepositories } from "./provider";
+import { localNetworkMode } from "./queryClient";
 
 /** 기기 설정 저장소. CoreProvider 에 preferences 를 넘기지 않은 앱(백오피스)에서 쓰면 던진다. */
 function usePreferencesRepository(): PreferencesRepository {
@@ -20,6 +21,7 @@ function usePreferencesRepository(): PreferencesRepository {
 export function useGoodsViewMode() {
   const preferences = usePreferencesRepository();
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.preferences.goodsViewMode(),
     queryFn: () => preferences.getGoodsViewMode(),
     // 이 기기에서만 바뀌는 값이라 다시 읽을 일이 없다
@@ -35,6 +37,7 @@ export function useSetGoodsViewMode() {
   const preferences = usePreferencesRepository();
   const queryClient = useQueryClient();
   return useMutation({
+    ...localNetworkMode,
     mutationFn: (mode: GoodsViewMode) => preferences.setGoodsViewMode(mode),
     onMutate: async (mode) => {
       const queryKey = queryKeys.preferences.goodsViewMode();

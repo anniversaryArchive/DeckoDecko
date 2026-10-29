@@ -12,6 +12,7 @@ import { useMemo } from "react";
 import { flattenPages, nextPageOffset } from "../pagination";
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
+import { serverNetworkMode } from "./queryClient";
 import { GACHA_DEFAULTS, resolveGachaFilter, toYearMonth } from "../repositories/gacha";
 import type { GachaFilter, GachaSort } from "../repositories/gacha";
 import type { Gacha, Page } from "../types";
@@ -20,6 +21,7 @@ import type { Gacha, Page } from "../types";
 export function useGachaList(limit: number = GACHA_DEFAULTS.listLimit) {
   const { gacha } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.list(limit),
     queryFn: () => gacha.listGacha({ limit }),
   });
@@ -29,6 +31,7 @@ export function useGachaList(limit: number = GACHA_DEFAULTS.listLimit) {
 export function usePopularGacha(limit: number = GACHA_DEFAULTS.popularLimit) {
   const { gacha } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.popular(limit),
     queryFn: () => gacha.listPopularGacha(limit),
   });
@@ -38,6 +41,7 @@ export function usePopularGacha(limit: number = GACHA_DEFAULTS.popularLimit) {
 export function useGacha(id: string | undefined) {
   const { gacha } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.detail(id ?? ""),
     queryFn: id ? () => gacha.getGacha(id) : skipToken,
   });
@@ -63,6 +67,7 @@ export function useGachaSearchPages(
   const sort = options?.sort ?? GACHA_DEFAULTS.searchSort;
   const pageSize = options?.pageSize ?? GACHA_DEFAULTS.searchPageSize;
   return useInfiniteQuery({
+    ...serverNetworkMode,
     // 기준 달을 키에 넣어 달이 바뀌면 새로 받는다 (안 그러면 지난달 신상품 결과가 캐시에서 그대로 나온다)
     queryKey: queryKeys.gacha.searchPages(trimmed, filter, sort, pageSize, toYearMonth(new Date())),
     queryFn: trimmed
@@ -88,6 +93,7 @@ export function useGachasByIds(ids: readonly string[]) {
   // 순서만 다른 목록이 다른 키로 두 번 캐시되지 않게 정렬해서 키로 쓴다
   const key = useMemo(() => [...new Set(ids)].sort(), [ids]);
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.byIds(key),
     queryFn: key.length > 0 ? () => gacha.listGachaByIds(key) : skipToken,
     // 기록을 모두 지워 빈 목록이 되면 이전 결과도 지운다 (keepPreviousData 는 꺼진 쿼리에도 마지막 결과를 돌려준다)
