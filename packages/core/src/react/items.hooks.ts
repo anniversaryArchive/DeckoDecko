@@ -126,6 +126,20 @@ function findPendingTypes(queryClient: QueryClient, id: string): ItemType[] {
 }
 
 /**
+ * 저장된 WISH · GET. 저장이 끝난 직후에는 받은 item 이 아직 다시 그려지기 전의 옛 값일 수 있어, 가장 최근에 읽은 목록 캐시를 먼저 본다.
+ */
+function savedItemType(queryClient: QueryClient, item: Pick<Item, "id" | "type">): ItemType {
+  let latest: { type: ItemType; at: number } | undefined;
+  const lists = queryClient.getQueriesData<Item[]>({ queryKey: queryKeys.items.lists });
+  for (const [queryKey, data] of lists) {
+    const at = queryClient.getQueryState(queryKey)?.dataUpdatedAt ?? 0;
+    const found = latest && latest.at >= at ? undefined : data?.find((i) => i.id === item.id);
+    if (found) latest = { type: found.type, at };
+  }
+  return latest?.type ?? item.type;
+}
+
+/**
  * WISH · GET 바꾸기. 모든 호출이 한 scope 라 아이템이 달라도 부른 순서대로 하나씩 저장된다.
  * 같은 아이템의 저장이 뒤에 대기 중이면 다시 읽기(invalidate)는 마지막 저장이 끝날 때 한 번만 한다 (연타할 때 소장률이 중간 값으로 갔다 돌아오지 않게).
  * 태그 원탭 전환은 useToggleItemType · useDisplayedItemType 을 쓴다.
@@ -144,12 +158,14 @@ export function useSetItemType() {
       await invalidate();
     },
     scope: { id: "items.setType" },
+    // 끝난 전환은 아무도 읽지 않는다. 남아 있으면 행마다 캐시를 훑는 비용만 는다
+    gcTime: 0,
   });
 }
 
 /**
  * 화면에 보일 WISH · GET. 이 아이템의 전환이 저장 중이면 마지막으로 누른 값, 아니면 item.type.
- * mutation 캐시를 읽으므로 같은 아이템을 그리는 모든 화면이 같은 값을 보고, 값이 바뀐 행만 다시 그려진다.
+ * mutation 캐시를 읽으므로 같은 아이템을 그리는 모든 화면이 같은 값을 본다. 저장 중 값이 바뀌면 이 훅을 쓴 컴포넌트만 다시 그려진다.
  */
 export function useDisplayedItemType(item: Pick<Item, "id" | "type">): ItemType {
   const pending = useMutationState({
@@ -160,9 +176,10 @@ export function useDisplayedItemType(item: Pick<Item, "id" | "type">): ItemType 
 }
 
 /**
- * WISH ↔ GET 원탭 전환 (상세 내 아이템 · 내 굿즈 목록의 태그). 돌려주는 함수는 다시 그려도 바뀌지 않는다.
+ * WISH ↔ GET 원탭 전환 (태그). 돌려주는 함수는 다시 그려도 바뀌지 않는다.
  * 보이는 값(useDisplayedItemType)의 반대로 저장하므로, 빠르게 여러 번 눌러도 마지막으로 보인 상태로 저장된다.
- * 저장이 실패하면 onError 를 부르고 저장된 상태로 돌아간다. 부른 화면이 사라진 뒤의 실패에는 onError 를 부르지 않는다.
+ * 저장이 실패하면 저장된 상태로 돌아가고 onError 를 부른다. 같은 아이템의 저장이 뒤에 남아 있으면 그 결과가 화면을 정하므로 부르지 않는다.
+ * 부른 화면이 사라진 뒤의 실패에도 부르지 않는다.
  */
 export function useToggleItemType({ onError }: { onError?: (error: unknown) => void } = {}) {
   const queryClient = useQueryClient();
@@ -181,9 +198,12 @@ export function useToggleItemType({ onError }: { onError?: (error: unknown) => v
 
   return useCallback(
     (item: Pick<Item, "id" | "type">) => {
-      const shown = findPendingTypes(queryClient, item.id).at(-1) ?? item.type;
+      const shown =
+        findPendingTypes(queryClient, item.id).at(-1) ?? savedItemType(queryClient, item);
       mutateAsync({ id: item.id, type: shown === "GET" ? "WISH" : "GET" }).catch(
         (error: unknown) => {
+          // 실패한 저장은 이미 pending 이 아니라, 남은 것은 뒤에 누른 저장뿐이다
+          if (findPendingTypes(queryClient, item.id).length > 0) return;
           if (mounted.current) onErrorRef.current?.(error);
         }
       );

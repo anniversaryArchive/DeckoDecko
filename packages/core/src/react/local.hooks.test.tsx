@@ -316,19 +316,50 @@ describe("WISH ↔ GET 원탭 전환 훅", () => {
     expect((await repositories.items.getItem(a.id))?.type).toBe("GET");
   });
 
-  it("앞 저장이 실패해도 뒤 저장이 대기 중이면 마지막으로 누른 값이 보이고, 그 값으로 저장된다", async () => {
+  it("앞 저장이 실패해도 뒤 저장이 대기 중이면 마지막으로 누른 값이 보이고, 그 값으로 저장되며 onError 는 부르지 않는다", async () => {
     const repositories = memoryRepositories();
-    const { finish } = holdUpdates(repositories);
+    const { held, finish } = holdUpdates(repositories);
     const { result, onError, a } = await render(repositories);
 
     act(() => result.current.toggle(result.current.listedA()));
     act(() => result.current.toggle(result.current.listedA()));
     await finish(1, "fail");
-    await waitFor(() => expect(onError).toHaveBeenCalledOnce());
+    await waitFor(() => expect(held).toHaveLength(2));
     expect(result.current.shownA).toBe("WISH");
     await finish(2, "save");
     await waitFor(() => expect(result.current.staleA).toBe("WISH"));
     expect(result.current.shownA).toBe("WISH");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("앞뒤 저장이 모두 실패하면 처음 상태(WISH)로 돌아가고 onError 를 한 번 부른다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, onError, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedA()));
+    await finish(1, "fail");
+    await waitFor(() => expect(held).toHaveLength(2));
+    expect(onError).not.toHaveBeenCalled();
+    await finish(2, "fail");
+    await waitFor(() => expect(onError).toHaveBeenCalledOnce());
+    expect(result.current.shownA).toBe("WISH");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+  });
+
+  it("저장이 끝난 뒤 다시 그려지기 전의 옛 item 으로 눌러도, 저장된 값의 반대로 바꾼다", async () => {
+    const { result, a, repositories } = await render();
+    const update = vi.spyOn(repositories.items, "updateItem");
+    // 화면이 아직 다시 그려지지 않아 행이 들고 있는 값 (WISH)
+    const stale = result.current.listedA();
+
+    act(() => result.current.toggle(stale));
+    await waitFor(() => expect(result.current.listedA().type).toBe("GET"));
+    act(() => result.current.toggle(stale));
+    await waitFor(() => expect(update).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current.listedA().type).toBe("WISH"));
     expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
   });
 

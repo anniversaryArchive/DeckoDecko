@@ -219,7 +219,7 @@ export const ko = {
       "이 가챠의 소장 수가 <bold>{{from, number}} → {{to, number}}</bold>로 바뀌어요.",
     wishBadge: "WISH",
     getBadge: "GET",
-    // WISH · GET 태그 버튼의 화면 읽기 이름 · 힌트 (상세 내 아이템 · 내 굿즈 목록). type 은 wishBadge · getBadge 문구
+    // WISH · GET 태그 버튼의 화면 읽기 이름 · 힌트 (상세 내 아이템). type 은 wishBadge · getBadge 문구
     typeTagLabel: "{{name}}, 현재 {{type}}",
     toggleToGetHint: "누르면 GET 으로 바뀌어요",
     toggleToWishHint: "누르면 WISH 로 바뀌어요",

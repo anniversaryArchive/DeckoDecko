@@ -31,6 +31,7 @@ export const queryKeys = {
   },
   items: {
     all: ["items"] as const,
+    lists: ["items", "list"] as const,
     // 거르지 않는 조건은 null
     list: (gachaId: string | null, type: ItemType | null, folderId: string | null) =>
       ["items", "list", gachaId, type, folderId] as const,

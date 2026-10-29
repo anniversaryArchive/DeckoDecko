@@ -16,15 +16,20 @@ const AnimatedText = Animated.createAnimatedComponent(Text);
 /** 태그 글자 (i18n 키) */
 export const ITEM_TYPE_BADGE = { WISH: "item.wishBadge", GET: "item.getBadge" } as const;
 
+/** WISH · GET 면 색과 그 위 글자색 (색 역할 이름) */
+export const ITEM_TYPE_COLORS = {
+  WISH: { surface: "wishSurface", label: "onWish" },
+  GET: { surface: "getSurface", label: "onGet" },
+} as const;
+
 /**
  * WISH · GET 면 색과 그 위 글자색. type 이 바뀌면 서서히 바뀐다 ("동작 줄이기"면 바로).
  * 한 행에서 한 번만 만들어 태그와 썸네일처럼 같은 색을 쓰는 면에 같이 넘긴다.
  */
 export function useItemTypeStyles(type: ItemType) {
   const { colors } = useTheme();
-  const isGet = type === "GET";
-  const surfaceColor = useColorTransition(isGet ? colors.getSurface : colors.wishSurface);
-  const labelColor = useColorTransition(isGet ? colors.onGet : colors.onWish);
+  const surfaceColor = useColorTransition(colors[ITEM_TYPE_COLORS[type].surface]);
+  const labelColor = useColorTransition(colors[ITEM_TYPE_COLORS[type].label]);
   const surface = useAnimatedStyle(() => ({ backgroundColor: surfaceColor.value }));
   const label = useAnimatedStyle(() => ({ color: labelColor.value }));
   return { surface, label };
@@ -44,7 +49,7 @@ type Props = {
 };
 
 /**
- * 누르면 WISH ↔ GET 이 바뀌는 태그 버튼 (상세 내 아이템 · 내 굿즈 목록).
+ * 누르면 WISH ↔ GET 이 바뀌는 태그 버튼 (상세 내 아이템).
  * 화면 읽기 프로그램은 이름과 현재 상태를 읽고, 힌트로 누르면 바뀌는 상태를 읽는다.
  */
 export function ItemTypeTag({ type, name, styles, onPress }: Props) {

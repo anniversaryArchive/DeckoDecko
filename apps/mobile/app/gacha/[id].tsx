@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, {
@@ -98,10 +98,11 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   /** 수정할 기록. 비어 있으면 추가 시트 */
   const [sheetItemId, setSheetItemId] = useState<string | undefined>();
-  function openSheet(itemId?: string) {
+  // MyItems 의 행(MyItemRow)이 memo 라 고정된 함수로 넘긴다
+  const openSheet = useCallback((itemId?: string) => {
     setSheetItemId(itemId);
     setSheetOpen(true);
-  }
+  }, []);
 
   // 히어로가 상태 표시줄 뒤까지 깔려 있어 GACHA_HERO_HEIGHT 만큼 스크롤하면 히어로 끝이 상태 표시줄 아래 선에 닿는다
   const scrollY = useSharedValue(0);
@@ -170,7 +171,7 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
 
         <View style={{ paddingHorizontal: gutter, gap: space[18] }}>
           <DetailCollection gacha={gacha} />
-          <MyItems gachaId={gacha.id} onPressItem={(itemId) => openSheet(itemId)} />
+          <MyItems gachaId={gacha.id} onPressItem={openSheet} />
         </View>
       </Animated.ScrollView>
       <Animated.View
@@ -284,8 +285,8 @@ function MyItems({
                   item={item}
                   detail={joinDot([folderName(item), item.memo ? t("detail.hasMemo") : null])}
                   last={i === list.length - 1}
-                  onPress={() => onPressItem(item.id)}
-                  onToggleType={() => toggleType(item)}
+                  onPress={onPressItem}
+                  onToggleType={toggleType}
                 />
               ))}
             </LayoutAnimationConfig>
