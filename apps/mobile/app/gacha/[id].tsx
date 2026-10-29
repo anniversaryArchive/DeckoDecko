@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, {
@@ -28,6 +28,7 @@ import { Button, Card, Text, useToast } from "@deckodecko/ui/native";
 import { GachaCollectionCard } from "@/components/GachaCollectionCard";
 import { GACHA_HERO_HEIGHT, GachaHero } from "@/components/GachaHero";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { ItemSheet } from "@/components/ItemSheet";
 import { MyItemRow } from "@/components/MyItemRow";
 import { QueryState } from "@/components/QueryState";
 import { StateMessage } from "@/components/StateMessage";
@@ -70,14 +71,6 @@ export default function GachaDetailScreen() {
   );
 }
 
-type SheetCallbacks = {
-  /** 시트가 저장에 실패하고 닫힐 때 부른다. reason 은 토스트 둘째 줄 ("잠시 뒤 다시 시도해 주세요.") */
-  onSaveFailed: (reason: string) => void;
-};
-
-// TODO(혜진): 아이템 추가 · 수정 시트가 병합되면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
-function openAddItemSheet(_gachaId: string, _callbacks: SheetCallbacks) {}
-function openEditItemSheet(_itemId: string, _callbacks: SheetCallbacks) {}
 // TODO(혜진): 사진 인식 화면이 생기면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
 function openAiScan(_gachaId: string) {}
 
@@ -102,8 +95,12 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
   // 가격 뒤에 붙는 보조 문구: "(세금 포함) · 전 6종". 가격이 없으면 종 수만.
   const priceTail = joinDot([pricePerPlay != null ? t("common.taxIncluded") : null, itemTotal]);
   const showSaveFailed = useSaveFailedToast();
-  function openAdd() {
-    openAddItemSheet(gacha.id, { onSaveFailed: (reason) => showSaveFailed(reason, openAdd) });
+  const [sheetOpen, setSheetOpen] = useState(false);
+  /** 수정할 기록. 비어 있으면 추가 시트 */
+  const [sheetItemId, setSheetItemId] = useState<string | undefined>();
+  function openSheet(itemId?: string) {
+    setSheetItemId(itemId);
+    setSheetOpen(true);
   }
 
   // 히어로가 상태 표시줄 뒤까지 깔려 있어 GACHA_HERO_HEIGHT 만큼 스크롤하면 히어로 끝이 상태 표시줄 아래 선에 닿는다
@@ -173,7 +170,7 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
 
         <View style={{ paddingHorizontal: gutter, gap: space[18] }}>
           <DetailCollection gacha={gacha} />
-          <MyItems gachaId={gacha.id} />
+          <MyItems gachaId={gacha.id} onPressItem={(itemId) => openSheet(itemId)} />
         </View>
       </Animated.ScrollView>
       <Animated.View
@@ -208,12 +205,22 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
         />
         <Button
           icon={<Ionicons name="add" size={ADD_ICON_SIZE} color={colors.onPrimary} />}
-          onPress={openAdd}
+          onPress={() => openSheet()}
           style={{ flex: 1 }}
         >
           {t("detail.addItem")}
         </Button>
       </View>
+      <ItemSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        gachaId={gacha.id}
+        itemId={sheetItemId}
+        onSaveFailed={(reason) => {
+          const reopenId = sheetItemId;
+          showSaveFailed(reason, () => openSheet(reopenId));
+        }}
+      />
     </View>
   );
 }
@@ -231,21 +238,22 @@ function DetailCollection({ gacha }: { gacha: GachaDetail }) {
 }
 
 /** 내 아이템: 이 가챠의 WISH · GET 기록 (최근에 추가한 것부터) */
-function MyItems({ gachaId }: { gachaId: string }) {
+function MyItems({
+  gachaId,
+  onPressItem,
+}: {
+  gachaId: string;
+  /** 행을 누르면 그 기록의 수정 시트를 연다 */
+  onPressItem: (itemId: string) => void;
+}) {
   const { t } = useTranslation();
   const items = useItems({ gachaId });
   const folderName = useFolderName();
-  const showSaveFailed = useSaveFailedToast();
   const toast = useToast();
   const toggleType = useToggleItemType({
     onError: () => toast.show({ title: t("item.toggleFailed") }),
   });
   const count = items.data?.length ?? 0;
-  function openEdit(itemId: string) {
-    openEditItemSheet(itemId, {
-      onSaveFailed: (reason) => showSaveFailed(reason, () => openEdit(itemId)),
-    });
-  }
 
   return (
     <View style={{ gap: space[10] }}>
@@ -276,7 +284,7 @@ function MyItems({ gachaId }: { gachaId: string }) {
                   item={item}
                   detail={joinDot([folderName(item), item.memo ? t("detail.hasMemo") : null])}
                   last={i === list.length - 1}
-                  onPress={() => openEdit(item.id)}
+                  onPress={() => onPressItem(item.id)}
                   onToggleType={() => toggleType(item)}
                 />
               ))}

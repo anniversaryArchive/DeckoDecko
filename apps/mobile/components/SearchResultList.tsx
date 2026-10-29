@@ -77,7 +77,7 @@ export function SearchResultList({
     setPriceMax(null);
   };
   const search = useGachaSearchPages(keyword, { filter, sort });
-  // 새 검색어 · 필터 · 정렬을 불러오는 동안에는 이전 조건의 결과 · 개수를 보이지 않는다 (목록이 비면 QueryState 가 로딩을 그린다)
+  // 새 검색어 · 필터 · 정렬을 불러오는 동안에는 이전 조건의 결과 · 개수를 보이지 않는다 (목록이 비면 QueryState 가 로딩 · 오프라인 안내를 그린다)
   const result = search.isPlaceholderData ? undefined : search.data;
 
   const loadMore = () => {

@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
-import { QueryClient } from "@tanstack/react-query";
+import { onlineManager, QueryClient } from "@tanstack/react-query";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { collectionRate } from "../collection";
 import type { Repositories } from "../repositories";
@@ -30,7 +30,12 @@ import { CoreProvider } from "./provider";
 import { createMemoryGachaRepository } from "../repositories/gacha.memory";
 import { createMemoryLocalRepositories } from "../repositories/local.memory";
 
-afterEach(cleanup);
+// 로컬 기록은 네트워크와 상관없이 돌아야 한다. 모든 테스트를 오프라인으로 돌려, 훅에 localNetworkMode 를 빠뜨리면 멈춰서 실패하게 한다.
+beforeEach(() => onlineManager.setOnline(false));
+afterEach(() => {
+  cleanup();
+  onlineManager.setOnline(true);
+});
 
 function setup(
   repositories: Repositories = {

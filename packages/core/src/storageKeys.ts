@@ -8,6 +8,8 @@ export const storageKeys = {
   recentSearches: "@deckodecko/recent-searches",
   /** 최근 본 가챠 id (JSON 문자열 배열, 최신이 앞) */
   recentGachaIds: "@deckodecko/recent-gacha-ids",
+  /** 내 굿즈 보기 방식 ("items" | "gachas") */
+  goodsViewMode: "@deckodecko/goods-view-mode",
 } as const;
 
 export type StorageKey = (typeof storageKeys)[keyof typeof storageKeys];

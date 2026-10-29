@@ -17,12 +17,14 @@ import { queryKeys } from "../queryKeys";
 import type { CreateItemInput, ListItemsParams, UpdateItemInput } from "../repositories/items";
 import type { Item, ItemType } from "../types";
 import { useLocalRepositories } from "./provider";
+import { localNetworkMode } from "./queryClient";
 
 /** 기록 목록. 상세(가챠별) · 내 굿즈(타입별 · 폴더별)가 조건만 바꿔 쓴다. */
 export function useItems(params: ListItemsParams = {}) {
   const { items } = useLocalRepositories();
   const { gachaId, type, folderId } = params;
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.items.list(gachaId ?? null, type ?? null, folderId ?? null),
     queryFn: () => items.listItems({ gachaId, type, folderId }),
   });
@@ -32,6 +34,7 @@ export function useItems(params: ListItemsParams = {}) {
 export function useItem(id: string | undefined) {
   const { items } = useLocalRepositories();
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.items.detail(id ?? ""),
     queryFn: id ? () => items.getItem(id) : skipToken,
   });
@@ -41,6 +44,7 @@ export function useItem(id: string | undefined) {
 export function useItemCounts(gachaId?: string) {
   const { items } = useLocalRepositories();
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.items.counts(gachaId ?? null),
     queryFn: () => items.countItems({ gachaId }),
   });
@@ -50,6 +54,7 @@ export function useItemCounts(gachaId?: string) {
 export function useItemCountsByFolder() {
   const { items } = useLocalRepositories();
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.items.countsByFolder(),
     queryFn: () => items.countItemsByFolder(),
   });
@@ -63,6 +68,7 @@ export function useIsItemNameTaken(gachaId: string | undefined, name: string, ex
   const { items } = useLocalRepositories();
   const key = normalizeName(name);
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.items.nameTaken(gachaId ?? "", key, excludeId ?? null),
     queryFn: gachaId && key ? () => items.isItemNameTaken({ gachaId, name, excludeId }) : skipToken,
   });
@@ -80,6 +86,7 @@ export function useCreateItem() {
   const { items } = useLocalRepositories();
   const invalidate = useInvalidateItems();
   return useMutation({
+    ...localNetworkMode,
     mutationFn: (input: CreateItemInput) => items.createItem(input),
     onSuccess: invalidate,
   });
@@ -89,6 +96,7 @@ export function useUpdateItem() {
   const { items } = useLocalRepositories();
   const invalidate = useInvalidateItems();
   return useMutation({
+    ...localNetworkMode,
     mutationFn: ({ id, input }: { id: string; input: UpdateItemInput }) =>
       items.updateItem(id, input),
     onSuccess: invalidate,
@@ -127,6 +135,7 @@ export function useSetItemType() {
   const queryClient = useQueryClient();
   const invalidate = useInvalidateItems();
   return useMutation({
+    ...localNetworkMode,
     mutationKey: queryKeys.items.setType,
     mutationFn: ({ id, type }: SetItemTypeVariables) => items.updateItem(id, { type }),
     // 실패해도 다시 읽는다: 앞선 저장이 다시 읽기를 이 저장에 미뤘을 수 있다
@@ -187,6 +196,7 @@ export function useDeleteItem() {
   const { items } = useLocalRepositories();
   const invalidate = useInvalidateItems();
   return useMutation({
+    ...localNetworkMode,
     mutationFn: (id: string) => items.deleteItem(id),
     onSuccess: invalidate,
   });
