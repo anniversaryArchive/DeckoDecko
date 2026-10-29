@@ -87,6 +87,65 @@ export type Database = {
         };
         Relationships: [];
       };
+      feedback: {
+        Row: {
+          admin_note: string | null;
+          admin_reply: string | null;
+          app_version: string | null;
+          body: string | null;
+          created_at: string;
+          device_uuid: string;
+          id: number;
+          kind: string;
+          media_id: number | null;
+          media_name_raw: string | null;
+          photo_url: string | null;
+          status: string;
+          title: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          admin_note?: string | null;
+          admin_reply?: string | null;
+          app_version?: string | null;
+          body?: string | null;
+          created_at?: string;
+          device_uuid: string;
+          id?: number;
+          kind: string;
+          media_id?: number | null;
+          media_name_raw?: string | null;
+          photo_url?: string | null;
+          status?: string;
+          title?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          admin_note?: string | null;
+          admin_reply?: string | null;
+          app_version?: string | null;
+          body?: string | null;
+          created_at?: string;
+          device_uuid?: string;
+          id?: number;
+          kind?: string;
+          media_id?: number | null;
+          media_name_raw?: string | null;
+          photo_url?: string | null;
+          status?: string;
+          title?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "feedback_media_id_fkey";
+            columns: ["media_id"];
+            isOneToOne: false;
+            referencedRelation: "anime";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       gacha: {
         Row: {
           anime_id: number | null;
@@ -242,9 +301,38 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      list_my_feedback: {
+        Args: { p_device_uuid: string; p_limit?: number; p_offset?: number };
+        Returns: {
+          admin_reply: string;
+          body: string;
+          created_at: string;
+          id: number;
+          kind: string;
+          media_id: number;
+          media_name_raw: string;
+          photo_url: string;
+          status: string;
+          title: string;
+          updated_at: string;
+        }[];
+      };
       log_gacha_view: {
         Args: { p_device_id: string; p_gacha_id: number };
         Returns: undefined;
+      };
+      submit_feedback: {
+        Args: {
+          p_app_version?: string;
+          p_body?: string;
+          p_device_uuid: string;
+          p_kind: string;
+          p_media_id?: number;
+          p_media_name_raw?: string;
+          p_photo_url?: string;
+          p_title?: string;
+        };
+        Returns: number;
       };
     };
     Enums: {
