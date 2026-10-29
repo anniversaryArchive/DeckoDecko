@@ -288,6 +288,36 @@ export function describeLocalRepositories(
         expect(await repos.folders.listFolders()).toHaveLength(1);
       });
 
+      it("순서 바꾸기. 일반 폴더를 ids 순서로 두고 기본 폴더는 맨 앞에 남는다", async () => {
+        const a = await repos.folders.createFolder("가방");
+        const b = await repos.folders.createFolder("책상");
+        const c = await repos.folders.createFolder("서랍");
+        await repos.folders.reorderFolders([c.id, a.id, b.id]);
+        const fallback = (await defaultFolder()).id;
+        const list = await repos.folders.listFolders();
+        expect(ids(list)).toEqual([fallback, c.id, a.id, b.id]);
+        expect(list.map((f) => f.sequence)).toEqual([0, 1, 2, 3]);
+        // 바꾼 뒤 새 폴더는 맨 뒤
+        const d = await repos.folders.createFolder("상자");
+        expect(ids(await repos.folders.listFolders()).at(-1)).toBe(d.id);
+      });
+
+      it("순서 목록이 지금 폴더와 다르면 아무것도 바꾸지 않고 던진다", async () => {
+        const a = await repos.folders.createFolder("가방");
+        const b = await repos.folders.createFolder("책상");
+        const before = ids(await repos.folders.listFolders());
+        const fallback = (await defaultFolder()).id;
+        for (const order of [[a.id], [a.id, b.id, "nope"], [a.id, a.id], [fallback, a.id, b.id]]) {
+          await expect(repos.folders.reorderFolders(order)).rejects.toThrow();
+        }
+        expect(ids(await repos.folders.listFolders())).toEqual(before);
+      });
+
+      it("일반 폴더가 없으면 빈 목록으로 바꿔도 된다", async () => {
+        await repos.folders.reorderFolders([]);
+        expect(await repos.folders.listFolders()).toHaveLength(1);
+      });
+
       it("이름 중복 검사 (공백 · 대소문자 무시, 수정 중인 폴더 자신은 뺀다)", async () => {
         const folder = await repos.folders.createFolder("Bag");
         expect(await repos.folders.isFolderNameTaken(" bag")).toBe(true);

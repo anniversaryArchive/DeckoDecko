@@ -1,4 +1,5 @@
 import {
+  assertFolderOrder,
   cleanName,
   normalizeName,
   type Folder,
@@ -6,7 +7,7 @@ import {
   type ListItemsParams,
   type LocalRepositories,
 } from "@deckodecko/core";
-import { and, asc, count, desc, eq, ne, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, ne, sql, type SQL } from "drizzle-orm";
 import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 
 import { folders, items } from "./schema";
@@ -160,6 +161,27 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
 
       async deleteFolder(id) {
         await db.delete(folders).where(eq(folders.id, id));
+      },
+
+      async reorderFolders(ids) {
+        const normal = await db
+          .select({ id: folders.id })
+          .from(folders)
+          .where(eq(folders.isDefault, false));
+        assertFolderOrder(
+          normal.map((f) => f.id),
+          ids
+        );
+        if (ids.length === 0) return;
+        // 한 문장으로 바꿔 중간에 실패해도 순서가 반만 바뀌지 않게 한다
+        const position = sql.join(
+          ids.map((id, i) => sql`WHEN ${id} THEN ${i + 1}`),
+          sql` `
+        );
+        await db
+          .update(folders)
+          .set({ sequence: sql`CASE ${folders.id} ${position} END` })
+          .where(inArray(folders.id, [...ids]));
       },
 
       async isFolderNameTaken(name, excludeId) {

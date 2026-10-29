@@ -184,6 +184,40 @@ export const ko = {
     nameHint: "같은 이름의 폴더는 만들 수 없어요",
     nameTaken: "이미 같은 이름의 폴더가 있어요",
     createFailed: "폴더를 만들지 못했어요",
+    // 이름 칸 아래 글자 수 ("4 / 20")
+    nameLength: "{{length}} / {{max}}",
+    // 폴더 관리 화면 (내 굿즈 머리글에서 연다)
+    manageTitle: "폴더 관리",
+    folderCount_one: "폴더 {{count, number}}개",
+    folderCount_other: "폴더 {{count, number}}개",
+    dragHint: "오른쪽 손잡이를 길게 눌러 순서를 바꿀 수 있어요.",
+    defaultLocked: "기본 폴더는 바꾸거나 지울 수 없어요",
+    renameLabel: "{{name}} 이름 변경",
+    deleteLabel: "{{name}} 삭제",
+    dragLabel: "{{name}} 순서 바꾸기",
+    // 순서 손잡이의 화면 읽기 동작 (끌기 대신)
+    moveUp: "위로 옮기기",
+    moveDown: "아래로 옮기기",
+    reorderFailed: "순서를 저장하지 못했어요",
+    deleteInfoTitle: "폴더를 삭제하면",
+    deleteInfo: "폴더 안의 아이템은 기본 폴더로 옮겨져요. 삭제 전에 한 번 더 확인 창이 나타나요.",
+    // 이름 변경 · 새 폴더 시트
+    renameTitle: "폴더 이름 변경",
+    nameLabel: "폴더 이름",
+    rename: "변경",
+    renameFailed: "이름을 바꾸지 못했어요",
+    // 삭제 확인 시트
+    deleteTitle: "'{{name}}' 폴더를 삭제할까요?",
+    deleteMoveMessage_one:
+      "폴더 안의 아이템 <bold>{{count, number}}개</bold>는 기본 폴더로 옮겨져요.",
+    deleteMoveMessage_other:
+      "폴더 안의 아이템 <bold>{{count, number}}개</bold>는 기본 폴더로 옮겨져요.",
+    deleteEmptyMessage: "폴더 안에 아이템이 없어요.",
+    // 옮겨질 아이템 미리보기. 앞의 몇 개 이름 뒤에 남은 개수
+    deletePreviewMore_one: "{{names}} 외 {{count, number}}개",
+    deletePreviewMore_other: "{{names}} 외 {{count, number}}개",
+    delete: "삭제",
+    deleteFailed: "폴더를 삭제하지 못했어요",
   },
   item: {
     // 아이템 추가 · 수정 시트 (상세에서 연다)

@@ -1,5 +1,6 @@
 import type { LocalRepositories } from ".";
 import type { Folder, Item } from "../types";
+import { assertFolderOrder } from "./folders";
 import type { ListItemsParams } from "./items";
 import { cleanName, normalizeName } from "../name";
 
@@ -141,6 +142,15 @@ export function createMemoryLocalRepositories(): LocalRepositories {
           i.folderId === id ? { ...i, folderId: fallback, updatedAt: at } : i
         );
         folders.splice(index, 1);
+      },
+
+      async reorderFolders(ids) {
+        const normal = folders.filter((f) => !f.isDefault);
+        assertFolderOrder(
+          normal.map((f) => f.id),
+          ids
+        );
+        for (const folder of normal) folder.sequence = ids.indexOf(folder.id) + 1;
       },
 
       async isFolderNameTaken(name, excludeId) {
