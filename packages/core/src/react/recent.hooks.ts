@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
+import { localNetworkMode, serverNetworkMode } from "./queryClient";
 import type { RecentRepository } from "../repositories/recent";
 
 /** 최근 기록 저장소. CoreProvider 에 recent 를 넘기지 않은 앱(백오피스)에서 쓰면 던진다. */
@@ -32,6 +33,7 @@ function useRecentMutation<TVariables>(
 ) {
   const queryClient = useQueryClient();
   return useMutation({
+    ...localNetworkMode,
     mutationFn,
     onSuccess: (list) => queryClient.setQueryData(queryKey, list),
   });
@@ -43,6 +45,7 @@ function useRecentMutation<TVariables>(
 export function useRecentSearches() {
   const recent = useRecentRepository();
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.recent.searches(),
     queryFn: () => recent.listSearches(),
   });
@@ -124,12 +127,15 @@ export function combineRecentGacha<T extends { id: string }>(
 export function useRecentGacha() {
   const { gacha } = useRepositories();
   const recent = useRecentRepository();
+  // id 목록은 기기 저장소, 가챠 목록은 서버라 id 목록만 오프라인에서도 읽는다
   const ids = useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.recent.gachaIds(),
     queryFn: () => recent.listGachaIds(),
   });
   const idList = ids.data ?? [];
   const list = useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.byIds(idList),
     queryFn: idList.length > 0 ? () => gacha.listGachaByIds(idList) : skipToken,
     placeholderData: keepPreviousData,

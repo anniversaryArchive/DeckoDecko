@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createSupabaseClient } from "../supabase";
+import type { GachaRepositoryOptions, ResolvedGachaFilter } from "./gacha";
 import { createSupabaseGachaRepository } from "./gacha.supabase";
 import {
   toGacha,
@@ -9,7 +10,7 @@ import {
   toMedia,
   toReleaseMonth,
 } from "./gacha.supabase.mappers";
-import { toIlikeValue } from "./gacha.supabase.params";
+import { toFilterConditions, toIlikeValue, toOrderBy } from "./gacha.supabase.params";
 import type { AnimeRow, GachaDetailRow, GachaRpcRow, GachaSummaryRow } from "./gacha.supabase.rows";
 
 const forest: AnimeRow = {
@@ -158,13 +159,72 @@ describe("toIlikeValue", () => {
   });
 });
 
+describe("toFilterConditions", () => {
+  const none: ResolvedGachaFilter = {
+    release: "all",
+    mediaId: null,
+    priceMin: null,
+    priceMax: null,
+  };
+
+  it("조건이 없으면 빈 목록", () => {
+    expect(toFilterConditions(none, "2026-10")).toEqual([]);
+  });
+
+  it("신상품은 이번 달 1일과 같은 것, 발매 예정은 그보다 늦은 것", () => {
+    expect(toFilterConditions({ ...none, release: "new" }, "2026-10")).toEqual([
+      { column: "release_month", operator: "eq", value: "2026-10-01" },
+    ]);
+    expect(toFilterConditions({ ...none, release: "upcoming" }, "2026-12")).toEqual([
+      { column: "release_month", operator: "gt", value: "2026-12-01" },
+    ]);
+  });
+
+  it("작품 id 는 DB id 로, 가격은 양 끝 포함 (0 엔도 조건)", () => {
+    expect(
+      toFilterConditions({ ...none, mediaId: "7", priceMin: 0, priceMax: 500 }, "2026-10")
+    ).toEqual([
+      { column: "anime_id", operator: "eq", value: "7" },
+      { column: "price", operator: "gte", value: "0" },
+      { column: "price", operator: "lte", value: "500" },
+    ]);
+  });
+
+  it("숫자가 아닌 작품 id 는 맞을 수 없는 조건이라 null", () => {
+    expect(toFilterConditions({ ...none, mediaId: "m1" }, "2026-10")).toBeNull();
+    expect(toFilterConditions({ ...none, mediaId: "007" }, "2026-10")).toBeNull();
+  });
+});
+
+describe("toOrderBy", () => {
+  const recent = [
+    { column: "created_at", ascending: false },
+    { column: "id", ascending: false },
+  ];
+
+  it("발매일순은 발매월 내림차순, 같으면 최근 등록순. 생략 · 모르는 값도 발매일순", () => {
+    const release = [{ column: "release_month", ascending: false }, ...recent];
+    expect(toOrderBy("release")).toEqual(release);
+    expect(toOrderBy(undefined)).toEqual(release);
+    expect(toOrderBy("popular" as never)).toEqual(release);
+  });
+
+  it("가격 낮은순 · 높은순, 같으면 최근 등록순", () => {
+    expect(toOrderBy("priceAsc")).toEqual([{ column: "price", ascending: true }, ...recent]);
+    expect(toOrderBy("priceDesc")).toEqual([{ column: "price", ascending: false }, ...recent]);
+  });
+});
+
 // ─────────────────────────────────────────────
 // 저장소: fetch 를 바꿔 끼워 요청 · 응답 처리만 본다 (실제 Supabase 에 붙지 않는다)
 // ─────────────────────────────────────────────
 
 type Reply = { status?: number; body: unknown; headers?: Record<string, string> };
 
-function fakeRepository(reply: (url: URL) => Reply | Promise<Reply>) {
+function fakeRepository(
+  reply: (url: URL) => Reply | Promise<Reply>,
+  options?: GachaRepositoryOptions
+) {
   const requests: URL[] = [];
   const fakeFetch: typeof fetch = async (input) => {
     const url = new URL(input instanceof Request ? input.url : String(input));
@@ -178,7 +238,7 @@ function fakeRepository(reply: (url: URL) => Reply | Promise<Reply>) {
   const client = createSupabaseClient("http://localhost:54321", "sb_publishable_test", {
     fetch: fakeFetch,
   });
-  return { repo: createSupabaseGachaRepository(client), requests };
+  return { repo: createSupabaseGachaRepository(client, options), requests };
 }
 
 describe("createSupabaseGachaRepository", () => {
@@ -408,6 +468,87 @@ describe("createSupabaseGachaRepository", () => {
     await expect(headFails.repo.searchGacha({ keyword: "숲", offset: 40 })).rejects.toThrow(
       "[gacha.searchGacha.count] boom"
     );
+  });
+
+  describe("검색: 필터 · 정렬", () => {
+    const october = () => new Date(2026, 9, 23);
+    const gachaReply = (url: URL): Reply =>
+      url.pathname.endsWith("/anime")
+        ? { body: [] }
+        : { body: [summaryRow()], headers: { "content-range": "0-0/1" } };
+
+    it("기본은 발매일순(모르는 값은 뒤), 같으면 최근 등록순이고 필터 조건은 붙지 않는다", async () => {
+      const { repo, requests } = fakeRepository(gachaReply, { now: october });
+      await repo.searchGacha({ keyword: "숲" });
+      const gacha = requests[1]!;
+      expect(gacha.searchParams.get("order")).toBe(
+        "release_month.desc.nullslast,created_at.desc.nullslast,id.desc.nullslast"
+      );
+      for (const column of ["release_month", "anime_id", "price"]) {
+        expect(gacha.searchParams.has(column), column).toBe(false);
+      }
+    });
+
+    it("필터는 검색 조건과 AND 로 붙고, 기준 달은 now 로 정한다", async () => {
+      const { repo, requests } = fakeRepository(gachaReply, { now: october });
+      const page = await repo.searchGacha({
+        keyword: "숲",
+        filter: { release: "new", mediaId: "1", priceMin: 400, priceMax: 500 },
+        sort: "priceAsc",
+      });
+      expect(page.total).toBe(1);
+      const gacha = requests[1]!;
+      expect(gacha.searchParams.get("or")).toBe('(name.ilike."%숲%",name_kr.ilike."%숲%")');
+      expect(gacha.searchParams.get("release_month")).toBe("eq.2026-10-01");
+      expect(gacha.searchParams.get("anime_id")).toBe("eq.1");
+      expect(gacha.searchParams.getAll("price")).toEqual(["gte.400", "lte.500"]);
+      expect(gacha.searchParams.get("order")).toBe(
+        "price.asc.nullslast,created_at.desc.nullslast,id.desc.nullslast"
+      );
+    });
+
+    it("발매 예정은 이번 달 1일보다 늦은 것, 가격 높은순", async () => {
+      const { repo, requests } = fakeRepository(gachaReply, { now: () => new Date(2026, 11, 31) });
+      await repo.searchGacha({ keyword: "숲", filter: { release: "upcoming" }, sort: "priceDesc" });
+      expect(requests[1]!.searchParams.get("release_month")).toBe("gt.2026-12-01");
+      expect(requests[1]!.searchParams.get("order")?.startsWith("price.desc.nullslast,")).toBe(
+        true
+      );
+    });
+
+    it("숫자가 아닌 작품 id 면 요청하지 않고 빈 결과", async () => {
+      const { repo, requests } = fakeRepository(gachaReply);
+      await expect(repo.searchGacha({ keyword: "숲", filter: { mediaId: "m1" } })).resolves.toEqual(
+        { items: [], total: 0 }
+      );
+      expect(requests).toHaveLength(0);
+    });
+
+    it("마지막 페이지 너머(416)의 개수 조회에도 같은 필터를 붙인다", async () => {
+      const { repo, requests } = fakeRepository(
+        (url) => {
+          if (url.pathname.endsWith("/anime")) return { body: [] };
+          return url.searchParams.has("offset")
+            ? {
+                status: 416,
+                body: { code: "PGRST103", message: "Requested range not satisfiable" },
+              }
+            : { body: [], headers: { "content-range": "*/2" } };
+        },
+        { now: october }
+      );
+      await expect(
+        repo.searchGacha({
+          keyword: "숲",
+          offset: 40,
+          filter: { release: "upcoming", priceMax: 300 },
+        })
+      ).resolves.toEqual({ items: [], total: 2 });
+      const head = requests[2]!;
+      expect(head.searchParams.has("offset")).toBe(false);
+      expect(head.searchParams.get("release_month")).toBe("gt.2026-10-01");
+      expect(head.searchParams.get("price")).toBe("lte.300");
+    });
   });
 });
 

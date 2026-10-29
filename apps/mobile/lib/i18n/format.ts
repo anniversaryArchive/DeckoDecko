@@ -46,6 +46,16 @@ export function formatMonth(yearMonth: string): string {
   }).format(date);
 }
 
+/** 짧은 날짜 (기기 시간대). ko "2026.10.17" · en "10/17/2026" */
+export function formatShortDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return i18n.t("common.shortDate", {
+    year: date.getFullYear(),
+    month: pad(date.getMonth() + 1),
+    day: pad(date.getDate()),
+  });
+}
+
 /** 날짜. ko "2026. 10. 17." · en "Oct 17, 2026" */
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium" }).format(date);

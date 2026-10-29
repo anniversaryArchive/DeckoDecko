@@ -16,6 +16,8 @@ export const ko = {
     itemCount_other: "{{count, number}}종",
     // formatPercent 가 쓴다
     percent: "{{value, number}}%",
+    // formatShortDate 가 쓴다 (month · day 는 두 자리)
+    shortDate: "{{year}}.{{month}}.{{day}}",
     appName: "가챠 탐색대",
     back: "뒤로",
     last10Days: "최근 10일",
@@ -23,13 +25,20 @@ export const ko = {
     pricePerPlay: "1회 {{price}}",
     taxIncluded: "(세금 포함)",
     released: "{{month}} 발매",
+    releaseUpcoming: "{{month}} 발매 예정",
     itemTotal: "전 {{total}}",
     cancel: "취소",
+    // 카드 사진 위 배지 (이번 달 발매 · 다음 달 이후 발매)
+    badgeNew: "NEW",
+    badgeUpcoming: "발매 예정",
     close: "닫기",
     // 입력창 지우기 버튼 (화면 읽기 프로그램이 읽는다)
     clear: "지우기",
     // 토스트(ToastProvider)의 iOS 화면 읽기 안내. 동작 결과를 적는다 (제스처 이름은 VoiceOver 가 붙인다)
     closeToastHint: "알림을 닫아요",
+    // 오프라인: 화면 위 배너 한 줄, 캐시가 없는 화면의 안내 (QueryState). 배너가 늘 같이 떠서 안내는 "오프라인"을 다시 말하지 않는다
+    offline: "오프라인 상태예요",
+    offlineLoad: "인터넷에 연결되면 자동으로 불러와요.",
   },
   startup: {
     // 로컬 DB 마이그레이션 실패 (루트 레이아웃의 실패 화면)
@@ -67,6 +76,37 @@ export const ko = {
     resultCount_other: "총 <bold>{{count, number}}</bold>개",
     noResult: "'{{keyword}}' 결과가 없어요",
     noResultHint: "작품명이나 상품명 일부만 입력해 보세요.\n아직 등록되지 않은 가챠일 수도 있어요.",
+    // 등록 요청 화면이 생기기 전까지 버튼은 자리만 있고 눌리지 않는다.
+    requestRegistration: "이 가챠 등록 요청하기",
+    // 결과 없음의 추천 검색어 칩 위 문구 (인기 가챠의 작품명)
+    suggestionTitle: "이렇게 검색해 보세요",
+    // 결과를 볼 때 제목 옆. 신상품 · 발매 예정의 기준일 (date 는 formatShortDate)
+    asOf: "{{date}} 기준",
+    // 필터 때문에 0개일 때. 등록 요청 대신 필터를 풀게 한다.
+    noFilteredResult: "조건에 맞는 결과가 없어요",
+    noFilteredResultHint: "필터를 바꾸거나 초기화해 보세요.",
+    resetFilters: "필터 초기화",
+    // 결과 위 필터 칩. 전체 · 신상품 · 발매 예정은 하나만 고르고, 작품 · 가격은 시트에서 고른다.
+    filter: {
+      all: "전체",
+      new: "신상품",
+      upcoming: "발매 예정",
+      media: "작품",
+      price: "가격",
+    },
+    // 가격 시트의 범위. 값은 포맷 헬퍼(formatPrice)로 만든 문자열을 넣는다.
+    priceRange: {
+      any: "가격 전체",
+      upTo: "{{price}} 이하",
+      between: "{{min}} ~ {{max}}",
+      from: "{{price}} 이상",
+    },
+    sortTitle: "정렬",
+    sort: {
+      release: "발매일순",
+      priceAsc: "가격 낮은순",
+      priceDesc: "가격 높은순",
+    },
   },
   detail: {
     title: "가챠 상세",
@@ -94,7 +134,40 @@ export const ko = {
   },
   goods: {
     title: "내 굿즈",
-    empty: "아직 저장된 가챠가 없어요.",
+    // 제목 위 한 줄. rate 는 formatPercent 로 만든 문자열
+    summary_one: "전체 {{count, number}}개 · 소장률 {{rate}}",
+    summary_other: "전체 {{count, number}}개 · 소장률 {{rate}}",
+    summaryEmpty: "아직 저장한 가챠가 없어요",
+    manageFolders: "폴더 관리",
+    // WISH · GET 세그먼트
+    typeLabel: "WISH · GET",
+    wishTab: "WISH {{count, number}}",
+    getTab: "GET {{count, number}}",
+    // 폴더 칩
+    folderLabel: "폴더",
+    allFolders: "전체",
+    searchPlaceholder: "내 굿즈 검색",
+    // 풀어보기 · 묶어보기 버튼 (화면 읽기 이름)
+    viewModeLabel: "보기 방식",
+    viewGachas: "가챠별로 묶어보기",
+    viewItems: "아이템별로 풀어보기",
+    // 묶어보기 한 줄의 개수 배지
+    groupCount_one: "{{count, number}}개",
+    groupCount_other: "{{count, number}}개",
+    // 묶어보기의 폴더 분포 "기본 폴더 1, 별의 숲 2" 의 한 조각
+    folderCount: "{{name}} {{count, number}}",
+    // 카탈로그에서 사라진 가챠의 이름 자리
+    unknownGacha: "정보가 없는 가챠",
+    // 가챠 이름 · 이미지 조회 실패 (기록 목록은 그대로 보인다)
+    gachaLoadFailed: "가챠 정보를 불러오지 못했어요",
+    // 저장된 기록이 하나도 없을 때
+    emptyTitle: "저장된 가챠가 없어요",
+    emptyDescription: "갖고 싶은 가챠는 WISH, 뽑은 가챠는 GET으로\n저장하면 여기에 모여요.",
+    findGacha: "가챠 찾아보기",
+    browseHome: "홈에서 신상 가챠 보기",
+    // 기록은 있는데 고른 WISH · GET · 폴더에 없을 때
+    noMatch: "여기에 저장된 아이템이 없어요",
+    noSearchResult: "'{{keyword}}' 결과가 없어요",
   },
   folder: {
     // 폴더 선택 시트 (아이템 시트에서 연다)
@@ -154,6 +227,14 @@ export const ko = {
     // 공지 목록 화면이 생기기 전까지 자리에 보이는 문구
     comingSoon: "공지 목록은 준비 중이에요.",
   },
-  settings: {},
+  settings: {
+    title: "설정",
+    language: "언어",
+    comingSoon: "준비 중",
+    // 화면 읽기용 (준비 중인 언어 줄)
+    comingSoonLabel: "{{name}}, 준비 중",
+    languageHint:
+      "한국어를 고르면 한국어 이름(없으면 일본어 원래 이름)으로, 다른 언어는 일본어 원래 이름으로 보여요.",
+  },
   feedback: {},
 } as const;
