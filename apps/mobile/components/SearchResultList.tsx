@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useScrollToTop } from "expo-router";
+import { useRef, useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { FlatList, Pressable, ScrollView, View, type ListRenderItemInfo } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
@@ -60,6 +61,8 @@ export function SearchResultList({
   onSearch: (keyword: string) => void;
 }) {
   const { t } = useTranslation();
+  const listRef = useRef<FlatList<Gacha>>(null);
+  useScrollToTop(listRef);
   const [release, setRelease] = useState<GachaReleaseFilter>("all");
   const [priceMin, setPriceMin] = useState<number | null>(null);
   const [priceMax, setPriceMax] = useState<number | null>(null);
@@ -159,6 +162,7 @@ export function SearchResultList({
       </View>
 
       <FlatList
+        ref={listRef}
         data={result?.items ?? []}
         keyExtractor={(gacha) => gacha.id}
         renderItem={renderResult}
