@@ -59,9 +59,9 @@ function AppTabBar({ state, descriptors, navigation, insets }: TabBarRenderProps
             key: route.key,
             label: descriptors[route.key]?.options.title ?? route.name,
             selected,
-            renderIcon: ({ color, size }) =>
+            renderIcon: ({ color, size, selected: iconSelected }) =>
               icons ? (
-                <Ionicons name={selected ? icons.on : icons.off} color={color} size={size} />
+                <Ionicons name={iconSelected ? icons.on : icons.off} color={color} size={size} />
               ) : null,
             // 기본 탭 바와 같은 순서: 이벤트를 먼저 보내고(같은 탭이면 useScrollToTop 을 건 목록이 맨 위로 간다), 막지 않았으면 이동한다
             onPress: () => {
