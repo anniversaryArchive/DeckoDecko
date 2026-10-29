@@ -5,7 +5,7 @@ import { formatPrice, i18n } from "@/lib/i18n";
 /** 칩 "전체 · 신상품 · 발매 예정" 순서. 하나만 고른다. */
 export const RELEASE_FILTERS: readonly GachaReleaseFilter[] = ["all", "new", "upcoming"];
 
-/** 정렬 시트 순서. 첫 값이 기본 (core 의 GACHA_DEFAULTS.searchSort 와 같다). */
+/** 정렬 시트 순서. 기본값은 core 의 GACHA_DEFAULTS.searchSort. */
 export const SORTS: readonly GachaSort[] = ["release", "priceAsc", "priceDesc"];
 
 /**

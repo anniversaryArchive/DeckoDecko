@@ -1,12 +1,27 @@
-import { useState, type ReactNode } from "react";
+import { memo, useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { FlatList, Pressable, ScrollView, View } from "react-native";
+import { FlatList, Pressable, ScrollView, View, type ListRenderItemInfo } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
-import type { GachaFilter, GachaReleaseFilter, GachaSort } from "@deckodecko/core";
+import {
+  GACHA_DEFAULTS,
+  releaseStatus,
+  toYearMonth,
+  type Gacha,
+  type GachaFilter,
+  type GachaReleaseFilter,
+  type GachaSort,
+} from "@deckodecko/core";
 import { useGachaSearchPages, usePopularGacha } from "@deckodecko/core/react";
 import { gutter, space } from "@deckodecko/ui";
-import { Button, ChevronDownIcon, Chip, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
+import {
+  Button,
+  ChevronDownIcon,
+  Chip,
+  PRESSED_OPACITY,
+  Text,
+  type GoodsCardBadge,
+} from "@deckodecko/ui/native";
 
 import { EmptyState } from "@/components/EmptyState";
 import { GachaCardSlot } from "@/components/GachaCardSlot";
@@ -55,7 +70,7 @@ export function SearchResultList({
   const [release, setRelease] = useState<GachaReleaseFilter>("all");
   const [priceMin, setPriceMin] = useState<number | null>(null);
   const [priceMax, setPriceMax] = useState<number | null>(null);
-  const [sort, setSort] = useState<GachaSort>(SORTS[0] ?? "release");
+  const [sort, setSort] = useState<GachaSort>(GACHA_DEFAULTS.searchSort);
   const [sheet, setSheet] = useState<Sheet>(null);
 
   const filter: GachaFilter = { release, priceMin, priceMax };
@@ -153,7 +168,7 @@ export function SearchResultList({
       <FlatList
         data={result?.items ?? []}
         keyExtractor={(gacha) => gacha.id}
-        renderItem={({ item }) => <GachaCardSlot gacha={item} layout="horizontal" />}
+        renderItem={renderResult}
         onEndReached={loadMore}
         onEndReachedThreshold={END_REACHED_THRESHOLD}
         ListFooterComponent={
@@ -252,6 +267,24 @@ export function SearchResultList({
       />
     </View>
   );
+}
+
+/** 결과 카드 한 장. 이번 달 발매면 NEW, 다음 달 이후면 발매 예정 배지 (필터의 신상품 · 발매 예정과 같은 기준, 기기 시간). */
+const ResultCard = memo(function ResultCard({ gacha }: { gacha: Gacha }) {
+  const { t } = useTranslation();
+  const status = releaseStatus(gacha.releaseMonth, toYearMonth(new Date()));
+  const badge: GoodsCardBadge | null =
+    status === "new"
+      ? { label: t("common.badgeNew"), tone: "accent" }
+      : status === "upcoming"
+        ? { label: t("common.badgeUpcoming"), tone: "get" }
+        : null;
+  return <GachaCardSlot gacha={gacha} layout="horizontal" badge={badge} />;
+});
+
+// 모듈에 두어 참조를 고정한다 (FlatList 가 목록이 다시 그려질 때 줄을 모두 다시 그리지 않게)
+function renderResult({ item }: ListRenderItemInfo<Gacha>) {
+  return <ResultCard gacha={item} />;
 }
 
 /** 결과 없음의 "이렇게 검색해 보세요": 인기 가챠의 작품명을 겹치지 않게 앞에서부터. 작품명이 하나도 없으면 그리지 않는다. */
