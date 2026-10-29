@@ -4,13 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Pressable, useWindowDimensions, View, type TextInput } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-import { normalizeName, type Folder } from "@deckodecko/core";
-import {
-  useCreateFolder,
-  useFolders,
-  useIsFolderNameTaken,
-  useItemCountsByFolder,
-} from "@deckodecko/core/react";
+import type { Folder } from "@deckodecko/core";
+import { useCreateFolder, useFolders, useItemCountsByFolder } from "@deckodecko/core/react";
 import { border, radius, space, useTheme, type FolderColor } from "@deckodecko/ui";
 import {
   BottomSheet,
@@ -22,10 +17,9 @@ import {
 } from "@deckodecko/ui/native";
 
 import { FolderIcon, folderIconColor } from "@/components/FolderIcon";
+import { FOLDER_NAME_MAX_LENGTH, useFolderNameCheck } from "@/hooks/useFolderNameCheck";
 import { folderName } from "@/lib/displayName";
 import { formatFolderItemCount } from "@/lib/i18n";
-import { languages } from "@/lib/i18n/types";
-import { NAME_CHECK_DELAY, useDebouncedValue } from "@/lib/useDebouncedValue";
 
 /** 머리글 원형 버튼 지름 */
 const HEADER_BUTTON_SIZE = 36;
@@ -195,23 +189,11 @@ function NewFolderForm({
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const checkedName = useDebouncedValue(name, NAME_CHECK_DELAY);
-  const takenQuery = useIsFolderNameTaken(checkedName);
+  const { taken, checked } = useFolderNameCheck(name);
   const create = useCreateFolder();
 
   const filled = name.trim().length > 0;
-  // 기본 폴더는 DB 이름이 비어 있어 저장소 검사로는 못 잡는다. 언어를 바꿔도 겹치지 않게 모든 언어의 표시 이름과 비교한다
-  const takenByDefault = languages.some(
-    (lng) => normalizeName(name) === normalizeName(t("folder.defaultName", { lng }))
-  );
-  const taken = takenByDefault || takenQuery.data === true;
-  // 지금 이름의 중복 검사 결과가 오기 전에는 만들지 않는다 (저장소는 중복을 막지 않는다)
-  const canCreate =
-    filled &&
-    !takenByDefault &&
-    checkedName === name &&
-    takenQuery.data === false &&
-    !create.isPending;
+  const canCreate = filled && checked && !create.isPending;
 
   const submit = async () => {
     if (!canCreate) return;
@@ -245,6 +227,7 @@ function NewFolderForm({
             if (create.isError) create.reset();
           }}
           placeholder={t("folder.namePlaceholder")}
+          maxLength={FOLDER_NAME_MAX_LENGTH}
           accessibilityLabel={t("folder.createLabel")}
           clearable={false}
           returnKeyType="done"
