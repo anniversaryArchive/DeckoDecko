@@ -6,6 +6,7 @@ import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { Card, Text } from "@deckodecko/ui/native";
 
 import { joinLabel } from "@/hooks/useGachaDisplay";
+import { photoUri } from "@/lib/photos";
 
 /** 사진 높이 */
 const IMAGE_HEIGHT = 150;
@@ -30,9 +31,10 @@ type Props = {
 export function GoodsItemCard({ item, folder, gacha, gachaImageUrl, onPress, style }: Props) {
   const { colors } = useTheme();
   const isGet = item.type === "GET";
-  // 고른 사진은 앱 밖(사진 앱 캐시)의 파일이라 지워졌을 수 있다. 사진을 바꾸면 새 주소로 다시 시도한다
+  // 사진 파일을 읽지 못하면(앱 폴더로 복사하기 전에 저장한 임시 주소 등) 가챠 이미지로 바꾼다. 사진을 바꾸면 다시 시도한다
   const [failedUri, setFailedUri] = useState<string | null>(null);
-  const uri = (item.thumbnail !== failedUri && item.thumbnail) || gachaImageUrl;
+  const photo = item.thumbnail ? photoUri(item.thumbnail) : null;
+  const uri = (photo !== failedUri && photo) || gachaImageUrl;
   return (
     <Card
       onPress={onPress}
@@ -53,7 +55,7 @@ export function GoodsItemCard({ item, folder, gacha, gachaImageUrl, onPress, sty
             style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
             onError={() => {
-              if (uri === item.thumbnail) setFailedUri(uri);
+              if (uri === photo) setFailedUri(uri);
             }}
             accessibilityIgnoresInvertColors
           />

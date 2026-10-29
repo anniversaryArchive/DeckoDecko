@@ -13,13 +13,22 @@ import {
   useUpdateItem,
 } from "@deckodecko/core/react";
 import { border, radius, space, useTheme } from "@deckodecko/ui";
-import { BottomSheet, Button, Input, PRESSED_OPACITY, Segment, Text } from "@deckodecko/ui/native";
+import {
+  BottomSheet,
+  Button,
+  Input,
+  PRESSED_OPACITY,
+  Segment,
+  Text,
+  useToast,
+} from "@deckodecko/ui/native";
 
 import { FolderIcon, folderIconColor } from "@/components/FolderIcon";
 import { FolderSelectSheet } from "@/components/FolderSelectSheet";
 import { ItemDeleteSheet } from "@/components/ItemDeleteSheet";
 import { folderName } from "@/lib/displayName";
 import { formatDate } from "@/lib/i18n";
+import { deletePhoto, photoUri, savePhoto } from "@/lib/photos";
 import { NAME_CHECK_DELAY, useDebouncedValue } from "@/lib/useDebouncedValue";
 
 /** 사진 칸 (정사각형) */
@@ -44,7 +53,7 @@ type Form = {
   name: string;
   /** 비어 있으면 기본 폴더 */
   folderId: string | undefined;
-  /** 고른 사진의 파일 주소 */
+  /** 저장된 기록의 items.thumbnail 그대로이거나, 새로 고른 사진의 임시 주소 (저장할 때 앱 폴더로 복사한다) */
   thumbnail: string | null;
   memo: string;
 };
@@ -101,6 +110,8 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   const [draft, setDraft] = useState<{ for: string; form: Form }>();
   // 열 때마다 입력 영역을 새로 그린다. 지난번 저장 요청 상태가 남지 않게
   const [session, setSession] = useState(0);
+  // 저장 중에는 시트를 닫지 못하게 한다. 닫아도 저장은 계속돼서 닫기가 취소처럼 보이지 않고, 다시 열면 늦게 끝난 저장이 새 시트를 닫는다
+  const [saving, setSaving] = useState(false);
   if (open !== wasOpen) {
     setWasOpen(open);
     if (open) {
@@ -126,6 +137,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
         onClose={onClose}
         title={editing ? t("item.editTitle") : t("item.addTitle")}
         closeLabel={t("common.close")}
+        dismissible={!saving}
       >
         {filled ? (
           <ItemForm
@@ -133,6 +145,8 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
             gachaId={gachaId}
             item={editingItem}
             form={form}
+            saving={saving}
+            onSavingChange={setSaving}
             onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
             onOpenFolders={() => setFolderSheetOpen(true)}
             onDelete={() => setDeleteSheetOpen(true)}
@@ -186,6 +200,8 @@ function ItemForm({
   gachaId,
   item,
   form,
+  saving,
+  onSavingChange,
   onChange,
   onOpenFolders,
   onDelete,
@@ -196,6 +212,9 @@ function ItemForm({
   /** 수정 중인 기록. 추가 시트면 없다 */
   item: Item | undefined;
   form: Form;
+  /** 저장(사진 복사 + 기록 저장) 중인지. 그동안 입력과 버튼을 막는다 */
+  saving: boolean;
+  onSavingChange: (saving: boolean) => void;
   onChange: (patch: Partial<Form>) => void;
   onOpenFolders: () => void;
   /** 삭제를 눌렀을 때. 삭제 확인 시트를 연다 */
@@ -204,6 +223,7 @@ function ItemForm({
   onSaveFailed: (reason: string) => void;
 }) {
   const { t } = useTranslation();
+  const toast = useToast();
   const checkedName = useDebouncedValue(form.name, NAME_CHECK_DELAY);
   const taken = useIsItemNameTaken(gachaId, checkedName, item?.id);
   const folders = useFolders();
@@ -211,26 +231,43 @@ function ItemForm({
   const update = useUpdateItem();
 
   const filled = form.name.trim().length > 0;
-  const busy = create.isPending || update.isPending;
   // 지금 이름의 중복 검사 결과가 오기 전에는 저장하지 않는다 (저장소는 중복을 막지 않는다)
-  const canSave = filled && checkedName === form.name && taken.data === false && !busy;
+  const canSave = filled && checkedName === form.name && taken.data === false && !saving;
 
   const save = async () => {
     if (!canSave) return;
+    onSavingChange(true);
+    try {
+      await submit();
+    } finally {
+      onSavingChange(false);
+    }
+  };
+
+  const submit = async () => {
     const memo = form.memo.trim() || null;
     // 폴더 행에 보이는 폴더로 저장한다
     const folderId = pickedFolder(folders.data, form.folderId)?.id ?? form.folderId;
+    const previous = item?.thumbnail ?? null;
+
+    // 새로 고른 사진만 앱 폴더로 복사한다. 실패해도 기록은 저장한다 (새 기록은 사진 없이, 수정은 예전 사진 그대로)
+    let thumbnail = form.thumbnail;
+    let copied: string | null = null;
+    let photoFailed = false;
+    if (thumbnail && thumbnail !== previous) {
+      try {
+        thumbnail = copied = await savePhoto(thumbnail);
+      } catch {
+        thumbnail = previous;
+        photoFailed = true;
+      }
+    }
+
     try {
       if (item) {
         await update.mutateAsync({
           id: item.id,
-          input: {
-            type: form.type,
-            name: form.name,
-            folderId,
-            thumbnail: form.thumbnail,
-            memo,
-          },
+          input: { type: form.type, name: form.name, folderId, thumbnail, memo },
         });
       } else {
         await create.mutateAsync({
@@ -238,13 +275,22 @@ function ItemForm({
           type: form.type,
           name: form.name,
           folderId,
-          thumbnail: form.thumbnail,
+          thumbnail,
           memo,
         });
       }
-      onDone();
     } catch {
+      // 기록에 들어가지 못한 사본은 지운다. 다시 열면 남겨 둔 입력의 원래 사진으로 다시 복사한다
+      deletePhoto(copied);
       onSaveFailed(t("item.saveFailedReason"));
+      return;
+    }
+    onDone();
+    if (photoFailed) {
+      toast.show({
+        title: t("item.photoSaveFailed"),
+        message: t(item ? "item.photoSaveFailedKept" : "item.photoSaveFailedAdded"),
+      });
     }
   };
 
@@ -268,7 +314,9 @@ function ItemForm({
     <>
       <Segment
         value={form.type}
-        onChange={(type) => onChange({ type })}
+        onChange={(type) => {
+          if (!saving) onChange({ type });
+        }}
         accessibilityLabel={t("item.typeLabel")}
         options={[
           { value: "WISH", label: t("item.wish") },
@@ -277,12 +325,17 @@ function ItemForm({
       />
 
       <View style={{ flexDirection: "row", alignItems: "center", gap: space[12] }}>
-        <PhotoPicker uri={form.thumbnail} onChange={(thumbnail) => onChange({ thumbnail })} />
+        <PhotoPicker
+          uri={form.thumbnail}
+          disabled={saving}
+          onChange={(thumbnail) => onChange({ thumbnail })}
+        />
         <View style={{ flex: 1, gap: space[6] }}>
           <Input
             label={t("item.nameLabel")}
             value={form.name}
             onChangeText={(name) => onChange({ name })}
+            editable={!saving}
             clearLabel={t("common.clear")}
             returnKeyType="done"
           />
@@ -292,12 +345,13 @@ function ItemForm({
         </View>
       </View>
 
-      <FolderRow folderId={form.folderId} onPress={onOpenFolders} />
+      <FolderRow folderId={form.folderId} disabled={saving} onPress={onOpenFolders} />
 
       <Input
         label={t("item.memoLabel")}
         value={form.memo}
         onChangeText={(memo) => onChange({ memo })}
+        editable={!saving}
         placeholder={t("item.memoPlaceholder")}
         multiline
       />
@@ -306,7 +360,7 @@ function ItemForm({
         <View style={{ flexDirection: "row", gap: space[10] }}>
           <Button
             variant="secondary"
-            disabled={busy}
+            disabled={saving}
             onPress={onDelete}
             style={{ width: DELETE_WIDTH }}
           >
@@ -329,13 +383,15 @@ function ItemForm({
  * 사진 칸. 비어 있으면 누를 때 시스템 사진 선택기를 연다.
  * 사진이 있으면 바꾸기 · 지우기를 고르게 한다 (iOS 액션 시트, Android 알림창). 시안에는 바꾸기만 있다.
  * 선택기는 운영체제가 띄우고 고른 사진만 앱에 넘겨서 사진첩 권한을 요청하지 않는다 (iOS PHPicker · Android Photo Picker).
- * 넘겨받은 주소는 선택기가 만든 임시 복사본이라 OS 가 지울 수 있다.
+ * 넘겨받은 주소는 선택기가 만든 임시 복사본이다. 앱 폴더로 복사하는 건 저장할 때다 (ItemForm 의 save).
  */
 function PhotoPicker({
   uri,
+  disabled,
   onChange,
 }: {
   uri: string | null;
+  disabled: boolean;
   onChange: (uri: string | null) => void;
 }) {
   const { t } = useTranslation();
@@ -350,7 +406,6 @@ function PhotoPicker({
       return;
     }
     const picked = result.canceled ? undefined : result.assets[0];
-    // TODO(혜진): 3주차에 고른 사진을 앱 폴더로 복사하고 그 주소를 저장한다
     if (picked) onChange(picked.uri);
   };
 
@@ -380,6 +435,7 @@ function PhotoPicker({
   return (
     <Pressable
       onPress={uri ? showOptions : pick}
+      disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={uri ? t("item.photoOptions") : t("item.addPhoto")}
       style={({ pressed }) => ({
@@ -399,7 +455,11 @@ function PhotoPicker({
     >
       {uri ? (
         <>
-          <Image source={{ uri }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+          <Image
+            source={{ uri: photoUri(uri) }}
+            style={{ width: "100%", height: "100%" }}
+            resizeMode="cover"
+          />
           <View
             style={{
               position: "absolute",
@@ -429,7 +489,15 @@ function PhotoPicker({
 }
 
 /** 지금 고른 폴더. 누르면 폴더 선택 시트를 연다 */
-function FolderRow({ folderId, onPress }: { folderId: string | undefined; onPress: () => void }) {
+function FolderRow({
+  folderId,
+  disabled,
+  onPress,
+}: {
+  folderId: string | undefined;
+  disabled: boolean;
+  onPress: () => void;
+}) {
   const { t } = useTranslation();
   const { colors, folders: folderColors } = useTheme();
   const folders = useFolders();
@@ -439,6 +507,7 @@ function FolderRow({ folderId, onPress }: { folderId: string | undefined; onPres
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={`${t("item.folderLabel")}, ${name}`}
       style={({ pressed }) => ({

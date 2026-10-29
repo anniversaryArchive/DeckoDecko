@@ -213,6 +213,10 @@ export const ko = {
     // 저장 실패 토스트의 둘째 줄 (토스트는 시트를 연 화면이 띄운다)
     saveFailedReason: "잠시 뒤 다시 시도해 주세요.",
     deleteFailed: "삭제하지 못했어요",
+    // 사진 사본을 앱에 저장하지 못했을 때 (기록은 저장된 뒤 시트가 닫히고 토스트로 알린다)
+    photoSaveFailed: "사진을 저장하지 못했어요",
+    photoSaveFailedAdded: "사진 없이 추가했어요. 수정에서 다시 넣어 주세요.",
+    photoSaveFailedKept: "사진은 바꾸지 않고 저장했어요.",
     // 삭제 확인 시트
     deleteTitle: "이 아이템을 삭제할까요?",
     deleteMessage: "사진과 메모도 함께 지워지고,\n삭제한 뒤에는 되돌릴 수 없어요.",

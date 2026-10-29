@@ -9,6 +9,7 @@ import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { Button, BottomSheet, Text } from "@deckodecko/ui/native";
 
 import { folderName, gachaName } from "@/lib/displayName";
+import { photoUri } from "@/lib/photos";
 
 /** 위쪽 휴지통 원 지름 */
 const ICON_CIRCLE_SIZE = 56;
@@ -143,7 +144,7 @@ function ItemSummary({ item }: { item: Item }) {
       >
         {item.thumbnail ? (
           <Image
-            source={{ uri: item.thumbnail }}
+            source={{ uri: photoUri(item.thumbnail) }}
             style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
           />
