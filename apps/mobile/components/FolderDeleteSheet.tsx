@@ -47,7 +47,8 @@ export function FolderDeleteSheet({ open, onClose, folder, name }: Props) {
   const count = shown?.length;
 
   const close = () => {
-    remove.reset();
+    // 지우는 중에 뒤 배경 · 뒤로가기로 닫으면 reset 하지 않는다. hold 가 풀려 닫히는 동안 개수가 0으로 바뀌어 보인다
+    if (!remove.isPending) remove.reset();
     onClose();
   };
 
