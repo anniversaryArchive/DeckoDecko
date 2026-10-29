@@ -20,7 +20,7 @@ import {
   useItemCounts,
   useItems,
   useRecordRecentGacha,
-  useSetItemType,
+  useToggleItemType,
 } from "@deckodecko/core/react";
 import { gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Button, Card, Text, useToast } from "@deckodecko/ui/native";
@@ -80,27 +80,6 @@ function openAddItemSheet(_gachaId: string, _callbacks: SheetCallbacks) {}
 function openEditItemSheet(_itemId: string, _callbacks: SheetCallbacks) {}
 // TODO(혜진): 사진 인식 화면이 생기면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
 function openAiScan(_gachaId: string) {}
-
-/** 태그 원탭 전환 (WISH ↔ GET). 실패하면 토스트의 "다시 시도"로 한 번 더 바꿔 본다 */
-function useToggleItemType() {
-  const { t } = useTranslation();
-  const toast = useToast();
-  const setType = useSetItemType();
-  function toggle(item: Item) {
-    setType.mutate(
-      { id: item.id, type: item.type === "GET" ? "WISH" : "GET" },
-      {
-        onError: () =>
-          toast.show({
-            title: t("detail.saveFailed"),
-            actionLabel: t("common.retry"),
-            onAction: () => toggle(item),
-          }),
-      }
-    );
-  }
-  return toggle;
-}
 
 /** 시트 저장 실패 토스트. "다시 열기"를 누르면 reopen 으로 시트를 다시 연다 */
 function useSaveFailedToast() {
@@ -257,7 +236,10 @@ function MyItems({ gachaId }: { gachaId: string }) {
   const items = useItems({ gachaId });
   const folderName = useFolderName();
   const showSaveFailed = useSaveFailedToast();
-  const toggleType = useToggleItemType();
+  const toast = useToast();
+  const toggleType = useToggleItemType({
+    onError: () => toast.show({ title: t("item.toggleFailed") }),
+  });
   const count = items.data?.length ?? 0;
   function openEdit(itemId: string) {
     openEditItemSheet(itemId, {
