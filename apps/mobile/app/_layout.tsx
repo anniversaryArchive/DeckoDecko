@@ -26,7 +26,7 @@ import { ToastProvider } from "@deckodecko/ui/native";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { StateMessage } from "@/components/StateMessage";
 import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
-import { i18n, pickLanguage } from "@/lib/i18n";
+import { followDeviceLanguage } from "@/lib/i18n";
 import { watchNetworkState } from "@/lib/network";
 import { repositories } from "@/lib/repositories";
 
@@ -37,7 +37,7 @@ watchNetworkState();
 
 /**
  * 루트 레이아웃. 탭 그룹 하나와 가챠 상세 스택 하나로 시작한다.
- * 문구는 i18next(lib/i18n, import 하는 순간 기기 언어로 초기화)가, 데이터는 CoreProvider(React Query + 저장소)가 제공한다.
+ * 문구는 i18next(lib/i18n, import 하는 순간 설정에서 고른 언어 · 없으면 기기 언어로 초기화)가, 데이터는 CoreProvider(React Query + 저장소)가 제공한다.
  */
 export default function RootLayout() {
   const localDb = useLocalDbMigrations();
@@ -62,10 +62,7 @@ export default function RootLayout() {
 
   // 앱을 쓰는 중에 기기 언어를 바꾸면 따라간다 (Android 는 앱을 다시 띄우지 않고 바뀔 수 있다)
   const locales = useLocales();
-  useEffect(() => {
-    const next = pickLanguage(locales);
-    if (i18n.language !== next) void i18n.changeLanguage(next);
-  }, [locales]);
+  useEffect(() => followDeviceLanguage(locales), [locales]);
 
   useEffect(() => {
     if (error) console.warn("글꼴을 불러오지 못해 시스템 글꼴로 표시합니다.", error);
@@ -137,6 +134,7 @@ function RootStack() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="gacha/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="dev/components" options={{ title: "컴포넌트 카탈로그" }} />
       </Stack>
     </>

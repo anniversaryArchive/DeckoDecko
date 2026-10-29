@@ -227,6 +227,14 @@ export const ko = {
     // 공지 목록 화면이 생기기 전까지 자리에 보이는 문구
     comingSoon: "공지 목록은 준비 중이에요.",
   },
-  settings: {},
+  settings: {
+    title: "설정",
+    language: "언어",
+    comingSoon: "준비 중",
+    // 화면 읽기용 (준비 중인 언어 줄)
+    comingSoonLabel: "{{name}}, 준비 중",
+    languageHint:
+      "한국어를 고르면 한국어 이름(없으면 일본어 원래 이름)으로, 다른 언어는 일본어 원래 이름으로 보여요.",
+  },
   feedback: {},
 } as const;

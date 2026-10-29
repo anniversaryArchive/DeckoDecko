@@ -8,3 +8,7 @@ export type Messages = DeepStrings<typeof ko>;
 /** 앱이 지원하는 언어. 기기 언어가 여기 없으면 en 으로 보인다. */
 export const languages = ["ko", "en"] as const;
 export type Language = (typeof languages)[number];
+
+export function isLanguage(value: string): value is Language {
+  return (languages as readonly string[]).includes(value);
+}
