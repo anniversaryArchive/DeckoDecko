@@ -93,7 +93,7 @@ function LanguageSection() {
                 accessibilityRole="radio"
                 accessibilityState={{ checked: selected, disabled }}
                 accessibilityLabel={
-                  disabled ? `${option.name}, ${t("settings.comingSoon")}` : option.name
+                  disabled ? t("settings.comingSoonLabel", { name: option.name }) : option.name
                 }
                 style={({ pressed }) => ({
                   flexDirection: "row",

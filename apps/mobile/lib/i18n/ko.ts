@@ -231,6 +231,8 @@ export const ko = {
     title: "설정",
     language: "언어",
     comingSoon: "준비 중",
+    // 화면 읽기용 (준비 중인 언어 줄)
+    comingSoonLabel: "{{name}}, 준비 중",
     languageHint:
       "한국어를 고르면 한국어 이름(없으면 일본어 원래 이름)으로, 다른 언어는 일본어 원래 이름으로 보여요.",
   },
