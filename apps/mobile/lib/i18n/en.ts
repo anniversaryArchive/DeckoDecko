@@ -152,7 +152,7 @@ export const en: Messages = {
     folderCount_one: "{{count, number}} folder",
     folderCount_other: "{{count, number}} folders",
     dragHint: "Press and hold the handle on the right to reorder.",
-    defaultLocked: "The default folder can't be renamed",
+    defaultLocked: "The default folder can't be changed or deleted",
     renameLabel: "Rename {{name}}",
     deleteLabel: "Delete {{name}}",
     dragLabel: "Reorder {{name}}",

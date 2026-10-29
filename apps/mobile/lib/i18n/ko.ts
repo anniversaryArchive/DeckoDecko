@@ -191,7 +191,7 @@ export const ko = {
     folderCount_one: "폴더 {{count, number}}개",
     folderCount_other: "폴더 {{count, number}}개",
     dragHint: "오른쪽 손잡이를 길게 눌러 순서를 바꿀 수 있어요.",
-    defaultLocked: "기본 폴더는 이름을 바꿀 수 없어요",
+    defaultLocked: "기본 폴더는 바꾸거나 지울 수 없어요",
     renameLabel: "{{name}} 이름 변경",
     deleteLabel: "{{name}} 삭제",
     dragLabel: "{{name}} 순서 바꾸기",
