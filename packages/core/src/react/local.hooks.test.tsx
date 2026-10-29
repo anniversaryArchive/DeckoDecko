@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
-import { onlineManager, QueryClient } from "@tanstack/react-query";
+import { onlineManager, QueryClient, useQueryClient } from "@tanstack/react-query";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { collectionRate } from "../collection";
+import { queryKeys } from "../queryKeys";
 import type { Repositories } from "../repositories";
 import {
   useCreateFolder,
@@ -401,6 +402,58 @@ describe("폴더 순서 훅", () => {
     act(() => result.current.reorder.mutate([b.id, a.id]));
     await waitFor(() => expect(result.current.reorder.isError).toBe(true));
     expect(result.current.folders.data?.map((f) => f.id)).toEqual(before);
+  });
+
+  it("useReorderFolders: 앞 저장이 실패해도 뒤에 줄 선 저장이 있으면 옛 순서로 되돌리지 않는다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    const c = await repositories.folders!.createFolder("서랍");
+    let calls = 0;
+    let fail!: () => void;
+    const original = repositories.folders!.reorderFolders;
+    repositories.folders!.reorderFolders = async (ids) => {
+      calls += 1;
+      if (calls === 1) {
+        await new Promise<void>((resolve) => (fail = resolve));
+        throw new Error("disk full");
+      }
+      return original(ids);
+    };
+    const { result } = renderHook(
+      () => ({
+        folders: useFolders(),
+        reorder: useReorderFolders(),
+        queryClient: useQueryClient(),
+      }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(4));
+    const defaultId = result.current.folders.data![0]!.id;
+    const before = result.current.folders.data!.map((f) => f.id);
+    // 렌더는 묶여서 잠깐 바뀐 값을 놓칠 수 있으므로, 캐시에 들어간 순서를 모두 모은다
+    const seen: string[][] = [];
+    const listHash = JSON.stringify(queryKeys.folders.list());
+    const unsubscribe = result.current.queryClient.getQueryCache().subscribe((event) => {
+      if (event.query.queryHash !== listHash) return;
+      const data = event.query.state.data as { id: string }[] | undefined;
+      if (data) seen.push(data.map((f) => f.id));
+    });
+
+    act(() => result.current.reorder.mutate([b.id, a.id, c.id]));
+    await waitFor(() => expect(calls).toBe(1));
+    act(() => result.current.reorder.mutate([c.id, b.id, a.id]));
+    await waitFor(() =>
+      expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id])
+    );
+    const afterSecond = seen.length;
+
+    fail();
+    await waitFor(() => expect(calls).toBe(2));
+    await waitFor(() => expect(result.current.reorder.isSuccess).toBe(true));
+    unsubscribe();
+    expect(seen.slice(afterSecond)).not.toContainEqual(before);
+    expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id]);
   });
 });
 

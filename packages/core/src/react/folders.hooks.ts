@@ -70,7 +70,7 @@ const REORDER_FOLDERS_KEY = ["folders", "reorder"] as const;
 
 /**
  * 일반 폴더의 순서를 바꾼다 (ids 는 기본 폴더를 뺀 전체). 폴더 목록 캐시는 저장을 기다리지 않고 바로 바뀐다.
- * 저장에 실패하면 이전 순서로 되돌리고 mutation 의 error 로 알린다.
+ * 저장에 실패하면 이전 순서로 되돌리고 mutation 의 error 로 알린다. 뒤에 줄 선 저장이 있으면 되돌리지 않는다.
  */
 export function useReorderFolders() {
   const { folders } = useLocalRepositories();
@@ -94,6 +94,8 @@ export function useReorderFolders() {
       return { previous };
     },
     onError: (_error, _ids, context) => {
+      // 뒤에 줄 선 저장이 있으면 그 순서가 화면에 맞다. 되돌리면 그 저장이 끝날 때까지 옛 순서가 잠깐 보인다
+      if (queryClient.isMutating({ mutationKey: REORDER_FOLDERS_KEY }) > 1) return;
       if (context?.previous) queryClient.setQueryData(queryKey, context.previous);
     },
     // 줄 선 저장이 남아 있으면 다시 읽지 않는다. 읽은 값이 아직 저장 전인 순서로 화면을 되돌린다
