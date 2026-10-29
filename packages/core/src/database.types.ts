@@ -1,7 +1,12 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  "graphql_public": {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5";
+  };
+  graphql_public: {
     Tables: {
       [_ in never]: never;
     };
@@ -9,12 +14,12 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      "graphql": {
+      graphql: {
         Args: {
-          "extensions"?: Json;
-          "operationName"?: string;
-          "query"?: string;
-          "variables"?: Json;
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
         };
         Returns: Json;
       };
@@ -26,79 +31,77 @@ export type Database = {
       [_ in never]: never;
     };
   };
-  "public": {
+  public: {
     Tables: {
-      "anime": {
+      anime: {
         Row: {
-          "aliases": string[];
-          "created_at": string;
-          "en_title": string | null;
-          "id": number;
-          "jp_title": string | null;
-          "kr_sub_title": string | null;
-          "kr_title": string;
-          "type": string;
-          "updated_at": string | null;
+          aliases: string[];
+          created_at: string;
+          en_title: string | null;
+          id: number;
+          jp_title: string | null;
+          kr_sub_title: string | null;
+          kr_title: string;
+          type: string;
+          updated_at: string | null;
         };
-        ComputedFields: never;
         Insert: {
-          "aliases"?: string[];
-          "created_at"?: string;
-          "en_title"?: string | null;
-          "id"?: number;
-          "jp_title"?: string | null;
-          "kr_sub_title"?: string | null;
-          "kr_title": string;
-          "type"?: string;
-          "updated_at"?: string | null;
+          aliases?: string[];
+          created_at?: string;
+          en_title?: string | null;
+          id?: number;
+          jp_title?: string | null;
+          kr_sub_title?: string | null;
+          kr_title: string;
+          type?: string;
+          updated_at?: string | null;
         };
         Update: {
-          "aliases"?: string[];
-          "created_at"?: string;
-          "en_title"?: string | null;
-          "id"?: number;
-          "jp_title"?: string | null;
-          "kr_sub_title"?: string | null;
-          "kr_title"?: string;
-          "type"?: string;
-          "updated_at"?: string | null;
+          aliases?: string[];
+          created_at?: string;
+          en_title?: string | null;
+          id?: number;
+          jp_title?: string | null;
+          kr_sub_title?: string | null;
+          kr_title?: string;
+          type?: string;
+          updated_at?: string | null;
         };
         Relationships: [];
       };
-      "gacha": {
+      gacha: {
         Row: {
-          "anime_id": number | null;
-          "created_at": string | null;
-          "id": number;
-          "image_link": string | null;
-          "name": string | null;
-          "name_kr": string | null;
-          "price": number | null;
-          "release_month": string | null;
-          "updated_at": string | null;
+          anime_id: number | null;
+          created_at: string | null;
+          id: number;
+          image_link: string | null;
+          name: string | null;
+          name_kr: string | null;
+          price: number | null;
+          release_month: string | null;
+          updated_at: string | null;
         };
-        ComputedFields: never;
         Insert: {
-          "anime_id"?: number | null;
-          "created_at"?: string | null;
-          "id"?: number;
-          "image_link"?: string | null;
-          "name"?: string | null;
-          "name_kr"?: string | null;
-          "price"?: number | null;
-          "release_month"?: string | null;
-          "updated_at"?: string | null;
+          anime_id?: number | null;
+          created_at?: string | null;
+          id?: number;
+          image_link?: string | null;
+          name?: string | null;
+          name_kr?: string | null;
+          price?: number | null;
+          release_month?: string | null;
+          updated_at?: string | null;
         };
         Update: {
-          "anime_id"?: number | null;
-          "created_at"?: string | null;
-          "id"?: number;
-          "image_link"?: string | null;
-          "name"?: string | null;
-          "name_kr"?: string | null;
-          "price"?: number | null;
-          "release_month"?: string | null;
-          "updated_at"?: string | null;
+          anime_id?: number | null;
+          created_at?: string | null;
+          id?: number;
+          image_link?: string | null;
+          name?: string | null;
+          name_kr?: string | null;
+          price?: number | null;
+          release_month?: string | null;
+          updated_at?: string | null;
         };
         Relationships: [
           {
@@ -110,37 +113,36 @@ export type Database = {
           },
         ];
       };
-      "gacha_items": {
+      gacha_items: {
         Row: {
-          "created_at": string;
-          "gacha_id": number;
-          "id": number;
-          "image_link": string | null;
-          "name": string;
-          "name_kr": string | null;
-          "sort_order": number;
-          "updated_at": string;
+          created_at: string;
+          gacha_id: number;
+          id: number;
+          image_link: string | null;
+          name: string;
+          name_kr: string | null;
+          sort_order: number;
+          updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
-          "created_at"?: string;
-          "gacha_id": number;
-          "id"?: number;
-          "image_link"?: string | null;
-          "name": string;
-          "name_kr"?: string | null;
-          "sort_order"?: number;
-          "updated_at"?: string;
+          created_at?: string;
+          gacha_id: number;
+          id?: number;
+          image_link?: string | null;
+          name: string;
+          name_kr?: string | null;
+          sort_order?: number;
+          updated_at?: string;
         };
         Update: {
-          "created_at"?: string;
-          "gacha_id"?: number;
-          "id"?: number;
-          "image_link"?: string | null;
-          "name"?: string;
-          "name_kr"?: string | null;
-          "sort_order"?: number;
-          "updated_at"?: string;
+          created_at?: string;
+          gacha_id?: number;
+          id?: number;
+          image_link?: string | null;
+          name?: string;
+          name_kr?: string | null;
+          sort_order?: number;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -152,28 +154,27 @@ export type Database = {
           },
         ];
       };
-      "gacha_view_log": {
+      gacha_view_log: {
         Row: {
-          "created_at": string;
-          "device_id": string;
-          "gacha_id": number;
-          "id": number;
-          "viewed_on": string;
+          created_at: string;
+          device_id: string;
+          gacha_id: number;
+          id: number;
+          viewed_on: string;
         };
-        ComputedFields: never;
         Insert: {
-          "created_at"?: string;
-          "device_id": string;
-          "gacha_id": number;
-          "id"?: number;
-          "viewed_on"?: string;
+          created_at?: string;
+          device_id: string;
+          gacha_id: number;
+          id?: number;
+          viewed_on?: string;
         };
         Update: {
-          "created_at"?: string;
-          "device_id"?: string;
-          "gacha_id"?: number;
-          "id"?: number;
-          "viewed_on"?: string;
+          created_at?: string;
+          device_id?: string;
+          gacha_id?: number;
+          id?: number;
+          viewed_on?: string;
         };
         Relationships: [
           {
@@ -185,31 +186,33 @@ export type Database = {
           },
         ];
       };
-      "notice": {
+      notice: {
         Row: {
-          "body": string;
-          "created_at": string;
-          "id": number;
-          "is_published": boolean;
-          "title": string;
-          "updated_at": string;
+          body: string;
+          created_at: string;
+          id: number;
+          is_fixed: boolean;
+          is_published: boolean;
+          title: string;
+          updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
-          "body": string;
-          "created_at"?: string;
-          "id"?: number;
-          "is_published"?: boolean;
-          "title": string;
-          "updated_at"?: string;
+          body: string;
+          created_at?: string;
+          id?: number;
+          is_fixed?: boolean;
+          is_published?: boolean;
+          title: string;
+          updated_at?: string;
         };
         Update: {
-          "body"?: string;
-          "created_at"?: string;
-          "id"?: number;
-          "is_published"?: boolean;
-          "title"?: string;
-          "updated_at"?: string;
+          body?: string;
+          created_at?: string;
+          id?: number;
+          is_fixed?: boolean;
+          is_published?: boolean;
+          title?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -218,8 +221,8 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      "log_gacha_view": {
-        Args: { "p_device_id": string; "p_gacha_id": number };
+      log_gacha_view: {
+        Args: { p_device_id: string; p_gacha_id: number };
         Returns: undefined;
       };
     };
@@ -246,7 +249,9 @@ export type Tables<
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
@@ -269,7 +274,9 @@ export type TablesInsert<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
     }
@@ -291,7 +298,9 @@ export type TablesUpdate<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
     }
@@ -313,7 +322,9 @@ export type Enums<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
@@ -327,17 +338,19 @@ export type CompositeTypes<
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never;
 
 export const Constants = {
-  "graphql_public": {
+  graphql_public: {
     Enums: {},
   },
-  "public": {
+  public: {
     Enums: {},
   },
 } as const;

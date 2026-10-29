@@ -32,5 +32,7 @@ export {
   formatFolderItemCount,
   formatItemCount,
   formatMonth,
+  formatNumber,
+  formatPercent,
   formatPrice,
 } from "./format";

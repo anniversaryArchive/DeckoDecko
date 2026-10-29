@@ -1,11 +1,21 @@
 import type { FolderRepository } from "./folders";
 import type { GachaRepository } from "./gacha";
 import type { ItemRepository } from "./items";
+import type { NoticeRepository } from "./notice";
+import type { RecentRepository } from "./recent";
 
 /** 기기 로컬 기록 저장소. 앱만 넘긴다 (백오피스는 사용자 기기의 기록을 읽지 않는다). */
 export type LocalRepositories = {
   items: ItemRepository;
   folders: FolderRepository;
+};
+
+/**
+ * CoreProvider 에 빠져 있어도 되는 저장소. 빠지면 그 도메인의 훅은 요청하지 않고 데이터 없음으로 끝난다.
+ * 공지가 빠지면 앱은 공지 띠를 숨기고 공지 목록은 빈 상태가 된다. 백오피스는 공지를 넘기지 않는다.
+ */
+export type OptionalRepositories = {
+  notice: NoticeRepository;
 };
 
 /**
@@ -16,4 +26,10 @@ export type LocalRepositories = {
  */
 export type Repositories = {
   gacha: GachaRepository;
-} & Partial<LocalRepositories>;
+  /**
+   * 최근 검색어 · 최근 본 가챠 (기기 키-값 저장소, recent.storage.ts). 앱만 넘긴다.
+   * 백오피스는 사용자 기기의 기록을 쓰지 않으므로 선택으로 둔다. 넘기지 않고 최근 기록 훅을 쓰면 훅이 던진다.
+   */
+  recent?: RecentRepository;
+} & Partial<LocalRepositories> &
+  Partial<OptionalRepositories>;
