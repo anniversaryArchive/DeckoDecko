@@ -94,7 +94,40 @@ export const ko = {
   },
   goods: {
     title: "내 굿즈",
-    empty: "아직 저장된 가챠가 없어요.",
+    // 제목 위 한 줄. rate 는 formatPercent 로 만든 문자열
+    summary_one: "전체 {{count, number}}개 · 소장률 {{rate}}",
+    summary_other: "전체 {{count, number}}개 · 소장률 {{rate}}",
+    summaryEmpty: "아직 저장한 가챠가 없어요",
+    manageFolders: "폴더 관리",
+    // WISH · GET 세그먼트
+    typeLabel: "WISH · GET",
+    wishTab: "WISH {{count, number}}",
+    getTab: "GET {{count, number}}",
+    // 폴더 칩
+    folderLabel: "폴더",
+    allFolders: "전체",
+    searchPlaceholder: "내 굿즈 검색",
+    // 풀어보기 · 묶어보기 버튼 (화면 읽기 이름)
+    viewModeLabel: "보기 방식",
+    viewGachas: "가챠별로 묶어보기",
+    viewItems: "아이템별로 풀어보기",
+    // 묶어보기 한 줄의 개수 배지
+    groupCount_one: "{{count, number}}개",
+    groupCount_other: "{{count, number}}개",
+    // 묶어보기의 폴더 분포 "기본 폴더 1, 별의 숲 2" 의 한 조각
+    folderCount: "{{name}} {{count, number}}",
+    // 카탈로그에서 사라진 가챠의 이름 자리
+    unknownGacha: "정보가 없는 가챠",
+    // 가챠 이름 · 이미지 조회 실패 (기록 목록은 그대로 보인다)
+    gachaLoadFailed: "가챠 정보를 불러오지 못했어요",
+    // 저장된 기록이 하나도 없을 때
+    emptyTitle: "저장된 가챠가 없어요",
+    emptyDescription: "갖고 싶은 가챠는 WISH, 뽑은 가챠는 GET으로\n저장하면 여기에 모여요.",
+    findGacha: "가챠 찾아보기",
+    browseHome: "홈에서 신상 가챠 보기",
+    // 기록은 있는데 고른 WISH · GET · 폴더에 없을 때
+    noMatch: "여기에 저장된 아이템이 없어요",
+    noSearchResult: "'{{keyword}}' 결과가 없어요",
   },
   folder: {
     // 폴더 선택 시트 (아이템 시트에서 연다)

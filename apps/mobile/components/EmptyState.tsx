@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { View } from "react-native";
 
 import { radius, space, useTheme } from "@deckodecko/ui";
@@ -18,13 +18,15 @@ type Props = {
   title: string;
   /** 제목 아래 안내. 줄바꿈은 문구의 \n 으로 */
   description?: string;
+  /** 안내 아래 버튼 · 링크 (내 굿즈 "가챠 찾아보기") */
+  children?: ReactNode;
 };
 
 /**
- * 내용이 없을 때의 큰 안내 (검색 결과 없음, 앞으로 빈 폴더 · 빈 목록).
+ * 내용이 없을 때의 큰 안내 (검색 결과 없음, 내 굿즈에 기록 없음).
  * 부모가 준 공간을 채우고 가운데 둔다. 로딩 · 에러처럼 문구 한 줄이면 StateMessage.
  */
-export function EmptyState({ icon, title, description }: Props) {
+export function EmptyState({ icon, title, description, children }: Props) {
   const { colors } = useTheme();
   return (
     <View
@@ -59,6 +61,7 @@ export function EmptyState({ icon, title, description }: Props) {
           </Text>
         )}
       </View>
+      {children}
     </View>
   );
 }
