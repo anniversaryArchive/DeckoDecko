@@ -48,6 +48,7 @@ export type {
   UpdateItemInput,
 } from "./repositories/items";
 export type { FolderRepository } from "./repositories/folders";
+export { assertFolderOrder } from "./repositories/folders";
 export type { LocalRepositories, Repositories } from "./repositories";
 export { cleanName, normalizeName } from "./name";
 export { createMemoryLocalRepositories } from "./repositories/local.memory";

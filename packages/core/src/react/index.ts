@@ -32,6 +32,7 @@ export {
   useFolders,
   useIsFolderNameTaken,
   useRenameFolder,
+  useReorderFolders,
 } from "./folders.hooks";
 export {
   useAddRecentSearch,
