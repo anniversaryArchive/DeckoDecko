@@ -6,10 +6,12 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useGachaList } from "./gacha.hooks";
 import { useIsOnline } from "./network";
+import { useGoodsViewMode, useSetGoodsViewMode } from "./preferences.hooks";
 import { CoreProvider } from "./provider";
 import { useAddRecentSearch, useRecentGacha, useRecentSearches } from "./recent.hooks";
 import { createMemoryGachaRepository } from "../repositories/gacha.memory";
 import { createMemoryLocalRepositories } from "../repositories/local.memory";
+import { createStoragePreferencesRepository } from "../repositories/preferences.storage";
 import {
   createMemoryKeyValueStorage,
   createStorageRecentRepository,
@@ -27,6 +29,7 @@ function setup() {
     gacha: createMemoryGachaRepository([]),
     ...createMemoryLocalRepositories(),
     recent: createStorageRecentRepository(createMemoryKeyValueStorage()),
+    preferences: createStoragePreferencesRepository(createMemoryKeyValueStorage()),
   };
   return function wrapper({ children }: { children: ReactNode }) {
     return (
@@ -52,7 +55,7 @@ describe("오프라인", () => {
     expect(result.current.online).toBe(true);
   });
 
-  // 로컬 기록 훅은 local.hooks.test 가 오프라인으로 돌며 지킨다. 최근 기록 훅은 여기서 지킨다.
+  // 로컬 기록 훅은 local.hooks.test 가 오프라인으로 돌며 지킨다. 최근 기록 · 설정 훅은 여기서 지킨다.
   it("최근 기록(기기 저장소)은 오프라인에서도 읽고 저장한다", async () => {
     act(() => onlineManager.setOnline(false));
     const { result } = renderHook(
@@ -65,5 +68,19 @@ describe("오프라인", () => {
 
     await act(() => result.current.add.mutateAsync("루나"));
     await waitFor(() => expect(result.current.searches.data).toEqual(["루나"]));
+  });
+
+  it("설정(기기 저장소)은 오프라인에서도 읽고 저장한다", async () => {
+    act(() => onlineManager.setOnline(false));
+    const { result } = renderHook(
+      () => ({ mode: useGoodsViewMode(), setMode: useSetGoodsViewMode() }),
+      { wrapper: setup() }
+    );
+    await waitFor(() => expect(result.current.mode.isSuccess).toBe(true));
+    const next = result.current.mode.data === "items" ? "gachas" : "items";
+
+    await act(() => result.current.setMode.mutateAsync(next));
+    await waitFor(() => expect(result.current.setMode.isSuccess).toBe(true));
+    expect(result.current.mode.data).toBe(next);
   });
 });

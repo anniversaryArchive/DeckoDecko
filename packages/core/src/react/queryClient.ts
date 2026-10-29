@@ -19,7 +19,7 @@ export function createQueryClient(): QueryClient {
 }
 
 /**
- * 기기 안에 저장하는 데이터(WISH · GET 기록 · 폴더 · 최근 기록)를 읽고 쓰는 훅에만 펼쳐 넣는다.
+ * 기기 안에 저장하는 데이터(WISH · GET 기록 · 폴더 · 최근 기록 · 설정)를 읽고 쓰는 훅에만 펼쳐 넣는다.
  * 기본값이면 오프라인에서 기기 저장까지 멈춰서, 네트워크와 상관없이 늘 실행하게 한다.
  * 서버(Supabase)에서 받는 훅에는 넣지 않고 serverNetworkMode 를 넣는다.
  * 넣었으면 local.hooks.test.tsx 처럼 오프라인으로 도는 테스트를 같이 쓴다.
