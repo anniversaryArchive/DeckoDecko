@@ -29,6 +29,7 @@ export type {
   GachaRepository,
   GachaSort,
   ListGachaParams,
+  ReleaseStatus,
   ResolvedGachaFilter,
   SearchGachaParams,
 } from "./repositories/gacha";

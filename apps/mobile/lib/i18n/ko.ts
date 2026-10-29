@@ -16,6 +16,8 @@ export const ko = {
     itemCount_other: "{{count, number}}종",
     // formatPercent 가 쓴다
     percent: "{{value, number}}%",
+    // formatShortDate 가 쓴다 (month · day 는 두 자리)
+    shortDate: "{{year}}.{{month}}.{{day}}",
     appName: "가챠 탐색대",
     back: "뒤로",
     last10Days: "최근 10일",
@@ -23,6 +25,7 @@ export const ko = {
     pricePerPlay: "1회 {{price}}",
     taxIncluded: "(세금 포함)",
     released: "{{month}} 발매",
+    releaseUpcoming: "{{month}} 발매 예정",
     itemTotal: "전 {{total}}",
     cancel: "취소",
     // 카드 사진 위 배지 (이번 달 발매 · 다음 달 이후 발매)
@@ -74,7 +77,7 @@ export const ko = {
     requestRegistration: "이 가챠 등록 요청하기",
     // 결과 없음의 추천 검색어 칩 위 문구 (인기 가챠의 작품명)
     suggestionTitle: "이렇게 검색해 보세요",
-    // 결과를 볼 때 제목 옆. 신상품 · 발매 예정의 기준일 (date 는 formatDate)
+    // 결과를 볼 때 제목 옆. 신상품 · 발매 예정의 기준일 (date 는 formatShortDate)
     asOf: "{{date}} 기준",
     // 필터 때문에 0개일 때. 등록 요청 대신 필터를 풀게 한다.
     noFilteredResult: "조건에 맞는 결과가 없어요",

@@ -20,7 +20,7 @@ import { SearchResultList } from "@/components/SearchResultList";
 import { SectionHeader } from "@/components/SectionHeader";
 import { StateMessage } from "@/components/StateMessage";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { formatDate } from "@/lib/i18n";
+import { formatShortDate } from "@/lib/i18n";
 
 /**
  * 검색. 상단(제목 + 입력창)은 고정이고, 아래 영역이 검색어 유무에 따라 검색 전 화면(최근 기록 · 인기) ↔ 결과 목록으로 바뀐다.
@@ -72,7 +72,7 @@ export default function SearchScreen() {
           {/* 신상품 · 발매 예정 · NEW 배지가 오늘(기기 시간) 기준이라 결과를 볼 때만 알린다 */}
           {keyword ? (
             <Text variant="caption" color="textMuted">
-              {t("search.asOf", { date: formatDate(new Date()) })}
+              {t("search.asOf", { date: formatShortDate(new Date()) })}
             </Text>
           ) : null}
         </View>

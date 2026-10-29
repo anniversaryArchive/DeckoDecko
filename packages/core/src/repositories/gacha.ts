@@ -74,10 +74,12 @@ export function toYearMonth(date: Date): string {
  * 발매월이 기준 달(toYearMonth)에 비해 어디쯤인지. 신상품 · 발매 예정 필터와 카드 배지가 같이 쓴다.
  * new: 이번 달 발매, upcoming: 다음 달 이후. 지난 발매 · 발매월 모름은 null.
  */
+export type ReleaseStatus = "new" | "upcoming";
+
 export function releaseStatus(
   releaseMonth: string | null | undefined,
   thisMonth: string
-): "new" | "upcoming" | null {
+): ReleaseStatus | null {
   if (releaseMonth == null) return null;
   if (releaseMonth === thisMonth) return "new";
   return releaseMonth > thisMonth ? "upcoming" : null;
