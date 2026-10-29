@@ -52,4 +52,9 @@ export const queryKeys = {
     searches: () => ["recent", "searches"] as const,
     gachaIds: () => ["recent", "gachaIds"] as const,
   },
+  // 기기 설정. 쓰기 훅이 캐시를 바로 바꾼다.
+  preferences: {
+    all: ["preferences"] as const,
+    goodsViewMode: () => ["preferences", "goodsViewMode"] as const,
+  },
 } as const;

@@ -12,6 +12,7 @@ export type {
   Gacha,
   GachaDetail,
   GachaItem,
+  GoodsViewMode,
   Item,
   ItemCounts,
   ItemType,
@@ -66,6 +67,9 @@ export {
   createMemoryKeyValueStorage,
   createStorageRecentRepository,
 } from "./repositories/recent.storage";
+export type { PreferencesRepository } from "./repositories/preferences";
+export { DEFAULT_GOODS_VIEW_MODE, parseGoodsViewMode } from "./repositories/preferences";
+export { createStoragePreferencesRepository } from "./repositories/preferences.storage";
 export { createSupabaseGachaRepository } from "./repositories/gacha.supabase";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";
 export { queryKeys } from "./queryKeys";
