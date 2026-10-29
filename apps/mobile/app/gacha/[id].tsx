@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, {
@@ -86,10 +86,15 @@ function useToggleItemType() {
   const { t } = useTranslation();
   const toast = useToast();
   const setType = useSetItemType();
+  // 목록을 다시 읽기 전까지 item.type 은 이전 값이라, 저장 중에 또 누르면 같은 쪽으로 한 번 더 보낸다
+  const pending = useRef(new Set<string>());
   function toggle(item: Item) {
+    if (pending.current.has(item.id)) return;
+    pending.current.add(item.id);
     setType.mutate(
       { id: item.id, type: item.type === "GET" ? "WISH" : "GET" },
       {
+        onSettled: () => pending.current.delete(item.id),
         onError: () =>
           toast.show({
             title: t("detail.saveFailed"),
