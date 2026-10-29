@@ -12,6 +12,7 @@ export type {
   Gacha,
   GachaDetail,
   GachaItem,
+  GoodsViewMode,
   Item,
   ItemCounts,
   ItemType,
@@ -23,8 +24,22 @@ export type {
 export type { ListNoticesParams, NoticeRepository } from "./repositories/notice";
 export { NOTICE_DEFAULTS } from "./repositories/notice";
 export { createMemoryNoticeRepository } from "./repositories/notice.memory";
-export type { GachaRepository, ListGachaParams, SearchGachaParams } from "./repositories/gacha";
-export { GACHA_DEFAULTS } from "./repositories/gacha";
+export type {
+  GachaFilter,
+  GachaReleaseFilter,
+  GachaRepository,
+  GachaSort,
+  ListGachaParams,
+  ReleaseStatus,
+  ResolvedGachaFilter,
+  SearchGachaParams,
+} from "./repositories/gacha";
+export {
+  GACHA_DEFAULTS,
+  releaseStatus,
+  resolveGachaFilter,
+  toYearMonth,
+} from "./repositories/gacha";
 export type {
   CreateItemInput,
   ItemNameQuery,
@@ -52,6 +67,9 @@ export {
   createMemoryKeyValueStorage,
   createStorageRecentRepository,
 } from "./repositories/recent.storage";
+export type { PreferencesRepository } from "./repositories/preferences";
+export { DEFAULT_GOODS_VIEW_MODE, parseGoodsViewMode } from "./repositories/preferences";
+export { createStoragePreferencesRepository } from "./repositories/preferences.storage";
 export { createSupabaseGachaRepository } from "./repositories/gacha.supabase";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";
 export { queryKeys } from "./queryKeys";
