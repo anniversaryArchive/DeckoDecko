@@ -13,12 +13,14 @@ export type QueryLike<T> = {
 export type QueryView = "offline" | "loading" | "error" | "empty" | "content";
 
 /**
- * 쿼리 하나를 어떤 상태로 그릴지 고른다 (QueryState).
- * - 오프라인으로 멈췄는데(isPaused) 받은 적 있는 값이 없으면 offline. 멈춘 쿼리는 isLoading 이 false 다.
- *   "없음"으로 확정된 null 캐시는 받은 값이라 offline 이 아니다 (React Query 도 undefined 만 데이터 없음으로 본다).
- * - 로딩은 isLoading 으로 본다. 꺼진 쿼리(빈 id · 빈 검색어)는 isPending 이 계속 true 라서다.
- * - 이전 결과를 대신 들고 있는 동안(isPlaceholderData)도 로딩이다. 그 결과로 "결과 없음"을 그리면 새 검색어의 결과처럼 보인다.
- * - 캐시가 있으면 오프라인이어도 content 다 (오프라인은 루트의 배너가 알린다).
+ * QueryState 가 무엇을 그릴지 고른다. 위에서부터 먼저 맞는 것이 이긴다.
+ *   offline  오프라인이라 멈췄고, 보여 줄 데이터가 없다
+ *   loading  불러오는 중이거나, 새 검색어를 불러오는 동안 이전 검색어의 결과만 들고 있다
+ *   error    불러오지 못했다
+ *   empty    받은 데이터가 비었다 ("없음"으로 받은 null 도 여기)
+ *   content  그 밖. 오프라인이어도 캐시가 있으면 여기로 온다 (오프라인은 배너가 알린다)
+ * 주의: 멈춘 쿼리는 isLoading 이 false 라 offline 을 loading 보다 먼저 본다.
+ * 로딩을 isPending 이 아니라 isLoading 으로 보는 건, 꺼진 쿼리(빈 id · 빈 검색어)는 isPending 이 계속 true 라서다.
  */
 export function queryView<T>(
   query: QueryLike<T>,

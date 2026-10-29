@@ -4,12 +4,14 @@ import { keepPreviousData, skipToken, useQuery } from "@tanstack/react-query";
 
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
+import { serverNetworkMode } from "./queryClient";
 import { GACHA_DEFAULTS } from "../repositories/gacha";
 
 /** 홈 "새로 나왔어요" */
 export function useGachaList(limit: number = GACHA_DEFAULTS.listLimit) {
   const { gacha } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.list(limit),
     queryFn: () => gacha.listGacha({ limit }),
   });
@@ -19,6 +21,7 @@ export function useGachaList(limit: number = GACHA_DEFAULTS.listLimit) {
 export function usePopularGacha(limit: number = GACHA_DEFAULTS.popularLimit) {
   const { gacha } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.popular(limit),
     queryFn: () => gacha.listPopularGacha(limit),
   });
@@ -28,6 +31,7 @@ export function usePopularGacha(limit: number = GACHA_DEFAULTS.popularLimit) {
 export function useGacha(id: string | undefined) {
   const { gacha } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.detail(id ?? ""),
     queryFn: id ? () => gacha.getGacha(id) : skipToken,
   });
@@ -43,6 +47,7 @@ export function useGachaSearch(keyword: string, options?: { limit?: number; offs
   const offset = options?.offset ?? GACHA_DEFAULTS.searchOffset;
   const limit = options?.limit ?? GACHA_DEFAULTS.searchLimit;
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.search(trimmed, offset, limit),
     queryFn: trimmed ? () => gacha.searchGacha({ keyword: trimmed, offset, limit }) : skipToken,
     // 검색어를 비우면 이전 결과도 지운다 (keepPreviousData 는 꺼진 쿼리에도 마지막 결과를 돌려준다)

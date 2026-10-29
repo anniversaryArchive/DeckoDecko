@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
-import { localNetworkMode } from "./queryClient";
+import { localNetworkMode, serverNetworkMode } from "./queryClient";
 import type { RecentRepository } from "../repositories/recent";
 
 /** 최근 기록 저장소. CoreProvider 에 recent 를 넘기지 않은 앱(백오피스)에서 쓰면 던진다. */
@@ -135,6 +135,7 @@ export function useRecentGacha() {
   });
   const idList = ids.data ?? [];
   const list = useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.byIds(idList),
     queryFn: idList.length > 0 ? () => gacha.listGachaByIds(idList) : skipToken,
     placeholderData: keepPreviousData,
