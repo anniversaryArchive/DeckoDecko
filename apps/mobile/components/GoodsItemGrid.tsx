@@ -1,3 +1,5 @@
+import { useScrollToTop } from "expo-router";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, useWindowDimensions } from "react-native";
 
@@ -26,8 +28,11 @@ export function GoodsItemGrid({ items, gachas, folders, onPressItem }: Props) {
   const { width } = useWindowDimensions();
   const folderNames = useFolderNames(folders);
   const cardWidth = (width - gutter * 2 - GAP * (COLUMNS - 1)) / COLUMNS;
+  const listRef = useRef<FlatList<Item>>(null);
+  useScrollToTop(listRef);
   return (
     <FlatList
+      ref={listRef}
       data={items}
       keyExtractor={(item) => item.id}
       numColumns={COLUMNS}
