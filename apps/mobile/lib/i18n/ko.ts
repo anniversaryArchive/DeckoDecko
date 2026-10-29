@@ -127,8 +127,6 @@ export const ko = {
     addItem: "아이템 추가",
     aiScan: "사진으로 인식해서 추가",
     toggleHint: "태그를 누르면 WISH ↔ GET",
-    // 태그 버튼의 화면 읽기 이름. type 은 WISH · GET
-    toggleLabel: "{{name}} 상태 전환, 현재 {{type}}",
     saveFailed: "저장하지 못했어요",
     reopenSheet: "다시 열기",
   },
@@ -221,6 +219,11 @@ export const ko = {
       "이 가챠의 소장 수가 <bold>{{from, number}} → {{to, number}}</bold>로 바뀌어요.",
     wishBadge: "WISH",
     getBadge: "GET",
+    // WISH · GET 태그 버튼의 화면 읽기 이름 · 힌트 (상세 내 아이템). type 은 wishBadge · getBadge 문구
+    typeTagLabel: "{{name}}, 현재 {{type}}",
+    toggleToGetHint: "누르면 GET 으로 바뀌어요",
+    toggleToWishHint: "누르면 WISH 로 바뀌어요",
+    toggleFailed: "상태를 바꾸지 못했어요",
   },
   notice: {
     title: "공지사항",

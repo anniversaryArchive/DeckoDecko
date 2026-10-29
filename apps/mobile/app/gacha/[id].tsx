@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, {
@@ -20,7 +20,7 @@ import {
   useItemCounts,
   useItems,
   useRecordRecentGacha,
-  useSetItemType,
+  useToggleItemType,
 } from "@deckodecko/core/react";
 import { gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Button, Card, Text, useToast } from "@deckodecko/ui/native";
@@ -75,27 +75,6 @@ export default function GachaDetailScreen() {
 // TODO(혜진): 사진 인식 화면이 생기면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
 function openAiScan(_gachaId: string) {}
 
-/** 태그 원탭 전환 (WISH ↔ GET). 실패하면 토스트의 "다시 시도"로 한 번 더 바꿔 본다 */
-function useToggleItemType() {
-  const { t } = useTranslation();
-  const toast = useToast();
-  const setType = useSetItemType();
-  function toggle(item: Item) {
-    setType.mutate(
-      { id: item.id, type: item.type === "GET" ? "WISH" : "GET" },
-      {
-        onError: () =>
-          toast.show({
-            title: t("detail.saveFailed"),
-            actionLabel: t("common.retry"),
-            onAction: () => toggle(item),
-          }),
-      }
-    );
-  }
-  return toggle;
-}
-
 /** 시트 저장 실패 토스트. "다시 열기"를 누르면 reopen 으로 시트를 다시 연다 */
 function useSaveFailedToast() {
   const { t } = useTranslation();
@@ -120,10 +99,11 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   /** 수정할 기록. 비어 있으면 추가 시트 */
   const [sheetItemId, setSheetItemId] = useState<string | undefined>();
-  function openSheet(itemId?: string) {
+  // MyItems 의 행(MyItemRow)이 memo 라 고정된 함수로 넘긴다
+  const openSheet = useCallback((itemId?: string) => {
     setSheetItemId(itemId);
     setSheetOpen(true);
-  }
+  }, []);
 
   // 히어로가 상태 표시줄 뒤까지 깔려 있어 GACHA_HERO_HEIGHT 만큼 스크롤하면 히어로 끝이 상태 표시줄 아래 선에 닿는다
   const scrollY = useSharedValue(0);
@@ -192,7 +172,7 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
 
         <View style={{ paddingHorizontal: gutter, gap: space[18] }}>
           <DetailCollection gacha={gacha} />
-          <MyItems gachaId={gacha.id} onPressItem={(itemId) => openSheet(itemId)} />
+          <MyItems gachaId={gacha.id} onPressItem={openSheet} />
         </View>
       </Animated.ScrollView>
       <Animated.View
@@ -271,7 +251,10 @@ function MyItems({
   const { t } = useTranslation();
   const items = useItems({ gachaId });
   const folderName = useFolderName();
-  const toggleType = useToggleItemType();
+  const toast = useToast();
+  const toggleType = useToggleItemType({
+    onError: () => toast.show({ title: t("item.toggleFailed") }),
+  });
   const count = items.data?.length ?? 0;
 
   return (
@@ -303,8 +286,8 @@ function MyItems({
                   item={item}
                   detail={joinDot([folderName(item), item.memo ? t("detail.hasMemo") : null])}
                   last={i === list.length - 1}
-                  onPress={() => onPressItem(item.id)}
-                  onToggleType={() => toggleType(item)}
+                  onPress={onPressItem}
+                  onToggleType={toggleType}
                 />
               ))}
             </LayoutAnimationConfig>

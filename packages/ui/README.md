@@ -118,6 +118,7 @@ toast.show({ title: t("item.saveFailed"), message: t("item.duplicateName"), acti
 - 토스트는 앱 루트(`apps/mobile/app/_layout.tsx`)의 `ToastProvider` 가 그린다. 화면 맨 위, 상태 바 바로 아래(머리글과 같은 높이)에 머리글 · 바텀 시트 위로 겹쳐 뜬다. 화면에서는 `useToast()` 로 띄운다. 이미 떠 있을 때 다시 `show` 하면 그 자리에서 내용만 바꾸고 시간을 다시 잰다. 화면 읽기 프로그램이 켜져 있고 동작 버튼이 있으면 저절로 사라지지 않는다 (버튼까지 가기 전에 사라지지 않게). 화면 읽기 프로그램은 밀기를 쓸 수 없어서 두 번 탭, 동작 목록의 닫기(`closeLabel`), iOS 문지르기로 닫는다. iOS 는 내용 다음에 `closeHint` 를 읽는다.
 - 선 아이콘 `CloseIcon`(×) · `ChevronDownIcon`(⌄) · `AlertIcon`(!)은 `size` · `color`(색 역할)를 받는다. 칩의 펼침 표시는 `<Chip trailing={<ChevronDownIcon size={14} color="text" />}>`.
 - `Input` 은 RN `TextInput` 이 글꼴을 하나만 쓸 수 있어서 Noto Sans KR 로 고정한다.
+- 색을 서서히 바꿀 때는 `useColorTransition(color)` 를 쓴다 (`COLOR_TRANSITION_DURATION` 250ms, "동작 줄이기"면 바로). 돌려받은 값을 `useAnimatedStyle` 안에서 읽는다. 소장률 막대 칸과 WISH/GET 태그가 같은 속도로 바뀌게 하려고 한 곳에 둔다.
 - 시안에 오류 상태 색이 없어서 `Input` 에는 오류 표시가 아직 없다. 필요해지면 색 역할(`danger` 등)부터 추가한다.
 
 ### 글꼴 굵기 추가

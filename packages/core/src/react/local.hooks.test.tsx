@@ -16,12 +16,14 @@ import {
 import {
   useCreateItem,
   useDeleteItem,
+  useDisplayedItemType,
   useIsItemNameTaken,
   useItem,
   useItemCounts,
   useItemCountsByFolder,
   useItems,
   useSetItemType,
+  useToggleItemType,
   useUpdateItem,
 } from "./items.hooks";
 import { CoreProvider } from "./provider";
@@ -208,6 +210,182 @@ describe("기록 하나 · 수정 · 삭제 훅", () => {
     await act(() => result.current.remove.mutateAsync(item.id));
     await waitFor(() => expect(result.current.list.data).toEqual([]));
     expect(result.current.counts.data).toEqual({ wish: 0, get: 0 });
+  });
+});
+
+describe("WISH ↔ GET 원탭 전환 훅", () => {
+  /** updateItem 을 붙잡아 두었다가 테스트가 하나씩 풀어 준다 (실제 타이머 없이 순서를 정한다) */
+  function holdUpdates(repositories: ReturnType<typeof memoryRepositories>) {
+    const updateItem = repositories.items.updateItem.bind(repositories.items);
+    const held: { save: () => void; fail: () => void }[] = [];
+    vi.spyOn(repositories.items, "updateItem").mockImplementation(
+      (...args) =>
+        new Promise((resolve, reject) => {
+          held.push({
+            save: () => void updateItem(...args).then(resolve, reject),
+            fail: () => reject(new Error("disk full")),
+          });
+        })
+    );
+    // n 번째(1부터) 저장이 시작될 때까지 기다렸다가 끝낸다
+    async function finish(n: number, how: "save" | "fail") {
+      await waitFor(() => expect(held).toHaveLength(n));
+      act(() => held[n - 1]![how]());
+    }
+    return { held, finish };
+  }
+
+  function memoryRepositories() {
+    return { gacha: createMemoryGachaRepository([]), ...createMemoryLocalRepositories() };
+  }
+
+  async function render(repositories = memoryRepositories(), onError = vi.fn()) {
+    const a = await repositories.items.createItem({ gachaId: "g1", type: "WISH", name: "a" });
+    const b = await repositories.items.createItem({ gachaId: "g1", type: "WISH", name: "b" });
+    const { wrapper } = setup(repositories);
+    // 소장률이 중간 값을 거쳤는지 보려고 그릴 때마다 GET 수를 남긴다
+    const getHistory: number[] = [];
+    const { result, unmount } = renderHook(
+      () => {
+        const list = useItems({ gachaId: "g1" });
+        const counts = useItemCounts("g1");
+        if (counts.data) getHistory.push(counts.data.get);
+        const listed = (id: string) => list.data?.find((i) => i.id === id);
+        return {
+          list,
+          counts,
+          toggle: useToggleItemType({ onError }),
+          shownA: useDisplayedItemType(listed(a.id) ?? a),
+          shownB: useDisplayedItemType(listed(b.id) ?? b),
+          // 목록 값과 다른 옛 객체로 물어도 WISH 면, 저장 중인 값이 남아 있지 않다는 뜻
+          staleA: useDisplayedItemType({ id: a.id, type: "WISH" }),
+          listedA: () => listed(a.id)!,
+          listedB: () => listed(b.id)!,
+        };
+      },
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.list.data).toHaveLength(2));
+    return { result, unmount, onError, getHistory, a, b, repositories };
+  }
+
+  it("누르면 바로 바뀌어 보이고, 저장이 끝나면 목록 · 소장률도 새 값이 되고 저장 중인 값은 남지 않는다", async () => {
+    const { result } = await render();
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(result.current.shownA).toBe("GET"));
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+    expect(result.current.listedA().type).toBe("GET");
+    expect(result.current.shownA).toBe("GET");
+    expect(result.current.staleA).toBe("WISH");
+  });
+
+  it("빠르게 두 번 누르면: 저장은 하나씩 차례로, 소장률은 중간 값을 거치지 않고 원래대로 끝난다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, getHistory, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(result.current.shownA).toBe("GET"));
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(result.current.shownA).toBe("WISH"));
+    await finish(1, "save");
+    // 첫 저장이 끝나도 두 번째가 남아 있으니 보이는 값은 그대로, 두 번째 저장은 이제야 시작한다
+    await waitFor(() => expect(held).toHaveLength(2));
+    expect(result.current.shownA).toBe("WISH");
+    await finish(2, "save");
+    await waitFor(() => expect(repositories.items.updateItem).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current.staleA).toBe("WISH"));
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    expect(result.current.counts.data).toEqual({ wish: 2, get: 0 });
+    expect(getHistory).not.toContain(1);
+  });
+
+  it("앞 저장은 성공하고 뒤 저장이 실패하면, 앞 저장 상태(GET)로 돌아가고 onError 를 한 번 부른다", async () => {
+    const repositories = memoryRepositories();
+    const { finish } = holdUpdates(repositories);
+    const { result, onError, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedA()));
+    await finish(1, "save");
+    await finish(2, "fail");
+    await waitFor(() => expect(onError).toHaveBeenCalledOnce());
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+    expect(result.current.shownA).toBe("GET");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("GET");
+  });
+
+  it("앞 저장이 실패해도 뒤 저장이 대기 중이면 마지막으로 누른 값이 보이고, 그 값으로 저장되며 onError 는 부르지 않는다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, onError, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedA()));
+    await finish(1, "fail");
+    await waitFor(() => expect(held).toHaveLength(2));
+    expect(result.current.shownA).toBe("WISH");
+    await finish(2, "save");
+    await waitFor(() => expect(result.current.staleA).toBe("WISH"));
+    expect(result.current.shownA).toBe("WISH");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("앞뒤 저장이 모두 실패하면 처음 상태(WISH)로 돌아가고 onError 를 한 번 부른다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, onError, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedA()));
+    await finish(1, "fail");
+    await waitFor(() => expect(held).toHaveLength(2));
+    expect(onError).not.toHaveBeenCalled();
+    await finish(2, "fail");
+    await waitFor(() => expect(onError).toHaveBeenCalledOnce());
+    expect(result.current.shownA).toBe("WISH");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+  });
+
+  it("저장이 끝난 뒤 다시 그려지기 전의 옛 item 으로 눌러도, 저장된 값의 반대로 바꾼다", async () => {
+    const { result, a, repositories } = await render();
+    const update = vi.spyOn(repositories.items, "updateItem");
+    // 화면이 아직 다시 그려지지 않아 행이 들고 있는 값 (WISH)
+    const stale = result.current.listedA();
+
+    act(() => result.current.toggle(stale));
+    await waitFor(() => expect(result.current.listedA().type).toBe("GET"));
+    act(() => result.current.toggle(stale));
+    await waitFor(() => expect(update).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current.listedA().type).toBe("WISH"));
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+  });
+
+  it("서로 다른 두 아이템을 이어서 누르면 둘 다 바뀐다", async () => {
+    const { result } = await render();
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedB()));
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 0, get: 2 }));
+    expect(result.current.shownA).toBe("GET");
+    expect(result.current.shownB).toBe("GET");
+  });
+
+  it("누른 화면이 사라진 뒤 저장이 실패하면 onError 를 부르지 않는다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, unmount, onError } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(held).toHaveLength(1));
+    unmount();
+    await finish(1, "fail");
+    await waitFor(() => expect(repositories.items.updateItem).toHaveBeenCalledOnce());
+    // reject 가 onError 까지 흘러갈 틈을 준다
+    await act(() => Promise.resolve());
+    expect(onError).not.toHaveBeenCalled();
   });
 });
 

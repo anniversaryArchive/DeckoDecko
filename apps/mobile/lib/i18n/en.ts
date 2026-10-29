@@ -103,7 +103,6 @@ export const en: Messages = {
     addItem: "Add item",
     aiScan: "Add by scanning a photo",
     toggleHint: "Tap a tag to switch WISH ↔ GET",
-    toggleLabel: "Switch {{name}}, currently {{type}}",
     saveFailed: "Couldn't save",
     reopenSheet: "Reopen",
   },
@@ -178,6 +177,10 @@ export const en: Messages = {
       "Owned count for this gacha goes <bold>{{from, number}} → {{to, number}}</bold>.",
     wishBadge: "WISH",
     getBadge: "GET",
+    typeTagLabel: "{{name}}, currently {{type}}",
+    toggleToGetHint: "Switches to GET",
+    toggleToWishHint: "Switches to WISH",
+    toggleFailed: "Couldn't change the status",
   },
   notice: {
     title: "Notices",

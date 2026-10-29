@@ -59,7 +59,7 @@ export type Notice = {
   createdAt: string; // ISO 8601 UTC
 };
 
-/** WISH = 갖고 싶음, GET = 가졌음. 목록 · 상세에서 원탭으로 바꾼다 (useSetItemType). */
+/** WISH = 갖고 싶음, GET = 가졌음. 목록 · 상세에서 태그를 눌러 바꾼다 (useToggleItemType). */
 export type ItemType = "WISH" | "GET";
 
 /**

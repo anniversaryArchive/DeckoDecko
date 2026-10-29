@@ -4,6 +4,7 @@ import type { Gacha, ItemType } from "@deckodecko/core";
 import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { Card, Text } from "@deckodecko/ui/native";
 
+import { ITEM_TYPE_COLORS } from "@/components/ItemTypeTag";
 import { joinLabel, useGachaDisplay } from "@/hooks/useGachaDisplay";
 
 /** 썸네일 한 변 */
@@ -35,7 +36,7 @@ type Props = {
 export function GoodsGachaRow({ gacha, fallbackName, type, countLabel, folders, onPress }: Props) {
   const { colors } = useTheme();
   const display = useGachaDisplay(gacha ?? { ...NO_GACHA, name: fallbackName });
-  const isGet = type === "GET";
+  const typeColors = ITEM_TYPE_COLORS[type];
   return (
     <Card
       onPress={onPress}
@@ -77,9 +78,9 @@ export function GoodsGachaRow({ gacha, fallbackName, type, countLabel, folders, 
         <Text
           variant="caption"
           weight="bold"
-          color={isGet ? "onGet" : "onWish"}
+          color={typeColors.label}
           style={{
-            backgroundColor: isGet ? colors.getSurface : colors.wishSurface,
+            backgroundColor: colors[typeColors.surface],
             borderRadius: radius.full,
             overflow: "hidden",
             paddingHorizontal: space[8],
