@@ -115,7 +115,7 @@ grant execute on function "public"."submit_feedback"(uuid, text, text, text, big
 -- ─────────────────────────────────────────────
 -- 3. 내 문의: list_my_feedback
 --    그 기기 UUID 의 문의만, 최신순. admin_note(내부 메모)와 device_uuid 는 돌려주지 않는다.
---    limit · offset 은 검색 RPC 와 같은 규칙: limit 은 1 미만 · null 이면 기본 20, 상한 50. offset 은 0 미만 · null 이면 0.
+--    limit 은 1 미만 · null 이면 기본 20, 상한 50. offset 은 0 미만 · null 이면 0.
 -- ─────────────────────────────────────────────
 create or replace function "public"."list_my_feedback"(
   p_device_uuid uuid,
