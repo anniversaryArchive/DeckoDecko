@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "backgroundColor": "#FFF9F4",
+    "icon": "./assets/brand/icon.png",
     "ios": {
       "bundleIdentifier": "com.anniversaryarchive.deckodecko",
       "supportsTablet": false,
@@ -15,12 +16,34 @@
       }
     },
     "android": {
-      "package": "com.anniversaryarchive.deckodecko"
+      "package": "com.anniversaryarchive.deckodecko",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/brand/adaptive-icon-foreground.png",
+        "monochromeImage": "./assets/brand/adaptive-icon-monochrome.png",
+        "backgroundColor": "#FFF1EA"
+      }
     },
     "locales": {
       "ko": "./locales/ko.json"
     },
-    "plugins": ["expo-router", "expo-localization", "expo-sqlite"],
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        { "photosPermission": false, "cameraPermission": false, "microphonePermission": false }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/brand/splash.png",
+          "imageWidth": 128,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFF9F4"
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     },

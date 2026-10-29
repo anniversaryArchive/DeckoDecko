@@ -4,12 +4,14 @@ import { skipToken, useMutation, useQuery, useQueryClient } from "@tanstack/reac
 
 import { queryKeys } from "../queryKeys";
 import { useLocalRepositories } from "./provider";
+import { localNetworkMode } from "./queryClient";
 import { normalizeName } from "../name";
 
 /** 폴더 목록 (sequence 순, 기본 폴더가 맨 앞) */
 export function useFolders() {
   const { folders } = useLocalRepositories();
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.folders.list(),
     queryFn: () => folders.listFolders(),
   });
@@ -20,6 +22,7 @@ export function useIsFolderNameTaken(name: string, excludeId?: string) {
   const { folders } = useLocalRepositories();
   const key = normalizeName(name);
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.folders.nameTaken(key, excludeId ?? null),
     queryFn: key ? () => folders.isFolderNameTaken(name, excludeId) : skipToken,
   });
@@ -31,6 +34,7 @@ export function useCreateFolder() {
   const { folders } = useLocalRepositories();
   const queryClient = useQueryClient();
   return useMutation({
+    ...localNetworkMode,
     mutationFn: (name: string) => folders.createFolder(name),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.folders.all }),
   });
@@ -40,6 +44,7 @@ export function useRenameFolder() {
   const { folders } = useLocalRepositories();
   const queryClient = useQueryClient();
   return useMutation({
+    ...localNetworkMode,
     mutationFn: ({ id, name }: { id: string; name: string }) => folders.renameFolder(id, name),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.folders.all }),
   });
@@ -50,6 +55,7 @@ export function useDeleteFolder() {
   const { folders } = useLocalRepositories();
   const queryClient = useQueryClient();
   return useMutation({
+    ...localNetworkMode,
     mutationFn: (id: string) => folders.deleteFolder(id),
     onSuccess: () =>
       Promise.all([

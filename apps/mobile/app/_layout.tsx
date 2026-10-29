@@ -19,22 +19,25 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { CoreProvider } from "@deckodecko/core/react";
+import { CoreProvider, useIsOnline } from "@deckodecko/core/react";
 import { fonts, ThemeProvider, useTheme } from "@deckodecko/ui";
 import { ToastProvider } from "@deckodecko/ui/native";
 
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { StateMessage } from "@/components/StateMessage";
 import { useLocalDbMigrations } from "@/lib/db/useLocalDbMigrations";
-import { i18n, pickLanguage } from "@/lib/i18n";
+import { followDeviceLanguage } from "@/lib/i18n";
+import { watchNetworkState } from "@/lib/network";
 import { repositories } from "@/lib/repositories";
 
 // 글꼴과 로컬 DB 마이그레이션이 끝날 때까지 스플래시를 유지한다. 모듈이 읽히자마자 호출해야 첫 프레임 전에 걸린다.
 void SplashScreen.preventAutoHideAsync();
+// 첫 쿼리보다 먼저 연결 상태를 듣기 시작한다
+watchNetworkState();
 
 /**
  * 루트 레이아웃. 탭 그룹 하나와 가챠 상세 스택 하나로 시작한다.
- * 문구는 i18next(lib/i18n, import 하는 순간 기기 언어로 초기화)가, 데이터는 CoreProvider(React Query + 저장소)가 제공한다.
- * TODO(여경): app.json 에 icon · splash 설정과 assets/ 이미지 추가. 지금은 Expo 기본 아이콘으로 빌드된다.
+ * 문구는 i18next(lib/i18n, import 하는 순간 설정에서 고른 언어 · 없으면 기기 언어로 초기화)가, 데이터는 CoreProvider(React Query + 저장소)가 제공한다.
  */
 export default function RootLayout() {
   const localDb = useLocalDbMigrations();
@@ -59,10 +62,7 @@ export default function RootLayout() {
 
   // 앱을 쓰는 중에 기기 언어를 바꾸면 따라간다 (Android 는 앱을 다시 띄우지 않고 바뀔 수 있다)
   const locales = useLocales();
-  useEffect(() => {
-    const next = pickLanguage(locales);
-    if (i18n.language !== next) void i18n.changeLanguage(next);
-  }, [locales]);
+  useEffect(() => followDeviceLanguage(locales), [locales]);
 
   useEffect(() => {
     if (error) console.warn("글꼴을 불러오지 못해 시스템 글꼴로 표시합니다.", error);
@@ -79,11 +79,14 @@ export default function RootLayout() {
         {localDb.success ? (
           // 시트 안에서도 데이터 훅을 쓸 수 있게 CoreProvider 를 시트 Provider 바깥에 둔다
           <CoreProvider repositories={repositories}>
-            <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
-              <BottomSheetModalProvider>
-                <RootStack />
-              </BottomSheetModalProvider>
-            </ToastProvider>
+            {/* 토스트가 배너를 가리지 않게 배너를 토스트 바깥에 둔다 (토스트는 배너 아래부터 자리를 잡는다) */}
+            <OfflineBanner>
+              <ToastProvider closeLabel={t("common.close")} closeHint={t("common.closeToastHint")}>
+                <BottomSheetModalProvider>
+                  <RootStack />
+                </BottomSheetModalProvider>
+              </ToastProvider>
+            </OfflineBanner>
           </CoreProvider>
         ) : (
           <LocalDbFailed retrying={localDb.retrying} onRetry={localDb.retry} />
@@ -109,11 +112,19 @@ function LocalDbFailed({ retrying, onRetry }: { retrying: boolean; onRetry: () =
   );
 }
 
+// StatusBar 는 앱에 이것 하나만 둔다 (둘이면 마운트 순서로 승부가 갈린다). 오프라인이면 뒤가 배너(inverse)라 글자색을 뒤집는다
+function AppStatusBar() {
+  const { scheme } = useTheme();
+  const online = useIsOnline();
+  const darkBehind = (scheme === "dark") === online;
+  return <StatusBar style={darkBehind ? "light" : "dark"} />;
+}
+
 function RootStack() {
-  const { scheme, colors } = useTheme();
+  const { colors } = useTheme();
   return (
     <>
-      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+      <AppStatusBar />
       <Stack
         screenOptions={{
           headerTintColor: colors.text,
@@ -123,6 +134,7 @@ function RootStack() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="gacha/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="dev/components" options={{ title: "컴포넌트 카탈로그" }} />
       </Stack>
     </>

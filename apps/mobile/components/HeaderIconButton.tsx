@@ -7,6 +7,8 @@ import { PRESSED_OPACITY } from "@deckodecko/ui/native";
 
 /** 버튼 지름. md: 화면 위쪽 (홈 검색, 상세 뒤로), lg: 옆의 Button lg 와 높이를 맞출 때 (상세 사진 인식) */
 const SIZE = { md: 44, lg: 54 } as const;
+/** md 버튼 지름. 머리글 제목을 가운데에 둘 때 반대쪽 빈 자리 폭으로 쓴다 */
+export const HEADER_ICON_BUTTON_SIZE = SIZE.md;
 /** 버튼 안 아이콘 */
 const ICON_SIZE = { md: 20, lg: 22 } as const;
 
