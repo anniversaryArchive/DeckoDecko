@@ -36,7 +36,7 @@ export function OptionSheet<T extends string>({
   const { colors } = useTheme();
   return (
     <BottomSheet open={open} onClose={onClose} title={title} closeLabel={t("common.close")}>
-      <View accessibilityRole="radiogroup">
+      <View accessibilityRole="radiogroup" accessibilityLabel={title}>
         {options.map((option, i) => {
           const selected = option.value === value;
           return (

@@ -106,7 +106,7 @@ export function SearchResultList({
             {t(`search.filter.${value}`)}
           </Chip>
         ))}
-        {/* 작품 고르기 시트는 작품 목록 조회(저장소 · 훅)가 생긴 뒤에 붙인다. 지금은 자리만 */}
+        {/* TODO(혜진): 작품 목록 조회(저장소 · 훅)가 생기면 작품 고르기 시트를 붙인다 */}
         <Chip disabled trailing={<ChevronDownIcon size={CHEVRON_SIZE} color="text" />}>
           {t("search.filter.media")}
         </Chip>
