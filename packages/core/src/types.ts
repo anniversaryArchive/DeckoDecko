@@ -92,3 +92,6 @@ export type ItemCounts = {
   wish: number;
   get: number;
 };
+
+/** 내 굿즈 보기 방식. items = 풀어보기(아이템 2열 그리드), gachas = 묶어보기(가챠별 한 줄). 기기에 기억한다 */
+export type GoodsViewMode = "items" | "gachas";

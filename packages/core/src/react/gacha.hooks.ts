@@ -1,10 +1,12 @@
 "use client";
 
 import { keepPreviousData, skipToken, useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
 import { GACHA_DEFAULTS } from "../repositories/gacha";
+import type { Gacha } from "../types";
 
 /** 홈 "새로 나왔어요" */
 export function useGachaList(limit: number = GACHA_DEFAULTS.listLimit) {
@@ -48,4 +50,26 @@ export function useGachaSearch(keyword: string, options?: { limit?: number; offs
     // 검색어를 비우면 이전 결과도 지운다 (keepPreviousData 는 꺼진 쿼리에도 마지막 결과를 돌려준다)
     placeholderData: trimmed ? keepPreviousData : undefined,
   });
+}
+
+/**
+ * 여러 가챠의 요약을 id 로 한 번에 (내 굿즈 카드의 가챠 이름 · 이미지 · 가챠 이름 검색). id → 가챠 Map 으로 돌려준다.
+ * 순서 · 중복은 보지 않는다. 카탈로그에 없는 id 는 Map 에 없다. 빈 목록이면 요청하지 않는다.
+ * 기록이 늘어 id 가 바뀌어도 새 결과가 올 때까지 이전 결과를 들고 있어 카드의 이름이 깜빡이지 않는다.
+ */
+export function useGachasByIds(ids: readonly string[]) {
+  const { gacha } = useRepositories();
+  // 순서만 다른 목록이 다른 키로 두 번 캐시되지 않게 정렬해서 키로 쓴다
+  const key = useMemo(() => [...new Set(ids)].sort(), [ids]);
+  return useQuery({
+    queryKey: queryKeys.gacha.byIds(key),
+    queryFn: key.length > 0 ? () => gacha.listGachaByIds(key) : skipToken,
+    // 기록을 모두 지워 빈 목록이 되면 이전 결과도 지운다 (keepPreviousData 는 꺼진 쿼리에도 마지막 결과를 돌려준다)
+    placeholderData: key.length > 0 ? keepPreviousData : undefined,
+    select: toGachaMap,
+  });
+}
+
+function toGachaMap(list: Gacha[]): Map<string, Gacha> {
+  return new Map(list.map((g) => [g.id, g]));
 }
