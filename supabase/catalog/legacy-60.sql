@@ -139,7 +139,7 @@ insert into public.gacha_items (gacha_id, name, name_kr, image_link, sort_order)
   (1054, '真中らぁら', '마나카 라라', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_5.jpg', 3),
   (1054, '南みれぃ', '미나미 미레이', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_6.jpg', 4),
   (1054, '北条そふぃ', '호조 소피', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_7.jpg', 5),
-  (1051, '見習い服 どれみ', '견습복 도레미', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_2.jpg', 0),
+  (1051, '見習い服 どれみ', '견습복 레미', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_2.jpg', 0),
   (1051, '見習い服 はづき', '견습복 장메이', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_3.jpg', 1),
   (1051, '見習い服 あいこ', '견습복 유사랑', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_4.jpg', 2),
   (1051, 'クルリンコール', '쿠루링 콜', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_5.jpg', 3),
