@@ -7,6 +7,7 @@ supabase/
 ├── config.toml          # supabase init 이 생성. 로컬(supabase start) 설정
 ├── migrations/          # 테이블·RLS·RPC SQL (날짜_설명.sql)
 ├── seed.sql             # 개발용 샘플 데이터 (가챠 20개)
+├── catalog/             # dev 카탈로그 보강 SQL (tools/catalog-seed 가 생성)
 └── functions/           # Edge Functions (1.1 인식 API)
 ```
 

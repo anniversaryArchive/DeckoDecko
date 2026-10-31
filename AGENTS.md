@@ -19,7 +19,8 @@
 | `apps/admin`    | Next.js 백오피스 (운영자용, 포트 3001)             |
 | `packages/ui`   | 디자인 토큰, 공용 컴포넌트                         |
 | `packages/core` | Supabase 클라이언트, 생성 타입, 쿼리 훅            |
-| `supabase/`     | 마이그레이션 · RLS · RPC · seed                    |
+| `supabase/`     | 마이그레이션 · RLS · RPC · seed · 카탈로그 SQL     |
+| `tools/`        | 앱과 분리된 운영 스크립트 (카탈로그 수집 등)       |
 | `legacy/`       | 재개발 전 코드. **참고만, import 금지, 수정 금지** |
 
 `packages/ui` 의 RN 컴포넌트는 `@deckodecko/ui/native` 로만 내보낸다. `apps/admin` 은 이 입구를 import 하지 않는다 (react-native 가 없어 빌드가 깨진다).
