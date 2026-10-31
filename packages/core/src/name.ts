@@ -6,6 +6,11 @@ export function normalizeName(name: string): string {
   return name.normalize("NFKC").trim().toLowerCase();
 }
 
+/** 검색 비교용. 이름 비교(normalizeName)보다 느슨하게 가운데 공백까지 무시한다 ("별 숲" = "별숲"). 메모리 검색(가챠 · 작품)이 같이 쓴다. */
+export function normalizeSearch(text: string): string {
+  return text.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+}
+
 /** 저장 전 이름 정리. 비어 있으면 던진다 (화면이 먼저 막지만, 저장소도 빈 이름을 받지 않는다). */
 export function cleanName(name: string): string {
   const trimmed = name.trim();

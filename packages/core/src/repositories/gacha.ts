@@ -14,11 +14,6 @@ export const GACHA_DEFAULTS = {
   searchSort: "release",
 } as const;
 
-/** GACHA_DEFAULTS 의 규칙대로 limit · offset 을 고른다. 두 구현이 같이 쓴다 (한쪽만 고치면 페이지 동작이 갈린다). */
-export function count(n: number | undefined, fallback: number, min = 1): number {
-  return n !== undefined && Number.isInteger(n) && n >= min ? n : fallback;
-}
-
 /**
  * 발매 시기 필터 (목록 칩 "전체 · 신상품 · 발매 예정"). 기준 달은 오늘(기기 시간)이 속한 달.
  *   all      : 거르지 않는다

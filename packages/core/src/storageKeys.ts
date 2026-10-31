@@ -12,6 +12,8 @@ export const storageKeys = {
   goodsViewMode: "@deckodecko/goods-view-mode",
   /** 설정에서 고른 언어 ("ko" | "en"). 첫 화면 전에 읽어야 해서 동기로 읽을 수 있는 expo-sqlite kv-store 에 둔다 */
   language: "@deckodecko/language",
+  /** 기기 UUID. 레거시 앱이 쓰던 키라 접두어 규칙의 예외다 (바꾸면 업데이트한 기기가 새 UUID 를 받는다) */
+  deviceId: "@device_uuid",
 } as const;
 
 export type StorageKey = (typeof storageKeys)[keyof typeof storageKeys];

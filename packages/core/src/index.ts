@@ -8,6 +8,8 @@
  * 만든 클라이언트 인스턴스는 저장소에만 넘긴다.
  */
 export type {
+  Feedback,
+  FeedbackKind,
   Folder,
   Gacha,
   GachaDetail,
@@ -49,7 +51,7 @@ export type {
 } from "./repositories/items";
 export type { FolderRepository } from "./repositories/folders";
 export type { LocalRepositories, Repositories } from "./repositories";
-export { cleanName, normalizeName } from "./name";
+export { cleanName, normalizeName, normalizeSearch } from "./name";
 export { createMemoryLocalRepositories } from "./repositories/local.memory";
 export { collectionRate, gachaCollection, type GachaCollection } from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
@@ -72,5 +74,22 @@ export { DEFAULT_GOODS_VIEW_MODE, parseGoodsViewMode } from "./repositories/pref
 export { createStoragePreferencesRepository } from "./repositories/preferences.storage";
 export { createSupabaseGachaRepository } from "./repositories/gacha.supabase";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";
+export type {
+  FeedbackMediaInput,
+  FeedbackPhoto,
+  FeedbackRepository,
+  SendFeedbackInput,
+} from "./repositories/feedback";
+export {
+  FEEDBACK_DAILY_LIMIT,
+  FeedbackLimitError,
+  isFeedbackLimitError,
+} from "./repositories/feedback";
+export { createMemoryFeedbackRepository } from "./repositories/feedback.memory";
+export type { MediaEntry, MediaRepository, SearchMediaParams } from "./repositories/media";
+export { MEDIA_DEFAULTS } from "./repositories/media";
+export { createMemoryMediaRepository } from "./repositories/media.memory";
+export { createSupabaseMediaRepository } from "./repositories/media.supabase";
+export { createStorageDeviceId } from "./deviceId";
 export { queryKeys } from "./queryKeys";
 export { storageKeys, type StorageKey } from "./storageKeys";

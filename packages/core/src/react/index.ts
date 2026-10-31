@@ -43,3 +43,5 @@ export {
   useRemoveRecentSearch,
 } from "./recent.hooks";
 export { useGoodsViewMode, useSetGoodsViewMode } from "./preferences.hooks";
+export { useMediaSearch } from "./media.hooks";
+export { useCanSendFeedback, useSendFeedback } from "./feedback.hooks";

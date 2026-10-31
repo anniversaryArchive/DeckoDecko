@@ -79,6 +79,21 @@ describe("앱 저장소 묶음", () => {
     expect(await usesSupabase(repositories)).toBe(true);
   });
 
+  it("Supabase 모드의 작품 목록은 anime 테이블에서 받는다", async () => {
+    const repositories = await loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "", ...SUPABASE_ENV });
+
+    await repositories.media.listMedia();
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("localhost:54321/rest/v1/anime");
+  });
+
+  it("요청 · 문의 저장소는 개발 빌드에만 넣는다 (#185 전)", async () => {
+    const dev = await loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "", ...SUPABASE_ENV });
+    expect(dev.feedback).toBeDefined();
+
+    const release = await loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "", ...SUPABASE_ENV }, false);
+    expect(release.feedback).toBeUndefined();
+  });
+
   it("출시 빌드에서 Supabase 값이 없으면 시작할 때 실패한다", async () => {
     await expect(
       loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "", ...NO_SUPABASE_ENV }, false)

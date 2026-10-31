@@ -95,3 +95,19 @@ export type ItemCounts = {
 
 /** 내 굿즈 보기 방식. items = 풀어보기(아이템 2열 그리드), gachas = 묶어보기(가챠별 한 줄). 기기에 기억한다 */
 export type GoodsViewMode = "items" | "gachas";
+
+/** 요청 · 문의 종류 (feedback 테이블의 kind 와 같은 값). request 가챠 등록 요청은 검색 결과 없음에서, bug 버그 · idea 제안은 설정에서 들어온다. */
+export type FeedbackKind = "request" | "bug" | "idea";
+
+/** 보낸 요청 · 문의 한 건. 앱은 보낸 결과로만 받는다 (내 문의 목록은 1.0 범위 밖). */
+export type Feedback = {
+  id: string;
+  kind: FeedbackKind;
+  gachaName: string | null; // 가챠 등록 요청만
+  mediaId: string | null; // 자동완성에서 고른 작품
+  mediaText: string | null; // 목록에 없어 직접 적은 작품 이름
+  content: string | null; // 비었으면 null
+  photoPath: string | null; // Storage 안의 경로 (버킷 이름 제외)
+  deviceId: string;
+  createdAt: string; // ISO 8601 UTC
+};

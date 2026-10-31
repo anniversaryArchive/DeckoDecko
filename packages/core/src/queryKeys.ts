@@ -29,6 +29,11 @@ export const queryKeys = {
     home: (limit: number) => ["notice", "home", limit] as const,
     detail: (id: string) => ["notice", "detail", id] as const,
   },
+  media: {
+    all: ["media"] as const,
+    // 작품 전체 (별칭 포함). 검색은 훅이 기기에서 하므로 검색어는 키에 넣지 않는다
+    list: () => ["media", "list"] as const,
+  },
   items: {
     all: ["items"] as const,
     // 거르지 않는 조건은 null
