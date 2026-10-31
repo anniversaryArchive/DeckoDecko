@@ -93,11 +93,11 @@ export function useCreateItem() {
 }
 
 /** WISH · GET 전환과 수정 시트 저장이 같이 쓰는 scope. 시트가 type 까지 통째로 저장하므로, 누른 순서대로 저장돼야 마지막 값이 남는다 */
-const ITEM_TYPE_SCOPE = { id: "items.setType" };
+const ITEM_WRITE_SCOPE = { id: "items.write" };
 
 /**
  * 기록 수정 (시트). type 을 포함해 받은 필드를 저장한다.
- * WISH · GET 전환과 같은 scope 라 앞서 누른 전환이 끝난 뒤에 저장된다. 폼의 type 은 useDisplayedItemType 값으로 채운다.
+ * WISH · GET 전환과 같은 scope 라 앞서 누른 전환이 끝난 뒤에 저장된다. 폼의 type 은 useReadDisplayedItemType 으로 채운다.
  */
 export function useUpdateItem() {
   const { items } = useLocalRepositories();
@@ -107,7 +107,7 @@ export function useUpdateItem() {
     mutationFn: ({ id, input }: { id: string; input: UpdateItemInput }) =>
       items.updateItem(id, input),
     onSuccess: invalidate,
-    scope: ITEM_TYPE_SCOPE,
+    scope: ITEM_WRITE_SCOPE,
   });
 }
 
@@ -131,6 +131,11 @@ function findPendingTypes(queryClient: QueryClient, id: string): ItemType[] {
     .getMutationCache()
     .findAll(pendingSetTypeFilters(id))
     .map((m) => setTypeVariables(m)!.type);
+}
+
+/** 이 아이템의 전환이 저장 중이면 마지막으로 누른 값 */
+function pendingItemType(queryClient: QueryClient, id: string): ItemType | undefined {
+  return findPendingTypes(queryClient, id).at(-1);
 }
 
 /**
@@ -165,7 +170,7 @@ export function useSetItemType() {
       if (findPendingTypes(queryClient, id).length > 1) return;
       await invalidate();
     },
-    scope: ITEM_TYPE_SCOPE,
+    scope: ITEM_WRITE_SCOPE,
     // 끝난 전환은 아무도 읽지 않는다. 남아 있으면 행마다 캐시를 훑는 비용만 는다
     gcTime: 0,
   });
@@ -174,6 +179,7 @@ export function useSetItemType() {
 /**
  * 화면에 보일 WISH · GET. 이 아이템의 전환이 저장 중이면 마지막으로 누른 값, 아니면 item.type.
  * mutation 캐시를 읽으므로 같은 아이템을 그리는 모든 화면이 같은 값을 본다. 저장 중 값이 바뀌면 이 훅을 쓴 컴포넌트만 다시 그려진다.
+ * 한 컴포넌트에서 item.id 를 바꿔 쓰지 않는다 (useMutationState 가 다음 저장 변화 전까지 이전 id 의 값을 돌려준다). 바뀌면 key 로 다시 마운트한다.
  */
 export function useDisplayedItemType(item: Pick<Item, "id" | "type">): ItemType {
   const pending = useMutationState({
@@ -181,6 +187,18 @@ export function useDisplayedItemType(item: Pick<Item, "id" | "type">): ItemType 
     select: (m) => setTypeVariables(m)!.type,
   });
   return pending.at(-1) ?? item.type;
+}
+
+/**
+ * 지금 보일 WISH · GET 을 읽는 함수 (useDisplayedItemType 의 값과 같다). 구독하지 않으므로 값이 바뀌어도 다시 그리지 않는다.
+ * 수정 시트처럼 한 순간의 값만 필요할 때 쓴다. useDisplayedItemType 은 item.id 가 바뀐 첫 렌더에 이전 id 의 값을 돌려줄 수 있다.
+ */
+export function useReadDisplayedItemType() {
+  const queryClient = useQueryClient();
+  return useCallback(
+    (item: Pick<Item, "id" | "type">) => pendingItemType(queryClient, item.id) ?? item.type,
+    [queryClient]
+  );
 }
 
 /**
@@ -206,8 +224,7 @@ export function useToggleItemType({ onError }: { onError?: (error: unknown) => v
 
   return useCallback(
     (item: Pick<Item, "id" | "type">) => {
-      const shown =
-        findPendingTypes(queryClient, item.id).at(-1) ?? savedItemType(queryClient, item);
+      const shown = pendingItemType(queryClient, item.id) ?? savedItemType(queryClient, item);
       mutateAsync({ id: item.id, type: shown === "GET" ? "WISH" : "GET" }).catch(
         (error: unknown) => {
           // 실패한 저장은 이미 pending 이 아니라, 남은 것은 뒤에 누른 저장뿐이다
