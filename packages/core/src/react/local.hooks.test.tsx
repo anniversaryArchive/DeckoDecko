@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { collectionRate } from "../collection";
 import type { Repositories } from "../repositories";
+import type { UpdateItemInput } from "../repositories/items";
+import type { ItemType } from "../types";
 import {
   useCreateFolder,
   useDeleteFolder,
@@ -22,6 +24,7 @@ import {
   useItemCounts,
   useItemCountsByFolder,
   useItems,
+  useReadDisplayedItemType,
   useSetItemType,
   useToggleItemType,
   useUpdateItem,
@@ -255,6 +258,8 @@ describe("WISH ↔ GET 원탭 전환 훅", () => {
           list,
           counts,
           toggle: useToggleItemType({ onError }),
+          update: useUpdateItem(),
+          readShown: useReadDisplayedItemType(),
           shownA: useDisplayedItemType(listed(a.id) ?? a),
           shownB: useDisplayedItemType(listed(b.id) ?? b),
           // 목록 값과 다른 옛 객체로 물어도 WISH 면, 저장 중인 값이 남아 있지 않다는 뜻
@@ -371,6 +376,78 @@ describe("WISH ↔ GET 원탭 전환 훅", () => {
     await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 0, get: 2 }));
     expect(result.current.shownA).toBe("GET");
     expect(result.current.shownB).toBe("GET");
+  });
+
+  it("useReadDisplayedItemType: 저장 중인 전환은 그 아이템에만 보이고, 끝나면 넘긴 item.type 을 돌려준다", async () => {
+    const repositories = memoryRepositories();
+    const { finish } = holdUpdates(repositories);
+    const { result, a, b } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedB()));
+    await waitFor(() => expect(result.current.shownB).toBe("GET"));
+    // 시트가 B 를 보다가 A 를 열어도 B 의 전환값이 섞이지 않는다
+    expect(result.current.readShown({ id: b.id, type: "WISH" })).toBe("GET");
+    expect(result.current.readShown({ id: a.id, type: "WISH" })).toBe("WISH");
+    await finish(1, "save");
+    await waitFor(() => expect(result.current.listedB().type).toBe("GET"));
+    expect(result.current.readShown({ id: b.id, type: "WISH" })).toBe("WISH");
+  });
+
+  /** 태그로 A 를 GET 으로 바꾸고, 그 저장이 끝나기 전에 수정 시트에서 저장한다. 시트는 보이는 값(shown)으로 폼을 채운다 */
+  async function saveSheetDuringToggle(
+    sheetInput: (shown: ItemType) => UpdateItemInput,
+    toggleResult: "save" | "fail" = "save"
+  ) {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const rendered = await render(repositories);
+    const { result, a } = rendered;
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(held).toHaveLength(1));
+    // 시트가 다시 읽는 기록은 아직 WISH 다
+    const stored = (await repositories.items.getItem(a.id))!;
+    expect(stored.type).toBe("WISH");
+    const input = sheetInput(result.current.readShown(stored));
+    let saved!: Promise<unknown>;
+    act(() => {
+      saved = result.current.update.mutateAsync({ id: a.id, input });
+    });
+    // 시트 저장은 앞선 전환이 끝날 때까지 줄 서 있다
+    await waitFor(() => expect(result.current.update.isPaused).toBe(true));
+    expect(held).toHaveLength(1);
+    await finish(1, toggleResult);
+    await finish(2, "save");
+    await act(() => saved);
+    expect(vi.mocked(repositories.items.updateItem).mock.calls).toEqual([
+      [a.id, { type: "GET" }],
+      [a.id, input],
+    ]);
+    return rendered;
+  }
+
+  it("전환 저장 중에 수정 시트에서 이름만 고쳐 저장해도, 마지막으로 누른 값(GET)이 남는다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle((shown) => ({
+      type: shown,
+      name: "a2",
+    }));
+    expect(await repositories.items.getItem(a.id)).toMatchObject({ type: "GET", name: "a2" });
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+  });
+
+  it("전환 저장 중에 시트에서 WISH 로 되돌려 저장하면, 전환이 끝난 뒤 저장돼 WISH 가 남는다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle(() => ({ type: "WISH" }));
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 2, get: 0 }));
+  });
+
+  it("앞선 전환이 실패해도 줄 서 있던 시트 저장은 이어서 실행된다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle(
+      (shown) => ({ type: shown, name: "a2" }),
+      "fail"
+    );
+    expect(await repositories.items.getItem(a.id)).toMatchObject({ type: "GET", name: "a2" });
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
   });
 
   it("누른 화면이 사라진 뒤 저장이 실패하면 onError 를 부르지 않는다", async () => {

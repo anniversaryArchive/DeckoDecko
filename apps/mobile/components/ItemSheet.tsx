@@ -10,6 +10,7 @@ import {
   useFolders,
   useIsItemNameTaken,
   useItem,
+  useReadDisplayedItemType,
   useUpdateItem,
 } from "@deckodecko/core/react";
 import { border, radius, space, useTheme } from "@deckodecko/ui";
@@ -56,9 +57,25 @@ function pickedFolder(folders: readonly Folder[] | undefined, folderId: string |
   return folders?.find((f) => f.id === folderId) ?? folders?.find((f) => f.isDefault);
 }
 
-function formFromItem(item: Item): Form {
+/** 저장에 실패해 닫은 입력. for 는 기록 id (추가 시트면 `add:${gachaId}`), baseType 은 그 입력을 채울 때 보이던 WISH · GET */
+type Draft = { for: string; form: Form; baseType: ItemType | undefined };
+
+/**
+ * 시트를 열 때 채울 입력. shownType 은 지금 보일 WISH · GET (태그 전환이 저장 중이면 마지막으로 누른 값).
+ * 남은 입력이 있으면 이어서 쓰되, 시트에서 type 을 고르지 않았으면 그 사이 태그로 바꾼 값을 따른다.
+ */
+function initialForm(
+  item: Item | undefined,
+  shownType: ItemType | undefined,
+  kept: Draft | undefined
+): Form {
+  if (kept) {
+    const typeKept = !shownType || kept.form.type !== kept.baseType;
+    return typeKept ? kept.form : { ...kept.form, type: shownType };
+  }
+  if (!item || !shownType) return EMPTY_FORM;
   return {
-    type: item.type,
+    type: shownType,
     name: item.name,
     folderId: item.folderId,
     thumbnail: item.thumbnail,
@@ -80,7 +97,7 @@ type Props = {
 
 /**
  * 상세에서 여는 아이템 추가 · 수정 시트 (시안 B_ItemSheet · B_ItemSheetEdit).
- * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록.
+ * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록 (WISH · GET 은 태그 전환이 저장 중이면 마지막으로 누른 값).
  * 저장에 실패해 닫혔으면 같은 시트(같은 기록 · 추가)를 다시 열 때 그 입력을 이어서 보여 준다.
  * 폴더 선택 · 삭제 확인은 이 시트 위에 여는 시트다 (시안 B_FolderSheet · B_ItemDelete).
  */
@@ -91,14 +108,15 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   const [form, setForm] = useState<Form>(EMPTY_FORM);
   const [folderSheetOpen, setFolderSheetOpen] = useState(false);
   const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
+  const readDisplayedType = useReadDisplayedItemType();
 
   // 열릴 때마다 한 번 입력을 채운다. 수정은 기록을 다시 불러오는 중이면 끝난 뒤에 채운다
   const [wasOpen, setWasOpen] = useState(open);
   const [filled, setFilled] = useState(false);
   // 저장 · 삭제 뒤 기록이 다시 불려도 닫히는 동안 내용이 바뀌지 않게 채울 때의 기록을 들고 있다
   const [editingItem, setEditingItem] = useState<Item>();
-  // 저장에 실패해 닫은 입력. for 는 기록 id (추가 시트면 `add:${gachaId}`)
-  const [draft, setDraft] = useState<{ for: string; form: Form }>();
+  const [draft, setDraft] = useState<Draft>();
+  const [baseType, setBaseType] = useState<ItemType>();
   // 열 때마다 입력 영역을 새로 그린다. 지난번 저장 요청 상태가 남지 않게
   const [session, setSession] = useState(0);
   if (open !== wasOpen) {
@@ -111,9 +129,12 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   if (open && !filled && (!itemId || (item.data && !item.isFetching))) {
     setFilled(true);
     setEditingItem(item.data ?? undefined);
-    const kept = draft?.for === (itemId ?? `add:${gachaId}`) ? draft.form : undefined;
+    // 태그 전환이 저장 중이면 기록에는 아직 옛 type 이 있다
+    const shownType = item.data ? readDisplayedType(item.data) : undefined;
+    setBaseType(shownType);
+    const kept = draft?.for === (itemId ?? `add:${gachaId}`) ? draft : undefined;
     setDraft(undefined);
-    setForm(kept ?? (item.data ? formFromItem(item.data) : EMPTY_FORM));
+    setForm(initialForm(item.data ?? undefined, shownType, kept));
   }
 
   // 열 때 정한 모드를 닫힐 때까지 유지한다. 닫는 동안 화면이 itemId 를 지워도 제목 · 버튼이 바뀌지 않는다
@@ -138,7 +159,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
             onDelete={() => setDeleteSheetOpen(true)}
             onDone={onClose}
             onSaveFailed={(reason) => {
-              setDraft({ for: editingItem?.id ?? `add:${gachaId}`, form });
+              setDraft({ for: editingItem?.id ?? `add:${gachaId}`, form, baseType });
               onClose();
               onSaveFailed(reason);
             }}
