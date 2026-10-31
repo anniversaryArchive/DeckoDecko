@@ -335,7 +335,7 @@ insert into public.gacha_items (gacha_id, name, name_kr, image_link, sort_order)
   (106, 'ゴジュウウルフ', '고쥬 울프', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_11.jpg', 9),
   (97, 'アンパンマン', '호빵맨', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_2.jpg', 0),
   (97, 'ばいきんまん', '세균맨', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_3.jpg', 1),
-  (97, 'ドキンちゃん', '도킨짱', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_4.jpg', 2),
+  (97, 'ドキンちゃん', '짤랑이', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_4.jpg', 2),
   (97, 'あかちゃんまん', '베이비맨', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_5.jpg', 3),
   (97, 'クリームパンダ', '크림판다', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_6.jpg', 4),
   (93, 'ジュン & 塊（プレート）', '준 & 괴(플레이트)', 'https://bandai-a.akamaihd.net/bc/img/model/xl/1000234134_2.jpg', 0),

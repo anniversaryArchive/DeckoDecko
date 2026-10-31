@@ -16,6 +16,8 @@ dev 에 이미 있는 레거시 가챠 60개에 라인업(`gacha_items`) · 발�
 
 ## 실행
 
+macOS · Linux 기준이다. Windows 에서는 `collect` 가 `pnpm.cmd` 를 찾지 못한다.
+
 ```bash
 pnpm exec supabase login                                    # 처음 한 번 (팀 공용 계정)
 pnpm --filter @deckodecko/catalog-seed collect              # → supabase/catalog/legacy-60.json
