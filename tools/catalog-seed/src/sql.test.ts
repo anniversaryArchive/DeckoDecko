@@ -43,4 +43,11 @@ describe("buildSql", () => {
     expect(sql).toContain("anime_id is not null) <> 1 then");
     expect(sql.indexOf("begin;")).toBeLessThan(sql.indexOf("commit;"));
   });
+
+  it("대상이 없거나 라인업이 빈 가챠가 있으면 문법 오류 SQL 대신 던진다", () => {
+    expect(() => buildSql({ ...catalog, entries: [] })).toThrow("대상 가챠가 없다");
+    const [entry] = catalog.entries;
+    if (!entry) throw new Error("fixture");
+    expect(() => buildSql({ ...catalog, entries: [{ ...entry, items: [] }] })).toThrow("#7");
+  });
 });

@@ -34,10 +34,12 @@ const ENTITIES: Record<string, string> = {
 
 export function decodeHtml(text: string): string {
   return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (whole, code: string) => {
-    if (code.startsWith("#x") || code.startsWith("#X")) {
-      return String.fromCodePoint(parseInt(code.slice(2), 16));
+    if (code.startsWith("#")) {
+      const hex = code[1] === "x" || code[1] === "X";
+      const point = parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10);
+      // 범위 밖 코드는 fromCodePoint 가 던져 수집 전체가 멈추므로 원문을 둔다
+      return point <= 0x10ffff ? String.fromCodePoint(point) : whole;
     }
-    if (code.startsWith("#")) return String.fromCodePoint(parseInt(code.slice(1), 10));
     return ENTITIES[code.toLowerCase()] ?? whole;
   });
 }
@@ -73,12 +75,15 @@ export function parseSchedule(html: string): ScheduleCard[] {
   return cards;
 }
 
-/** 상세 페이지 정의 목록(발売時期 · 価格 · 種類数)에서 제목이 `title` 로 시작하는 항목의 값. */
+/** 상세 페이지 정의 목록(発売時期 · 価格 · 種類数)에서 제목이 `title` 로 시작하는 항목의 값. */
 function definition(html: string, title: string): string | null {
-  const re =
-    /pg-detailDefinition__title">([\s\S]*?)<\/[a-z]+>\s*<[a-z]+ class="pg-detailDefinition__detail[^"]*">([\s\S]*?)<\/[a-z]+>/g;
-  for (const [, key = "", value = ""] of html.matchAll(re)) {
-    if (cleanText(key).startsWith(title)) return cleanText(value);
+  // dl 하나 안에서만 찾는다. 통째로 찾으면 값 요소가 없을 때 다음 항목의 값을 잡는다
+  for (const [block] of html.matchAll(/<dl class="pg-detailDefinition"[\s\S]*?<\/dl>/g)) {
+    const key = /pg-detailDefinition__title">([\s\S]*?)<\/dt>/.exec(block)?.[1];
+    const value = /pg-detailDefinition__detail[^"]*">([\s\S]*?)<\/dd>/.exec(block)?.[1];
+    if (key !== undefined && value !== undefined && cleanText(key).startsWith(title)) {
+      return cleanText(value);
+    }
   }
   return null;
 }

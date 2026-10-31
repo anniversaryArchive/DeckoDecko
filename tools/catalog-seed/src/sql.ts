@@ -11,6 +11,10 @@ function literal(value: string | number | null): string {
  * (라인업은 지우고 다시 넣는다). 대상 가챠에 작품이 빠져 있으면 전체를 되돌린다.
  */
 export function buildSql(catalog: CatalogFile): string {
+  // 비어 있으면 `in ()` · 빈 values 가 나와 SQL 문법 오류가 된다
+  if (catalog.entries.length === 0) throw new Error("대상 가챠가 없다");
+  const empty = catalog.entries.find((entry) => entry.items.length === 0);
+  if (empty) throw new Error(`라인업이 빈 가챠 #${empty.gachaId}`);
   const ids = catalog.entries.map((entry) => entry.gachaId);
   const idList = ids.join(", ");
   const lines: string[] = [

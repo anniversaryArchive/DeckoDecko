@@ -31,8 +31,14 @@ const { values: args } = parseArgs({
   },
 });
 const target = Number(args.count);
+if (!Number.isInteger(target) || target <= 0)
+  throw new Error(`--count 는 양의 정수: ${args.count}`);
+for (const ym of [args.from, args.to]) {
+  if (!/^\d{4}(0[1-9]|1[0-2])$/.test(ym)) throw new Error(`--from · --to 는 YYYYMM: ${ym}`);
+}
 // 공식 사이트에 부담을 주지 않도록 요청 사이를 띄운다
 const REQUEST_GAP_MS = 1000;
+const REQUEST_TIMEOUT_MS = 15_000;
 // 작품이 아닌 레거시 anime 행: 여러 작품이 섞여 붙은 행("몬스터" · "X" · "러프"), 깨진 행, 브랜드
 const EXCLUDED_ANIME_IDS = new Set([374, 1179, 285, 1262, 1192, 1362, 1242, 1290]);
 
@@ -58,7 +64,10 @@ function months(from: string, to: string): string[] {
 
 async function fetchHtml(url: string): Promise<string> {
   await sleep(REQUEST_GAP_MS);
-  const response = await fetch(url, { headers: { "user-agent": "DeckoDecko catalog-seed" } });
+  const response = await fetch(url, {
+    headers: { "user-agent": "DeckoDecko catalog-seed" },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
   if (!response.ok) throw new Error(`${response.status} ${url}`);
   return response.text();
 }
@@ -69,9 +78,21 @@ function loadLegacy(projectRef: string): LegacyGacha[] {
     from public.gacha g join public.anime a on a.id = g.anime_id
     where g.image_link is not null order by g.id`;
   // Management API 를 거치므로 supabase login 만 되어 있으면 된다 (link · DB 비밀번호 불필요)
+  // 기본 출력은 text 표라서 JSON 을 명시한다 (AI 에이전트 안에서만 JSON 이 기본이다)
   const out = execFileSync(
     "pnpm",
-    ["exec", "supabase", "db", "query", "--linked", "--project-ref", projectRef, sql],
+    [
+      "exec",
+      "supabase",
+      "db",
+      "query",
+      "--linked",
+      "--project-ref",
+      projectRef,
+      "--output-format",
+      "json",
+      sql,
+    ],
     { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] }
   );
   return (JSON.parse(out) as { rows: LegacyGacha[] }).rows;

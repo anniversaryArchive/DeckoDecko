@@ -61,6 +61,14 @@ describe("parseDetail", () => {
   it("발매 시기에 월이 없으면 던진다", () => {
     expect(() => parseDetail(detail({ release: "近日発売" }))).toThrow("発売時期");
   });
+
+  it("값 요소가 없는 항목은 다음 항목의 값을 가져오지 않는다", () => {
+    const html = detail().replace(
+      /<dd class="pg-detailDefinition__detail --releaseDate">[\s\S]*?<\/dd>/,
+      ""
+    );
+    expect(() => parseDetail(html)).toThrow("発売時期");
+  });
 });
 
 describe("helpers", () => {
@@ -71,5 +79,9 @@ describe("helpers", () => {
 
   it("숫자 · 이름 엔티티를 푼다", () => {
     expect(decodeHtml("&#12354;&#x3044;&amp;&unknown;")).toBe("あい&&unknown;");
+  });
+
+  it("범위 밖 숫자 엔티티는 던지지 않고 원문을 둔다", () => {
+    expect(decodeHtml("a&#99999999;b")).toBe("a&#99999999;b");
   });
 });

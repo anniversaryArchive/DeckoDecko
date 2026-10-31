@@ -28,6 +28,7 @@ pnpm --filter @deckodecko/catalog-seed sql                  # → supabase/catal
 ## dev 적용
 
 리뷰가 끝난 SQL 만 적용한다. 파일 전체가 한 트랜잭션이라 중간에 실패하면 아무것도 바뀌지 않고, 다시 실행해도 결과가 같다.
+대신 대상 가챠의 라인업은 지우고 다시 넣으므로, 적용 뒤 dev 에서 직접 고친 라인업 · 발매월 · 가격은 다시 실행하면 사라진다.
 
 ```bash
 pnpm exec supabase db query --linked -f supabase/catalog/legacy-60.sql
