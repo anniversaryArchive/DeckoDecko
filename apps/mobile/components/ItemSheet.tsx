@@ -7,6 +7,7 @@ import { ActionSheetIOS, Alert, Image, Platform, Pressable, View } from "react-n
 import type { Folder, Item, ItemType } from "@deckodecko/core";
 import {
   useCreateItem,
+  useDisplayedItemType,
   useFolders,
   useIsItemNameTaken,
   useItem,
@@ -56,9 +57,9 @@ function pickedFolder(folders: readonly Folder[] | undefined, folderId: string |
   return folders?.find((f) => f.id === folderId) ?? folders?.find((f) => f.isDefault);
 }
 
-function formFromItem(item: Item): Form {
+function formFromItem(item: Item, type: ItemType): Form {
   return {
-    type: item.type,
+    type,
     name: item.name,
     folderId: item.folderId,
     thumbnail: item.thumbnail,
@@ -80,7 +81,7 @@ type Props = {
 
 /**
  * 상세에서 여는 아이템 추가 · 수정 시트 (시안 B_ItemSheet · B_ItemSheetEdit).
- * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록.
+ * 열 때마다 입력을 새로 채운다: 추가는 빈 값, 수정은 저장된 기록 (WISH · GET 은 태그 전환이 저장 중이면 마지막으로 누른 값).
  * 저장에 실패해 닫혔으면 같은 시트(같은 기록 · 추가)를 다시 열 때 그 입력을 이어서 보여 준다.
  * 폴더 선택 · 삭제 확인은 이 시트 위에 여는 시트다 (시안 B_FolderSheet · B_ItemDelete).
  */
@@ -91,6 +92,8 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
   const [form, setForm] = useState<Form>(EMPTY_FORM);
   const [folderSheetOpen, setFolderSheetOpen] = useState(false);
   const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
+  // 태그 전환이 아직 저장 중이면 기록에는 옛 type 이 있어, 마지막으로 누른 값으로 채운다
+  const shownType = useDisplayedItemType({ id: itemId ?? "", type: item.data?.type ?? "WISH" });
 
   // 열릴 때마다 한 번 입력을 채운다. 수정은 기록을 다시 불러오는 중이면 끝난 뒤에 채운다
   const [wasOpen, setWasOpen] = useState(open);
@@ -113,7 +116,7 @@ export function ItemSheet({ open, onClose, gachaId, itemId, onSaveFailed }: Prop
     setEditingItem(item.data ?? undefined);
     const kept = draft?.for === (itemId ?? `add:${gachaId}`) ? draft.form : undefined;
     setDraft(undefined);
-    setForm(kept ?? (item.data ? formFromItem(item.data) : EMPTY_FORM));
+    setForm(kept ?? (item.data ? formFromItem(item.data, shownType) : EMPTY_FORM));
   }
 
   // 열 때 정한 모드를 닫힐 때까지 유지한다. 닫는 동안 화면이 itemId 를 지워도 제목 · 버튼이 바뀌지 않는다

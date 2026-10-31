@@ -255,6 +255,7 @@ describe("WISH ↔ GET 원탭 전환 훅", () => {
           list,
           counts,
           toggle: useToggleItemType({ onError }),
+          update: useUpdateItem(),
           shownA: useDisplayedItemType(listed(a.id) ?? a),
           shownB: useDisplayedItemType(listed(b.id) ?? b),
           // 목록 값과 다른 옛 객체로 물어도 WISH 면, 저장 중인 값이 남아 있지 않다는 뜻
@@ -371,6 +372,54 @@ describe("WISH ↔ GET 원탭 전환 훅", () => {
     await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 0, get: 2 }));
     expect(result.current.shownA).toBe("GET");
     expect(result.current.shownB).toBe("GET");
+  });
+
+  it("전환 저장 중에 수정 시트를 열어 이름만 고쳐 저장해도, 마지막으로 누른 값(GET)이 남는다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(held).toHaveLength(1));
+    // 시트가 다시 읽는 기록은 아직 WISH 지만, 폼은 보이는 값으로 채운다
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    const formType = result.current.shownA;
+    expect(formType).toBe("GET");
+    let saved!: Promise<unknown>;
+    act(() => {
+      saved = result.current.update.mutateAsync({
+        id: a.id,
+        input: { type: formType, name: "a2" },
+      });
+    });
+    // 시트 저장은 앞선 전환이 끝날 때까지 시작하지 않는다
+    await act(() => Promise.resolve());
+    expect(held).toHaveLength(1);
+    await finish(1, "save");
+    await finish(2, "save");
+    await act(() => saved);
+    expect(await repositories.items.getItem(a.id)).toMatchObject({ type: "GET", name: "a2" });
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+  });
+
+  it("전환 저장 중에 시트에서 WISH 로 되돌려 저장하면, 전환이 끝난 뒤 저장돼 WISH 가 남는다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(held).toHaveLength(1));
+    let saved!: Promise<unknown>;
+    act(() => {
+      saved = result.current.update.mutateAsync({ id: a.id, input: { type: "WISH" } });
+    });
+    await act(() => Promise.resolve());
+    expect(held).toHaveLength(1);
+    await finish(1, "save");
+    await finish(2, "save");
+    await act(() => saved);
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 2, get: 0 }));
   });
 
   it("누른 화면이 사라진 뒤 저장이 실패하면 onError 를 부르지 않는다", async () => {

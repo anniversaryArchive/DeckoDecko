@@ -92,6 +92,13 @@ export function useCreateItem() {
   });
 }
 
+/** WISH · GET 전환과 수정 시트 저장이 같이 쓰는 scope. 시트가 type 까지 통째로 저장하므로, 누른 순서대로 저장돼야 마지막 값이 남는다 */
+const ITEM_TYPE_SCOPE = { id: "items.setType" };
+
+/**
+ * 기록 수정 (시트). type 을 포함해 받은 필드를 저장한다.
+ * WISH · GET 전환과 같은 scope 라 앞서 누른 전환이 끝난 뒤에 저장된다. 폼의 type 은 useDisplayedItemType 값으로 채운다.
+ */
 export function useUpdateItem() {
   const { items } = useLocalRepositories();
   const invalidate = useInvalidateItems();
@@ -100,6 +107,7 @@ export function useUpdateItem() {
     mutationFn: ({ id, input }: { id: string; input: UpdateItemInput }) =>
       items.updateItem(id, input),
     onSuccess: invalidate,
+    scope: ITEM_TYPE_SCOPE,
   });
 }
 
@@ -140,7 +148,7 @@ function savedItemType(queryClient: QueryClient, item: Pick<Item, "id" | "type">
 }
 
 /**
- * WISH · GET 바꾸기. 모든 호출이 한 scope 라 아이템이 달라도 부른 순서대로 하나씩 저장된다.
+ * WISH · GET 바꾸기. 모든 호출과 useUpdateItem 이 한 scope 라 아이템이 달라도 부른 순서대로 하나씩 저장된다.
  * 같은 아이템의 저장이 뒤에 대기 중이면 다시 읽기(invalidate)는 마지막 저장이 끝날 때 한 번만 한다 (연타할 때 소장률이 중간 값으로 갔다 돌아오지 않게).
  * 태그 원탭 전환은 useToggleItemType · useDisplayedItemType 을 쓴다.
  */
@@ -157,7 +165,7 @@ export function useSetItemType() {
       if (findPendingTypes(queryClient, id).length > 1) return;
       await invalidate();
     },
-    scope: { id: "items.setType" },
+    scope: ITEM_TYPE_SCOPE,
     // 끝난 전환은 아무도 읽지 않는다. 남아 있으면 행마다 캐시를 훑는 비용만 는다
     gcTime: 0,
   });
