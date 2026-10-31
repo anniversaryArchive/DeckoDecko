@@ -1,6 +1,8 @@
+import type { FeedbackRepository } from "./feedback";
 import type { FolderRepository } from "./folders";
 import type { GachaRepository } from "./gacha";
 import type { ItemRepository } from "./items";
+import type { MediaRepository } from "./media";
 import type { NoticeRepository } from "./notice";
 import type { PreferencesRepository } from "./preferences";
 import type { RecentRepository } from "./recent";
@@ -14,9 +16,12 @@ export type LocalRepositories = {
 /**
  * CoreProvider 에 빠져 있어도 되는 저장소. 빠지면 그 도메인의 훅은 요청하지 않고 데이터 없음으로 끝난다.
  * 공지가 빠지면 앱은 공지 띠를 숨기고 공지 목록은 빈 상태가 된다. 백오피스는 공지를 넘기지 않는다.
+ * 요청 · 문의가 빠지면 useCanSendFeedback 이 false 라 화면이 보내기 진입점을 숨긴다. 백오피스는 둘 다 넘기지 않는다.
  */
 export type OptionalRepositories = {
   notice: NoticeRepository;
+  media: MediaRepository;
+  feedback: FeedbackRepository;
 };
 
 /**

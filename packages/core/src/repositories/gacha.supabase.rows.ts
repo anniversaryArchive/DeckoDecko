@@ -1,7 +1,7 @@
 import type { Tables } from "../database.types";
 
 /** 목록 · 검색 · 상세가 같이 쓰는 select. 작품은 FK(gacha.anime_id) 로 붙인다. */
-const ANIME_COLUMNS = "id, kr_title, jp_title, en_title, type" as const;
+export const ANIME_COLUMNS = "id, kr_title, jp_title, en_title, type" as const;
 const GACHA_COLUMNS =
   `id, name, name_kr, image_link, price, release_month, anime(${ANIME_COLUMNS})` as const;
 

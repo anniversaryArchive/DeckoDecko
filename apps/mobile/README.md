@@ -23,6 +23,7 @@ pnpm --filter @deckodecko/mobile exec expo start --web   # 브라우저에서 �
 - 개발 빌드에서 `EXPO_PUBLIC_DATA_SOURCE=mock` 이면 목 데이터(메모리 저장소). 출시 빌드는 이 값을 무시한다 (EAS 환경변수에 mock 이 잘못 들어가도 실제 데이터를 쓰게).
 - Supabase 값이 비어 있으면 개발 빌드는 경고 후 목 데이터로 돌고, 출시 빌드는 시작할 때 실패한다.
 - 공지는 Supabase 공지 저장소가 생기기 전까지 개발 빌드에서만 목 데이터(어느 모드든). 출시 빌드는 공지를 넘기지 않아 홈 공지 띠가 숨는다.
+- 요청 · 문의(feedback)도 feedback 테이블이 생기기 전까지 개발 빌드에서만 메모리 저장소(어느 모드든). 출시 빌드는 넘기지 않아 `useCanSendFeedback` 이 false 다. 작품 자동완성(media)은 가챠 카탈로그와 같은 모드를 따른다.
 - WISH / GET 기록 · 폴더는 어느 모드든 기기 로컬 DB (아래 "로컬 DB"). 두 모드의 반환값에 `...localRepositories` 를 모두 넣는다.
 - 로컬 Supabase(`supabase start`)로 띄우려면 `.env.development.local` 에 로컬 URL · 키를 넣는다. Expo SDK 57 은 `.env.local` 을 번들에 바로 넣어서 셸 환경변수로 덮어쓸 수 없다. Android 는 `adb reverse tcp:54321 tcp:54321` 도 필요하다.
 

@@ -236,5 +236,8 @@ export const ko = {
     languageHint:
       "한국어를 고르면 한국어 이름(없으면 일본어 원래 이름)으로, 다른 언어는 일본어 원래 이름으로 보여요.",
   },
-  feedback: {},
+  feedback: {
+    // 하루 보낼 수 있는 건수를 넘겼을 때 (useSendFeedback 의 FeedbackLimitError)
+    dailyLimit: "오늘은 더 보낼 수 없어요.\n내일 다시 보내 주세요.",
+  },
 } as const;

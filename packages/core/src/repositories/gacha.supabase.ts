@@ -1,5 +1,6 @@
+import { count } from "../pagination";
 import type { DeckoSupabaseClient } from "../supabase";
-import { count, GACHA_DEFAULTS, resolveGachaFilter, toYearMonth } from "./gacha";
+import { GACHA_DEFAULTS, resolveGachaFilter, toYearMonth } from "./gacha";
 import type {
   GachaRepository,
   GachaRepositoryOptions,

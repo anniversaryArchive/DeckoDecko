@@ -190,5 +190,7 @@ export const en: Messages = {
     comingSoonLabel: "{{name}}, coming soon",
     languageHint: "Gacha names are shown in their original Japanese.",
   },
-  feedback: {},
+  feedback: {
+    dailyLimit: "You've reached today's limit.\nPlease try again tomorrow.",
+  },
 };
