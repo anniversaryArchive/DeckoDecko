@@ -44,5 +44,5 @@ where id in (select gacha_id from gacha_items) and (anime_id is null or release_
 
 ## 이미지
 
-`gacha_items.image_link` 에는 공식 사이트의 원본 이미지 URL 을 **dev 화면 확인용으로만** 넣는다.
-앱에 보일 사진은 운영자가 직접 올린 것으로 바꿔야 하므로 prod 에는 이 SQL 을 그대로 쓰지 않는다.
+`gacha_items.image_link` 에는 공식 사이트의 라인업 이미지 URL(반다이 CDN)을 그대로 넣고, prod 에도 그대로 쓴다.
+복사하지 않으므로 원본 주소가 바뀌면 이미지가 깨진다. 이유와 감수하는 위험은 [ADR 0005](../../docs/adr/0005-official-lineup-images.md).
