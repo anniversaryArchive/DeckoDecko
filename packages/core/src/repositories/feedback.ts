@@ -3,6 +3,16 @@ import type { Feedback, FeedbackKind } from "../types";
 /** 기기당 하루(한국 시간 자정 기준) 보낼 수 있는 요청 · 문의 수. 서버 RPC 의 제한과 같은 값으로 둔다. */
 export const FEEDBACK_DAILY_LIMIT = 5;
 
+/**
+ * 칸별 최대 글자 수 (앞뒤 공백을 지운 뒤, 서버처럼 코드 포인트로 센다). feedback 테이블의 길이 제약과 같은 값이다.
+ * 화면은 이 값으로 TextInput 의 maxLength 를 건다. 넘기면 sendFeedback 이 던진다.
+ */
+export const FEEDBACK_MAX_LENGTH = {
+  gachaName: 100,
+  mediaText: 100,
+  content: 2000,
+} as const;
+
 /** 이미지 피커가 돌려준 사진. uri 는 기기 안의 파일 (file://) */
 export type FeedbackPhoto = {
   uri: string;
@@ -57,22 +67,32 @@ export function isFeedbackLimitError(error: unknown): error is FeedbackLimitErro
 export interface FeedbackRepository {
   /**
    * 사진이 있으면 올리고 그 경로와 함께 저장한다. 하루 제한을 넘으면 저장하지 않고 FeedbackLimitError 를 던진다.
-   * 필수 칸이 비어 있으면 던진다 (화면이 먼저 막는다).
+   * 필수 칸이 비어 있거나 FEEDBACK_MAX_LENGTH 를 넘으면 던진다 (화면이 먼저 막는다).
+   * 서버(submit_feedback)가 새 id 만 돌려주므로 저장한 내용은 돌려주지 않는다.
    */
-  sendFeedback(input: SendFeedbackInput): Promise<Feedback>;
+  sendFeedback(input: SendFeedbackInput): Promise<{ id: string }>;
 }
 
-/** 저장할 칸으로 정리한다. 앞뒤 공백을 지우고, 빈 선택 칸은 null. 구현들이 같이 쓴다. */
+function checkLength(field: keyof typeof FEEDBACK_MAX_LENGTH, value: string | null) {
+  const max = FEEDBACK_MAX_LENGTH[field];
+  if (value && [...value].length > max)
+    throw new Error(`${field} must be at most ${max} characters`);
+}
+
+/** 저장할 칸으로 정리한다. 앞뒤 공백을 지우고, 빈 선택 칸은 null. 필수 칸 · 길이를 검사한다. 구현들이 같이 쓴다. */
 export function cleanFeedbackInput(
   input: SendFeedbackInput
 ): Pick<Feedback, "kind" | "gachaName" | "mediaId" | "mediaText" | "content"> {
   const content = input.content?.trim() || null;
+  checkLength("content", content);
   if (input.kind === "request") {
     const gachaName = input.gachaName.trim();
     if (!gachaName) throw new Error("gachaName must not be empty");
+    checkLength("gachaName", gachaName);
     const media = input.media;
     const mediaId = media?.id?.trim() || null;
     const mediaText = mediaId ? null : media?.text?.trim() || null;
+    checkLength("mediaText", mediaText);
     return { kind: input.kind, gachaName, mediaId, mediaText, content };
   }
   if (!content) throw new Error("content must not be empty");

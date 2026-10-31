@@ -14,11 +14,10 @@ import { createMemoryGachaRepository } from "../repositories/gacha.memory";
 afterEach(cleanup);
 
 function setup(withFeedback = true) {
+  const feedback = createMemoryFeedbackRepository({ getDeviceId: async () => "device-a" });
   const repositories: Repositories = {
     gacha: createMemoryGachaRepository([]),
-    ...(withFeedback && {
-      feedback: createMemoryFeedbackRepository({ getDeviceId: async () => "device-a" }),
-    }),
+    ...(withFeedback && { feedback }),
   };
   const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -26,18 +25,20 @@ function setup(withFeedback = true) {
       {children}
     </CoreProvider>
   );
-  return { wrapper };
+  return { wrapper, feedback };
 }
 
 describe("useSendFeedback", () => {
-  it("보낸 결과에 기기 UUID 가 붙는다", async () => {
-    const { wrapper } = setup();
+  it("기기 UUID 를 붙여 저장하고, 새 id 를 돌려준다", async () => {
+    const { wrapper, feedback } = setup();
     const { result } = renderHook(() => useSendFeedback(), { wrapper });
     let saved: Awaited<ReturnType<typeof result.current.mutateAsync>> | undefined;
     await act(async () => {
       saved = await result.current.mutateAsync({ kind: "bug", content: "꺼져요" });
     });
-    expect(saved).toMatchObject({ kind: "bug", content: "꺼져요", deviceId: "device-a" });
+    const [row] = feedback.snapshot();
+    expect(saved).toEqual({ id: row!.id });
+    expect(row).toMatchObject({ kind: "bug", content: "꺼져요", deviceId: "device-a" });
   });
 
   it("하루 제한에 걸리면 error 가 FeedbackLimitError 다", async () => {

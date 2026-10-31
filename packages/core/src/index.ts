@@ -51,7 +51,7 @@ export type {
 } from "./repositories/items";
 export type { FolderRepository } from "./repositories/folders";
 export type { LocalRepositories, Repositories } from "./repositories";
-export { cleanName, normalizeName, normalizeSearch } from "./name";
+export { cleanName, normalizeName } from "./name";
 export { createMemoryLocalRepositories } from "./repositories/local.memory";
 export { collectionRate, gachaCollection, type GachaCollection } from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
@@ -82,6 +82,7 @@ export type {
 } from "./repositories/feedback";
 export {
   FEEDBACK_DAILY_LIMIT,
+  FEEDBACK_MAX_LENGTH,
   FeedbackLimitError,
   isFeedbackLimitError,
 } from "./repositories/feedback";

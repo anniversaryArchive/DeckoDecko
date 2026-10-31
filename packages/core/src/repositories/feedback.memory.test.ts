@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   FEEDBACK_DAILY_LIMIT,
+  FEEDBACK_MAX_LENGTH,
   feedbackDay,
   feedbackPhotoPath,
   isFeedbackLimitError,
@@ -17,6 +18,11 @@ function setup(start = "2026-10-28T03:00:00.000Z", deviceId = "device-a") {
   });
   return {
     repo,
+    // 보내고 저장된 행을 꺼낸다 (sendFeedback 은 id 만 돌려준다)
+    send: async (input: SendFeedbackInput) => {
+      const { id } = await repo.sendFeedback(input);
+      return repo.snapshot().find((r) => r.id === id)!;
+    },
     setNow: (iso: string) => {
       now = new Date(iso);
     },
@@ -31,8 +37,8 @@ async function sendTimes(repo: ReturnType<typeof setup>["repo"], n: number) {
 
 describe("createMemoryFeedbackRepository", () => {
   it("기기 UUID 와 시각을 붙여 저장하고, 공백을 정리한다", async () => {
-    const { repo } = setup();
-    const saved = await repo.sendFeedback({ kind: "idea", content: "  다크 모드 \n" });
+    const { repo, send } = setup();
+    const saved = await send({ kind: "idea", content: "  다크 모드 \n" });
     expect(saved).toMatchObject({
       kind: "idea",
       content: "다크 모드",
@@ -43,12 +49,18 @@ describe("createMemoryFeedbackRepository", () => {
       deviceId: "device-a",
       createdAt: "2026-10-28T03:00:00.000Z",
     });
-    expect(saved.id).toBeTruthy();
+    expect(repo.snapshot()).toHaveLength(1);
+  });
+
+  it("보낸 결과로는 새 id 만 돌려준다 (서버 submit_feedback 과 같다)", async () => {
+    const { repo } = setup();
+    const result = await repo.sendFeedback(bug);
+    expect(result).toEqual({ id: repo.snapshot()[0]!.id });
   });
 
   it("가챠 등록 요청: 고른 작품은 mediaId, 직접 적은 작품은 mediaText 로 저장한다", async () => {
-    const { repo } = setup();
-    const picked = await repo.sendFeedback({
+    const { send } = setup();
+    const picked = await send({
       kind: "request",
       gachaName: " 별의 숲 미니 피규어 ",
       media: { id: "m-starry-forest" },
@@ -60,7 +72,7 @@ describe("createMemoryFeedbackRepository", () => {
       content: null, // 비운 "자세히"
     });
 
-    const typed = await repo.sendFeedback({
+    const typed = await send({
       kind: "request",
       gachaName: "새 가챠",
       media: { text: " 없는 작품 " },
@@ -69,21 +81,21 @@ describe("createMemoryFeedbackRepository", () => {
     expect(typed).toMatchObject({ mediaId: null, mediaText: "없는 작품", content: "3월 발매" });
 
     // 타입은 막지만, 런타임에 둘 다 오면 고른 작품을 쓴다
-    const both = await repo.sendFeedback({
+    const both = await send({
       kind: "request",
       gachaName: "새 가챠",
       media: { id: "m-1", text: "적은 글자" } as unknown as { id: string },
     });
     expect(both).toMatchObject({ mediaId: "m-1", mediaText: null });
 
-    const blankId = await repo.sendFeedback({
+    const blankId = await send({
       kind: "request",
       gachaName: "새 가챠",
       media: { id: "  " },
     });
     expect(blankId).toMatchObject({ mediaId: null, mediaText: null });
 
-    const blank = await repo.sendFeedback({
+    const blank = await send({
       kind: "request",
       gachaName: "새 가챠",
       media: { text: "   " },
@@ -97,13 +109,35 @@ describe("createMemoryFeedbackRepository", () => {
     await expect(repo.sendFeedback({ kind: "bug", content: " " })).rejects.toThrow();
   });
 
-  it("사진이 있으면 기기 UUID 폴더 아래 경로를 붙인다", async () => {
-    const { repo } = setup();
-    const saved = await repo.sendFeedback({
+  it("사진이 있으면 기기 UUID 폴더 아래, feedback id 와 따로 만든 사진 id 로 경로를 붙인다", async () => {
+    const { send } = setup();
+    const saved = await send({
       ...bug,
       photo: { uri: "file:///tmp/a.png", mimeType: "image/png" },
     });
-    expect(saved.photoPath).toBe(`device-a/${saved.id}.png`);
+    expect(saved.photoPath).toBe("device-a/photo-1.png");
+  });
+
+  it("칸마다 서버와 같은 최대 글자 수를 넘으면 던진다 (앞뒤 공백은 빼고, 이모지는 한 글자로 센다)", async () => {
+    const { repo } = setup();
+    const at = (n: number) => "가".repeat(n);
+    const max = FEEDBACK_MAX_LENGTH;
+    await expect(
+      repo.sendFeedback({ kind: "bug", content: ` ${at(max.content)} ` })
+    ).resolves.toBeTruthy();
+    await expect(
+      repo.sendFeedback({ kind: "bug", content: "😀".repeat(max.content) })
+    ).resolves.toBeTruthy();
+    await expect(repo.sendFeedback({ kind: "bug", content: at(max.content + 1) })).rejects.toThrow(
+      /content/
+    );
+    await expect(
+      repo.sendFeedback({ kind: "request", gachaName: at(max.gachaName + 1) })
+    ).rejects.toThrow(/gachaName/);
+    await expect(
+      repo.sendFeedback({ kind: "request", gachaName: "g", media: { text: at(max.mediaText + 1) } })
+    ).rejects.toThrow(/mediaText/);
+    expect(repo.snapshot()).toHaveLength(2);
   });
 
   it(`하루 ${FEEDBACK_DAILY_LIMIT}건을 넘으면 FeedbackLimitError, 한국 시간으로 다음 날이 되면 다시 보낼 수 있다`, async () => {
@@ -127,7 +161,8 @@ describe("createMemoryFeedbackRepository", () => {
     });
     await sendTimes(repo, FEEDBACK_DAILY_LIMIT);
     getDeviceId.current = "device-b";
-    await expect(repo.sendFeedback(bug)).resolves.toMatchObject({ deviceId: "device-b" });
+    await repo.sendFeedback(bug);
+    expect(repo.snapshot().at(-1)).toMatchObject({ deviceId: "device-b" });
   });
 });
 

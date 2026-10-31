@@ -99,7 +99,7 @@ export type GoodsViewMode = "items" | "gachas";
 /** 요청 · 문의 종류 (feedback 테이블의 kind 와 같은 값). request 가챠 등록 요청은 검색 결과 없음에서, bug 버그 · idea 제안은 설정에서 들어온다. */
 export type FeedbackKind = "request" | "bug" | "idea";
 
-/** 보낸 요청 · 문의 한 건. 앱은 보낸 결과로만 받는다 (내 문의 목록은 1.0 범위 밖). */
+/** 저장된 요청 · 문의 한 건 (feedback 테이블 한 행). */
 export type Feedback = {
   id: string;
   kind: FeedbackKind;

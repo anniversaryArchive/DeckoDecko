@@ -17,12 +17,14 @@ type Options = {
 /**
  * 메모리 안에 쌓는 요청 · 문의 저장소. feedback 테이블이 생기기 전의 앱, 훅 테스트에 쓴다. 앱을 끄면 사라진다.
  * 사진은 올리지 않고 경로만 만든다. 하루 제한은 서버와 같은 기준(기기당, 한국 시간 하루 FEEDBACK_DAILY_LIMIT 건)으로 막는다.
+ * snapshot 은 테스트에서 저장된 내용을 볼 때만 쓴다.
  */
 export function createMemoryFeedbackRepository({
   getDeviceId,
   now = () => new Date(),
-}: Options): FeedbackRepository {
+}: Options): FeedbackRepository & { snapshot(): Feedback[] } {
   let seq = 0;
+  let photoSeq = 0;
   const rows: Feedback[] = [];
 
   return {
@@ -36,11 +38,15 @@ export function createMemoryFeedbackRepository({
       ).length;
       if (sentToday >= FEEDBACK_DAILY_LIMIT) throw new FeedbackLimitError();
 
+      const photoPath = input.photo
+        ? feedbackPhotoPath(deviceId, `photo-${++photoSeq}`, input.photo.mimeType)
+        : null;
       const id = `feedback-${++seq}`;
-      const photoPath = input.photo ? feedbackPhotoPath(deviceId, id, input.photo.mimeType) : null;
-      const row: Feedback = { id, ...fields, photoPath, deviceId, createdAt };
-      rows.push(row);
-      return { ...row };
+      rows.push({ id, ...fields, photoPath, deviceId, createdAt });
+      return { id };
+    },
+    snapshot() {
+      return rows.map((r) => ({ ...r }));
     },
   };
 }
