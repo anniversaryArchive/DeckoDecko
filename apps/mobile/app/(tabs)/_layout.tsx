@@ -1,21 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { useEffect, useState, type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import { Keyboard, Platform, View } from "react-native";
+import { Platform, View } from "react-native";
 
 import { space, useTheme } from "@deckodecko/ui";
 import { TabBar } from "@deckodecko/ui/native";
 
-type IconName = ComponentProps<typeof Ionicons>["name"];
-type TabBarRenderProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0];
+import { isTabRoute, TAB_ICONS, type TabRoute } from "@/lib/tabIcons";
 
-/** 탭마다 아이콘 (선택 · 선택 안 됨). 키는 app/(tabs) 의 파일 이름 */
-const TAB_ICONS: Record<string, { on: IconName; off: IconName }> = {
-  index: { on: "home", off: "home-outline" },
-  goods: { on: "folder", off: "folder-outline" },
-  search: { on: "search", off: "search" },
-};
+type TabBarRenderProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0];
 
 /** 하단 탭 3개: 홈 · 내 굿즈 · 검색. 헤더는 숨기고 각 화면이 상단 영역과 safe area 를 직접 그린다. */
 export default function TabsLayout() {
@@ -26,9 +20,9 @@ export default function TabsLayout() {
       tabBar={(props) => <AppTabBar {...props} />}
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.bg } }}
     >
-      <Tabs.Screen name="index" options={{ title: t("home.title") }} />
-      <Tabs.Screen name="goods" options={{ title: t("goods.title") }} />
-      <Tabs.Screen name="search" options={{ title: t("search.title") }} />
+      <Tabs.Screen name={"index" satisfies TabRoute} options={{ title: t("home.title") }} />
+      <Tabs.Screen name={"goods" satisfies TabRoute} options={{ title: t("goods.title") }} />
+      <Tabs.Screen name={"search" satisfies TabRoute} options={{ title: t("search.title") }} />
     </Tabs>
   );
 }
@@ -36,12 +30,13 @@ export default function TabsLayout() {
 /**
  * 공용 TabBar 를 탭 내비게이션에 잇는다 (시안 B_Home 의 떠 있는 알약형).
  * 화면 위에 겹치지 않고 화면 아래에 자리를 차지하므로, 탭 화면은 아래 여백을 따로 두지 않는다.
+ * 탭 옵션은 title 만 읽는다. href: null(숨김 탭) · tabBarBadge 같은 옵션은 쓰려면 여기서 따로 읽어야 한다.
+ * 키보드가 떠도 숨기지 않는다. iOS · Android(edge-to-edge) 모두 창이 줄지 않고 키보드가 바를 덮는다.
  */
 function AppTabBar({ state, descriptors, navigation, insets }: TabBarRenderProps) {
   const { colors } = useTheme();
-  const keyboardVisible = useKeyboardVisible();
-  // Android 는 키보드가 화면을 줄여 바가 키보드 바로 위로 올라오므로 숨긴다 (iOS 는 키보드가 바를 덮는다)
-  if (keyboardVisible) return null;
+  const { t } = useTranslation();
+  const count = state.routes.length;
 
   return (
     <View
@@ -54,10 +49,16 @@ function AppTabBar({ state, descriptors, navigation, insets }: TabBarRenderProps
       <TabBar
         items={state.routes.map((route, index) => {
           const selected = state.index === index;
-          const icons = TAB_ICONS[route.name];
+          const icons = isTabRoute(route.name) ? TAB_ICONS[route.name] : undefined;
+          const label = descriptors[route.key]?.options.title ?? route.name;
           return {
             key: route.key,
-            label: descriptors[route.key]?.options.title ?? route.name,
+            label,
+            // iOS 는 role 이 button 이라(TabBar) 탭이라는 것과 위치를 이름에 넣는다. 기본 탭 바와 같다
+            accessibilityLabel:
+              Platform.OS === "ios"
+                ? t("common.tabA11yLabel", { name: label, index: index + 1, count })
+                : undefined,
             selected,
             renderIcon: ({ color, size, selected: iconSelected }) =>
               icons ? (
@@ -79,19 +80,4 @@ function AppTabBar({ state, descriptors, navigation, insets }: TabBarRenderProps
       />
     </View>
   );
-}
-
-/** Android 에서 키보드가 떠 있는지. iOS 는 늘 false */
-function useKeyboardVisible(): boolean {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (Platform.OS !== "android") return;
-    const show = Keyboard.addListener("keyboardDidShow", () => setVisible(true));
-    const hide = Keyboard.addListener("keyboardDidHide", () => setVisible(false));
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, []);
-  return visible;
 }

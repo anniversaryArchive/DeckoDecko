@@ -23,6 +23,7 @@ export const en: Messages = {
     badgeNew: "NEW",
     badgeUpcoming: "Coming soon",
     close: "Close",
+    tabA11yLabel: "{{name}}, tab, {{index}} of {{count}}",
     clear: "Clear",
     closeToastHint: "Dismisses the alert.",
     offline: "You're offline",

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
+import { Platform, Pressable, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { useTheme } from "../theme";
 import { border, radius, space, type ThemeColors } from "../tokens";
@@ -13,11 +13,17 @@ const ICON_TAB_WIDTH = 44;
 /** 아이콘 크기. 선택된 탭은 이름이 옆에 붙어 조금 작게 */
 const SELECTED_ICON_SIZE = 20;
 const ICON_SIZE = 22;
+// iOS VoiceOver 는 role "tab" 을 제대로 읽지 않아 button 으로 둔다 (react-navigation 기본 탭 바와 같다)
+const TAB_ROLE = Platform.select({ ios: "button", default: "tab" } as const);
 
 export type TabBarItem = {
   key: string;
   /** 탭 이름. 선택된 탭에서만 보이지만, 화면 읽기 프로그램은 늘 읽는다 */
   label: string;
+  /**
+   * 화면 읽기 이름. 없으면 label. iOS 는 role 이 button 이라 탭이라는 것 · 위치("홈, 탭, 3개 중 1번째")를 넣어 넘긴다.
+   */
+  accessibilityLabel?: string;
   /** 아이콘. 탭 바가 고른 색 · 크기로 그린다 (아이콘 라이브러리는 앱에서) */
   renderIcon: (props: { color: string; size: number; selected: boolean }) => ReactNode;
   selected: boolean;
@@ -60,9 +66,9 @@ export function TabBar({ items, style }: TabBarProps) {
           key={item.key}
           onPress={item.onPress}
           onLongPress={item.onLongPress}
-          accessibilityRole="tab"
+          accessibilityRole={TAB_ROLE}
           accessibilityState={{ selected: item.selected }}
-          accessibilityLabel={item.label}
+          accessibilityLabel={item.accessibilityLabel ?? item.label}
           hitSlop={{ top: space[4], bottom: space[4] }}
           style={({ pressed }) => ({
             flex: 1,
