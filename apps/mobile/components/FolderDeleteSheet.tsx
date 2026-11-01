@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import type { TFunction } from "i18next";
 import { useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Image, View } from "react-native";
@@ -29,22 +30,27 @@ type Props = {
   folder: Folder;
   /** 표시 이름 */
   name: string;
+  /** 폴더 안 아이템 수 (화면이 이미 읽은 폴더별 개수). 못 읽었으면 undefined */
+  count: number | undefined;
 };
 
 /**
  * 폴더 관리의 삭제 확인 시트 (시안 B_FolderDelete).
  * 시안은 안의 아이템도 지운다고 하지만, 저장소 규칙대로 아이템은 기본 폴더로 옮겨지고 그렇게 안내한다.
  */
-export function FolderDeleteSheet({ open, onClose, folder, name }: Props) {
+export function FolderDeleteSheet({ open, onClose, folder, name, count: liveCount }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const remove = useDeleteFolder();
-  const items = useItems({ folderId: folder.id });
-  // 지우는 중 · 지운 뒤에는 옮겨진 뒤의 빈 목록으로 문구가 바뀌지 않게 마지막으로 읽은 목록을 그대로 둔다
-  const [shown, setShown] = useState(items.data);
   const hold = remove.isPending || remove.isSuccess;
-  if (!hold && items.data !== shown) setShown(items.data);
-  const count = shown?.length;
+  // 지우는 중 · 지운 뒤에는 읽지 않는다. 없어진 폴더를 invalidate 때마다 다시 읽지 않게
+  const items = useItems({ folderId: folder.id, limit: PREVIEW_COUNT }, { enabled: !hold });
+  // 지우는 중 · 지운 뒤에는 옮겨진 뒤의 빈 목록 · 0개로 문구가 바뀌지 않게 마지막 값을 그대로 둔다
+  const [shown, setShown] = useState({ items: items.data, count: liveCount });
+  if (!hold && (items.data !== shown.items || liveCount !== shown.count)) {
+    setShown({ items: items.data, count: liveCount });
+  }
+  const count = shown.count;
 
   const close = () => {
     // 지우는 중에 뒤 배경 · 뒤로가기로 닫으면 reset 하지 않는다. hold 가 풀려 닫히는 동안 개수가 0으로 바뀌어 보인다
@@ -94,7 +100,9 @@ export function FolderDeleteSheet({ open, onClose, folder, name }: Props) {
         )}
       </View>
 
-      {shown && shown.length > 0 ? <MovedItemsPreview items={shown} /> : null}
+      {shown.items && shown.items.length > 0 ? (
+        <MovedItemsPreview items={shown.items} total={count} />
+      ) : null}
 
       {remove.isError ? (
         <Text variant="captionSm" color="accent" accessibilityLiveRegion="polite">
@@ -122,13 +130,27 @@ function MessageText({ children }: { children?: ReactNode }) {
   );
 }
 
-/** 옮겨질 아이템: 앞의 몇 개 사진을 겹쳐 놓고 "이름, 이름, 이름 외 N개" */
-function MovedItemsPreview({ items }: { items: readonly Item[] }) {
+/** 이름을 이어 붙이는 문장 부호는 언어마다 달라서 개수별 번역 키로 둔다 (PREVIEW_COUNT 와 맞춘다) */
+function previewText(t: TFunction, head: readonly Item[], rest: number): string {
+  const [a = "", b = "", c = ""] = head.map((item) => item.name);
+  if (rest > 0) return t("folder.deletePreviewMore", { a, b, c, count: rest });
+  if (head.length >= 3) return t("folder.deletePreview3", { a, b, c });
+  if (head.length === 2) return t("folder.deletePreview2", { a, b });
+  return t("folder.deletePreview1", { a });
+}
+
+/** 옮겨질 아이템: 앞의 몇 개 사진을 겹쳐 놓고 "이름, 이름, 이름 외 N개". total 을 모르면 남은 개수 없이 */
+function MovedItemsPreview({
+  items,
+  total,
+}: {
+  items: readonly Item[];
+  total: number | undefined;
+}) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const head = items.slice(0, PREVIEW_COUNT);
-  const names = head.map((item) => item.name).join(", ");
-  const rest = items.length - head.length;
+  const rest = total === undefined ? 0 : Math.max(total - head.length, 0);
 
   return (
     <View
@@ -172,7 +194,7 @@ function MovedItemsPreview({ items }: { items: readonly Item[] }) {
         ))}
       </View>
       <Text variant="captionSm" color="textMuted" numberOfLines={2} style={{ flex: 1 }}>
-        {rest > 0 ? t("folder.deletePreviewMore", { names, count: rest }) : names}
+        {previewText(t, head, rest)}
       </Text>
     </View>
   );

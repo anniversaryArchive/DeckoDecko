@@ -191,10 +191,16 @@ export const ko = {
     folderCount_one: "폴더 {{count, number}}개",
     folderCount_other: "폴더 {{count, number}}개",
     dragHint: "오른쪽 손잡이를 길게 눌러 순서를 바꿀 수 있어요.",
+    // 머리글 안내. folders · items 는 개수 문구, 개수를 못 읽으면 noCount
+    manageSummary: "{{folders}} · {{items}}. {{hint}}",
+    manageSummaryNoCount: "{{folders}}. {{hint}}",
     defaultLocked: "기본 폴더는 바꾸거나 지울 수 없어요",
+    // 기본 폴더 행 아래 줄
+    defaultRowCaption: "{{items}} · {{locked}}",
     renameLabel: "{{name}} 이름 변경",
     deleteLabel: "{{name}} 삭제",
     dragLabel: "{{name}} 순서 바꾸기",
+    dragA11yHint: "위로 · 아래로 옮기기 동작으로 순서를 바꿀 수 있어요",
     // 순서 손잡이의 화면 읽기 동작 (끌기 대신)
     moveUp: "위로 옮기기",
     moveDown: "아래로 옮기기",
@@ -213,9 +219,12 @@ export const ko = {
     deleteMoveMessage_other:
       "폴더 안의 아이템 <bold>{{count, number}}개</bold>는 기본 폴더로 옮겨져요.",
     deleteEmptyMessage: "폴더 안에 아이템이 없어요.",
-    // 옮겨질 아이템 미리보기. 앞의 몇 개 이름 뒤에 남은 개수
-    deletePreviewMore_one: "{{names}} 외 {{count, number}}개",
-    deletePreviewMore_other: "{{names}} 외 {{count, number}}개",
+    // 옮겨질 아이템 미리보기. 앞의 이름 최대 3개(a · b · c) 뒤에 남은 개수
+    deletePreview1: "{{a}}",
+    deletePreview2: "{{a}}, {{b}}",
+    deletePreview3: "{{a}}, {{b}}, {{c}}",
+    deletePreviewMore_one: "{{a}}, {{b}}, {{c}} 외 {{count, number}}개",
+    deletePreviewMore_other: "{{a}}, {{b}}, {{c}} 외 {{count, number}}개",
     delete: "삭제",
     deleteFailed: "폴더를 삭제하지 못했어요",
   },

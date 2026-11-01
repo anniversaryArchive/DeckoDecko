@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState, type ReactNode } from "react";
+import { memo, useCallback, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View, type AccessibilityActionEvent } from "react-native";
 import ReorderableList, {
@@ -11,11 +11,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { Folder } from "@deckodecko/core";
 import { useFolders, useItemCountsByFolder, useReorderFolders } from "@deckodecko/core/react";
-import { border, gutter, radius, space, useTheme, type FolderColor } from "@deckodecko/ui";
+import {
+  border,
+  folderColor,
+  gutter,
+  radius,
+  space,
+  useTheme,
+  type FolderColor,
+} from "@deckodecko/ui";
 import { Card, PRESSED_OPACITY, Text, useToast } from "@deckodecko/ui/native";
 
 import { FolderDeleteSheet } from "@/components/FolderDeleteSheet";
-import { FolderIcon, folderIconColor } from "@/components/FolderIcon";
+import { FolderIcon } from "@/components/FolderIcon";
 import { FolderNameSheet } from "@/components/FolderNameSheet";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { StateMessage } from "@/components/StateMessage";
@@ -51,19 +59,40 @@ export default function FolderManageScreen() {
     open: false,
   });
 
-  const list = folders.data ?? [];
+  const list = useMemo(() => folders.data ?? [], [folders.data]);
   const defaultFolder = list.find((f) => f.isDefault);
-  const normal = list.filter((f) => !f.isDefault);
-  const countOf = (folder: Folder) => counts.data?.[folder.id] ?? 0;
-  const totalItems = Object.values(counts.data ?? {}).reduce((sum, n) => sum + n, 0);
+  const normal = useMemo(() => list.filter((f) => !f.isDefault), [list]);
+  // 개수를 못 읽었으면 0개가 아니라 undefined (행에서 개수를 숨긴다)
+  const countOf = (folder: Folder) => (counts.data ? (counts.data[folder.id] ?? 0) : undefined);
+  const totalItems = counts.data
+    ? Object.values(counts.data).reduce((sum, n) => sum + n, 0)
+    : undefined;
 
-  const move = (from: number, to: number) => {
-    if (from === to || to < 0 || to >= normal.length) return;
-    // 캐시는 훅이 바로 바꾸고, 실패하면 훅이 되돌린다. mutate 의 onError 는 연달아 부르면 마지막 것만 불려서 쓰지 않는다
-    reorder
-      .mutateAsync(reorderItems(normal, from, to).map((f) => f.id))
-      .catch(() => toast.show({ title: t("folder.reorderFailed") }));
-  };
+  const { mutateAsync: reorderAsync } = reorder;
+  const move = useCallback(
+    (from: number, to: number) => {
+      if (from === to || to < 0 || to >= normal.length) return;
+      // 캐시는 훅이 바로 바꾸고, 실패하면 훅이 되돌린다. mutate 의 onError 는 연달아 부르면 마지막 것만 불려서 쓰지 않는다
+      reorderAsync(reorderItems(normal, from, to).map((f) => f.id)).catch(() =>
+        toast.show({ title: t("folder.reorderFailed") })
+      );
+    },
+    [normal, reorderAsync, toast, t]
+  );
+  const openRename = useCallback((folder: Folder) => setNameSheet({ open: true, folder }), []);
+  const openDelete = useCallback((folder: Folder) => setDeleteSheet({ open: true, folder }), []);
+
+  const summary =
+    totalItems === undefined
+      ? t("folder.manageSummaryNoCount", {
+          folders: t("folder.folderCount", { count: list.length }),
+          hint: t("folder.dragHint"),
+        })
+      : t("folder.manageSummary", {
+          folders: t("folder.folderCount", { count: list.length }),
+          items: formatFolderItemCount(totalItems),
+          hint: t("folder.dragHint"),
+        });
 
   return (
     <View style={{ flex: 1 }}>
@@ -104,22 +133,20 @@ export default function FolderManageScreen() {
           renderItem={({ item, index }) => (
             <NormalFolderRow
               folder={item}
+              index={index}
               name={folderName(item, t)}
-              color={folderIconColor(folderColors, list, item)}
+              color={folderColor(folderColors, item, index)}
               count={countOf(item)}
-              first={index === 0}
               last={index === normal.length - 1}
-              onRename={() => setNameSheet({ open: true, folder: item })}
-              onDelete={() => setDeleteSheet({ open: true, folder: item })}
-              onMove={(offset) => move(index, index + offset)}
+              onRename={openRename}
+              onDelete={openDelete}
+              onMove={move}
             />
           )}
           ListHeaderComponent={
             <View style={{ gap: space[16], paddingBottom: space[10] }}>
               <Text variant="caption" color="textMuted">
-                {folders.data
-                  ? `${t("folder.folderCount", { count: list.length })} · ${formatFolderItemCount(totalItems)}. ${t("folder.dragHint")}`
-                  : ""}
+                {folders.data ? summary : ""}
               </Text>
               {defaultFolder ? (
                 <DefaultFolderRow folder={defaultFolder} count={countOf(defaultFolder)} />
@@ -148,6 +175,7 @@ export default function FolderManageScreen() {
           onClose={() => setDeleteSheet((s) => ({ ...s, open: false }))}
           folder={deleteSheet.folder}
           name={folderName(deleteSheet.folder, t)}
+          count={countOf(deleteSheet.folder)}
         />
       ) : null}
     </View>
@@ -182,7 +210,7 @@ function RowFrame({ children, trailingInset }: { children: ReactNode; trailingIn
 }
 
 /** 기본 폴더: 이름 변경 · 삭제 · 순서 바꾸기 없이 자물쇠만 */
-function DefaultFolderRow({ folder, count }: { folder: Folder; count: number }) {
+function DefaultFolderRow({ folder, count }: { folder: Folder; count: number | undefined }) {
   const { t } = useTranslation();
   const { colors, folders: folderColors } = useTheme();
   return (
@@ -193,7 +221,12 @@ function DefaultFolderRow({ folder, count }: { folder: Folder; count: number }) 
           {folderName(folder, t)}
         </Text>
         <Text variant="captionSm" color="textMuted" numberOfLines={1}>
-          {`${formatFolderItemCount(count)} · ${t("folder.defaultLocked")}`}
+          {count === undefined
+            ? t("folder.defaultLocked")
+            : t("folder.defaultRowCaption", {
+                items: formatFolderItemCount(count),
+                locked: t("folder.defaultLocked"),
+              })}
         </Text>
       </View>
       <Ionicons name="lock-closed-outline" size={ACTION_ICON_SIZE} color={colors.textFaint} />
@@ -201,38 +234,42 @@ function DefaultFolderRow({ folder, count }: { folder: Folder; count: number }) 
   );
 }
 
-function NormalFolderRow({
+// 시트를 열고 닫을 때 모든 행이 다시 그려지지 않게 memo. 넘기는 함수는 화면에서 useCallback 으로 고정한다
+const NormalFolderRow = memo(function NormalFolderRow({
+  folder,
+  index,
   name,
   color,
   count,
-  first,
   last,
   onRename,
   onDelete,
   onMove,
 }: {
   folder: Folder;
+  /** 일반 폴더 목록에서의 자리 */
+  index: number;
   name: string;
   color: FolderColor;
-  count: number;
-  first: boolean;
+  /** 못 읽었으면 undefined (개수를 숨긴다) */
+  count: number | undefined;
   last: boolean;
-  onRename: () => void;
-  onDelete: () => void;
-  /** 화면 읽기 프로그램의 위로 · 아래로 옮기기 (-1 · +1) */
-  onMove: (offset: number) => void;
+  onRename: (folder: Folder) => void;
+  onDelete: (folder: Folder) => void;
+  /** 끌기 대신 화면 읽기 프로그램의 위로 · 아래로 옮기기 */
+  onMove: (from: number, to: number) => void;
 }) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const drag = useReorderableDrag();
 
   const actions = [
-    ...(first ? [] : [{ name: "moveUp", label: t("folder.moveUp") }]),
+    ...(index === 0 ? [] : [{ name: "moveUp", label: t("folder.moveUp") }]),
     ...(last ? [] : [{ name: "moveDown", label: t("folder.moveDown") }]),
   ];
   const onAction = (event: AccessibilityActionEvent) => {
-    if (event.nativeEvent.actionName === "moveUp") onMove(-1);
-    if (event.nativeEvent.actionName === "moveDown") onMove(1);
+    if (event.nativeEvent.actionName === "moveUp") onMove(index, index - 1);
+    if (event.nativeEvent.actionName === "moveDown") onMove(index, index + 1);
   };
 
   return (
@@ -242,18 +279,21 @@ function NormalFolderRow({
         <Text variant="bodyStrong" numberOfLines={1}>
           {name}
         </Text>
-        <Text variant="captionSm" color="textMuted">
-          {formatFolderItemCount(count)}
-        </Text>
+        {count === undefined ? null : (
+          <Text variant="captionSm" color="textMuted">
+            {formatFolderItemCount(count)}
+          </Text>
+        )}
       </View>
-      <RowAction label={t("folder.renameLabel", { name })} onPress={onRename} filled>
+      <RowAction label={t("folder.renameLabel", { name })} onPress={() => onRename(folder)} filled>
         <Ionicons name="pencil-outline" size={ACTION_ICON_SIZE} color={colors.textMuted} />
       </RowAction>
-      <RowAction label={t("folder.deleteLabel", { name })} onPress={onDelete} filled>
+      <RowAction label={t("folder.deleteLabel", { name })} onPress={() => onDelete(folder)} filled>
         <Ionicons name="trash-outline" size={ACTION_ICON_SIZE} color={colors.accent} />
       </RowAction>
       <RowAction
         label={t("folder.dragLabel", { name })}
+        hint={t("folder.dragA11yHint")}
         onLongPress={drag}
         accessibilityActions={actions}
         onAccessibilityAction={onAction}
@@ -262,10 +302,11 @@ function NormalFolderRow({
       </RowAction>
     </RowFrame>
   );
-}
+});
 
 function RowAction({
   label,
+  hint,
   onPress,
   onLongPress,
   filled = false,
@@ -274,6 +315,8 @@ function RowAction({
   children,
 }: {
   label: string;
+  /** 화면 읽기 프로그램이 이름 뒤에 읽는 쓰는 법 */
+  hint?: string;
   onPress?: () => void;
   onLongPress?: () => void;
   /** 바탕색 칸 (이름 변경 · 삭제). 순서 손잡이는 바탕 없이 */
@@ -289,6 +332,7 @@ function RowAction({
       onLongPress={onLongPress}
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityHint={hint}
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction}
       style={({ pressed }) => ({
