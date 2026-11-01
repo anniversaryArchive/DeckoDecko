@@ -72,7 +72,7 @@ export type Item = {
   folderId: string; // 폴더를 고르지 않으면 기본 폴더
   type: ItemType;
   name: string; // 앞뒤 공백만 지우고 입력한 모양 그대로 저장
-  thumbnail: string | null; // 사진의 로컬 파일 URI (file://)
+  thumbnail: string | null; // 앱 문서 폴더 기준 상대 경로 (photos/<id>.jpg). 화면에서는 앱의 photoUri 로 주소를 만든다
   memo: string | null;
   createdAt: string; // ISO 8601 UTC. 목록은 이것의 역순
   updatedAt: string;
