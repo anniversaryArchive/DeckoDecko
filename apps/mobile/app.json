@@ -17,6 +17,10 @@
     },
     "android": {
       "package": "com.anniversaryarchive.deckodecko",
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/brand/adaptive-icon-foreground.png",
         "monochromeImage": "./assets/brand/adaptive-icon-monochrome.png",
