@@ -10,6 +10,7 @@ import {
 import { useEffect } from "react";
 
 import { queryKeys } from "../queryKeys";
+import { combineQueryStatus, refetchQueries, type QueryStatus } from "./combineQueries";
 import { useRepositories } from "./provider";
 import { localNetworkMode, serverNetworkMode } from "./queryClient";
 import type { RecentRepository } from "../repositories/recent";
@@ -93,7 +94,7 @@ export function useClearRecentGacha() {
   return useRecentMutation(queryKeys.recent.gachaIds(), () => recent.clearGachaIds());
 }
 
-type QueryPart<T> = { data: T | undefined; isLoading: boolean; isError: boolean };
+type QueryPart<T> = QueryStatus & { data: T | undefined };
 
 /**
  * 저장된 id 목록 쿼리와 가챠 목록 쿼리를 하나의 결과로 합친다 (useRecentGacha 안쪽, 테스트용으로 뺐다).
@@ -113,8 +114,7 @@ export function combineRecentGacha<T extends { id: string }>(
         : ids.data.length === 0
           ? []
           : list.data?.filter((g) => idSet.has(g.id)),
-    isLoading: ids.isLoading || list.isLoading,
-    isError: ids.isError || list.isError,
+    ...combineQueryStatus([ids, list]),
   };
 }
 
@@ -143,6 +143,6 @@ export function useRecentGacha() {
 
   return {
     ...combineRecentGacha(ids, list),
-    refetch: () => (ids.isError ? ids.refetch() : list.refetch()),
+    refetch: refetchQueries([ids, list]),
   };
 }

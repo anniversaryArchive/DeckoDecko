@@ -8,8 +8,9 @@ import type { Repositories } from "../repositories";
 import type { GachaRepository } from "../repositories/gacha";
 import { createMemoryGachaRepository } from "../repositories/gacha.memory";
 import { createMemoryLocalRepositories } from "../repositories/local.memory";
+import { createMemoryViewLogRepository } from "../repositories/viewLog.memory";
 import type { GachaDetail } from "../types";
-import { useGachaSearchPages } from "./gacha.hooks";
+import { useGachaSearchPages, useLogGachaView } from "./gacha.hooks";
 import { CoreProvider } from "./provider";
 
 afterEach(cleanup);
@@ -32,10 +33,11 @@ function gacha(id: string, overrides: Partial<Omit<GachaDetail, "items">> = {}):
   };
 }
 
-function setup(gachaRepository: GachaRepository) {
+function setup(gachaRepository: GachaRepository, extra: Partial<Repositories> = {}) {
   const repositories: Repositories = {
     gacha: gachaRepository,
     ...createMemoryLocalRepositories(),
+    ...extra,
   };
   const queryClient = new QueryClient({
     defaultOptions: { queries: { staleTime: Infinity, retry: false } },
@@ -134,5 +136,55 @@ describe("useGachaSearchPages", () => {
     await waitFor(() => expect(result.current.isPlaceholderData).toBe(false));
     expect(ids(result.current.data?.items)).toEqual(["mid"]);
     expect(result.current.data?.total).toBe(1);
+  });
+});
+
+describe("useLogGachaView (상세 진입 조회 로그)", () => {
+  const gacha = createMemoryGachaRepository([]);
+
+  it("id 가 생기면 한 번 보내고, 같은 화면에 다시 들어와도 그날은 다시 남기지 않는다", async () => {
+    const viewLog = createMemoryViewLogRepository(() => "2026-10-29");
+    const { wrapper: Wrapper } = setup(gacha, { viewLog });
+
+    const first = renderHook(({ id }) => useLogGachaView(id), {
+      wrapper: Wrapper,
+      initialProps: { id: undefined as string | undefined },
+    });
+    expect(viewLog.logged()).toEqual([]);
+    first.rerender({ id: "g1" });
+    first.rerender({ id: "g1" });
+    first.unmount();
+    renderHook(() => useLogGachaView("g1"), { wrapper: Wrapper });
+    renderHook(() => useLogGachaView("g2"), { wrapper: Wrapper });
+
+    await waitFor(() =>
+      expect(viewLog.logged()).toEqual([
+        { gachaId: "g1", day: "2026-10-29" },
+        { gachaId: "g2", day: "2026-10-29" },
+      ])
+    );
+  });
+
+  it("보내기가 실패해도 던지지 않는다 (화면에 영향 없음)", async () => {
+    const logGachaView = vi.fn(async () => {
+      throw new Error("offline");
+    });
+    const unhandled = vi.fn();
+    process.on("unhandledRejection", unhandled);
+    try {
+      const { result } = renderHook(() => useLogGachaView("g1"), {
+        wrapper: setup(gacha, { viewLog: { logGachaView } }).wrapper,
+      });
+      await waitFor(() => expect(logGachaView).toHaveBeenCalledWith("g1"));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(result.current).toBeUndefined();
+      expect(unhandled).not.toHaveBeenCalled();
+    } finally {
+      process.off("unhandledRejection", unhandled);
+    }
+  });
+
+  it("viewLog 를 넘기지 않은 Provider(백오피스)에서는 아무것도 하지 않는다", () => {
+    expect(() => renderHook(() => useLogGachaView("g1"), setup(gacha))).not.toThrow();
   });
 });

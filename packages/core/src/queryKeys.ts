@@ -38,6 +38,7 @@ export const queryKeys = {
     detail: (id: string) => ["items", "detail", id] as const,
     counts: (gachaId: string | null) => ["items", "counts", gachaId] as const,
     countsByFolder: () => ["items", "countsByFolder"] as const,
+    countsByGacha: () => ["items", "countsByGacha"] as const,
     nameTaken: (gachaId: string, name: string, excludeId: string | null) =>
       ["items", "nameTaken", gachaId, name, excludeId] as const,
     // mutation 키. 저장 중인 WISH · GET 을 mutation 캐시에서 찾을 때 쓴다 (useDisplayedItemType)
