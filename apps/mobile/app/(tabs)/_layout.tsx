@@ -21,7 +21,7 @@ export default function TabsLayout() {
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.bg } }}
     >
       <Tabs.Screen name={"index" satisfies TabRoute} options={{ title: t("home.title") }} />
-      <Tabs.Screen name={"goods" satisfies TabRoute} options={{ title: t("goods.title") }} />
+      <Tabs.Screen name={"goods" satisfies TabRoute} options={{ title: t("goods.tabLabel") }} />
       <Tabs.Screen name={"search" satisfies TabRoute} options={{ title: t("search.title") }} />
     </Tabs>
   );
@@ -50,6 +50,8 @@ function AppTabBar({ state, descriptors, navigation, insets }: TabBarRenderProps
         items={state.routes.map((route, index) => {
           const selected = state.index === index;
           const icons = isTabRoute(route.name) ? TAB_ICONS[route.name] : undefined;
+          // route.name 은 string 이라 (tabs) 에 파일을 더해도 타입 오류가 나지 않는다
+          if (__DEV__ && !icons) console.warn(`No tab icon for "${route.name}" in TAB_ICONS`);
           const label = descriptors[route.key]?.options.title ?? route.name;
           return {
             key: route.key,

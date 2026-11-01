@@ -136,6 +136,7 @@ export const ko = {
   },
   goods: {
     title: "내 굿즈",
+    tabLabel: "내 굿즈",
     // 제목 위 한 줄. rate 는 formatPercent 로 만든 문자열
     summary_one: "전체 {{count, number}}개 · 소장률 {{rate}}",
     summary_other: "전체 {{count, number}}개 · 소장률 {{rate}}",

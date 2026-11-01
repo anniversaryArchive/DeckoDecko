@@ -14,5 +14,5 @@ export const TAB_ICONS: Record<TabRoute, { on: IconName; off: IconName }> = {
 };
 
 export function isTabRoute(name: string): name is TabRoute {
-  return name in TAB_ICONS;
+  return Object.keys(TAB_ICONS).includes(name);
 }

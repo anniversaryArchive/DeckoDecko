@@ -103,7 +103,7 @@ toast.show({ title: t("item.saveFailed"), message: t("item.duplicateName"), acti
 | `BottomSheet` | `open` · `onClose` 로 연다. `title`, `closeLabel`(넘기면 닫기 버튼). 열고 닫을 때 0.45초 동안 올라오고 내려간다                                                                                                 | 내용에 맞춤           |
 | `GoodsCard`   | `layout`: `vertical`(`size` `md` 156 · `sm` 124) · `horizontal`(썸네일 96). `badge`(`accent` · `get`), 가로는 `priceNote` · `meta` · 오른쪽 `accessory`                                                         | 내용에 맞춤           |
 | `ProgressBar` | `variant`: `summary`(`value` 0 – 1) · `segments`(`get` · `wish` · `total`, `legend`)                                                                                                                            | 10 · 8                |
-| `TabBar`      | `items`: `label` · `renderIcon` · `selected` · `onPress` · `accessibilityLabel`. 선택된 탭만 이름이 보인다                                                                                                      | 탭 40                 |
+| `TabBar`      | `items`: `label` · `renderIcon` · `selected` · `onPress` · `onLongPress` · `accessibilityLabel`. 선택된 탭만 이름이 보인다                                                                                      | 탭 40                 |
 | `useToast`    | `show({ title, message, actionLabel, onAction, duration })` · `hide()`. `duration` 기본 4초(0 이하도 4초), `null` 이면 안 사라짐. 위로 밀거나 탭하면 닫힘. 앱 루트에 `ToastProvider closeLabel closeHint`       | 내용에 맞춤           |
 
 - 글자는 모두 props 로 받는다. 컴포넌트 안에 한글을 적지 않는다 (닫기 버튼의 읽기 이름도 `closeLabel` 로).

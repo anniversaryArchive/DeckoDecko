@@ -69,6 +69,8 @@ export function TabBar({ items, style }: TabBarProps) {
           accessibilityRole={TAB_ROLE}
           accessibilityState={{ selected: item.selected }}
           accessibilityLabel={item.accessibilityLabel ?? item.label}
+          accessibilityLargeContentTitle={item.label}
+          accessibilityShowsLargeContentViewer
           hitSlop={{ top: space[4], bottom: space[4] }}
           style={({ pressed }) => ({
             flex: 1,
