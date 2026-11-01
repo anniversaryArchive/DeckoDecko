@@ -48,6 +48,7 @@ export { i18n };
 export { isLanguage, languages, type Language } from "./types";
 export {
   formatDate,
+  formatDateTime,
   formatShortDate,
   formatFolderItemCount,
   formatItemCount,
