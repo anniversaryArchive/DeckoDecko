@@ -1,11 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { randomUUID } from "expo-crypto";
 
 import {
   createMemoryGachaRepository,
   createMemoryNoticeRepository,
   createMemoryViewLogRepository,
-  createStorageDeviceId,
   createSupabaseClient,
   createSupabaseGachaRepository,
   createStoragePreferencesRepository,
@@ -20,6 +18,7 @@ import {
 import { mockCatalog, mockNotices } from "@deckodecko/core/mocks";
 
 import { localRepositories } from "./db/local";
+import { getDeviceId } from "./deviceId";
 
 // 최근 검색어 · 최근 본 가챠 · 기기 설정은 데이터 소스와 관계없이 기기 AsyncStorage (키는 @deckodecko/core 의 storageKeys).
 const recent = createStorageRecentRepository(AsyncStorage);
@@ -44,10 +43,7 @@ function createRepositories(): AppRepositories {
     gacha: createSupabaseGachaRepository(client),
     recent,
     preferences,
-    viewLog: createSupabaseViewLogRepository(
-      client,
-      createStorageDeviceId(AsyncStorage, randomUUID)
-    ),
+    viewLog: createSupabaseViewLogRepository(client, getDeviceId),
     ...devNotice(),
     ...localRepositories,
   };

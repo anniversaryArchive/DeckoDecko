@@ -1,8 +1,6 @@
-import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// expo-crypto 는 react-native 를, AsyncStorage 는 window.localStorage 를 찾아서 node 에서 돌지 않는다
-vi.mock("expo-crypto", () => ({ randomUUID }));
+// AsyncStorage 는 window.localStorage 를 찾아서 node 에서 돌지 않는다
 vi.mock("@react-native-async-storage/async-storage", async () => ({
   default: (await import("@deckodecko/core")).createMemoryKeyValueStorage(),
 }));
