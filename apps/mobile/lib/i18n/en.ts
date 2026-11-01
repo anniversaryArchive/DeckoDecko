@@ -12,6 +12,7 @@ export const en: Messages = {
     percent: "{{value, number}}%",
     shortDate: "{{month}}/{{day}}/{{year}}",
     appName: "DeckoDecko",
+    imageCredit: "© BANDAI",
     back: "Back",
     last10Days: "Last 10 days",
     pricePerPlay: "{{price}} per play",

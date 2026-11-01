@@ -26,6 +26,17 @@ export function searchGoods(
   });
 }
 
+/**
+ * 목록에 공식 이미지가 보일 수 있는지 (출처 표시 조건). 내 사진이 있어도 true 일 수 있다:
+ * 사진 파일을 읽지 못하면 카드가 공식 이미지로 바꿔 보여 주므로 사진 유무로 가르지 않는다.
+ */
+export function hasGachaImage(
+  items: readonly Item[],
+  gachas: ReadonlyMap<string, Pick<Gacha, "imageUrl">>
+): boolean {
+  return items.some((item) => gachas.get(item.gachaId)?.imageUrl);
+}
+
 /** 가챠별로 묶는다. 묶음 순서 · 묶음 안 순서는 받은 순서를 따른다 (최신순 목록이면 최근에 기록한 가챠가 앞). */
 export function groupByGacha(items: readonly Item[]): GachaGroup[] {
   const groups = new Map<string, Item[]>();

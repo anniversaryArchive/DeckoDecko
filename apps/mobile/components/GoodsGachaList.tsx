@@ -6,8 +6,9 @@ import type { Folder, Gacha, Item, ItemType } from "@deckodecko/core";
 import { gutter, space } from "@deckodecko/ui";
 
 import { GoodsGachaRow } from "@/components/GoodsGachaRow";
+import { ImageCredit } from "@/components/ImageCredit";
 import { useFolderNames } from "@/hooks/useFolderNames";
-import { countByFolder, groupByGacha } from "@/lib/goods";
+import { countByFolder, groupByGacha, hasGachaImage } from "@/lib/goods";
 import { openGacha } from "@/lib/routes";
 
 type Props = {
@@ -48,6 +49,7 @@ export function GoodsGachaList({ items, type, gachas, gachasLoaded, folders }: P
           onPress={() => openGacha(group.gachaId)}
         />
       )}
+      ListFooterComponent={hasGachaImage(items, gachas) ? <ImageCredit /> : null}
       contentContainerStyle={{
         paddingHorizontal: gutter,
         paddingBottom: space[24],

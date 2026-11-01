@@ -11,6 +11,7 @@ import { Text } from "@deckodecko/ui/native";
 import { CollectionRateCard } from "@/components/CollectionRateCard";
 import { GachaCardSlot } from "@/components/GachaCardSlot";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { ImageCredit } from "@/components/ImageCredit";
 import { NoticeStrip } from "@/components/NoticeStrip";
 import { PopularGachaList } from "@/components/PopularGachaList";
 import { QueryState } from "@/components/QueryState";
@@ -36,6 +37,7 @@ export default function HomeScreen() {
         </View>
         <NewArrivalsSection />
         <PopularSection />
+        <HomeImageCredit />
         {/* 개발 빌드에서만 보인다. 출시 빌드에서는 카탈로그 화면도 홈으로 돌려보낸다. 개발자만 보는 문구라 i18n 을 거치지 않는다. */}
         {__DEV__ ? (
           <Link href="/dev/components" asChild>
@@ -127,6 +129,14 @@ function PopularSection() {
       </View>
     </Section>
   );
+}
+
+/** 두 목록 중 공식 이미지가 하나라도 보일 때만 맨 끝에 출처를 둔다. 위 섹션과 같은 쿼리라 요청이 늘지 않는다. */
+function HomeImageCredit() {
+  const latest = useGachaList(HOME_LIST_LIMIT);
+  const popular = usePopularGacha(HOME_LIST_LIMIT);
+  const hasImage = [...(latest.data ?? []), ...(popular.data ?? [])].some((g) => g.imageUrl);
+  return hasImage ? <ImageCredit /> : null;
 }
 
 /** 섹션 = 제목(좌우 gutter) + 14 아래 내용. 내용의 좌우 여백은 내용 쪽에서 준다 (가로 스크롤은 끝까지 닿아야 해서). */

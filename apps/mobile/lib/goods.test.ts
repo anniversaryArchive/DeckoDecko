@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Item } from "@deckodecko/core";
 
-import { countByFolder, groupByGacha, searchGoods } from "./goods";
+import { countByFolder, groupByGacha, hasGachaImage, searchGoods } from "./goods";
 
 function item(id: string, gachaId: string, name: string, folderId = "f0"): Item {
   return {
@@ -27,6 +27,23 @@ const gachas = new Map([
   ["g1", { name: "うさぎマスコット", nameKo: "토끼 마스코트" }],
   ["g2", { name: "Forest Friends", nameKo: null }],
 ]);
+
+describe("hasGachaImage", () => {
+  const images = new Map([
+    ["g1", { imageUrl: "https://example.com/1.jpg" }],
+    ["g2", { imageUrl: null }],
+  ]);
+
+  it("이미지가 있는 가챠의 기록이 하나라도 있으면 true", () => {
+    expect(hasGachaImage(items, images)).toBe(true);
+  });
+
+  it("이미지가 없거나 아직 못 받은 가챠뿐이면 false", () => {
+    expect(hasGachaImage([item("2", "g2", "다람쥐")], images)).toBe(false);
+    expect(hasGachaImage([item("4", "g3", "곰")], images)).toBe(false);
+    expect(hasGachaImage([], images)).toBe(false);
+  });
+});
 
 describe("searchGoods", () => {
   it("빈 검색어 · 공백뿐이면 모두 남긴다", () => {

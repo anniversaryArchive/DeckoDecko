@@ -4,10 +4,11 @@ import { Keyboard, ScrollView, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAddRecentSearch, usePopularGacha } from "@deckodecko/core/react";
+import { useAddRecentSearch, usePopularGacha, useRecentGacha } from "@deckodecko/core/react";
 import { gutter, space } from "@deckodecko/ui";
 import { Text } from "@deckodecko/ui/native";
 
+import { ImageCredit } from "@/components/ImageCredit";
 import { PopularGachaList } from "@/components/PopularGachaList";
 import { QueryState } from "@/components/QueryState";
 import {
@@ -113,7 +114,10 @@ function BeforeSearch({ onSelectRecent }: { onSelectRecent: (keyword: string) =>
 function PopularSearches() {
   const { t } = useTranslation();
   const popular = usePopularGacha();
+  const recent = useRecentGacha();
   const { layout } = useRecentMotion();
+  // 최근 본 굿즈의 이미지까지 함께 친다 (인기 목록만 비어 있을 수 있다)
+  const hasImage = [...(popular.data ?? []), ...(recent.data ?? [])].some((g) => g.imageUrl);
   // 위의 최근 섹션이 생기고 없어질 때 같이 미끄러진다
   return (
     <Animated.View layout={layout} style={{ paddingHorizontal: gutter, gap: space[10] }}>
@@ -129,6 +133,7 @@ function PopularSearches() {
       >
         {(list) => <PopularGachaList gachas={list} />}
       </QueryState>
+      {hasImage ? <ImageCredit style={{ paddingTop: space[14] }} /> : null}
     </Animated.View>
   );
 }

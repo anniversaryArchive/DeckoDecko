@@ -19,6 +19,7 @@ export const ko = {
     // formatShortDate 가 쓴다 (month · day 는 두 자리)
     shortDate: "{{year}}.{{month}}.{{day}}",
     appName: "가챠 탐색대",
+    imageCredit: "© BANDAI",
     back: "뒤로",
     last10Days: "최근 10일",
     // 가챠 정보 줄 (검색 결과 카드 · 상세). 값은 포맷 헬퍼로 만든 문자열을 넣는다.

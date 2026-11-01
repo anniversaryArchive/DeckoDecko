@@ -18,6 +18,7 @@ import { Button, ChevronDownIcon, Chip, PRESSED_OPACITY, Text } from "@deckodeck
 
 import { EmptyState } from "@/components/EmptyState";
 import { GachaCardSlot } from "@/components/GachaCardSlot";
+import { ImageCredit } from "@/components/ImageCredit";
 import { OptionSheet } from "@/components/OptionSheet";
 import { QueryState } from "@/components/QueryState";
 import { StateMessage } from "@/components/StateMessage";
@@ -172,6 +173,8 @@ export function SearchResultList({
               message={t("common.loadFailed")}
               onRetry={() => void search.fetchNextPage()}
             />
+          ) : !search.hasNextPage && result?.items.some((g) => g.imageUrl) ? (
+            <ImageCredit style={{ paddingTop: space[14] }} />
           ) : null
         }
         // 결과가 있으면 그려지지 않으므로 로딩 · 에러 · 결과 없음만 여기서 고른다

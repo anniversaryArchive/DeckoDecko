@@ -29,6 +29,7 @@ import { Button, Card, Text, useToast } from "@deckodecko/ui/native";
 import { GachaCollectionCard } from "@/components/GachaCollectionCard";
 import { GACHA_HERO_HEIGHT, GachaHero } from "@/components/GachaHero";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { ImageCredit } from "@/components/ImageCredit";
 import { ItemSheet } from "@/components/ItemSheet";
 import { MyItemRow } from "@/components/MyItemRow";
 import { QueryState } from "@/components/QueryState";
@@ -129,6 +130,7 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
         contentContainerStyle={{ paddingBottom: space[24] }}
       >
         <GachaHero imageUrl={gacha.imageUrl} />
+        {gacha.imageUrl ? <ImageCredit style={{ paddingTop: space[6] }} /> : null}
 
         <View style={{ paddingVertical: space[20], paddingHorizontal: gutter, gap: space[6] }}>
           {(media != null || release != null) && (

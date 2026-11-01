@@ -5,8 +5,10 @@ import type { Folder, Gacha, Item } from "@deckodecko/core";
 import { gutter, space } from "@deckodecko/ui";
 
 import { GoodsItemCard } from "@/components/GoodsItemCard";
+import { ImageCredit } from "@/components/ImageCredit";
 import { useFolderNames } from "@/hooks/useFolderNames";
 import { gachaName } from "@/lib/displayName";
+import { hasGachaImage } from "@/lib/goods";
 
 /** 열 수 · 카드 사이 간격 */
 const COLUMNS = 2;
@@ -44,6 +46,7 @@ export function GoodsItemGrid({ items, gachas, folders, onPressItem }: Props) {
           />
         );
       }}
+      ListFooterComponent={hasGachaImage(items, gachas) ? <ImageCredit /> : null}
       columnWrapperStyle={{ gap: GAP }}
       contentContainerStyle={{ paddingHorizontal: gutter, paddingBottom: space[24], gap: GAP }}
       keyboardShouldPersistTaps="handled"
