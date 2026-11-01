@@ -40,7 +40,7 @@ export type TabBarProps = {
 /**
  * 떠 있는 알약형 하단 탭 바 (시안). 선택된 탭만 알약 안에 아이콘 + 이름, 나머지는 아이콘만.
  * 탭마다 같은 폭의 칸을 주고 그 가운데에 둔다. 선택된 탭이 넓어져도 다른 탭의 아이콘은 움직이지 않는다.
- * 그리기만 한다: 내비게이션 연결 · safe area · 키보드가 뜰 때 숨기기는 앱의 탭 레이아웃(Tabs 의 tabBar)이 맡는다.
+ * 그리기만 한다: 내비게이션 연결 · safe area 는 앱의 탭 레이아웃(Tabs 의 tabBar)이 맡는다.
  */
 export function TabBar({ items, style }: TabBarProps) {
   const { colors } = useTheme();
