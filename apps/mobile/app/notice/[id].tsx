@@ -8,10 +8,9 @@ import { border, gutter, space, useTheme } from "@deckodecko/ui";
 import { Button, Card, Text } from "@deckodecko/ui/native";
 
 import { EmptyState } from "@/components/EmptyState";
-import { NoticeFixedBadge } from "@/components/NoticeFixedBadge";
+import { NoticeMeta } from "@/components/NoticeMeta";
 import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
-import { formatDateTime } from "@/lib/i18n";
 
 /**
  * 공지 상세 (시안 B_NoticeDetail). 공지 목록에서 공지를 누르면 온다.
@@ -45,12 +44,7 @@ export default function NoticeDetailScreen() {
               }}
             >
               <View style={{ gap: space[8] }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: space[8] }}>
-                  {data.isFixed ? <NoticeFixedBadge /> : null}
-                  <Text variant="captionSm" color="textMuted">
-                    {formatDateTime(new Date(data.createdAt))}
-                  </Text>
-                </View>
+                <NoticeMeta notice={data} />
                 <Text variant="headingSm" accessibilityRole="header">
                   {data.title}
                 </Text>

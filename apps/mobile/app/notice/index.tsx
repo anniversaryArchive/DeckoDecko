@@ -10,7 +10,7 @@ import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Button, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
 import { EmptyState } from "@/components/EmptyState";
-import { NoticeFixedBadge } from "@/components/NoticeFixedBadge";
+import { NoticeMeta } from "@/components/NoticeMeta";
 import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { joinLabel } from "@/hooks/useGachaDisplay";
@@ -83,12 +83,7 @@ function NoticeCard({ notice }: { notice: Notice }) {
         opacity: pressed ? PRESSED_OPACITY : 1,
       })}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: space[8] }}>
-        {notice.isFixed ? <NoticeFixedBadge /> : null}
-        <Text variant="captionSm" color="textMuted">
-          {date}
-        </Text>
-      </View>
+      <NoticeMeta notice={notice} />
       <Text variant="titleSm">{notice.title}</Text>
       {/* 빈 줄로 시작하면 Android 는 첫 줄 뒤에 … 만 보여서 미리보기에서는 공백을 합친다 */}
       <Text variant="caption" color="textMuted" numberOfLines={2}>
