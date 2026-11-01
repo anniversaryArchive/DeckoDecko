@@ -19,6 +19,8 @@ import { openNotice } from "@/lib/routes";
 
 /** 빈 화면 "홈으로 돌아가기" 버튼의 집 아이콘 */
 const HOME_ICON_SIZE = 18;
+/** 카드 미리보기로 넘길 최대 글자 수. 두 줄만 보이는데 Text 는 렌더링마다 글자 전체를 글꼴별로 나눈다 */
+const PREVIEW_MAX_LENGTH = 200;
 
 /**
  * 공지 목록 (시안 B_Notice · B_NoticeEmpty). 홈 공지 띠를 누르면 여기로 온다.
@@ -88,8 +90,9 @@ function NoticeCard({ notice }: { notice: Notice }) {
         </Text>
       </View>
       <Text variant="titleSm">{notice.title}</Text>
+      {/* 빈 줄로 시작하면 Android 는 첫 줄 뒤에 … 만 보여서 미리보기에서는 공백을 합친다 */}
       <Text variant="caption" color="textMuted" numberOfLines={2}>
-        {notice.content}
+        {notice.content.replace(/\s+/g, " ").trim().slice(0, PREVIEW_MAX_LENGTH)}
       </Text>
     </Pressable>
   );
