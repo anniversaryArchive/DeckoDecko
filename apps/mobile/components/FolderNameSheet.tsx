@@ -47,7 +47,9 @@ export function FolderNameSheet({ open, onClose, folder }: Props) {
   const filled = name.trim().length > 0;
   // 저장소처럼 앞뒤 공백만 빼고 비교한다 (cleanName 은 빈 이름에 던지므로 입력 중에는 쓰지 않는다)
   const unchanged = folder !== undefined && name.trim() === folder.name;
-  const canSubmit = filled && checked && !unchanged && !mutation.isPending;
+  // 저장이 끝나면 중복 검사를 다시 읽어 방금 만든 이름이 "이미 있음"이 된다. 시트가 내려가는 동안 오류 · 꺼진 버튼이 보이지 않게
+  const submitted = mutation.isPending || mutation.isSuccess;
+  const canSubmit = filled && checked && !unchanged && !submitted;
 
   const submit = async () => {
     if (!canSubmit) return;
@@ -61,7 +63,7 @@ export function FolderNameSheet({ open, onClose, folder }: Props) {
   };
 
   const message =
-    filled && taken && !unchanged
+    filled && taken && !unchanged && !submitted
       ? { text: t("folder.nameTaken"), color: "accent" as const }
       : mutation.isError
         ? {
@@ -130,7 +132,7 @@ export function FolderNameSheet({ open, onClose, folder }: Props) {
         >
           {t("common.cancel")}
         </Button>
-        <Button disabled={!canSubmit} onPress={submit} style={{ flex: 1 }}>
+        <Button disabled={!canSubmit && !submitted} onPress={submit} style={{ flex: 1 }}>
           {folder ? t("folder.rename") : t("folder.create")}
         </Button>
       </View>

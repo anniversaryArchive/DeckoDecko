@@ -55,7 +55,7 @@ export function FolderDeleteSheet({ open, onClose, folder, name, count: liveCoun
   const count = shown.count;
 
   const close = () => {
-    // 지우는 중에 뒤 배경 · 뒤로가기로 닫으면 reset 하지 않는다. hold 가 풀려 닫히는 동안 개수가 0으로 바뀌어 보인다
+    // 지우는 중에는 reset 하지 않는다. hold 가 풀리면 지우고 있는 폴더를 다시 읽는다
     if (!remove.isPending) remove.reset();
     onClose();
   };

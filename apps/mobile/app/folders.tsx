@@ -51,7 +51,9 @@ export default function FolderManageScreen() {
   const toast = useToast();
   const folders = useFolders();
   const counts = useItemCountsByFolder();
-  const reorder = useReorderFolders();
+  const { mutate: saveOrder } = useReorderFolders({
+    onError: () => toast.show({ title: t("folder.reorderFailed") }),
+  });
   // 시트마다 open 을 따로 둔다. 하나를 닫는 애니메이션 중에 다른 시트를 열어도 닫히던 시트가 끝까지 그려지게
   const [nameSheet, setNameSheet] = useState<{ open: boolean; folder?: Folder }>({ open: false });
   // 지울 폴더는 닫힌 뒤에도 남겨 둔다 (닫히는 동안 그릴 내용)
@@ -68,16 +70,12 @@ export default function FolderManageScreen() {
     ? Object.values(counts.data).reduce((sum, n) => sum + n, 0)
     : undefined;
 
-  const { mutateAsync: reorderAsync } = reorder;
   const move = useCallback(
     (from: number, to: number) => {
       if (from === to || to < 0 || to >= normal.length) return;
-      // 캐시는 훅이 바로 바꾸고, 실패하면 훅이 되돌린다. mutate 의 onError 는 연달아 부르면 마지막 것만 불려서 쓰지 않는다
-      reorderAsync(reorderItems(normal, from, to).map((f) => f.id)).catch(() =>
-        toast.show({ title: t("folder.reorderFailed") })
-      );
+      saveOrder(reorderItems(normal, from, to).map((f) => f.id));
     },
-    [normal, reorderAsync, toast, t]
+    [normal, saveOrder]
   );
   const openRename = useCallback((folder: Folder) => setNameSheet({ open: true, folder }), []);
   const openDelete = useCallback((folder: Folder) => setDeleteSheet({ open: true, folder }), []);
@@ -220,7 +218,7 @@ function DefaultFolderRow({ folder, count }: { folder: Folder; count: number | u
         <Text variant="bodyStrong" numberOfLines={1}>
           {folderName(folder, t)}
         </Text>
-        <Text variant="captionSm" color="textMuted" numberOfLines={1}>
+        <Text variant="captionSm" color="textMuted" numberOfLines={2}>
           {count === undefined
             ? t("folder.defaultLocked")
             : t("folder.defaultRowCaption", {

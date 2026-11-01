@@ -571,15 +571,47 @@ describe("폴더 순서 훅", () => {
     const a = await repositories.folders!.createFolder("가방");
     const b = await repositories.folders!.createFolder("책상");
     repositories.folders!.reorderFolders = () => Promise.reject(new Error("disk full"));
-    const { result } = renderHook(() => ({ folders: useFolders(), reorder: useReorderFolders() }), {
-      wrapper,
-    });
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({ folders: useFolders(), reorder: useReorderFolders({ onError }) }),
+      { wrapper }
+    );
     await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
     const before = result.current.folders.data!.map((f) => f.id);
 
     act(() => result.current.reorder.mutate([b.id, a.id]));
     await waitFor(() => expect(result.current.reorder.isError).toBe(true));
     expect(result.current.folders.data?.map((f) => f.id)).toEqual(before);
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it("useReorderFolders: 앞뒤 저장이 다 실패하면 onError 는 마지막 저장에서 한 번만 불린다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    let calls = 0;
+    let fail!: () => void;
+    repositories.folders!.reorderFolders = async () => {
+      calls += 1;
+      if (calls === 1) await new Promise<void>((resolve) => (fail = resolve));
+      throw new Error("disk full");
+    };
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({ folders: useFolders(), reorder: useReorderFolders({ onError }) }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
+
+    act(() => result.current.reorder.mutate([b.id, a.id]));
+    await waitFor(() => expect(calls).toBe(1));
+    act(() => result.current.reorder.mutate([a.id, b.id]));
+    await waitFor(() => expect(result.current.reorder.isPending).toBe(true));
+
+    fail();
+    await waitFor(() => expect(result.current.reorder.isError).toBe(true));
+    expect(calls).toBe(2);
+    expect(onError).toHaveBeenCalledTimes(1);
   });
 
   it("useReorderFolders: 앞 저장이 실패해도 뒤에 줄 선 저장이 있으면 옛 순서로 되돌리지 않는다", async () => {
@@ -598,10 +630,11 @@ describe("폴더 순서 훅", () => {
       }
       return original(ids);
     };
+    const onError = vi.fn();
     const { result } = renderHook(
       () => ({
         folders: useFolders(),
-        reorder: useReorderFolders(),
+        reorder: useReorderFolders({ onError }),
         queryClient: useQueryClient(),
       }),
       { wrapper }
@@ -632,6 +665,7 @@ describe("폴더 순서 훅", () => {
     unsubscribe();
     expect(seen.slice(afterSecond)).not.toContainEqual(before);
     expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id]);
+    expect(onError).not.toHaveBeenCalled();
   });
 });
 
