@@ -204,6 +204,42 @@ export type Database = {
           },
         ];
       };
+      image_takedowns: {
+        Row: {
+          batch_id: string;
+          created_at: string;
+          id: number;
+          note: string;
+          previous_image_link: string;
+          reason: string;
+          restored_at: string | null;
+          row_id: number;
+          source_table: string;
+        };
+        Insert: {
+          batch_id: string;
+          created_at?: string;
+          id?: number;
+          note: string;
+          previous_image_link: string;
+          reason: string;
+          restored_at?: string | null;
+          row_id: number;
+          source_table: string;
+        };
+        Update: {
+          batch_id?: string;
+          created_at?: string;
+          id?: number;
+          note?: string;
+          previous_image_link?: string;
+          reason?: string;
+          restored_at?: string | null;
+          row_id?: number;
+          source_table?: string;
+        };
+        Relationships: [];
+      };
       notice: {
         Row: {
           body: string;
@@ -263,6 +299,14 @@ export type Database = {
       log_gacha_view: {
         Args: { p_device_id: string; p_gacha_id: number };
         Returns: undefined;
+      };
+      take_down_images: {
+        Args: { p_id: number; p_note: string; p_reason: string; p_scope: string };
+        Returns: {
+          gacha_rows: number;
+          item_rows: number;
+          takedown_batch: string;
+        }[];
       };
     };
     Enums: {

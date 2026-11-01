@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, View } from "react-native";
+import { Linking, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
@@ -9,6 +9,9 @@ import { Card, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIconButton";
 import { chooseLanguage, isLanguage, type Language } from "@/lib/i18n";
 import { goBackOrHome } from "@/lib/routes";
+
+/** 스토어 등록 정보와 같은 주소로 둔다. 바꾸면 docs/image-takedown.md 도 같이 고친다. */
+const CONTACT_EMAIL = "anniversaryarchive@gmail.com";
 
 /** 목록 한 줄 높이 */
 const ROW_HEIGHT = 50;
@@ -59,7 +62,51 @@ export default function SettingsScreen() {
         }}
       >
         <LanguageSection />
+        <ContactSection />
       </ScrollView>
+    </View>
+  );
+}
+
+function ContactSection() {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  return (
+    <View style={{ gap: space[8] }}>
+      <Text
+        variant="caption"
+        weight="bold"
+        color="textMuted"
+        style={{ paddingHorizontal: space[4] }}
+      >
+        {t("settings.contact")}
+      </Text>
+      <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>
+        <Pressable
+          onPress={() => {
+            // 메일 앱이 없으면 실패하지만, 주소가 화면에 보이므로 따로 안내하지 않는다
+            Linking.openURL(`mailto:${CONTACT_EMAIL}`).catch(() => undefined);
+          }}
+          accessibilityRole="link"
+          accessibilityLabel={CONTACT_EMAIL}
+          style={({ pressed }) => ({
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: space[8],
+            minHeight: ROW_HEIGHT,
+            opacity: pressed ? PRESSED_OPACITY : 1,
+          })}
+        >
+          <Text variant="body" style={{ flexShrink: 1 }}>
+            {CONTACT_EMAIL}
+          </Text>
+          <Ionicons name="mail-outline" size={CHECK_SIZE} color={colors.textMuted} />
+        </Pressable>
+      </Card>
+      <Text variant="captionSm" color="textMuted" style={{ paddingHorizontal: space[4] }}>
+        {t("settings.contactHint")}
+      </Text>
     </View>
   );
 }

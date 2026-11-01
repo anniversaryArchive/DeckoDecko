@@ -39,6 +39,15 @@ describe("buildSql", () => {
     expect(sql).toContain("(7, 'くろ', null, 'https://img/1_3.jpg', 1)");
   });
 
+  it("내린 이미지(imageLink null)는 다시 넣지 않는다", () => {
+    const [entry] = catalog.entries;
+    if (!entry) throw new Error("fixture");
+    const items = [{ name: "しろ", nameKr: null, imageLink: null }];
+    expect(buildSql({ ...catalog, entries: [{ ...entry, items }] })).toContain(
+      "(7, 'しろ', null, null, 0)"
+    );
+  });
+
   it("작품이 빠진 가챠가 있으면 되돌리는 검사를 넣고 트랜잭션으로 감싼다", () => {
     expect(sql).toContain("anime_id is not null) <> 1 then");
     expect(sql.indexOf("begin;")).toBeLessThan(sql.indexOf("commit;"));

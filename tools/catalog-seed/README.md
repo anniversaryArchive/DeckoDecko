@@ -48,3 +48,5 @@ where id in (select gacha_id from gacha_items) and (anime_id is null or release_
 
 `gacha_items.image_link` 에는 공식 사이트의 라인업 이미지 URL(반다이 CDN)을 그대로 넣고, prod 에도 그대로 쓴다.
 복사하지 않으므로 원본 주소가 바뀌면 이미지가 깨진다. prod 적용은 출처 표시(#217) · 삭제 대응(#218)이 끝난 뒤에 한다. 이유와 감수하는 위험은 [ADR 0005](../../docs/adr/0005-official-lineup-images.md).
+
+**내린 이미지가 되살아나지 않게 한다.** `legacy-60.sql` 은 라인업을 지우고 다시 넣으므로, 이미지를 내린 뒤 그대로 다시 실행하면 URL 이 돌아온다. 내린 항목은 JSON 의 `imageLink` 를 `null` 로 바꾸고 `sql` 단계를 다시 돌린다. `collect` 를 다시 돌리면 JSON 이 새로 만들어지므로 그 뒤에도 같은 확인을 한다. 절차는 [이미지 삭제 요청 대응](../../docs/image-takedown.md).
