@@ -18,12 +18,14 @@ export { useHomeNotices, useNotice, useNotices } from "./notice.hooks";
 export {
   useCreateItem,
   useDeleteItem,
+  useDisplayedItemType,
   useIsItemNameTaken,
   useItem,
   useItemCounts,
   useItemCountsByFolder,
   useItems,
   useSetItemType,
+  useToggleItemType,
   useUpdateItem,
 } from "./items.hooks";
 export {
