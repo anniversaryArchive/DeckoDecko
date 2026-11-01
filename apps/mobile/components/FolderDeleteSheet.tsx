@@ -9,6 +9,8 @@ import { useDeleteFolder, useItems } from "@deckodecko/core/react";
 import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { BottomSheet, Button, Text } from "@deckodecko/ui/native";
 
+import { photoUri } from "@/lib/photos";
+
 /** 위쪽 휴지통 원 지름 */
 const ICON_CIRCLE_SIZE = 56;
 /** 휴지통 아이콘 */
@@ -183,7 +185,7 @@ function MovedItemsPreview({
           >
             {item.thumbnail ? (
               <Image
-                source={{ uri: item.thumbnail }}
+                source={{ uri: photoUri(item.thumbnail) }}
                 style={{ width: "100%", height: "100%" }}
                 resizeMode="cover"
               />
