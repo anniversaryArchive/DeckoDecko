@@ -97,6 +97,15 @@ export function describeLocalRepositories(
         expect(await repos.items.listItems({ gachaId: "none" })).toEqual([]);
       });
 
+      it("limit 이면 최근 것부터 그만큼만", async () => {
+        const a = await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "a" });
+        const b = await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "b" });
+        const c = await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "c" });
+
+        expect(ids(await repos.items.listItems({ limit: 2 }))).toEqual([c.id, b.id]);
+        expect(ids(await repos.items.listItems({ limit: 5 }))).toEqual([c.id, b.id, a.id]);
+      });
+
       it("없는 id 를 읽으면 null", async () => {
         expect(await repos.items.getItem("nope")).toBeNull();
       });

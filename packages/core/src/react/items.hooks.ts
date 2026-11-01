@@ -9,14 +9,18 @@ import type { ItemType } from "../types";
 import { useLocalRepositories } from "./provider";
 import { localNetworkMode } from "./queryClient";
 
-/** 기록 목록. 상세(가챠별) · 내 굿즈(타입별 · 폴더별)가 조건만 바꿔 쓴다. */
-export function useItems(params: ListItemsParams = {}) {
+/**
+ * 기록 목록. 상세(가챠별) · 내 굿즈(타입별 · 폴더별)가 조건만 바꿔 쓴다.
+ * enabled 가 false 면 읽지 않고, invalidate 돼도 다시 읽지 않는다 (지운 폴더처럼 더 볼 일 없는 목록).
+ */
+export function useItems(params: ListItemsParams = {}, options: { enabled?: boolean } = {}) {
   const { items } = useLocalRepositories();
-  const { gachaId, type, folderId } = params;
+  const { gachaId, type, folderId, limit } = params;
   return useQuery({
     ...localNetworkMode,
-    queryKey: queryKeys.items.list(gachaId ?? null, type ?? null, folderId ?? null),
-    queryFn: () => items.listItems({ gachaId, type, folderId }),
+    queryKey: queryKeys.items.list(gachaId ?? null, type ?? null, folderId ?? null, limit ?? null),
+    queryFn: () => items.listItems({ gachaId, type, folderId, limit }),
+    enabled: options.enabled,
   });
 }
 

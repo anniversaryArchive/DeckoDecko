@@ -37,6 +37,7 @@ export function createMemoryLocalRepositories(): LocalRepositories {
         return items
           .filter((i) => matches(i, params))
           .reverse()
+          .slice(0, params?.limit)
           .map((i) => ({ ...i }));
       },
 

@@ -5,6 +5,8 @@ export type ListItemsParams = {
   gachaId?: string;
   type?: ItemType;
   folderId?: string;
+  /** 앞에서부터 이만큼만 (최근 것부터) */
+  limit?: number;
 };
 
 export type CreateItemInput = {
