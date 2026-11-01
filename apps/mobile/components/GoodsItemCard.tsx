@@ -5,6 +5,7 @@ import type { Item } from "@deckodecko/core";
 import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { Card, Text } from "@deckodecko/ui/native";
 
+import { ITEM_TYPE_COLORS } from "@/components/ItemTypeTag";
 import { joinLabel } from "@/hooks/useGachaDisplay";
 import { photoUri } from "@/lib/photos";
 
@@ -30,7 +31,7 @@ type Props = {
  */
 export function GoodsItemCard({ item, folder, gacha, gachaImageUrl, onPress, style }: Props) {
   const { colors } = useTheme();
-  const isGet = item.type === "GET";
+  const typeColors = ITEM_TYPE_COLORS[item.type];
   // 사진 파일을 읽지 못하면(앱 폴더로 복사하기 전에 저장한 임시 주소 등) 가챠 이미지로 바꾼다. 사진을 바꾸면 다시 시도한다
   const [failedUri, setFailedUri] = useState<string | null>(null);
   const photo = item.thumbnail ? photoUri(item.thumbnail) : null;
@@ -44,7 +45,7 @@ export function GoodsItemCard({ item, folder, gacha, gachaImageUrl, onPress, sty
       <View
         style={{
           height: IMAGE_HEIGHT,
-          backgroundColor: isGet ? colors.getSurface : colors.wishSurface,
+          backgroundColor: colors[typeColors.surface],
           borderBottomWidth: border.default,
           borderBottomColor: colors.lineSoft,
         }}
@@ -62,12 +63,12 @@ export function GoodsItemCard({ item, folder, gacha, gachaImageUrl, onPress, sty
         ) : null}
         <Text
           variant="captionXs"
-          color={isGet ? "onGet" : "onWish"}
+          color={typeColors.label}
           style={{
             position: "absolute",
             top: space[8],
             right: space[8],
-            backgroundColor: isGet ? colors.getSurface : colors.wishSurface,
+            backgroundColor: colors[typeColors.surface],
             borderRadius: radius.full,
             overflow: "hidden",
             paddingHorizontal: space[8],
