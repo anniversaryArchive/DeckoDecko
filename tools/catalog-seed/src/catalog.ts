@@ -13,7 +13,9 @@ export interface CatalogEntry {
   animeId: number;
   /** 리뷰용. SQL 에는 쓰지 않는다. */
   animeTitle: string;
+  /** 리뷰용. SQL 에는 쓰지 않는다 (가챠 이름은 바꾸지 않는다). */
   name: string;
+  /** 리뷰용. SQL 에는 쓰지 않는다 (가챠 이름은 바꾸지 않는다). */
   nameKr: string | null;
   sourceUrl: string;
   /** "YYYY-MM" */
