@@ -3,6 +3,7 @@ import type {
   AnimeRow,
   GachaBaseRow,
   GachaDetailRow,
+  GachaRpcRow,
   GachaSummaryRow,
 } from "./gacha.supabase.rows";
 
@@ -46,6 +47,21 @@ function toGachaBase(row: GachaBaseRow, itemCount: number): Gacha {
 
 export function toGacha(row: GachaSummaryRow): Gacha {
   return toGachaBase(row, row.gacha_items[0]?.count ?? 0);
+}
+
+/** RPC 의 평평한 행 → 가챠 요약. 작품 id 나 한국어 제목이 없으면 작품 없음(media null)으로 본다. */
+export function toGachaFromRpc(row: GachaRpcRow): Gacha {
+  const anime: AnimeRow | null =
+    row.anime_id !== null && row.anime_kr_title !== null
+      ? {
+          id: row.anime_id,
+          kr_title: row.anime_kr_title,
+          jp_title: row.anime_jp_title,
+          en_title: row.anime_en_title,
+          type: row.anime_type ?? "",
+        }
+      : null;
+  return toGachaBase({ ...row, anime }, row.item_count ?? 0);
 }
 
 /** 라인업은 sort_order → id 순으로 세운 뒤 1부터 번호를 매긴다 (sort_order 는 기본값 0 이라 겹칠 수 있다). */
