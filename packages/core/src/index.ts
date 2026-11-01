@@ -52,8 +52,15 @@ export type {
 export type { FolderRepository } from "./repositories/folders";
 export type { LocalRepositories, Repositories } from "./repositories";
 export { cleanName, normalizeName } from "./name";
+export { toItemCounts, toItemCountsBy } from "./itemCounts";
 export { createMemoryLocalRepositories } from "./repositories/local.memory";
-export { collectionRate, gachaCollection, type GachaCollection } from "./collection";
+export {
+  collectionRate,
+  gachaCollection,
+  gachaCollectionRates,
+  type GachaCollection,
+  type GachaCollectionRate,
+} from "./collection";
 export { createMemoryGachaRepository } from "./repositories/gacha.memory";
 export type { RecentRepository } from "./repositories/recent";
 export {
@@ -73,6 +80,10 @@ export type { PreferencesRepository } from "./repositories/preferences";
 export { DEFAULT_GOODS_VIEW_MODE, parseGoodsViewMode } from "./repositories/preferences";
 export { createStoragePreferencesRepository } from "./repositories/preferences.storage";
 export { createSupabaseGachaRepository } from "./repositories/gacha.supabase";
+export type { ViewLogRepository } from "./repositories/viewLog";
+export { createMemoryViewLogRepository } from "./repositories/viewLog.memory";
+export { createSupabaseViewLogRepository } from "./repositories/viewLog.supabase";
+export { createStorageDeviceId } from "./deviceId";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";
 export type {
   FeedbackMediaInput,
@@ -91,6 +102,5 @@ export type { MediaEntry, MediaRepository, SearchMediaParams } from "./repositor
 export { MEDIA_DEFAULTS } from "./repositories/media";
 export { createMemoryMediaRepository } from "./repositories/media.memory";
 export { createSupabaseMediaRepository } from "./repositories/media.supabase";
-export { createStorageDeviceId } from "./deviceId";
 export { queryKeys } from "./queryKeys";
 export { storageKeys, type StorageKey } from "./storageKeys";

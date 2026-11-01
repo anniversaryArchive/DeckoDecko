@@ -1,6 +1,8 @@
 import {
   cleanName,
   normalizeName,
+  toItemCounts,
+  toItemCountsBy,
   type Folder,
   type Item,
   type ListItemsParams,
@@ -28,8 +30,13 @@ function itemFilter({ gachaId, type, folderId }: ListItemsParams = {}): SQL | un
 /**
  * 로컬 DB(drizzle) 위의 items · folders 저장소. lib/repositories 에서 db 와 UUID 생성기를 넣어 만든다.
  * 기본 폴더 보호 · 폴더 삭제 시 기록 이동은 DB 트리거(drizzle/0001_*.sql)가 하고, 여기서는 다시 구현하지 않는다.
+ * @param deletePhoto 기록을 지우거나 사진을 바꿔 더 쓰지 않는 사진(items.thumbnail 값)을 받는다. 던지지 않아야 한다
  */
-export function createLocalRepositories(db: LocalDb, newId: () => string): LocalRepositories {
+export function createLocalRepositories(
+  db: LocalDb,
+  newId: () => string,
+  deletePhoto: (thumbnail: string) => void
+): LocalRepositories {
   async function getItem(id: string): Promise<Item | null> {
     const [row] = await db.select().from(items).where(eq(items.id, id));
     return row ?? null;
@@ -61,8 +68,7 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .from(items)
           .where(itemFilter({ gachaId: params?.gachaId }))
           .groupBy(items.type);
-        const of = (type: Item["type"]) => rows.find((r) => r.type === type)?.n ?? 0;
-        return { wish: of("WISH"), get: of("GET") };
+        return toItemCounts(rows);
       },
 
       async countItemsByFolder() {
@@ -71,6 +77,14 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .from(items)
           .groupBy(items.folderId);
         return Object.fromEntries(rows.map((r) => [r.folderId, r.n]));
+      },
+
+      async countItemsByGacha() {
+        const rows = await db
+          .select({ gachaId: items.gachaId, type: items.type, n: count() })
+          .from(items)
+          .groupBy(items.gachaId, items.type);
+        return toItemCountsBy(rows, (r) => r.gachaId);
       },
 
       async createItem(input) {
@@ -96,6 +110,7 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
       },
 
       async updateItem(id, input) {
+        const before = input.thumbnail === undefined ? null : await getItem(id);
         // drizzle 은 set 의 undefined 값을 건너뛴다 (= 안 바꿈)
         const [row] = await db
           .update(items)
@@ -107,12 +122,13 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .where(eq(items.id, id))
           .returning();
         if (!row) throw new Error(`item not found: ${id}`);
+        if (before?.thumbnail && before.thumbnail !== row.thumbnail) deletePhoto(before.thumbnail);
         return row;
       },
 
-      // TODO(혜진): 3주차에 사진을 앱 폴더로 옮기면 기록을 지울 때 사진 파일도 같이 지운다
       async deleteItem(id) {
-        await db.delete(items).where(eq(items.id, id));
+        const [row] = await db.delete(items).where(eq(items.id, id)).returning();
+        if (row?.thumbnail) deletePhoto(row.thumbnail);
       },
 
       async isItemNameTaken({ gachaId, name, excludeId }) {

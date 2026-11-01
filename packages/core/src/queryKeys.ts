@@ -36,14 +36,18 @@ export const queryKeys = {
   },
   items: {
     all: ["items"] as const,
+    lists: ["items", "list"] as const,
     // 거르지 않는 조건은 null
     list: (gachaId: string | null, type: ItemType | null, folderId: string | null) =>
       ["items", "list", gachaId, type, folderId] as const,
     detail: (id: string) => ["items", "detail", id] as const,
     counts: (gachaId: string | null) => ["items", "counts", gachaId] as const,
     countsByFolder: () => ["items", "countsByFolder"] as const,
+    countsByGacha: () => ["items", "countsByGacha"] as const,
     nameTaken: (gachaId: string, name: string, excludeId: string | null) =>
       ["items", "nameTaken", gachaId, name, excludeId] as const,
+    // mutation 키. 저장 중인 WISH · GET 을 mutation 캐시에서 찾을 때 쓴다 (useDisplayedItemType)
+    setType: ["items", "setType"] as const,
   },
   folders: {
     all: ["folders"] as const,

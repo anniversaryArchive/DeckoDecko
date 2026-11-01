@@ -185,6 +185,18 @@ export function describeLocalRepositories(
         expect(await repos.items.countItemsByFolder()).toEqual({ [fallback]: 1, [bag.id]: 2 });
       });
 
+      it("가챠별 개수: WISH / GET 따로, 기록이 없는 가챠는 빠진다", async () => {
+        expect(await repos.items.countItemsByGacha()).toEqual({});
+        await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "a" });
+        await repos.items.createItem({ gachaId: "g1", type: "GET", name: "b" });
+        await repos.items.createItem({ gachaId: "g1", type: "GET", name: "c" });
+        await repos.items.createItem({ gachaId: "g2", type: "WISH", name: "d" });
+        expect(await repos.items.countItemsByGacha()).toEqual({
+          g1: { wish: 1, get: 2 },
+          g2: { wish: 1, get: 0 },
+        });
+      });
+
       describe("이름 중복 검사", () => {
         it("같은 가챠 안에서만 본다", async () => {
           await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "토끼" });

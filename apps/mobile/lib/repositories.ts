@@ -5,15 +5,18 @@ import {
   createMemoryGachaRepository,
   createMemoryMediaRepository,
   createMemoryNoticeRepository,
+  createMemoryViewLogRepository,
   createSupabaseClient,
   createSupabaseGachaRepository,
   createStoragePreferencesRepository,
   createSupabaseMediaRepository,
   createStorageRecentRepository,
+  createSupabaseViewLogRepository,
   type LocalRepositories,
   type PreferencesRepository,
   type RecentRepository,
   type Repositories,
+  type ViewLogRepository,
 } from "@deckodecko/core";
 import { mockCatalog, mockMedia, mockNotices } from "@deckodecko/core/mocks";
 
@@ -44,6 +47,7 @@ function createRepositories(): AppRepositories {
     media: createSupabaseMediaRepository(client),
     recent,
     preferences,
+    viewLog: createSupabaseViewLogRepository(client, getDeviceId),
     ...devNotice(),
     ...devFeedback(),
     ...localRepositories,
@@ -56,6 +60,7 @@ function createMockRepositories(): AppRepositories {
     media: createMemoryMediaRepository(mockMedia),
     recent,
     preferences,
+    viewLog: createMemoryViewLogRepository(),
     ...devNotice(),
     ...devFeedback(),
     ...localRepositories,
@@ -73,12 +78,13 @@ function devFeedback(): Pick<Repositories, "feedback"> {
   return __DEV__ ? { feedback: createMemoryFeedbackRepository({ getDeviceId }) } : {};
 }
 
-// Repositories 는 로컬 기록 · recent · preferences 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
+// Repositories 는 로컬 기록 · recent · preferences · viewLog 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
 type AppRepositories = Repositories &
   LocalRepositories &
   Required<Pick<Repositories, "media">> & {
     recent: RecentRepository;
     preferences: PreferencesRepository;
+    viewLog: ViewLogRepository;
   };
 
 export const repositories: AppRepositories = createRepositories();

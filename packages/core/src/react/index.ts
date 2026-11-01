@@ -12,18 +12,22 @@ export {
   useGachaList,
   useGachaSearchPages,
   useGachasByIds,
+  useLogGachaView,
   usePopularGacha,
 } from "./gacha.hooks";
+export { useGachaCollections } from "./gachaCollection.hooks";
 export { useHomeNotices, useNotice, useNotices } from "./notice.hooks";
 export {
   useCreateItem,
   useDeleteItem,
+  useDisplayedItemType,
   useIsItemNameTaken,
   useItem,
   useItemCounts,
   useItemCountsByFolder,
   useItems,
   useSetItemType,
+  useToggleItemType,
   useUpdateItem,
 } from "./items.hooks";
 export {

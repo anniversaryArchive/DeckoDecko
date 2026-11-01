@@ -12,7 +12,7 @@ export const storageKeys = {
   goodsViewMode: "@deckodecko/goods-view-mode",
   /** 설정에서 고른 언어 ("ko" | "en"). 첫 화면 전에 읽어야 해서 동기로 읽을 수 있는 expo-sqlite kv-store 에 둔다 */
   language: "@deckodecko/language",
-  /** 익명 기기 UUID */
+  /** 익명 기기 UUID. 지우면 다른 기기로 집계된다 */
   deviceId: "@deckodecko/device-uuid",
 } as const;
 
