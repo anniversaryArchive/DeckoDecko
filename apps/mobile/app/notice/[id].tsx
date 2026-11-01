@@ -4,8 +4,8 @@ import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useNotice } from "@deckodecko/core/react";
-import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
-import { Button, Text } from "@deckodecko/ui/native";
+import { border, gutter, space, useTheme } from "@deckodecko/ui";
+import { Button, Card, Text } from "@deckodecko/ui/native";
 
 import { EmptyState } from "@/components/EmptyState";
 import { NoticeFixedBadge } from "@/components/NoticeFixedBadge";
@@ -36,16 +36,12 @@ export default function NoticeDetailScreen() {
               paddingBottom: insets.bottom + space[24],
             }}
           >
-            <View
+            <Card
               style={{
                 gap: space[16],
                 paddingTop: space[20],
                 paddingHorizontal: space[20],
                 paddingBottom: space[24],
-                borderRadius: radius.card,
-                borderWidth: border.default,
-                borderColor: colors.line,
-                backgroundColor: colors.surface,
               }}
             >
               <View style={{ gap: space[8] }}>
@@ -63,7 +59,7 @@ export default function NoticeDetailScreen() {
               <Text variant="bodyLoose" selectable>
                 {data.content}
               </Text>
-            </View>
+            </Card>
           </ScrollView>
         )}
       </QueryState>
