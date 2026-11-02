@@ -31,6 +31,16 @@ import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIc
 import { MediaField } from "@/components/MediaField";
 import { goBackOrHome } from "@/lib/routes";
 
+/** 종류마다 내용 칸 안내 · 사진 안내. 버그 ↔ 제안은 칸이 같아서 이 글로만 구분된다 */
+const KIND_HINTS = {
+  request: {
+    placeholder: "feedback.contentPlaceholderRequest",
+    photo: "feedback.photoHintRequest",
+  },
+  bug: { placeholder: "feedback.contentPlaceholderBug", photo: "feedback.photoHintBug" },
+  idea: { placeholder: "feedback.contentPlaceholderIdea", photo: "feedback.photoHintIdea" },
+} as const satisfies Record<FeedbackKind, { placeholder: string; photo: string }>;
+
 /** 사진 칸 (정사각형) */
 const PHOTO_SIZE = 72;
 /** 빈 사진 칸의 아이콘 */
@@ -180,6 +190,7 @@ export default function FeedbackScreen() {
 
         <Input
           label={t(isRequest ? "feedback.detailLabel" : "feedback.contentLabel")}
+          placeholder={t(KIND_HINTS[kind].placeholder)}
           value={content}
           onChangeText={setContent}
           editable={!send.isPending}
@@ -239,7 +250,7 @@ export default function FeedbackScreen() {
             ) : null}
           </View>
           <Text variant="caption" color="textMuted" style={{ flex: 1 }}>
-            {t(isRequest ? "feedback.photoHintRequest" : "feedback.photoHint")}
+            {t(KIND_HINTS[kind].photo)}
           </Text>
         </View>
       </ScrollView>
