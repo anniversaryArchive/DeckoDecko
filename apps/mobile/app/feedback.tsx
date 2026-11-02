@@ -145,6 +145,11 @@ export default function FeedbackScreen() {
             if (!send.isPending) setKind(next);
           }}
           accessibilityLabel={t("feedback.kindLabel")}
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: border.default,
+            borderColor: colors.line,
+          }}
           options={[
             { value: "request", label: t("feedback.kindRequest") },
             { value: "bug", label: t("feedback.kindBug") },
