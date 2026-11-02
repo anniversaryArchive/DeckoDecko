@@ -372,9 +372,9 @@ function Catalog() {
 
       <Section
         title="Toast"
-        note="useToast().show({ title · message · actionLabel · onAction · duration })"
+        note="useToast().show({ tone · title · message · actionLabel · onAction · duration })"
       >
-        <View style={{ flexDirection: "row", gap: space[8] }}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[8] }}>
           <Button variant="outline" size="sm" onPress={() => toast.show(SAVE_FAILED)}>
             제목 · 설명
           </Button>
@@ -391,6 +391,13 @@ function Catalog() {
             }
           >
             동작 버튼 · 안 사라짐
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onPress={() => toast.show({ tone: "success", title: "보냈어요" })}
+          >
+            완료
           </Button>
         </View>
       </Section>
