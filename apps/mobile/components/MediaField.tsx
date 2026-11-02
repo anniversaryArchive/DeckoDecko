@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard, Pressable, View } from "react-native";
 
@@ -27,6 +27,8 @@ type Props = {
   text: string;
   onTextChange: (text: string) => void;
   disabled: boolean;
+  /** 찾은 작품 목록이 열릴 때. 부모가 이 칸을 화면 위쪽으로 올려 목록이 키보드 · 보내기 버튼에 가리지 않게 한다 */
+  onListShown?: () => void;
 };
 
 /**
@@ -34,12 +36,17 @@ type Props = {
  * 목록을 받지 못해도 적은 글자로 보낼 수 있다.
  * 부모 ScrollView 에 keyboardShouldPersistTaps="handled" 를 걸어야 키보드가 떠 있을 때 목록을 누를 수 있다.
  */
-export function MediaField({ picked, onPick, text, onTextChange, disabled }: Props) {
+export function MediaField({ picked, onPick, text, onTextChange, disabled, onListShown }: Props) {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, shadows } = useTheme();
   const [focused, setFocused] = useState(false);
   const results = useMediaSearch(text);
   const typed = text.trim();
+  const listShown = !picked && focused && typed.length > 0;
+
+  useEffect(() => {
+    if (listShown) onListShown?.();
+  }, [listShown, onListShown]);
 
   if (picked) {
     return (
@@ -92,58 +99,61 @@ export function MediaField({ picked, onPick, text, onTextChange, disabled }: Pro
         clearLabel={t("common.clear")}
         returnKeyType="done"
       />
-      {focused && typed ? (
-        <View
-          style={{
-            borderRadius: radius.field,
-            borderWidth: border.default,
-            borderColor: colors.line,
-            backgroundColor: colors.surface,
-            overflow: "hidden",
-          }}
-        >
-          {(results.data ?? []).map((media) => (
+      {listShown ? (
+        // 그림자는 overflow: hidden 에 잘리므로 그림자 면과 모서리를 자르는 면을 나눈다
+        <View style={{ borderRadius: radius.field, boxShadow: shadows.popover }}>
+          <View
+            style={{
+              borderRadius: radius.field,
+              borderWidth: border.default,
+              borderColor: colors.line,
+              backgroundColor: colors.surface,
+              overflow: "hidden",
+            }}
+          >
+            {(results.data ?? []).map((media) => (
+              <Pressable
+                key={media.id}
+                onPress={() => {
+                  onPick(media);
+                  onTextChange("");
+                }}
+                accessibilityRole="button"
+                style={({ pressed }) => ({
+                  paddingVertical: space[10],
+                  paddingHorizontal: space[14],
+                  borderBottomWidth: border.divider,
+                  borderBottomColor: colors.lineSoft,
+                  opacity: pressed ? PRESSED_OPACITY : 1,
+                })}
+              >
+                <MediaName media={media} />
+              </Pressable>
+            ))}
             <Pressable
-              key={media.id}
-              onPress={() => {
-                onPick(media);
-                onTextChange("");
-              }}
+              onPress={() => Keyboard.dismiss()}
               accessibilityRole="button"
               style={({ pressed }) => ({
+                flexDirection: "row",
+                alignItems: "center",
+                gap: space[10],
                 paddingVertical: space[10],
                 paddingHorizontal: space[14],
-                borderBottomWidth: border.divider,
-                borderBottomColor: colors.lineSoft,
+                backgroundColor: colors.bg,
                 opacity: pressed ? PRESSED_OPACITY : 1,
               })}
             >
-              <MediaName media={media} />
+              <Ionicons name="add" size={PLUS_ICON_SIZE} color={colors.accent} />
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text variant="bodyStrong" color="accent" numberOfLines={1}>
+                  {t("feedback.mediaUseText", { text: typed })}
+                </Text>
+                <Text variant="captionSm" color="textMuted">
+                  {t("feedback.mediaUseTextHint")}
+                </Text>
+              </View>
             </Pressable>
-          ))}
-          <Pressable
-            onPress={() => Keyboard.dismiss()}
-            accessibilityRole="button"
-            style={({ pressed }) => ({
-              flexDirection: "row",
-              alignItems: "center",
-              gap: space[10],
-              paddingVertical: space[10],
-              paddingHorizontal: space[14],
-              backgroundColor: colors.bg,
-              opacity: pressed ? PRESSED_OPACITY : 1,
-            })}
-          >
-            <Ionicons name="add" size={PLUS_ICON_SIZE} color={colors.accent} />
-            <View style={{ flex: 1, minWidth: 0 }}>
-              <Text variant="bodyStrong" color="accent" numberOfLines={1}>
-                {t("feedback.mediaUseText", { text: typed })}
-              </Text>
-              <Text variant="captionSm" color="textMuted">
-                {t("feedback.mediaUseTextHint")}
-              </Text>
-            </View>
-          </Pressable>
+          </View>
         </View>
       ) : null}
     </View>

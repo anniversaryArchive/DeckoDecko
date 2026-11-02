@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, KeyboardAvoidingView, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -84,6 +84,13 @@ export default function FeedbackScreen() {
   const setPhoto = (target: FeedbackKind, next: FeedbackPhoto | null) =>
     setPhotos((prev) => ({ ...prev, [target]: next }));
 
+  const scrollRef = useRef<ScrollView>(null);
+  const mediaY = useRef(0);
+  const scrollToMedia = useCallback(() => {
+    // 목록이 그려진 뒤에 올려야 내용 높이가 늘어 끝까지 올라간다
+    requestAnimationFrame(() => scrollRef.current?.scrollTo({ y: mediaY.current, animated: true }));
+  }, []);
+
   const isRequest = kind === "request";
   const filled = (isRequest ? gachaName : content).trim().length > 0;
   // 오프라인이면 보내기가 멈춘 채 기다리므로 누르지 못하게 한다
@@ -119,7 +126,7 @@ export default function FeedbackScreen() {
       return;
     }
     goBackOrHome();
-    toast.show({ title: t("feedback.sent") });
+    toast.show({ tone: "success", title: t("feedback.sent") });
   };
 
   const notice = !online
@@ -154,6 +161,7 @@ export default function FeedbackScreen() {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           paddingTop: space[10],
@@ -191,13 +199,20 @@ export default function FeedbackScreen() {
               clearLabel={t("common.clear")}
               returnKeyType="done"
             />
-            <MediaField
-              picked={pickedMedia}
-              onPick={setPickedMedia}
-              text={mediaText}
-              onTextChange={setMediaText}
-              disabled={send.isPending}
-            />
+            <View
+              onLayout={(e) => {
+                mediaY.current = e.nativeEvent.layout.y;
+              }}
+            >
+              <MediaField
+                picked={pickedMedia}
+                onPick={setPickedMedia}
+                text={mediaText}
+                onTextChange={setMediaText}
+                disabled={send.isPending}
+                onListShown={scrollToMedia}
+              />
+            </View>
           </>
         ) : null}
 
