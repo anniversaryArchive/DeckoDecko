@@ -31,7 +31,7 @@ import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIc
 import { MediaField } from "@/components/MediaField";
 import { goBackOrHome } from "@/lib/routes";
 
-/** 종류마다 내용 칸 안내 · 사진 안내. 버그 ↔ 제안은 칸이 같아서 이 글로만 구분된다 */
+/** 종류마다 내용 칸 안내 · 사진 안내 */
 const KIND_HINTS = {
   request: {
     placeholder: "feedback.contentPlaceholderRequest",
@@ -40,6 +40,13 @@ const KIND_HINTS = {
   bug: { placeholder: "feedback.contentPlaceholderBug", photo: "feedback.photoHintBug" },
   idea: { placeholder: "feedback.contentPlaceholderIdea", photo: "feedback.photoHintIdea" },
 } as const satisfies Record<FeedbackKind, { placeholder: string; photo: string }>;
+
+const EMPTY_CONTENTS: Record<FeedbackKind, string> = { request: "", bug: "", idea: "" };
+const EMPTY_PHOTOS: Record<FeedbackKind, FeedbackPhoto | null> = {
+  request: null,
+  bug: null,
+  idea: null,
+};
 
 /** 사진 칸 (정사각형) */
 const PHOTO_SIZE = 72;
@@ -69,8 +76,13 @@ export default function FeedbackScreen() {
   );
   const [pickedMedia, setPickedMedia] = useState<Media | null>(null);
   const [mediaText, setMediaText] = useState("");
-  const [content, setContent] = useState("");
-  const [photo, setPhoto] = useState<FeedbackPhoto | null>(null);
+  // 종류마다 따로 둔다. 탭을 바꿔도 다른 종류에 쓰던 글 · 사진이 섞이지 않고, 돌아오면 그대로 있다
+  const [contents, setContents] = useState<Record<FeedbackKind, string>>(EMPTY_CONTENTS);
+  const [photos, setPhotos] = useState<Record<FeedbackKind, FeedbackPhoto | null>>(EMPTY_PHOTOS);
+  const content = contents[kind];
+  const photo = photos[kind];
+  const setPhoto = (target: FeedbackKind, next: FeedbackPhoto | null) =>
+    setPhotos((prev) => ({ ...prev, [target]: next }));
 
   const isRequest = kind === "request";
   const filled = (isRequest ? gachaName : content).trim().length > 0;
@@ -78,6 +90,7 @@ export default function FeedbackScreen() {
   const canSend = filled && online && !send.isPending;
 
   const pickPhoto = async () => {
+    const target = kind;
     let result: ImagePicker.ImagePickerResult;
     try {
       result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"] });
@@ -86,7 +99,7 @@ export default function FeedbackScreen() {
       return;
     }
     const picked = result.canceled ? undefined : result.assets[0];
-    if (picked) setPhoto({ uri: picked.uri, mimeType: picked.mimeType });
+    if (picked) setPhoto(target, { uri: picked.uri, mimeType: picked.mimeType });
   };
 
   const submit = async () => {
@@ -189,10 +202,11 @@ export default function FeedbackScreen() {
         ) : null}
 
         <Input
+          key={kind}
           label={t(isRequest ? "feedback.detailLabel" : "feedback.contentLabel")}
           placeholder={t(KIND_HINTS[kind].placeholder)}
           value={content}
-          onChangeText={setContent}
+          onChangeText={(next) => setContents((prev) => ({ ...prev, [kind]: next }))}
           editable={!send.isPending}
           maxLength={FEEDBACK_MAX_LENGTH.content}
           multiline
@@ -241,7 +255,7 @@ export default function FeedbackScreen() {
                   size={PHOTO_CLEAR_SIZE}
                   label={t("feedback.removePhoto")}
                   onPress={() => {
-                    if (!send.isPending) setPhoto(null);
+                    if (!send.isPending) setPhoto(kind, null);
                   }}
                 >
                   <CloseIcon size={PHOTO_CLEAR_ICON_SIZE} />
