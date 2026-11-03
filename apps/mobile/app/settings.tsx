@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,8 +16,8 @@ const CONTACT_EMAIL = "anniversaryarchive@gmail.com";
 
 /** 목록 한 줄 높이 */
 const ROW_HEIGHT = 50;
-/** 고른 언어 옆 체크 */
-const CHECK_SIZE = 20;
+/** 줄 끝 아이콘 (고른 언어 체크, 메일) */
+const ICON_SIZE = 20;
 
 /** 언어 목록. 이름은 그 언어로 적어서 어느 언어로 보든 같다. comingSoon 은 번역 전이라 고를 수 없다. */
 const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSoon?: true }[] = [
@@ -25,7 +26,7 @@ const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSo
   { code: "ja", name: "日本語", comingSoon: true },
 ];
 
-/** 설정 (시안 B_Settings). 1.0 은 언어만 고른다. 홈 머리글의 설정 버튼으로 들어온다. */
+/** 설정 (시안 B_Settings). 언어와 연락처. 홈 머리글의 설정 버튼으로 들어온다. */
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -68,46 +69,64 @@ export default function SettingsScreen() {
   );
 }
 
-function ContactSection() {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
+/** 제목 · 카드 · 안내문으로 이루어진 설정 묶음 */
+function SettingsSection({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint: string;
+  children: ReactNode;
+}) {
   return (
     <View style={{ gap: space[8] }}>
       <Text
         variant="caption"
         weight="bold"
         color="textMuted"
+        accessibilityRole="header"
         style={{ paddingHorizontal: space[4] }}
       >
-        {t("settings.contact")}
+        {title}
       </Text>
-      <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>
-        <Pressable
-          onPress={() => {
-            // 메일 앱이 없으면 실패하지만, 주소가 화면에 보이므로 따로 안내하지 않는다
-            Linking.openURL(`mailto:${CONTACT_EMAIL}`).catch(() => undefined);
-          }}
-          accessibilityRole="link"
-          accessibilityLabel={CONTACT_EMAIL}
-          style={({ pressed }) => ({
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: space[8],
-            minHeight: ROW_HEIGHT,
-            opacity: pressed ? PRESSED_OPACITY : 1,
-          })}
-        >
-          <Text variant="body" style={{ flexShrink: 1 }}>
-            {CONTACT_EMAIL}
-          </Text>
-          <Ionicons name="mail-outline" size={CHECK_SIZE} color={colors.textMuted} />
-        </Pressable>
-      </Card>
+      <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>{children}</Card>
       <Text variant="captionSm" color="textMuted" style={{ paddingHorizontal: space[4] }}>
-        {t("settings.contactHint")}
+        {hint}
       </Text>
     </View>
+  );
+}
+
+function ContactSection() {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  return (
+    <SettingsSection title={t("settings.contact")} hint={t("settings.contactHint")}>
+      <Pressable
+        onPress={() => {
+          // 메일 앱이 없으면 실패하지만, 주소가 화면에 보이므로 따로 안내하지 않는다
+          Linking.openURL(`mailto:${CONTACT_EMAIL}`).catch(() => undefined);
+        }}
+        accessibilityRole="link"
+        // 없으면 Android 가 아이콘 글리프까지 함께 읽는다
+        accessibilityLabel={CONTACT_EMAIL}
+        accessibilityHint={t("settings.contactOpenHint")}
+        style={({ pressed }) => ({
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: space[8],
+          minHeight: ROW_HEIGHT,
+          opacity: pressed ? PRESSED_OPACITY : 1,
+        })}
+      >
+        <Text variant="body" style={{ flexShrink: 1 }}>
+          {CONTACT_EMAIL}
+        </Text>
+        <Ionicons name="mail-outline" size={ICON_SIZE} color={colors.textMuted} />
+      </Pressable>
+    </SettingsSection>
   );
 }
 
@@ -115,78 +134,65 @@ function LanguageSection() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   return (
-    <View style={{ gap: space[8] }}>
-      <Text
-        variant="caption"
-        weight="bold"
-        color="textMuted"
-        style={{ paddingHorizontal: space[4] }}
-      >
-        {t("settings.language")}
-      </Text>
-      <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>
-        <View accessibilityRole="radiogroup" accessibilityLabel={t("settings.language")}>
-          {LANGUAGE_OPTIONS.map((option, i) => {
-            const selected = option.code === i18n.resolvedLanguage;
-            const disabled = option.comingSoon === true;
-            const last = i === LANGUAGE_OPTIONS.length - 1;
-            return (
-              <Pressable
-                key={option.code}
-                disabled={disabled}
-                onPress={() => {
-                  if (isLanguage(option.code)) chooseLanguage(option.code);
-                }}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: selected, disabled }}
-                accessibilityLabel={
-                  disabled ? t("settings.comingSoonLabel", { name: option.name }) : option.name
-                }
-                style={({ pressed }) => ({
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  height: ROW_HEIGHT,
-                  borderBottomWidth: last ? 0 : border.divider,
-                  borderBottomColor: colors.lineSoft,
-                  opacity: pressed ? PRESSED_OPACITY : 1,
-                })}
+    <SettingsSection title={t("settings.language")} hint={t("settings.languageHint")}>
+      <View accessibilityRole="radiogroup" accessibilityLabel={t("settings.language")}>
+        {LANGUAGE_OPTIONS.map((option, i) => {
+          const selected = option.code === i18n.resolvedLanguage;
+          const disabled = option.comingSoon === true;
+          const last = i === LANGUAGE_OPTIONS.length - 1;
+          return (
+            <Pressable
+              key={option.code}
+              disabled={disabled}
+              onPress={() => {
+                if (isLanguage(option.code)) chooseLanguage(option.code);
+              }}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: selected, disabled }}
+              accessibilityLabel={
+                disabled ? t("settings.comingSoonLabel", { name: option.name }) : option.name
+              }
+              style={({ pressed }) => ({
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                height: ROW_HEIGHT,
+                borderBottomWidth: last ? 0 : border.divider,
+                borderBottomColor: colors.lineSoft,
+                opacity: pressed ? PRESSED_OPACITY : 1,
+              })}
+            >
+              <Text
+                variant={selected ? "bodyStrong" : "body"}
+                color={disabled ? "textMuted" : "text"}
               >
+                {option.name}
+              </Text>
+              {selected ? (
+                <Ionicons name="checkmark" size={ICON_SIZE} color={colors.accent} />
+              ) : null}
+              {disabled ? (
                 <Text
-                  variant={selected ? "bodyStrong" : "body"}
-                  color={disabled ? "textMuted" : "text"}
+                  variant="captionSm"
+                  weight="bold"
+                  color="textMuted"
+                  style={{
+                    backgroundColor: colors.bg,
+                    borderWidth: border.divider,
+                    borderColor: colors.line,
+                    borderRadius: radius.full,
+                    overflow: "hidden",
+                    paddingHorizontal: space[8],
+                    paddingVertical: space[2],
+                  }}
                 >
-                  {option.name}
+                  {t("settings.comingSoon")}
                 </Text>
-                {selected ? (
-                  <Ionicons name="checkmark" size={CHECK_SIZE} color={colors.accent} />
-                ) : null}
-                {disabled ? (
-                  <Text
-                    variant="captionSm"
-                    weight="bold"
-                    color="textMuted"
-                    style={{
-                      backgroundColor: colors.bg,
-                      borderWidth: border.divider,
-                      borderColor: colors.line,
-                      borderRadius: radius.full,
-                      overflow: "hidden",
-                      paddingHorizontal: space[8],
-                      paddingVertical: space[2],
-                    }}
-                  >
-                    {t("settings.comingSoon")}
-                  </Text>
-                ) : null}
-              </Pressable>
-            );
-          })}
-        </View>
-      </Card>
-      <Text variant="captionSm" color="textMuted" style={{ paddingHorizontal: space[4] }}>
-        {t("settings.languageHint")}
-      </Text>
-    </View>
+              ) : null}
+            </Pressable>
+          );
+        })}
+      </View>
+    </SettingsSection>
   );
 }

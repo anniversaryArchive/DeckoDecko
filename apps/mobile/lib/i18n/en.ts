@@ -197,6 +197,7 @@ export const en: Messages = {
     languageHint: "Gacha names are shown in their original Japanese.",
     contact: "Contact",
     contactHint: "For image removal or other rights requests, please email us here.",
+    contactOpenHint: "Opens your mail app",
   },
   feedback: {},
 };

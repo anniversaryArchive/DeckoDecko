@@ -18,8 +18,9 @@ ADR 0005 는 공식 이미지를 URL 그대로 쓰는 대신, 권리자 요청�
 
 ## 결정
 
-- `public.take_down_images(범위, id, 사유, 메모)` 로 내린다. 범위는 `gacha` · `anime` · `all` 이고, `gacha` 와 그 가챠의 `gacha_items` 를 함께 비운다.
-- 이전 URL 과 사유는 `public.image_takedowns` 에 남긴다. 테이블과 함수 모두 anon · authenticated 권한을 회수해 앱에서 접근하지 못한다.
+- `public.take_down_images(범위, id 배열, 사유, 메모)` 로 내린다. 범위는 `gacha` · `anime`(미디어) · `all` 이고, `gacha` 와 그 가챠의 `gacha_items` 를 함께 비운다. 미디어가 여러 행이거나 연결되지 않은 가챠가 있어 id 를 여러 개 받고, 회신 전에 이름 검색으로 남은 이미지를 확인한다.
+- 호출마다 `public.image_takedown_requests` 에 사유와 범위를 남기고, 범위 안의 행은 이미 비어 있어도 이전 URL 과 함께 `public.image_takedowns` 에 남긴다. 테이블과 함수 모두 anon · authenticated 권한을 회수해 앱에서 접근하지 못한다.
+- 되돌리기는 `public.restore_images(요청)` 로 한다. 한 행을 여러 요청이 덮으면 유효한 요청이 모두 풀릴 때 돌아온다. 잘못된 요청 하나를 되돌려 다른 요청으로 내린 이미지가 다시 노출되면 안 되기 때문이다.
 - prod SQL Editor 에서 실행한다. 절차는 [이미지 삭제 요청 대응](../image-takedown.md).
 - 연락처는 팀 공용 메일 `anniversaryarchive@gmail.com` 으로, 스토어 등록 정보와 앱 설정 화면에 표시한다.
 - 요청을 먼저 본 사람이 처리한다.
@@ -35,4 +36,5 @@ ADR 0005 는 공식 이미지를 URL 그대로 쓰는 대신, 권리자 요청�
 - 먼저 본 사람이 처리하는 방식은 서로 미루거나 겹칠 수 있다. 시작할 때 팀 채팅에 알린다.
 - `legacy-60.sql` 을 다시 실행하면 내린 라인업 이미지가 돌아온다. JSON 도 같이 고친다 (절차 문서).
 - `all` 은 출처를 가리지 않고 `image_link` 를 모두 비운다. 운영자가 직접 올린 이미지가 생기면(1.2) 범위를 다시 본다.
-- 백오피스 카탈로그 화면이 생기면 이 함수를 부르는 버튼을 검토한다. 그때는 `requireAdmin()` 을 거친다 (ADR 0004).
+- 레거시 가챠 전체를 prod 에 넣으면 권리자는 반다이 · 원작사뿐 아니라 기업 브랜드와 아티스트까지 넓어진다.
+- 백오피스 카탈로그 화면이 생기면 이 함수를 부르는 버튼을 검토한다. `service_role` 은 이 함수들을 실행할 수 있어 DB 가 막아 주지 않으니, 서버 코드에서 반드시 `requireAdmin()` 을 거친다 (ADR 0004).

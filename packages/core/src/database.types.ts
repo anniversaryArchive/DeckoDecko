@@ -204,41 +204,73 @@ export type Database = {
           },
         ];
       };
-      image_takedowns: {
+      image_takedown_requests: {
         Row: {
           batch_id: string;
           created_at: string;
-          id: number;
           note: string;
-          previous_image_link: string;
           reason: string;
+          restored_at: string | null;
+          scope: string;
+          target_ids: number[] | null;
+        };
+        Insert: {
+          batch_id: string;
+          created_at?: string;
+          note: string;
+          reason: string;
+          restored_at?: string | null;
+          scope: string;
+          target_ids?: number[] | null;
+        };
+        Update: {
+          batch_id?: string;
+          created_at?: string;
+          note?: string;
+          reason?: string;
+          restored_at?: string | null;
+          scope?: string;
+          target_ids?: number[] | null;
+        };
+        Relationships: [];
+      };
+      image_takedowns: {
+        Row: {
+          batch_id: string;
+          gacha_id: number;
+          id: number;
+          previous_image_link: string | null;
           restored_at: string | null;
           row_id: number;
           source_table: string;
         };
         Insert: {
           batch_id: string;
-          created_at?: string;
+          gacha_id: number;
           id?: number;
-          note: string;
-          previous_image_link: string;
-          reason: string;
+          previous_image_link?: string | null;
           restored_at?: string | null;
           row_id: number;
           source_table: string;
         };
         Update: {
           batch_id?: string;
-          created_at?: string;
+          gacha_id?: number;
           id?: number;
-          note?: string;
-          previous_image_link?: string;
-          reason?: string;
+          previous_image_link?: string | null;
           restored_at?: string | null;
           row_id?: number;
           source_table?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "image_takedowns_batch_id_fkey";
+            columns: ["batch_id"];
+            isOneToOne: false;
+            referencedRelation: "image_takedown_requests";
+            referencedColumns: ["batch_id"];
+          },
+        ];
       };
       notice: {
         Row: {
@@ -300,12 +332,22 @@ export type Database = {
         Args: { p_device_id: string; p_gacha_id: number };
         Returns: undefined;
       };
+      restore_images: {
+        Args: { p_batch: string };
+        Returns: {
+          gacha_rows: number;
+          item_rows: number;
+          missing_rows: number;
+          skipped_rows: number;
+        }[];
+      };
       take_down_images: {
-        Args: { p_id: number; p_note: string; p_reason: string; p_scope: string };
+        Args: { p_ids: number[]; p_note: string; p_reason: string; p_scope: string };
         Returns: {
           gacha_rows: number;
           item_rows: number;
           takedown_batch: string;
+          target_gachas: number;
         }[];
       };
     };

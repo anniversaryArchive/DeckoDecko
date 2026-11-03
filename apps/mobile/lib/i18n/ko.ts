@@ -244,6 +244,7 @@ export const ko = {
       "한국어를 고르면 한국어 이름(없으면 일본어 원래 이름)으로, 다른 언어는 일본어 원래 이름으로 보여요.",
     contact: "연락처",
     contactHint: "이미지 삭제 요청 등 권리 관련 문의는 이 메일로 보내 주세요.",
+    contactOpenHint: "메일 앱을 엽니다",
   },
   feedback: {},
 } as const;
