@@ -23,6 +23,7 @@ export const en: Messages = {
     badgeNew: "NEW",
     badgeUpcoming: "Coming soon",
     close: "Close",
+    tabA11yLabel: "{{name}}, tab, {{index}} of {{count}}",
     clear: "Clear",
     closeToastHint: "Dismisses the alert.",
     offline: "You're offline",
@@ -108,6 +109,8 @@ export const en: Messages = {
   },
   goods: {
     title: "My Goods",
+    // 선택된 탭의 알약 안 이름. 칸이 좁아 "My Goods" 는 잘린다
+    tabLabel: "Goods",
     summary_one: "{{count, number}} item · {{rate}} collected",
     summary_other: "{{count, number}} items · {{rate}} collected",
     summaryEmpty: "No saved gacha yet",

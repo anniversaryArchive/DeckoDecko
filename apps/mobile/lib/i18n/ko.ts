@@ -32,6 +32,8 @@ export const ko = {
     badgeNew: "NEW",
     badgeUpcoming: "발매 예정",
     close: "닫기",
+    // 하단 탭의 iOS 화면 읽기 이름 (iOS 는 탭을 버튼으로 읽혀서 탭 · 위치를 이름에 넣는다)
+    tabA11yLabel: "{{name}}, 탭, {{count}}개 중 {{index}}번째",
     // 입력창 지우기 버튼 (화면 읽기 프로그램이 읽는다)
     clear: "지우기",
     // 토스트(ToastProvider)의 iOS 화면 읽기 안내. 동작 결과를 적는다 (제스처 이름은 VoiceOver 가 붙인다)
@@ -132,6 +134,7 @@ export const ko = {
   },
   goods: {
     title: "내 굿즈",
+    tabLabel: "내 굿즈",
     // 제목 위 한 줄. rate 는 formatPercent 로 만든 문자열
     summary_one: "전체 {{count, number}}개 · 소장률 {{rate}}",
     summary_other: "전체 {{count, number}}개 · 소장률 {{rate}}",
