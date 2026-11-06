@@ -4,6 +4,7 @@ import type { ItemRepository } from "./items";
 import type { NoticeRepository } from "./notice";
 import type { PreferencesRepository } from "./preferences";
 import type { RecentRepository } from "./recent";
+import type { ViewLogRepository } from "./viewLog";
 
 /** 기기 로컬 기록 저장소. 앱만 넘긴다 (백오피스는 사용자 기기의 기록을 읽지 않는다). */
 export type LocalRepositories = {
@@ -34,5 +35,7 @@ export type Repositories = {
   recent?: RecentRepository;
   /** 기기 설정 (preferences.storage.ts). recent 처럼 앱만 넘기고, 넘기지 않고 설정 훅을 쓰면 훅이 던진다. */
   preferences?: PreferencesRepository;
+  /** 가챠 상세 조회 로그. 앱만 넘긴다. 없으면 useLogGachaView 가 아무것도 하지 않는다 (백오피스) */
+  viewLog?: ViewLogRepository;
 } & Partial<LocalRepositories> &
   Partial<OptionalRepositories>;

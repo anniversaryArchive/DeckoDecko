@@ -1,12 +1,15 @@
 import {
+  assertFolderOrder,
   cleanName,
   normalizeName,
+  toItemCounts,
+  toItemCountsBy,
   type Folder,
   type Item,
   type ListItemsParams,
   type LocalRepositories,
 } from "@deckodecko/core";
-import { and, asc, count, desc, eq, ne, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, ne, sql, type SQL } from "drizzle-orm";
 import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 
 import { folders, items } from "./schema";
@@ -55,6 +58,8 @@ export function createLocalRepositories(
             .where(itemFilter(params))
             // created_at 이 같은 밀리초면 나중에 넣은 행(rowid 가 큰 쪽)이 앞
             .orderBy(desc(items.createdAt), desc(sql`rowid`))
+            // SQLite 에서 LIMIT -1 은 제한 없음
+            .limit(params?.limit ?? -1)
         );
       },
 
@@ -66,8 +71,7 @@ export function createLocalRepositories(
           .from(items)
           .where(itemFilter({ gachaId: params?.gachaId }))
           .groupBy(items.type);
-        const of = (type: Item["type"]) => rows.find((r) => r.type === type)?.n ?? 0;
-        return { wish: of("WISH"), get: of("GET") };
+        return toItemCounts(rows);
       },
 
       async countItemsByFolder() {
@@ -76,6 +80,14 @@ export function createLocalRepositories(
           .from(items)
           .groupBy(items.folderId);
         return Object.fromEntries(rows.map((r) => [r.folderId, r.n]));
+      },
+
+      async countItemsByGacha() {
+        const rows = await db
+          .select({ gachaId: items.gachaId, type: items.type, n: count() })
+          .from(items)
+          .groupBy(items.gachaId, items.type);
+        return toItemCountsBy(rows, (r) => r.gachaId);
       },
 
       async createItem(input) {
@@ -167,6 +179,31 @@ export function createLocalRepositories(
 
       async deleteFolder(id) {
         await db.delete(folders).where(eq(folders.id, id));
+      },
+
+      async reorderFolders(ids) {
+        // 확인과 수정 사이에 다른 쓰기가 끼지 않게 묶는다. 동기 드라이버라 콜백 안은 await 없이 all() · run() 으로
+        db.transaction((tx) => {
+          const normal = tx
+            .select({ id: folders.id })
+            .from(folders)
+            .where(eq(folders.isDefault, false))
+            .all();
+          assertFolderOrder(
+            normal.map((f) => f.id),
+            ids
+          );
+          if (ids.length === 0) return;
+          // 한 문장으로 바꿔 중간에 실패해도 순서가 반만 바뀌지 않게 한다
+          const position = sql.join(
+            ids.map((id, i) => sql`WHEN ${id} THEN ${i + 1}`),
+            sql` `
+          );
+          tx.update(folders)
+            .set({ sequence: sql`CASE ${folders.id} ${position} END` })
+            .where(inArray(folders.id, [...ids]))
+            .run();
+        });
       },
 
       async isFolderNameTaken(name, excludeId) {

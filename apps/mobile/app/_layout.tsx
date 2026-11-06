@@ -137,6 +137,7 @@ function RootStack() {
         <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="notice/index" options={{ headerShown: false }} />
         <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="folders" options={{ headerShown: false }} />
         <Stack.Screen name="dev/components" options={{ title: "컴포넌트 카탈로그" }} />
       </Stack>
     </>

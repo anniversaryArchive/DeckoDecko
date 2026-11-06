@@ -42,9 +42,6 @@ const FIND_ICON_SIZE = 18;
 
 const NO_GACHAS: ReadonlyMap<string, Gacha> = new Map();
 
-// TODO(혜진): 폴더 관리 화면이 생기면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
-function openFolderManage() {}
-
 /**
  * 내 굿즈. WISH · GET 세그먼트 · 폴더 칩 · 목록 검색 · 풀어보기(아이템 그리드) / 묶어보기(가챠별 줄).
  * 세그먼트를 바꾸면 폴더는 "전체"로 돌아간다. 검색어는 그대로 둔다.
@@ -122,7 +119,7 @@ function GoodsHeader({
           icon="folder-open-outline"
           variant="outline"
           label={t("goods.manageFolders")}
-          onPress={openFolderManage}
+          onPress={() => router.push("/folders")}
         />
       </View>
       <Segment
