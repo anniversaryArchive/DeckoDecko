@@ -109,8 +109,11 @@ export default function FeedbackScreen() {
     if (picked) setPhoto(target, { uri: picked.uri, mimeType: picked.mimeType });
   };
 
+  // isPending 은 다음 렌더 뒤에야 켜져, 그 사이 두 번째 누름을 막는다
+  const sending = useRef(false);
   const submit = async () => {
-    if (!canSend) return;
+    if (!canSend || sending.current) return;
+    sending.current = true;
     const media = pickedMedia
       ? { id: pickedMedia.id }
       : mediaText.trim()
@@ -124,6 +127,8 @@ export default function FeedbackScreen() {
     } catch {
       // 안내는 send.error 로 보내기 버튼 위에 보인다
       return;
+    } finally {
+      sending.current = false;
     }
     goBackOrHome();
     toast.show({ tone: "success", title: t("feedback.sent") });
@@ -173,7 +178,9 @@ export default function FeedbackScreen() {
         <Segment
           value={kind}
           onChange={(next) => {
-            if (!send.isPending) setKind(next);
+            if (send.isPending) return;
+            send.reset();
+            setKind(next);
           }}
           accessibilityLabel={t("feedback.kindLabel")}
           style={{
