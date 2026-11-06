@@ -26,6 +26,7 @@ export {
   useItemCounts,
   useItemCountsByFolder,
   useItems,
+  useReadDisplayedItemType,
   useSetItemType,
   useToggleItemType,
   useUpdateItem,
