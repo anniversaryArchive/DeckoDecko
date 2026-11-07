@@ -6,7 +6,7 @@ import { useRepositories } from "./provider";
 import { serverNetworkMode } from "./queryClient";
 import type { SendFeedbackInput } from "../repositories/feedback";
 
-/** 요청 · 문의를 보낼 수 있는지. 저장소를 넘기지 않은 빌드(출시 빌드, #185 전)에서는 false 라 화면이 진입점을 숨긴다. */
+/** 요청 · 문의를 보낼 수 있는지. 저장소를 넘기지 않은 빌드(출시 빌드, #250 전)에서는 false 라 화면이 진입점을 숨긴다. */
 export function useCanSendFeedback(): boolean {
   return useRepositories().feedback !== undefined;
 }
@@ -20,7 +20,7 @@ export function useCanSendFeedback(): boolean {
 export function useSendFeedback() {
   const { feedback } = useRepositories();
   return useMutation({
-    // 지금은 메모리 저장소지만 #185 뒤에는 서버로 보낸다
+    // 지금은 메모리 저장소지만 #250 뒤에는 서버로 보낸다
     ...serverNetworkMode,
     mutationFn: (input: SendFeedbackInput) => {
       if (!feedback) throw new Error("feedback 저장소를 넘기지 않아 요청 · 문의를 보낼 수 없다.");
