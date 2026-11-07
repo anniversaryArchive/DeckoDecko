@@ -1,5 +1,7 @@
+import { normalizeSearch as normalize } from "../name";
+import { count } from "../pagination";
 import type { Gacha, GachaDetail } from "../types";
-import { count, GACHA_DEFAULTS, releaseStatus, resolveGachaFilter, toYearMonth } from "./gacha";
+import { GACHA_DEFAULTS, releaseStatus, resolveGachaFilter, toYearMonth } from "./gacha";
 import type {
   GachaRepository,
   GachaRepositoryOptions,
@@ -8,10 +10,6 @@ import type {
   ResolvedGachaFilter,
   SearchGachaParams,
 } from "./gacha";
-
-function normalize(s: string): string {
-  return s.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
-}
 
 function toSummary(detail: GachaDetail): Gacha {
   const { items: _items, ...summary } = detail;

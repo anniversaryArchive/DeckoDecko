@@ -1,6 +1,14 @@
 import type { Page } from "./types";
 
 /**
+ * limit · offset 인자를 고른다. 정수가 아니거나 min 보다 작으면(음수 · 소수 · NaN) 생략한 것으로 보고 fallback.
+ * 같은 도메인의 구현들이 같이 쓴다 (한쪽만 고치면 페이지 동작이 갈린다).
+ */
+export function count(n: number | undefined, fallback: number, min = 1): number {
+  return n !== undefined && Number.isInteger(n) && n >= min ? n : fallback;
+}
+
+/**
  * offset 무한 스크롤 도우미. React 없이 쓰는 순수 함수라 훅(./react)과 테스트가 같이 쓴다.
  * 페이지는 { items, total } 이고, 다음 페이지의 offset 은 지금까지 받은 개수다.
  */
