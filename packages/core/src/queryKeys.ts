@@ -33,8 +33,12 @@ export const queryKeys = {
     all: ["items"] as const,
     lists: ["items", "list"] as const,
     // 거르지 않는 조건은 null
-    list: (gachaId: string | null, type: ItemType | null, folderId: string | null) =>
-      ["items", "list", gachaId, type, folderId] as const,
+    list: (
+      gachaId: string | null,
+      type: ItemType | null,
+      folderId: string | null,
+      limit: number | null
+    ) => ["items", "list", gachaId, type, folderId, limit] as const,
     detail: (id: string) => ["items", "detail", id] as const,
     counts: (gachaId: string | null) => ["items", "counts", gachaId] as const,
     countsByFolder: () => ["items", "countsByFolder"] as const,

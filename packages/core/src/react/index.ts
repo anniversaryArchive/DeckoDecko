@@ -26,6 +26,7 @@ export {
   useItemCounts,
   useItemCountsByFolder,
   useItems,
+  useReadDisplayedItemType,
   useSetItemType,
   useToggleItemType,
   useUpdateItem,
@@ -36,6 +37,7 @@ export {
   useFolders,
   useIsFolderNameTaken,
   useRenameFolder,
+  useReorderFolders,
 } from "./folders.hooks";
 export {
   useAddRecentSearch,

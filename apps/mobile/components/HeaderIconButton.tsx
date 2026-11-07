@@ -19,9 +19,9 @@ type Props = {
   onPress: () => void;
   /**
    * outline: 바탕 위 흰 면 + 테두리 (홈), surface: 사진 위 흰 면 (상세),
-   * accent: 흰 면 + 포인트 테두리 · 포인트 아이콘 (상세 사진 인식)
+   * accent: 흰 면 + 포인트 테두리 · 포인트 아이콘 (상세 사진 인식), primary: 주 색 면 (폴더 관리 새 폴더)
    */
-  variant: "outline" | "surface" | "accent";
+  variant: "outline" | "surface" | "accent" | "primary";
   /** 생략하면 md */
   size?: keyof typeof SIZE;
   /** 배치용 (위치) */
@@ -48,13 +48,20 @@ export function HeaderIconButton({ icon, label, onPress, variant, size = "md", s
         },
         variant === "outline" && { borderWidth: border.default, borderColor: colors.line },
         variant === "accent" && { borderWidth: border.default, borderColor: colors.primary },
+        variant === "primary" && { backgroundColor: colors.primary },
         style,
       ]}
     >
       <Ionicons
         name={icon}
         size={ICON_SIZE[size]}
-        color={variant === "accent" ? colors.accent : colors.text}
+        color={
+          variant === "accent"
+            ? colors.accent
+            : variant === "primary"
+              ? colors.onPrimary
+              : colors.text
+        }
       />
     </Pressable>
   );

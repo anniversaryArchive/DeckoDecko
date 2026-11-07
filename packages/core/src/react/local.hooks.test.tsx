@@ -1,17 +1,21 @@
 // @vitest-environment happy-dom
-import { onlineManager, QueryClient } from "@tanstack/react-query";
+import { onlineManager, QueryClient, useQueryClient } from "@tanstack/react-query";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { collectionRate } from "../collection";
+import { queryKeys } from "../queryKeys";
 import type { Repositories } from "../repositories";
+import type { UpdateItemInput } from "../repositories/items";
+import type { ItemType } from "../types";
 import {
   useCreateFolder,
   useDeleteFolder,
   useFolders,
   useIsFolderNameTaken,
   useRenameFolder,
+  useReorderFolders,
 } from "./folders.hooks";
 import {
   useCreateItem,
@@ -22,6 +26,7 @@ import {
   useItemCounts,
   useItemCountsByFolder,
   useItems,
+  useReadDisplayedItemType,
   useSetItemType,
   useToggleItemType,
   useUpdateItem,
@@ -255,6 +260,8 @@ describe("WISH ↔ GET 원탭 전환 훅", () => {
           list,
           counts,
           toggle: useToggleItemType({ onError }),
+          update: useUpdateItem(),
+          readShown: useReadDisplayedItemType(),
           shownA: useDisplayedItemType(listed(a.id) ?? a),
           shownB: useDisplayedItemType(listed(b.id) ?? b),
           // 목록 값과 다른 옛 객체로 물어도 WISH 면, 저장 중인 값이 남아 있지 않다는 뜻
@@ -373,6 +380,78 @@ describe("WISH ↔ GET 원탭 전환 훅", () => {
     expect(result.current.shownB).toBe("GET");
   });
 
+  it("useReadDisplayedItemType: 저장 중인 전환은 그 아이템에만 보이고, 끝나면 넘긴 item.type 을 돌려준다", async () => {
+    const repositories = memoryRepositories();
+    const { finish } = holdUpdates(repositories);
+    const { result, a, b } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedB()));
+    await waitFor(() => expect(result.current.shownB).toBe("GET"));
+    // 시트가 B 를 보다가 A 를 열어도 B 의 전환값이 섞이지 않는다
+    expect(result.current.readShown({ id: b.id, type: "WISH" })).toBe("GET");
+    expect(result.current.readShown({ id: a.id, type: "WISH" })).toBe("WISH");
+    await finish(1, "save");
+    await waitFor(() => expect(result.current.listedB().type).toBe("GET"));
+    expect(result.current.readShown({ id: b.id, type: "WISH" })).toBe("WISH");
+  });
+
+  /** 태그로 A 를 GET 으로 바꾸고, 그 저장이 끝나기 전에 수정 시트에서 저장한다. 시트는 보이는 값(shown)으로 폼을 채운다 */
+  async function saveSheetDuringToggle(
+    sheetInput: (shown: ItemType) => UpdateItemInput,
+    toggleResult: "save" | "fail" = "save"
+  ) {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const rendered = await render(repositories);
+    const { result, a } = rendered;
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(held).toHaveLength(1));
+    // 시트가 다시 읽는 기록은 아직 WISH 다
+    const stored = (await repositories.items.getItem(a.id))!;
+    expect(stored.type).toBe("WISH");
+    const input = sheetInput(result.current.readShown(stored));
+    let saved!: Promise<unknown>;
+    act(() => {
+      saved = result.current.update.mutateAsync({ id: a.id, input });
+    });
+    // 시트 저장은 앞선 전환이 끝날 때까지 줄 서 있다
+    await waitFor(() => expect(result.current.update.isPaused).toBe(true));
+    expect(held).toHaveLength(1);
+    await finish(1, toggleResult);
+    await finish(2, "save");
+    await act(() => saved);
+    expect(vi.mocked(repositories.items.updateItem).mock.calls).toEqual([
+      [a.id, { type: "GET" }],
+      [a.id, input],
+    ]);
+    return rendered;
+  }
+
+  it("전환 저장 중에 수정 시트에서 이름만 고쳐 저장해도, 마지막으로 누른 값(GET)이 남는다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle((shown) => ({
+      type: shown,
+      name: "a2",
+    }));
+    expect(await repositories.items.getItem(a.id)).toMatchObject({ type: "GET", name: "a2" });
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+  });
+
+  it("전환 저장 중에 시트에서 WISH 로 되돌려 저장하면, 전환이 끝난 뒤 저장돼 WISH 가 남는다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle(() => ({ type: "WISH" }));
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 2, get: 0 }));
+  });
+
+  it("앞선 전환이 실패해도 줄 서 있던 시트 저장은 이어서 실행된다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle(
+      (shown) => ({ type: shown, name: "a2" }),
+      "fail"
+    );
+    expect(await repositories.items.getItem(a.id)).toMatchObject({ type: "GET", name: "a2" });
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+  });
+
   it("누른 화면이 사라진 뒤 저장이 실패하면 onError 를 부르지 않는다", async () => {
     const repositories = memoryRepositories();
     const { held, finish } = holdUpdates(repositories);
@@ -488,6 +567,182 @@ describe("폴더 이름 변경 훅", () => {
       ).rejects.toThrow();
     });
     await waitFor(() => expect(result.current.rename.error).toBeInstanceOf(Error));
+  });
+});
+
+describe("폴더 순서 훅", () => {
+  it("useReorderFolders: 저장을 기다리지 않고 목록이 바로 바뀌고, 기본 폴더는 맨 앞에 남는다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    // 저장을 붙잡아 두고, 그동안 캐시가 이미 새 순서인지 본다
+    let release!: () => void;
+    const original = repositories.folders!.reorderFolders;
+    repositories.folders!.reorderFolders = async (ids) => {
+      await new Promise<void>((resolve) => (release = resolve));
+      return original(ids);
+    };
+    const { result } = renderHook(() => ({ folders: useFolders(), reorder: useReorderFolders() }), {
+      wrapper,
+    });
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
+    const defaultId = result.current.folders.data![0]!.id;
+
+    act(() => result.current.reorder.mutate([b.id, a.id]));
+    await waitFor(() =>
+      expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, b.id, a.id])
+    );
+    expect(result.current.reorder.isPending).toBe(true);
+
+    release();
+    await waitFor(() => expect(result.current.reorder.isSuccess).toBe(true));
+    expect((await repositories.folders!.listFolders()).map((f) => f.id)).toEqual([
+      defaultId,
+      b.id,
+      a.id,
+    ]);
+  });
+
+  it("useReorderFolders: 연달아 바꾸면 저장은 차례로 하고, 마지막 순서가 남는다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    const c = await repositories.folders!.createFolder("서랍");
+    const calls: string[][] = [];
+    let release!: () => void;
+    const original = repositories.folders!.reorderFolders;
+    repositories.folders!.reorderFolders = async (ids) => {
+      calls.push([...ids]);
+      if (calls.length === 1) await new Promise<void>((resolve) => (release = resolve));
+      return original(ids);
+    };
+    const { result } = renderHook(() => ({ folders: useFolders(), reorder: useReorderFolders() }), {
+      wrapper,
+    });
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(4));
+    const defaultId = result.current.folders.data![0]!.id;
+
+    act(() => result.current.reorder.mutate([b.id, a.id, c.id]));
+    await waitFor(() => expect(calls).toHaveLength(1));
+    act(() => result.current.reorder.mutate([c.id, b.id, a.id]));
+    await waitFor(() =>
+      expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id])
+    );
+    // 첫 저장이 끝나기 전에는 둘째 저장을 시작하지 않는다
+    expect(calls).toHaveLength(1);
+
+    release();
+    await waitFor(() => expect(calls).toHaveLength(2));
+    await waitFor(() => expect(result.current.reorder.isSuccess).toBe(true));
+    expect((await repositories.folders!.listFolders()).map((f) => f.id)).toEqual([
+      defaultId,
+      c.id,
+      b.id,
+      a.id,
+    ]);
+    expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id]);
+  });
+
+  it("useReorderFolders: 실패하면 이전 순서로 돌아가고 error 로 올라온다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    repositories.folders!.reorderFolders = () => Promise.reject(new Error("disk full"));
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({ folders: useFolders(), reorder: useReorderFolders({ onError }) }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
+    const before = result.current.folders.data!.map((f) => f.id);
+
+    act(() => result.current.reorder.mutate([b.id, a.id]));
+    await waitFor(() => expect(result.current.reorder.isError).toBe(true));
+    expect(result.current.folders.data?.map((f) => f.id)).toEqual(before);
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it("useReorderFolders: 앞뒤 저장이 다 실패하면 onError 는 마지막 저장에서 한 번만 불린다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    let calls = 0;
+    let fail!: () => void;
+    repositories.folders!.reorderFolders = async () => {
+      calls += 1;
+      if (calls === 1) await new Promise<void>((resolve) => (fail = resolve));
+      throw new Error("disk full");
+    };
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({ folders: useFolders(), reorder: useReorderFolders({ onError }) }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
+
+    act(() => result.current.reorder.mutate([b.id, a.id]));
+    await waitFor(() => expect(calls).toBe(1));
+    act(() => result.current.reorder.mutate([a.id, b.id]));
+    await waitFor(() => expect(result.current.reorder.isPending).toBe(true));
+
+    fail();
+    await waitFor(() => expect(result.current.reorder.isError).toBe(true));
+    expect(calls).toBe(2);
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it("useReorderFolders: 앞 저장이 실패해도 뒤에 줄 선 저장이 있으면 옛 순서로 되돌리지 않는다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    const c = await repositories.folders!.createFolder("서랍");
+    let calls = 0;
+    let fail!: () => void;
+    const original = repositories.folders!.reorderFolders;
+    repositories.folders!.reorderFolders = async (ids) => {
+      calls += 1;
+      if (calls === 1) {
+        await new Promise<void>((resolve) => (fail = resolve));
+        throw new Error("disk full");
+      }
+      return original(ids);
+    };
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({
+        folders: useFolders(),
+        reorder: useReorderFolders({ onError }),
+        queryClient: useQueryClient(),
+      }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(4));
+    const defaultId = result.current.folders.data![0]!.id;
+    const before = result.current.folders.data!.map((f) => f.id);
+    // 렌더는 묶여서 잠깐 바뀐 값을 놓칠 수 있으므로, 캐시에 들어간 순서를 모두 모은다
+    const seen: string[][] = [];
+    const listHash = JSON.stringify(queryKeys.folders.list());
+    const unsubscribe = result.current.queryClient.getQueryCache().subscribe((event) => {
+      if (event.query.queryHash !== listHash) return;
+      const data = event.query.state.data as { id: string }[] | undefined;
+      if (data) seen.push(data.map((f) => f.id));
+    });
+
+    act(() => result.current.reorder.mutate([b.id, a.id, c.id]));
+    await waitFor(() => expect(calls).toBe(1));
+    act(() => result.current.reorder.mutate([c.id, b.id, a.id]));
+    await waitFor(() =>
+      expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id])
+    );
+    const afterSecond = seen.length;
+
+    fail();
+    await waitFor(() => expect(calls).toBe(2));
+    await waitFor(() => expect(result.current.reorder.isSuccess).toBe(true));
+    unsubscribe();
+    expect(seen.slice(afterSecond)).not.toContainEqual(before);
+    expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id]);
+    expect(onError).not.toHaveBeenCalled();
   });
 });
 
