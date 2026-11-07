@@ -15,6 +15,11 @@ export type Media = {
   titleJa: string | null;
   titleEn: string | null;
   kind: MediaKind | null;
+  /**
+   * 검색에만 쓰는 별칭 ("별숲" 같은 줄임말). 화면에는 보이지 않는다.
+   * 메모리 저장소 · 목 데이터만 채운다. Supabase 저장소는 검색 RPC 가 서버에서 별칭을 찾아서 받아 오지 않는다.
+   */
+  aliases?: readonly string[];
 };
 
 /** 가챠 한 종의 라인업 아이템. WISH / GET 기록의 기본 단위. */

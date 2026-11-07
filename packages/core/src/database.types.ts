@@ -416,6 +416,35 @@ export type Database = {
           skipped_rows: number;
         }[];
       };
+      search_gacha_with_anime: {
+        Args: {
+          anime_filter?: number;
+          keyword: string;
+          limit_count?: number;
+          offset_count?: number;
+          price_max?: number;
+          price_min?: number;
+          release_filter?: string;
+          sort_by?: string;
+          this_month?: string;
+        };
+        Returns: {
+          anime_en_title: string;
+          anime_id: number;
+          anime_jp_title: string;
+          anime_kr_title: string;
+          anime_type: string;
+          id: number;
+          image_link: string;
+          item_count: number;
+          name: string;
+          name_kr: string;
+          price: number;
+          release_month: string;
+          total_count: number;
+        }[];
+      };
+      search_normalize: { Args: { value: string }; Returns: string };
       submit_feedback: {
         Args: {
           p_app_version?: string;
