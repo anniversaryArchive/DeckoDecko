@@ -8,7 +8,7 @@ export const GACHA_HERO_HEIGHT = 300;
 /** 아래 모서리. 시안 값 36 은 radius 토큰(sheet 28)보다 커서 이 컴포넌트 상수로 둔다. */
 const BOTTOM_RADIUS = 36;
 
-/** 상세 맨 위 큰 이미지 자리. 상태 바 뒤까지 채우고 아래 모서리만 둥글다. 이미지가 없으면(목 데이터) 면만 둔다. */
+/** 상세 맨 위 큰 이미지 자리. 상태 바 뒤까지 채우고 아래 모서리만 둥글다. 이미지가 없으면(권리 요청으로 내린 경우 등) 면만 둔다. */
 export function GachaHero({ imageUrl }: { imageUrl: string | null }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();

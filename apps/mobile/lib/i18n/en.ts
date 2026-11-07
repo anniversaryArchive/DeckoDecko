@@ -236,6 +236,9 @@ export const en: Messages = {
     comingSoon: "Coming soon",
     comingSoonLabel: "{{name}}, coming soon",
     languageHint: "Gacha names are shown in their original Japanese.",
+    contact: "Contact",
+    contactHint: "For image removal or other rights requests, please email us here.",
+    contactOpenHint: "Opens your mail app",
     info: "About",
   },
   feedback: {

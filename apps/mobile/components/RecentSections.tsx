@@ -149,7 +149,7 @@ export function RecentGachaSection() {
   );
 }
 
-/** 최근 본 굿즈 카드 (작은 세로 카드). 누르면 상세로 간다. 사진이 없으면(목 데이터) 카드의 면만 보인다. */
+/** 최근 본 굿즈 카드 (작은 세로 카드). 누르면 상세로 간다. 사진이 없으면(권리 요청으로 내린 경우 등) 카드의 면만 보인다. */
 function RecentGachaCard({ gacha }: { gacha: Gacha }) {
   const { name, media } = useGachaDisplay(gacha);
   return (
