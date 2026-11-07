@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>가챠 탐색대 개인정보처리방침</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --text: #2b2420;
+        --muted: #6f625a;
+        --line: #e8dfd8;
+        --bg: #fff9f4;
+        --head: #f6ece4;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text: #f1e9e3;
+          --muted: #b9aca3;
+          --line: #3b332e;
+          --bg: #1b1714;
+          --head: #2a231f;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        line-height: 1.7;
+        word-break: keep-all;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 32px 16px 64px;
+      }
+      h1 {
+        font-size: 1.6rem;
+        line-height: 1.4;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 36px 0 8px;
+      }
+      .meta {
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .table {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: var(--head);
+      }
+      a {
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>가챠 탐색대 개인정보처리방침</h1>
+      <p class="meta">시행일: 2026년 11월 8일</p>
+
+      <h2>1. 처리 원칙</h2>
+      <p>
+        가챠 탐색대(DeckoDecko, 이하 "앱")는 회원 가입과 로그인 없이 쓸 수 있고, 이용자의 WISH · GET 기록은
+        기기에만 저장합니다.
+      </p>
+      <p>서버에는 이름, 이메일, 전화번호를 받는 기능이 없습니다. 서버로 보내는 정보는 아래 2절의 항목뿐입니다.</p>
+
+      <h2>2. 처리하는 정보와 목적</h2>
+      <p>앱은 아래 정보를 표의 목적으로만 처리합니다.</p>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>상황</th>
+              <th>항목</th>
+              <th>목적</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>가챠 상세 화면을 열 때</td>
+              <td>앱이 만든 임의의 기기 식별값(UUID), 본 가챠, 본 날짜</td>
+              <td>인기 가챠 집계, 중복 집계 방지(기기 · 가챠당 하루 1건)</td>
+            </tr>
+            <tr>
+              <td>요청 · 문의를 보낼 때</td>
+              <td>기기 식별값, 문의 종류, 제목 · 내용, 작품명, 첨부 사진 경로, 앱 버전</td>
+              <td>문의 확인과 처리, 하루 건수 제한(기기당 5건)</td>
+            </tr>
+            <tr>
+              <td>이메일로 연락할 때</td>
+              <td>이메일 주소, 보낸 내용</td>
+              <td>문의 · 권리 요청 처리</td>
+            </tr>
+            <tr>
+              <td>서버와 통신할 때</td>
+              <td>IP 주소, 접속 기록이 서비스 제공자 로그에 남을 수 있음</td>
+              <td>서비스 운영과 보안</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>문의 내용에는 이름이나 연락처 같은 개인정보를 적지 마세요.</p>
+
+      <h2>3. 기기에만 저장되는 정보</h2>
+      <p>
+        WISH · GET 기록, 폴더, 기록에 넣은 사진, 최근 검색어, 최근 본 가챠, 언어 설정은 기기에만 저장하며 서버로
+        보내지 않습니다.
+      </p>
+      <p>앱을 삭제하면 이 정보와 기기 식별값도 기기에서 함께 사라집니다. 다시 설치해도 복구할 수 없습니다.</p>
+      <p>
+        사진은 이용자가 직접 고른 것만 앱 폴더에 복사합니다. 앱은 사진 보관함 전체를 읽지 않으며 위치 정보, 연락처,
+        광고 식별자를 사용하지 않습니다.
+      </p>
+
+      <h2>4. 보유 기간과 파기</h2>
+      <p>서버의 정보는 아래 기간이 지나거나 목적을 달성하면 복구할 수 없게 삭제합니다.</p>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>보유 기간</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>가챠 조회 기록</td>
+              <td>수집일로부터 30일</td>
+            </tr>
+            <tr>
+              <td>요청 · 문의</td>
+              <td>처리 완료 후 1년</td>
+            </tr>
+            <tr>
+              <td>이메일 문의</td>
+              <td>처리 완료 후 1년</td>
+            </tr>
+            <tr>
+              <td>서비스 제공자 접속 로그</td>
+              <td>Supabase 정책에 따른 기간이 지나면 자동 삭제</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>5. 처리 위탁과 국외 이전</h2>
+      <p>
+        앱은 서버 운영을 Supabase에 맡기고, 정보는 일본 도쿄 리전 서버에 저장됩니다. 그 밖의 제3자에게 정보를
+        제공하지 않습니다.
+      </p>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>받는 곳</th>
+              <th>이전 국가</th>
+              <th>이전 항목</th>
+              <th>이전 시점 · 방법</th>
+              <th>보유 기간</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Supabase Pte. Ltd. (privacy@supabase.com)</td>
+              <td>일본(도쿄 리전)</td>
+              <td>2절의 서버 전송 항목</td>
+              <td>앱 사용 시 네트워크로 전송</td>
+              <td>4절과 같음</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        국외 이전을 원하지 않으면 요청 · 문의 기능을 쓰지 않거나 앱을 삭제하면 됩니다. 이 경우 앱 이용이 제한될 수
+        있습니다.
+      </p>
+
+      <h2>6. 이용자의 권리</h2>
+      <p>
+        이용자는 자신의 정보에 대해 열람, 정정, 삭제, 처리 정지를 요청할 수 있습니다. 7절의 이메일로 요청하면 확인 후
+        지체 없이 처리합니다.
+      </p>
+      <p>
+        계정이 없어 서버 기록이 요청자의 것인지 확인하려면 문의를 보낸 날짜와 내용 등을 여쭤볼 수 있습니다. 기기에
+        저장된 기록은 앱에서 직접 지우거나 앱을 삭제해 없앨 수 있습니다.
+      </p>
+      <p>
+        앱은 만 14세 미만 아동의 개인정보를 일부러 받지 않습니다. 아동이 보낸 문의에 개인정보가 있는 것을 알면
+        삭제합니다.
+      </p>
+
+      <h2>7. 보호책임자와 시행일</h2>
+      <p>
+        개인정보 관련 문의는
+        <a href="mailto:anniversaryarchive@gmail.com">anniversaryarchive@gmail.com</a> 으로 보내 주세요.
+      </p>
+      <ul>
+        <li>운영자: 가챠 탐색대 운영팀</li>
+        <li>개인정보 보호책임자: 가챠 탐색대 운영팀 (anniversaryarchive@gmail.com)</li>
+        <li>시행일: 2026년 11월 8일</li>
+      </ul>
+      <p>이 방침을 바꾸면 이 페이지에 변경 내용과 시행일을 알립니다.</p>
+      <p>
+        개인정보 침해 상담이 필요하면 개인정보분쟁조정위원회(1833-6972), 개인정보침해신고센터(118)에 문의할 수
+        있습니다.
+      </p>
+    </main>
+  </body>
+</html>
