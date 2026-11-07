@@ -7,7 +7,7 @@ export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from ".
 export { Card, type CardProps } from "./Card";
 export { Chip, type ChipProps } from "./Chip";
 export { GoodsCard, type GoodsCardBadge, type GoodsCardProps } from "./GoodsCard";
-export { AlertIcon, ChevronDownIcon, CloseIcon, type LineIconProps } from "./icons";
+export { AlertIcon, CheckIcon, ChevronDownIcon, CloseIcon, type LineIconProps } from "./icons";
 export { IconButton, type IconButtonProps } from "./IconButton";
 export { Input, type InputProps } from "./Input";
 export { DISABLED_OPACITY, PRESSED_OPACITY } from "./pressable";
@@ -15,5 +15,11 @@ export { ProgressBar, type ProgressBarProps } from "./ProgressBar";
 export { Segment, type SegmentOption, type SegmentProps, type SegmentTone } from "./Segment";
 export { TabBar, type TabBarItem, type TabBarProps } from "./TabBar";
 export { Text, type TextProps } from "./Text";
-export { ToastProvider, useToast, type ToastOptions, type ToastProviderProps } from "./Toast";
+export {
+  ToastProvider,
+  useToast,
+  type ToastOptions,
+  type ToastProviderProps,
+  type ToastTone,
+} from "./Toast";
 export { COLOR_TRANSITION_DURATION, useColorTransition } from "./useColorTransition";

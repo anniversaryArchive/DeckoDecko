@@ -4,12 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Linking, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useCanSendFeedback } from "@deckodecko/core/react";
 import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Card, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
 import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIconButton";
 import { chooseLanguage, isLanguage, type Language } from "@/lib/i18n";
-import { goBackOrHome } from "@/lib/routes";
+import { goBackOrHome, openFeedback } from "@/lib/routes";
 
 /** 스토어 등록 정보와 같은 주소로 둔다. 바꾸면 docs/image-takedown.md 도 같이 고친다. */
 const CONTACT_EMAIL = "anniversaryarchive@gmail.com";
@@ -18,6 +19,8 @@ const CONTACT_EMAIL = "anniversaryarchive@gmail.com";
 const ROW_HEIGHT = 50;
 /** 줄 끝 아이콘 (고른 언어 체크, 메일) */
 const ICON_SIZE = 20;
+/** 다른 화면으로 가는 줄의 화살표 */
+const CHEVRON_SIZE = 18;
 
 /** 언어 목록. 이름은 그 언어로 적어서 어느 언어로 보든 같다. comingSoon 은 번역 전이라 고를 수 없다. */
 const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSoon?: true }[] = [
@@ -26,7 +29,7 @@ const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSo
   { code: "ja", name: "日本語", comingSoon: true },
 ];
 
-/** 설정 (시안 B_Settings). 언어와 연락처. 홈 머리글의 설정 버튼으로 들어온다. */
+/** 설정 (시안 B_Settings). 1.0 은 언어 고르기, 요청 · 문의 보내기, 연락처만 있다. 홈 머리글의 설정 버튼으로 들어온다. */
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -63,20 +66,21 @@ export default function SettingsScreen() {
         }}
       >
         <LanguageSection />
+        <InfoSection />
         <ContactSection />
       </ScrollView>
     </View>
   );
 }
 
-/** 제목 · 카드 · 안내문으로 이루어진 설정 묶음 */
+/** 제목 · 카드 · 안내문(있으면)으로 이루어진 설정 묶음 */
 function SettingsSection({
   title,
   hint,
   children,
 }: {
   title: string;
-  hint: string;
+  hint?: string;
   children: ReactNode;
 }) {
   return (
@@ -91,10 +95,37 @@ function SettingsSection({
         {title}
       </Text>
       <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>{children}</Card>
-      <Text variant="captionSm" color="textMuted" style={{ paddingHorizontal: space[4] }}>
-        {hint}
-      </Text>
+      {hint ? (
+        <Text variant="captionSm" color="textMuted" style={{ paddingHorizontal: space[4] }}>
+          {hint}
+        </Text>
+      ) : null}
     </View>
+  );
+}
+
+function InfoSection() {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const canSendFeedback = useCanSendFeedback();
+  if (!canSendFeedback) return null;
+  return (
+    <SettingsSection title={t("settings.info")}>
+      <Pressable
+        onPress={() => openFeedback()}
+        accessibilityRole="button"
+        style={({ pressed }) => ({
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: ROW_HEIGHT,
+          opacity: pressed ? PRESSED_OPACITY : 1,
+        })}
+      >
+        <Text variant="body">{t("feedback.title")}</Text>
+        <Ionicons name="chevron-forward" size={CHEVRON_SIZE} color={colors.textMuted} />
+      </Pressable>
+    </SettingsSection>
   );
 }
 

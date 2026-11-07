@@ -13,7 +13,7 @@ import {
   type GachaReleaseFilter,
   type GachaSort,
 } from "@deckodecko/core";
-import { useGachaSearchPages, usePopularGacha } from "@deckodecko/core/react";
+import { useCanSendFeedback, useGachaSearchPages, usePopularGacha } from "@deckodecko/core/react";
 import { gutter, space } from "@deckodecko/ui";
 import { Button, ChevronDownIcon, Chip, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
@@ -23,6 +23,7 @@ import { OptionSheet } from "@/components/OptionSheet";
 import { QueryState } from "@/components/QueryState";
 import { StateMessage } from "@/components/StateMessage";
 import { mediaTitle } from "@/lib/displayName";
+import { openFeedback } from "@/lib/routes";
 import {
   findPriceRange,
   PRICE_RANGES,
@@ -63,6 +64,7 @@ export function SearchResultList({
   const { t } = useTranslation();
   const listRef = useRef<FlatList<Gacha>>(null);
   useScrollToTop(listRef);
+  const canSendFeedback = useCanSendFeedback();
   const [release, setRelease] = useState<GachaReleaseFilter>("all");
   const [priceMin, setPriceMin] = useState<number | null>(null);
   const [priceMax, setPriceMax] = useState<number | null>(null);
@@ -210,15 +212,16 @@ export function SearchResultList({
                     action={
                       <View style={{ alignItems: "center", gap: space[18] }}>
                         <SuggestedSearches onSelect={onSearch} />
-                        {/* TODO(혜진): 등록 요청 화면이 생기면 연결한다. 그 전까지는 자리만 두고 누를 수 없다. */}
-                        <Button
-                          variant="outline"
-                          size="md"
-                          disabled
-                          style={{ alignSelf: "center" }}
-                        >
-                          {t("search.requestRegistration")}
-                        </Button>
+                        {canSendFeedback ? (
+                          <Button
+                            variant="outline"
+                            size="md"
+                            onPress={() => openFeedback(keyword)}
+                            style={{ alignSelf: "center" }}
+                          >
+                            {t("search.requestRegistration")}
+                          </Button>
+                        ) : null}
                       </View>
                     }
                   />
