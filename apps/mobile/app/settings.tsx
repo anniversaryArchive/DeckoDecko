@@ -3,17 +3,20 @@ import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useCanSendFeedback } from "@deckodecko/core/react";
 import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Card, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
 import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIconButton";
 import { chooseLanguage, isLanguage, type Language } from "@/lib/i18n";
-import { goBackOrHome } from "@/lib/routes";
+import { goBackOrHome, openFeedback } from "@/lib/routes";
 
 /** 목록 한 줄 높이 */
 const ROW_HEIGHT = 50;
 /** 고른 언어 옆 체크 */
 const CHECK_SIZE = 20;
+/** 다른 화면으로 가는 줄의 화살표 */
+const CHEVRON_SIZE = 18;
 
 /** 언어 목록. 이름은 그 언어로 적어서 어느 언어로 보든 같다. comingSoon 은 번역 전이라 고를 수 없다. */
 const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSoon?: true }[] = [
@@ -22,7 +25,7 @@ const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSo
   { code: "ja", name: "日本語", comingSoon: true },
 ];
 
-/** 설정 (시안 B_Settings). 1.0 은 언어만 고른다. 홈 머리글의 설정 버튼으로 들어온다. */
+/** 설정 (시안 B_Settings). 1.0 은 언어 고르기와 요청 · 문의 보내기만 있다. 홈 머리글의 설정 버튼으로 들어온다. */
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -59,7 +62,43 @@ export default function SettingsScreen() {
         }}
       >
         <LanguageSection />
+        <InfoSection />
       </ScrollView>
+    </View>
+  );
+}
+
+function InfoSection() {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const canSendFeedback = useCanSendFeedback();
+  if (!canSendFeedback) return null;
+  return (
+    <View style={{ gap: space[8] }}>
+      <Text
+        variant="caption"
+        weight="bold"
+        color="textMuted"
+        style={{ paddingHorizontal: space[4] }}
+      >
+        {t("settings.info")}
+      </Text>
+      <Card style={{ paddingVertical: space[4], paddingHorizontal: space[14] }}>
+        <Pressable
+          onPress={() => openFeedback()}
+          accessibilityRole="button"
+          style={({ pressed }) => ({
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            height: ROW_HEIGHT,
+            opacity: pressed ? PRESSED_OPACITY : 1,
+          })}
+        >
+          <Text variant="body">{t("feedback.title")}</Text>
+          <Ionicons name="chevron-forward" size={CHEVRON_SIZE} color={colors.textMuted} />
+        </Pressable>
+      </Card>
     </View>
   );
 }

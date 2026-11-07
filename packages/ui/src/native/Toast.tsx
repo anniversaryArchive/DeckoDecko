@@ -23,13 +23,13 @@ import { scheduleOnRN } from "react-native-worklets";
 
 import { useTheme } from "../theme";
 import { radius, space } from "../tokens";
-import { AlertIcon } from "./icons";
+import { AlertIcon, CheckIcon } from "./icons";
 import { PRESSED_OPACITY } from "./pressable";
 import { Text } from "./Text";
 
 /** 왼쪽 아이콘 원 지름 */
 const ICON_CIRCLE = 32;
-/** 원 안 느낌표 크기 */
+/** 원 안 아이콘 크기 */
 const ICON_SIZE = 18;
 /** 오른쪽 동작 버튼 높이 */
 const ACTION_HEIGHT = 32;
@@ -44,7 +44,16 @@ const SWIPE_DISMISS_VELOCITY = 500;
 /** 세로로 이만큼 움직여야 밀기로 본다 (그 전에 손을 떼면 탭) */
 const SWIPE_ACTIVE_OFFSET = 8;
 
+/**
+ * 토스트 종류. 왼쪽 아이콘이 다르다.
+ * error: 실패 · 경고 (느낌표, 기본값)
+ * success: 끝났다는 안내 ("보냈어요", 체크)
+ */
+export type ToastTone = "error" | "success";
+
 export type ToastOptions = {
+  /** 생략하면 error */
+  tone?: ToastTone;
   /** 굵은 첫 줄 ("저장하지 못했어요") */
   title: string;
   /** 둘째 줄 설명 */
@@ -115,9 +124,10 @@ export function useToast(): ToastApi {
   return api;
 }
 
-/** 어두운 면에 느낌표 · 제목 · 설명 · 동작 버튼 (시안 "저장하지 못했어요") */
+/** 어두운 면에 아이콘 · 제목 · 설명 · 동작 버튼 (시안 "저장하지 못했어요") */
 function ToastView({
   id,
+  tone = "error",
   title,
   message,
   actionLabel,
@@ -232,12 +242,16 @@ function ToastView({
                 width: ICON_CIRCLE,
                 height: ICON_CIRCLE,
                 borderRadius: radius.full,
-                backgroundColor: colors.accent,
+                backgroundColor: tone === "success" ? colors.getSurface : colors.accent,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <AlertIcon size={ICON_SIZE} color="onAccent" />
+              {tone === "success" ? (
+                <CheckIcon size={ICON_SIZE} color="onGet" />
+              ) : (
+                <AlertIcon size={ICON_SIZE} color="onAccent" />
+              )}
             </View>
             <View style={{ flex: 1, minWidth: 0 }}>
               <Text variant="label" weight="bold" color="onInverse">
