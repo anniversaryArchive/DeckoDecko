@@ -4,8 +4,9 @@ import { cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { queryKeys } from "../queryKeys";
 import { createMemoryGachaRepository } from "../repositories/gacha.memory";
-import type { NoticeRepository } from "../repositories/notice";
+import { NOTICE_DEFAULTS, type NoticeRepository } from "../repositories/notice";
 import { createMemoryNoticeRepository } from "../repositories/notice.memory";
 import type { Notice } from "../types";
 import { useHomeNotices, useNotice, useNotices } from "./notice.hooks";
@@ -108,5 +109,27 @@ describe("공지 훅", () => {
 
     const { result } = renderHook(() => useNotice("a"), { wrapper });
     await waitFor(() => expect(result.current.data?.title).toBe("A"));
+  });
+
+  it("useNotice: 목록 캐시에 있는 공지는 상세를 받지 않아도 바로 보인다", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(queryKeys.notice.list(NOTICE_DEFAULTS.listLimit), seed);
+    // 상세 요청이 끝나지 않아도 (느린 네트워크 · 오프라인) 목록의 본문으로 그린다
+    const pending: NoticeRepository = {
+      listNotices: () => new Promise(() => {}),
+      getNotice: () => new Promise(() => {}),
+    };
+    const { result } = renderHook(() => useNotice("b"), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <CoreProvider
+          repositories={{ gacha: createMemoryGachaRepository([]), notice: pending }}
+          queryClient={queryClient}
+        >
+          {children}
+        </CoreProvider>
+      ),
+    });
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data?.title).toBe("B");
   });
 });

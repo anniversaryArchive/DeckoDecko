@@ -61,7 +61,8 @@ export function EmptyState({ icon, title, description, action }: Props) {
           </Text>
         )}
       </View>
-      {action}
+      {/* Button 은 fullWidth 가 아니면 alignSelf: "flex-start" 라 감싸서 가운데에 둔다 */}
+      {action != null && <View style={{ alignSelf: "center" }}>{action}</View>}
     </View>
   );
 }

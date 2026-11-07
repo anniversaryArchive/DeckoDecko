@@ -11,6 +11,7 @@ export const en: Messages = {
     itemCount_other: "{{count, number}} items",
     percent: "{{value, number}}%",
     shortDate: "{{month}}/{{day}}/{{year}}",
+    dateTime: "{{date}} {{hour}}:{{minute}}",
     appName: "DeckoDecko",
     back: "Back",
     last10Days: "Last 10 days",
@@ -228,7 +229,13 @@ export const en: Messages = {
   },
   notice: {
     title: "Notices",
-    comingSoon: "Notices are coming soon.",
+    fixedBadge: "Pinned",
+    emptyTitle: "No notices yet",
+    emptyDescription: "We'll post news about new gacha\nand app updates here.",
+    goHome: "Back to home",
+    notFoundTitle: "Notice not found",
+    notFoundDescription: "It may have been removed or is no longer available.",
+    backToList: "Back to notices",
   },
   settings: {
     title: "Settings",

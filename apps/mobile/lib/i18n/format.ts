@@ -46,13 +46,23 @@ export function formatMonth(yearMonth: string): string {
   }).format(date);
 }
 
+const pad = (n: number) => String(n).padStart(2, "0");
+
 /** 짧은 날짜 (기기 시간대). ko "2026.10.17" · en "10/17/2026" */
 export function formatShortDate(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
   return i18n.t("common.shortDate", {
     year: date.getFullYear(),
     month: pad(date.getMonth() + 1),
     day: pad(date.getDate()),
+  });
+}
+
+/** 날짜와 시각 (기기 시간대, 24시간). ko "2026.10.08 10:00" · en "10/08/2026 10:00" */
+export function formatDateTime(date: Date): string {
+  return i18n.t("common.dateTime", {
+    date: formatShortDate(date),
+    hour: pad(date.getHours()),
+    minute: pad(date.getMinutes()),
   });
 }
 

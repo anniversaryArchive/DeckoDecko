@@ -2,7 +2,7 @@ import i18n from "i18next";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { en } from "./en";
-import { formatNumber, formatPercent, formatShortDate } from "./format";
+import { formatDateTime, formatNumber, formatPercent, formatShortDate } from "./format";
 import { ko } from "./ko";
 
 // 앱의 index.ts 는 expo-localization 을 불러서 Node 에서 읽히지 않는다. 같은 리소스로 따로 초기화한다.
@@ -39,5 +39,14 @@ describe("formatShortDate", () => {
     expect(formatShortDate(new Date(2026, 0, 5, 23, 59))).toBe("2026.01.05");
     await i18n.changeLanguage("en");
     expect(formatShortDate(new Date(2026, 9, 29))).toBe("10/29/2026");
+  });
+});
+
+describe("formatDateTime", () => {
+  it("기기 시간대의 날짜와 24시간 시각 (ko 2026.10.08 09:05 · en 10/08/2026 21:30)", async () => {
+    await i18n.changeLanguage("ko");
+    expect(formatDateTime(new Date(2026, 9, 8, 9, 5))).toBe("2026.10.08 09:05");
+    await i18n.changeLanguage("en");
+    expect(formatDateTime(new Date(2026, 9, 8, 21, 30))).toBe("10/08/2026 21:30");
   });
 });

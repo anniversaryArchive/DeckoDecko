@@ -192,12 +192,7 @@ export function SearchResultList({
                     title={t("search.noFilteredResult")}
                     description={t("search.noFilteredResultHint")}
                     action={
-                      <Button
-                        variant="outline"
-                        size="md"
-                        onPress={resetFilter}
-                        style={{ alignSelf: "center" }}
-                      >
+                      <Button variant="outline" size="md" onPress={resetFilter}>
                         {t("search.resetFilters")}
                       </Button>
                     }
