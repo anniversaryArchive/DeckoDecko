@@ -29,6 +29,7 @@ import {
 
 import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIconButton";
 import { MediaField } from "@/components/MediaField";
+import { mediaTitle } from "@/lib/displayName";
 import { goBackOrHome } from "@/lib/routes";
 
 /** 종류마다 내용 칸 안내 · 사진 안내 */
@@ -62,7 +63,7 @@ const PHOTO_CLEAR_ICON_SIZE = 10;
  * 진입점은 useCanSendFeedback 으로 숨긴다. 내 문의 화면은 1.0 범위가 아니라, 보낸 뒤에는 토스트로 알리고 돌아간다.
  */
 export default function FeedbackScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const toast = useToast();
@@ -115,7 +116,7 @@ export default function FeedbackScreen() {
     if (!canSend || sending.current) return;
     sending.current = true;
     const media = pickedMedia
-      ? { id: pickedMedia.id }
+      ? { id: pickedMedia.id, text: mediaTitle(pickedMedia, i18n.language) }
       : mediaText.trim()
         ? { text: mediaText }
         : null;
