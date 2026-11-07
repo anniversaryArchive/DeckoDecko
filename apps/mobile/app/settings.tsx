@@ -14,10 +14,12 @@ import { goBackOrHome, openFeedback } from "@/lib/routes";
 
 /** 스토어 등록 정보와 같은 주소로 둔다. 바꾸면 docs/image-takedown.md 도 같이 고친다. */
 const CONTACT_EMAIL = "anniversaryarchive@gmail.com";
+/** 스토어 등록 정보의 개인정보처리방침 URL 과 같은 주소로 둔다. 앱 안의 주소는 새 빌드를 내야 바뀐다. */
+const PRIVACY_POLICY_URL = "https://anniversaryarchive.github.io/DeckoDecko/privacy/";
 
 /** 목록 한 줄 높이 */
 const ROW_HEIGHT = 50;
-/** 줄 끝 아이콘 (고른 언어 체크, 메일) */
+/** 줄 끝 아이콘 (고른 언어 체크, 메일, 바깥 링크) */
 const ICON_SIZE = 20;
 /** 다른 화면으로 가는 줄의 화살표 */
 const CHEVRON_SIZE = 18;
@@ -29,7 +31,7 @@ const LANGUAGE_OPTIONS: readonly { code: Language | "ja"; name: string; comingSo
   { code: "ja", name: "日本語", comingSoon: true },
 ];
 
-/** 설정 (시안 B_Settings). 1.0 은 언어 고르기, 요청 · 문의 보내기, 연락처만 있다. 홈 머리글의 설정 버튼으로 들어온다. */
+/** 설정 (시안 B_Settings). 1.0 은 언어 고르기, 요청 · 문의 보내기, 개인정보처리방침, 연락처만 있다. 홈 머리글의 설정 버튼으로 들어온다. */
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -104,26 +106,52 @@ function SettingsSection({
   );
 }
 
+/** 개인정보처리방침은 스토어 심사 요건이라 출시 빌드에서도 항상 보이고, 요청 · 문의는 보낼 수 있을 때만 보인다. */
 function InfoSection() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const canSendFeedback = useCanSendFeedback();
-  if (!canSendFeedback) return null;
   return (
     <SettingsSection title={t("settings.info")}>
+      {canSendFeedback ? (
+        <Pressable
+          onPress={() => openFeedback()}
+          accessibilityRole="button"
+          style={({ pressed }) => ({
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            height: ROW_HEIGHT,
+            borderBottomWidth: border.divider,
+            borderBottomColor: colors.lineSoft,
+            opacity: pressed ? PRESSED_OPACITY : 1,
+          })}
+        >
+          <Text variant="body">{t("feedback.title")}</Text>
+          <Ionicons name="chevron-forward" size={CHEVRON_SIZE} color={colors.textMuted} />
+        </Pressable>
+      ) : null}
       <Pressable
-        onPress={() => openFeedback()}
-        accessibilityRole="button"
+        onPress={() => {
+          // 브라우저를 못 여는 기기는 사실상 없어서 따로 안내하지 않는다
+          Linking.openURL(PRIVACY_POLICY_URL).catch(() => undefined);
+        }}
+        accessibilityRole="link"
+        accessibilityLabel={t("settings.privacyPolicy")}
+        accessibilityHint={t("settings.privacyOpenHint")}
         style={({ pressed }) => ({
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          height: ROW_HEIGHT,
+          gap: space[8],
+          minHeight: ROW_HEIGHT,
           opacity: pressed ? PRESSED_OPACITY : 1,
         })}
       >
-        <Text variant="body">{t("feedback.title")}</Text>
-        <Ionicons name="chevron-forward" size={CHEVRON_SIZE} color={colors.textMuted} />
+        <Text variant="body" style={{ flexShrink: 1 }}>
+          {t("settings.privacyPolicy")}
+        </Text>
+        <Ionicons name="open-outline" size={ICON_SIZE} color={colors.textMuted} />
       </Pressable>
     </SettingsSection>
   );

@@ -294,6 +294,8 @@ export const ko = {
     contactHint: "이미지 삭제 요청 등 권리 관련 문의는 이 메일로 보내 주세요.",
     contactOpenHint: "메일 앱을 엽니다",
     info: "정보",
+    privacyPolicy: "개인정보처리방침",
+    privacyOpenHint: "브라우저에서 엽니다",
   },
   feedback: {
     title: "요청 · 문의 보내기",
