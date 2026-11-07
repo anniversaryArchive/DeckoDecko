@@ -1,12 +1,15 @@
 import {
+  assertFolderOrder,
   cleanName,
   normalizeName,
+  toItemCounts,
+  toItemCountsBy,
   type Folder,
   type Item,
   type ListItemsParams,
   type LocalRepositories,
 } from "@deckodecko/core";
-import { and, asc, count, desc, eq, ne, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, ne, sql, type SQL } from "drizzle-orm";
 import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 
 import { folders, items } from "./schema";
@@ -28,8 +31,13 @@ function itemFilter({ gachaId, type, folderId }: ListItemsParams = {}): SQL | un
 /**
  * 로컬 DB(drizzle) 위의 items · folders 저장소. lib/repositories 에서 db 와 UUID 생성기를 넣어 만든다.
  * 기본 폴더 보호 · 폴더 삭제 시 기록 이동은 DB 트리거(drizzle/0001_*.sql)가 하고, 여기서는 다시 구현하지 않는다.
+ * @param deletePhoto 기록을 지우거나 사진을 바꿔 더 쓰지 않는 사진(items.thumbnail 값)을 받는다. 던지지 않아야 한다
  */
-export function createLocalRepositories(db: LocalDb, newId: () => string): LocalRepositories {
+export function createLocalRepositories(
+  db: LocalDb,
+  newId: () => string,
+  deletePhoto: (thumbnail: string) => void
+): LocalRepositories {
   async function getItem(id: string): Promise<Item | null> {
     const [row] = await db.select().from(items).where(eq(items.id, id));
     return row ?? null;
@@ -50,6 +58,8 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
             .where(itemFilter(params))
             // created_at 이 같은 밀리초면 나중에 넣은 행(rowid 가 큰 쪽)이 앞
             .orderBy(desc(items.createdAt), desc(sql`rowid`))
+            // SQLite 에서 LIMIT -1 은 제한 없음
+            .limit(params?.limit ?? -1)
         );
       },
 
@@ -61,8 +71,7 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .from(items)
           .where(itemFilter({ gachaId: params?.gachaId }))
           .groupBy(items.type);
-        const of = (type: Item["type"]) => rows.find((r) => r.type === type)?.n ?? 0;
-        return { wish: of("WISH"), get: of("GET") };
+        return toItemCounts(rows);
       },
 
       async countItemsByFolder() {
@@ -71,6 +80,14 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .from(items)
           .groupBy(items.folderId);
         return Object.fromEntries(rows.map((r) => [r.folderId, r.n]));
+      },
+
+      async countItemsByGacha() {
+        const rows = await db
+          .select({ gachaId: items.gachaId, type: items.type, n: count() })
+          .from(items)
+          .groupBy(items.gachaId, items.type);
+        return toItemCountsBy(rows, (r) => r.gachaId);
       },
 
       async createItem(input) {
@@ -96,6 +113,7 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
       },
 
       async updateItem(id, input) {
+        const before = input.thumbnail === undefined ? null : await getItem(id);
         // drizzle 은 set 의 undefined 값을 건너뛴다 (= 안 바꿈)
         const [row] = await db
           .update(items)
@@ -107,12 +125,13 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
           .where(eq(items.id, id))
           .returning();
         if (!row) throw new Error(`item not found: ${id}`);
+        if (before?.thumbnail && before.thumbnail !== row.thumbnail) deletePhoto(before.thumbnail);
         return row;
       },
 
-      // TODO(혜진): 3주차에 사진을 앱 폴더로 옮기면 기록을 지울 때 사진 파일도 같이 지운다
       async deleteItem(id) {
-        await db.delete(items).where(eq(items.id, id));
+        const [row] = await db.delete(items).where(eq(items.id, id)).returning();
+        if (row?.thumbnail) deletePhoto(row.thumbnail);
       },
 
       async isItemNameTaken({ gachaId, name, excludeId }) {
@@ -160,6 +179,31 @@ export function createLocalRepositories(db: LocalDb, newId: () => string): Local
 
       async deleteFolder(id) {
         await db.delete(folders).where(eq(folders.id, id));
+      },
+
+      async reorderFolders(ids) {
+        // 확인과 수정 사이에 다른 쓰기가 끼지 않게 묶는다. 동기 드라이버라 콜백 안은 await 없이 all() · run() 으로
+        db.transaction((tx) => {
+          const normal = tx
+            .select({ id: folders.id })
+            .from(folders)
+            .where(eq(folders.isDefault, false))
+            .all();
+          assertFolderOrder(
+            normal.map((f) => f.id),
+            ids
+          );
+          if (ids.length === 0) return;
+          // 한 문장으로 바꿔 중간에 실패해도 순서가 반만 바뀌지 않게 한다
+          const position = sql.join(
+            ids.map((id, i) => sql`WHEN ${id} THEN ${i + 1}`),
+            sql` `
+          );
+          tx.update(folders)
+            .set({ sequence: sql`CASE ${folders.id} ${position} END` })
+            .where(inArray(folders.id, [...ids]))
+            .run();
+        });
       },
 
       async isFolderNameTaken(name, excludeId) {

@@ -1,27 +1,34 @@
 // @vitest-environment happy-dom
-import { onlineManager, QueryClient } from "@tanstack/react-query";
+import { onlineManager, QueryClient, useQueryClient } from "@tanstack/react-query";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { collectionRate } from "../collection";
+import { queryKeys } from "../queryKeys";
 import type { Repositories } from "../repositories";
+import type { UpdateItemInput } from "../repositories/items";
+import type { ItemType } from "../types";
 import {
   useCreateFolder,
   useDeleteFolder,
   useFolders,
   useIsFolderNameTaken,
   useRenameFolder,
+  useReorderFolders,
 } from "./folders.hooks";
 import {
   useCreateItem,
   useDeleteItem,
+  useDisplayedItemType,
   useIsItemNameTaken,
   useItem,
   useItemCounts,
   useItemCountsByFolder,
   useItems,
+  useReadDisplayedItemType,
   useSetItemType,
+  useToggleItemType,
   useUpdateItem,
 } from "./items.hooks";
 import { CoreProvider } from "./provider";
@@ -211,6 +218,256 @@ describe("기록 하나 · 수정 · 삭제 훅", () => {
   });
 });
 
+describe("WISH ↔ GET 원탭 전환 훅", () => {
+  /** updateItem 을 붙잡아 두었다가 테스트가 하나씩 풀어 준다 (실제 타이머 없이 순서를 정한다) */
+  function holdUpdates(repositories: ReturnType<typeof memoryRepositories>) {
+    const updateItem = repositories.items.updateItem.bind(repositories.items);
+    const held: { save: () => void; fail: () => void }[] = [];
+    vi.spyOn(repositories.items, "updateItem").mockImplementation(
+      (...args) =>
+        new Promise((resolve, reject) => {
+          held.push({
+            save: () => void updateItem(...args).then(resolve, reject),
+            fail: () => reject(new Error("disk full")),
+          });
+        })
+    );
+    // n 번째(1부터) 저장이 시작될 때까지 기다렸다가 끝낸다
+    async function finish(n: number, how: "save" | "fail") {
+      await waitFor(() => expect(held).toHaveLength(n));
+      act(() => held[n - 1]![how]());
+    }
+    return { held, finish };
+  }
+
+  function memoryRepositories() {
+    return { gacha: createMemoryGachaRepository([]), ...createMemoryLocalRepositories() };
+  }
+
+  async function render(repositories = memoryRepositories(), onError = vi.fn()) {
+    const a = await repositories.items.createItem({ gachaId: "g1", type: "WISH", name: "a" });
+    const b = await repositories.items.createItem({ gachaId: "g1", type: "WISH", name: "b" });
+    const { wrapper } = setup(repositories);
+    // 소장률이 중간 값을 거쳤는지 보려고 그릴 때마다 GET 수를 남긴다
+    const getHistory: number[] = [];
+    const { result, unmount } = renderHook(
+      () => {
+        const list = useItems({ gachaId: "g1" });
+        const counts = useItemCounts("g1");
+        if (counts.data) getHistory.push(counts.data.get);
+        const listed = (id: string) => list.data?.find((i) => i.id === id);
+        return {
+          list,
+          counts,
+          toggle: useToggleItemType({ onError }),
+          update: useUpdateItem(),
+          readShown: useReadDisplayedItemType(),
+          shownA: useDisplayedItemType(listed(a.id) ?? a),
+          shownB: useDisplayedItemType(listed(b.id) ?? b),
+          // 목록 값과 다른 옛 객체로 물어도 WISH 면, 저장 중인 값이 남아 있지 않다는 뜻
+          staleA: useDisplayedItemType({ id: a.id, type: "WISH" }),
+          listedA: () => listed(a.id)!,
+          listedB: () => listed(b.id)!,
+        };
+      },
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.list.data).toHaveLength(2));
+    return { result, unmount, onError, getHistory, a, b, repositories };
+  }
+
+  it("누르면 바로 바뀌어 보이고, 저장이 끝나면 목록 · 소장률도 새 값이 되고 저장 중인 값은 남지 않는다", async () => {
+    const { result } = await render();
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(result.current.shownA).toBe("GET"));
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+    expect(result.current.listedA().type).toBe("GET");
+    expect(result.current.shownA).toBe("GET");
+    expect(result.current.staleA).toBe("WISH");
+  });
+
+  it("빠르게 두 번 누르면: 저장은 하나씩 차례로, 소장률은 중간 값을 거치지 않고 원래대로 끝난다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, getHistory, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(result.current.shownA).toBe("GET"));
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(result.current.shownA).toBe("WISH"));
+    await finish(1, "save");
+    // 첫 저장이 끝나도 두 번째가 남아 있으니 보이는 값은 그대로, 두 번째 저장은 이제야 시작한다
+    await waitFor(() => expect(held).toHaveLength(2));
+    expect(result.current.shownA).toBe("WISH");
+    await finish(2, "save");
+    await waitFor(() => expect(repositories.items.updateItem).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current.staleA).toBe("WISH"));
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    expect(result.current.counts.data).toEqual({ wish: 2, get: 0 });
+    expect(getHistory).not.toContain(1);
+  });
+
+  it("앞 저장은 성공하고 뒤 저장이 실패하면, 앞 저장 상태(GET)로 돌아가고 onError 를 한 번 부른다", async () => {
+    const repositories = memoryRepositories();
+    const { finish } = holdUpdates(repositories);
+    const { result, onError, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedA()));
+    await finish(1, "save");
+    await finish(2, "fail");
+    await waitFor(() => expect(onError).toHaveBeenCalledOnce());
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+    expect(result.current.shownA).toBe("GET");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("GET");
+  });
+
+  it("앞 저장이 실패해도 뒤 저장이 대기 중이면 마지막으로 누른 값이 보이고, 그 값으로 저장되며 onError 는 부르지 않는다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, onError, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedA()));
+    await finish(1, "fail");
+    await waitFor(() => expect(held).toHaveLength(2));
+    expect(result.current.shownA).toBe("WISH");
+    await finish(2, "save");
+    await waitFor(() => expect(result.current.staleA).toBe("WISH"));
+    expect(result.current.shownA).toBe("WISH");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("앞뒤 저장이 모두 실패하면 처음 상태(WISH)로 돌아가고 onError 를 한 번 부른다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, onError, a } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedA()));
+    await finish(1, "fail");
+    await waitFor(() => expect(held).toHaveLength(2));
+    expect(onError).not.toHaveBeenCalled();
+    await finish(2, "fail");
+    await waitFor(() => expect(onError).toHaveBeenCalledOnce());
+    expect(result.current.shownA).toBe("WISH");
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+  });
+
+  it("저장이 끝난 뒤 다시 그려지기 전의 옛 item 으로 눌러도, 저장된 값의 반대로 바꾼다", async () => {
+    const { result, a, repositories } = await render();
+    const update = vi.spyOn(repositories.items, "updateItem");
+    // 화면이 아직 다시 그려지지 않아 행이 들고 있는 값 (WISH)
+    const stale = result.current.listedA();
+
+    act(() => result.current.toggle(stale));
+    await waitFor(() => expect(result.current.listedA().type).toBe("GET"));
+    act(() => result.current.toggle(stale));
+    await waitFor(() => expect(update).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current.listedA().type).toBe("WISH"));
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+  });
+
+  it("서로 다른 두 아이템을 이어서 누르면 둘 다 바뀐다", async () => {
+    const { result } = await render();
+
+    act(() => result.current.toggle(result.current.listedA()));
+    act(() => result.current.toggle(result.current.listedB()));
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 0, get: 2 }));
+    expect(result.current.shownA).toBe("GET");
+    expect(result.current.shownB).toBe("GET");
+  });
+
+  it("useReadDisplayedItemType: 저장 중인 전환은 그 아이템에만 보이고, 끝나면 넘긴 item.type 을 돌려준다", async () => {
+    const repositories = memoryRepositories();
+    const { finish } = holdUpdates(repositories);
+    const { result, a, b } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedB()));
+    await waitFor(() => expect(result.current.shownB).toBe("GET"));
+    // 시트가 B 를 보다가 A 를 열어도 B 의 전환값이 섞이지 않는다
+    expect(result.current.readShown({ id: b.id, type: "WISH" })).toBe("GET");
+    expect(result.current.readShown({ id: a.id, type: "WISH" })).toBe("WISH");
+    await finish(1, "save");
+    await waitFor(() => expect(result.current.listedB().type).toBe("GET"));
+    expect(result.current.readShown({ id: b.id, type: "WISH" })).toBe("WISH");
+  });
+
+  /** 태그로 A 를 GET 으로 바꾸고, 그 저장이 끝나기 전에 수정 시트에서 저장한다. 시트는 보이는 값(shown)으로 폼을 채운다 */
+  async function saveSheetDuringToggle(
+    sheetInput: (shown: ItemType) => UpdateItemInput,
+    toggleResult: "save" | "fail" = "save"
+  ) {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const rendered = await render(repositories);
+    const { result, a } = rendered;
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(held).toHaveLength(1));
+    // 시트가 다시 읽는 기록은 아직 WISH 다
+    const stored = (await repositories.items.getItem(a.id))!;
+    expect(stored.type).toBe("WISH");
+    const input = sheetInput(result.current.readShown(stored));
+    let saved!: Promise<unknown>;
+    act(() => {
+      saved = result.current.update.mutateAsync({ id: a.id, input });
+    });
+    // 시트 저장은 앞선 전환이 끝날 때까지 줄 서 있다
+    await waitFor(() => expect(result.current.update.isPaused).toBe(true));
+    expect(held).toHaveLength(1);
+    await finish(1, toggleResult);
+    await finish(2, "save");
+    await act(() => saved);
+    expect(vi.mocked(repositories.items.updateItem).mock.calls).toEqual([
+      [a.id, { type: "GET" }],
+      [a.id, input],
+    ]);
+    return rendered;
+  }
+
+  it("전환 저장 중에 수정 시트에서 이름만 고쳐 저장해도, 마지막으로 누른 값(GET)이 남는다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle((shown) => ({
+      type: shown,
+      name: "a2",
+    }));
+    expect(await repositories.items.getItem(a.id)).toMatchObject({ type: "GET", name: "a2" });
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+  });
+
+  it("전환 저장 중에 시트에서 WISH 로 되돌려 저장하면, 전환이 끝난 뒤 저장돼 WISH 가 남는다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle(() => ({ type: "WISH" }));
+    expect((await repositories.items.getItem(a.id))?.type).toBe("WISH");
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 2, get: 0 }));
+  });
+
+  it("앞선 전환이 실패해도 줄 서 있던 시트 저장은 이어서 실행된다", async () => {
+    const { result, a, repositories } = await saveSheetDuringToggle(
+      (shown) => ({ type: shown, name: "a2" }),
+      "fail"
+    );
+    expect(await repositories.items.getItem(a.id)).toMatchObject({ type: "GET", name: "a2" });
+    await waitFor(() => expect(result.current.counts.data).toEqual({ wish: 1, get: 1 }));
+  });
+
+  it("누른 화면이 사라진 뒤 저장이 실패하면 onError 를 부르지 않는다", async () => {
+    const repositories = memoryRepositories();
+    const { held, finish } = holdUpdates(repositories);
+    const { result, unmount, onError } = await render(repositories);
+
+    act(() => result.current.toggle(result.current.listedA()));
+    await waitFor(() => expect(held).toHaveLength(1));
+    unmount();
+    await finish(1, "fail");
+    await waitFor(() => expect(repositories.items.updateItem).toHaveBeenCalledOnce());
+    // reject 가 onError 까지 흘러갈 틈을 준다
+    await act(() => Promise.resolve());
+    expect(onError).not.toHaveBeenCalled();
+  });
+});
+
 describe("이름 중복 검사 훅", () => {
   it("useIsItemNameTaken: gachaId 가 없거나 이름이 비면(공백뿐 포함) 요청하지 않는다", async () => {
     const { wrapper, repositories } = setup();
@@ -310,6 +567,182 @@ describe("폴더 이름 변경 훅", () => {
       ).rejects.toThrow();
     });
     await waitFor(() => expect(result.current.rename.error).toBeInstanceOf(Error));
+  });
+});
+
+describe("폴더 순서 훅", () => {
+  it("useReorderFolders: 저장을 기다리지 않고 목록이 바로 바뀌고, 기본 폴더는 맨 앞에 남는다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    // 저장을 붙잡아 두고, 그동안 캐시가 이미 새 순서인지 본다
+    let release!: () => void;
+    const original = repositories.folders!.reorderFolders;
+    repositories.folders!.reorderFolders = async (ids) => {
+      await new Promise<void>((resolve) => (release = resolve));
+      return original(ids);
+    };
+    const { result } = renderHook(() => ({ folders: useFolders(), reorder: useReorderFolders() }), {
+      wrapper,
+    });
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
+    const defaultId = result.current.folders.data![0]!.id;
+
+    act(() => result.current.reorder.mutate([b.id, a.id]));
+    await waitFor(() =>
+      expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, b.id, a.id])
+    );
+    expect(result.current.reorder.isPending).toBe(true);
+
+    release();
+    await waitFor(() => expect(result.current.reorder.isSuccess).toBe(true));
+    expect((await repositories.folders!.listFolders()).map((f) => f.id)).toEqual([
+      defaultId,
+      b.id,
+      a.id,
+    ]);
+  });
+
+  it("useReorderFolders: 연달아 바꾸면 저장은 차례로 하고, 마지막 순서가 남는다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    const c = await repositories.folders!.createFolder("서랍");
+    const calls: string[][] = [];
+    let release!: () => void;
+    const original = repositories.folders!.reorderFolders;
+    repositories.folders!.reorderFolders = async (ids) => {
+      calls.push([...ids]);
+      if (calls.length === 1) await new Promise<void>((resolve) => (release = resolve));
+      return original(ids);
+    };
+    const { result } = renderHook(() => ({ folders: useFolders(), reorder: useReorderFolders() }), {
+      wrapper,
+    });
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(4));
+    const defaultId = result.current.folders.data![0]!.id;
+
+    act(() => result.current.reorder.mutate([b.id, a.id, c.id]));
+    await waitFor(() => expect(calls).toHaveLength(1));
+    act(() => result.current.reorder.mutate([c.id, b.id, a.id]));
+    await waitFor(() =>
+      expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id])
+    );
+    // 첫 저장이 끝나기 전에는 둘째 저장을 시작하지 않는다
+    expect(calls).toHaveLength(1);
+
+    release();
+    await waitFor(() => expect(calls).toHaveLength(2));
+    await waitFor(() => expect(result.current.reorder.isSuccess).toBe(true));
+    expect((await repositories.folders!.listFolders()).map((f) => f.id)).toEqual([
+      defaultId,
+      c.id,
+      b.id,
+      a.id,
+    ]);
+    expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id]);
+  });
+
+  it("useReorderFolders: 실패하면 이전 순서로 돌아가고 error 로 올라온다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    repositories.folders!.reorderFolders = () => Promise.reject(new Error("disk full"));
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({ folders: useFolders(), reorder: useReorderFolders({ onError }) }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
+    const before = result.current.folders.data!.map((f) => f.id);
+
+    act(() => result.current.reorder.mutate([b.id, a.id]));
+    await waitFor(() => expect(result.current.reorder.isError).toBe(true));
+    expect(result.current.folders.data?.map((f) => f.id)).toEqual(before);
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it("useReorderFolders: 앞뒤 저장이 다 실패하면 onError 는 마지막 저장에서 한 번만 불린다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    let calls = 0;
+    let fail!: () => void;
+    repositories.folders!.reorderFolders = async () => {
+      calls += 1;
+      if (calls === 1) await new Promise<void>((resolve) => (fail = resolve));
+      throw new Error("disk full");
+    };
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({ folders: useFolders(), reorder: useReorderFolders({ onError }) }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(3));
+
+    act(() => result.current.reorder.mutate([b.id, a.id]));
+    await waitFor(() => expect(calls).toBe(1));
+    act(() => result.current.reorder.mutate([a.id, b.id]));
+    await waitFor(() => expect(result.current.reorder.isPending).toBe(true));
+
+    fail();
+    await waitFor(() => expect(result.current.reorder.isError).toBe(true));
+    expect(calls).toBe(2);
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it("useReorderFolders: 앞 저장이 실패해도 뒤에 줄 선 저장이 있으면 옛 순서로 되돌리지 않는다", async () => {
+    const { wrapper, repositories } = setup();
+    const a = await repositories.folders!.createFolder("가방");
+    const b = await repositories.folders!.createFolder("책상");
+    const c = await repositories.folders!.createFolder("서랍");
+    let calls = 0;
+    let fail!: () => void;
+    const original = repositories.folders!.reorderFolders;
+    repositories.folders!.reorderFolders = async (ids) => {
+      calls += 1;
+      if (calls === 1) {
+        await new Promise<void>((resolve) => (fail = resolve));
+        throw new Error("disk full");
+      }
+      return original(ids);
+    };
+    const onError = vi.fn();
+    const { result } = renderHook(
+      () => ({
+        folders: useFolders(),
+        reorder: useReorderFolders({ onError }),
+        queryClient: useQueryClient(),
+      }),
+      { wrapper }
+    );
+    await waitFor(() => expect(result.current.folders.data).toHaveLength(4));
+    const defaultId = result.current.folders.data![0]!.id;
+    const before = result.current.folders.data!.map((f) => f.id);
+    // 렌더는 묶여서 잠깐 바뀐 값을 놓칠 수 있으므로, 캐시에 들어간 순서를 모두 모은다
+    const seen: string[][] = [];
+    const listHash = JSON.stringify(queryKeys.folders.list());
+    const unsubscribe = result.current.queryClient.getQueryCache().subscribe((event) => {
+      if (event.query.queryHash !== listHash) return;
+      const data = event.query.state.data as { id: string }[] | undefined;
+      if (data) seen.push(data.map((f) => f.id));
+    });
+
+    act(() => result.current.reorder.mutate([b.id, a.id, c.id]));
+    await waitFor(() => expect(calls).toBe(1));
+    act(() => result.current.reorder.mutate([c.id, b.id, a.id]));
+    await waitFor(() =>
+      expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id])
+    );
+    const afterSecond = seen.length;
+
+    fail();
+    await waitFor(() => expect(calls).toBe(2));
+    await waitFor(() => expect(result.current.reorder.isSuccess).toBe(true));
+    unsubscribe();
+    expect(seen.slice(afterSecond)).not.toContainEqual(before);
+    expect(result.current.folders.data?.map((f) => f.id)).toEqual([defaultId, c.id, b.id, a.id]);
+    expect(onError).not.toHaveBeenCalled();
   });
 });
 

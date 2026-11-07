@@ -32,6 +32,8 @@ export const ko = {
     badgeNew: "NEW",
     badgeUpcoming: "발매 예정",
     close: "닫기",
+    // 하단 탭의 iOS 화면 읽기 이름 (iOS 는 탭을 버튼으로 읽혀서 탭 · 위치를 이름에 넣는다)
+    tabA11yLabel: "{{name}}, 탭, {{count}}개 중 {{index}}번째",
     // 입력창 지우기 버튼 (화면 읽기 프로그램이 읽는다)
     clear: "지우기",
     // 토스트(ToastProvider)의 iOS 화면 읽기 안내. 동작 결과를 적는다 (제스처 이름은 VoiceOver 가 붙인다)
@@ -127,13 +129,12 @@ export const ko = {
     addItem: "아이템 추가",
     aiScan: "사진으로 인식해서 추가",
     toggleHint: "태그를 누르면 WISH ↔ GET",
-    // 태그 버튼의 화면 읽기 이름. type 은 WISH · GET
-    toggleLabel: "{{name}} 상태 전환, 현재 {{type}}",
     saveFailed: "저장하지 못했어요",
     reopenSheet: "다시 열기",
   },
   goods: {
     title: "내 굿즈",
+    tabLabel: "내 굿즈",
     // 제목 위 한 줄. rate 는 formatPercent 로 만든 문자열
     summary_one: "전체 {{count, number}}개 · 소장률 {{rate}}",
     summary_other: "전체 {{count, number}}개 · 소장률 {{rate}}",
@@ -184,6 +185,49 @@ export const ko = {
     nameHint: "같은 이름의 폴더는 만들 수 없어요",
     nameTaken: "이미 같은 이름의 폴더가 있어요",
     createFailed: "폴더를 만들지 못했어요",
+    // 이름 칸 아래 글자 수 ("4 / 20")
+    nameLength: "{{length}} / {{max}}",
+    // 폴더 관리 화면 (내 굿즈 머리글에서 연다)
+    manageTitle: "폴더 관리",
+    folderCount_one: "폴더 {{count, number}}개",
+    folderCount_other: "폴더 {{count, number}}개",
+    dragHint: "오른쪽 손잡이를 길게 눌러 순서를 바꿀 수 있어요.",
+    // 머리글 안내. folders · items 는 개수 문구, 개수를 못 읽으면 noCount
+    manageSummary: "{{folders}} · {{items}}. {{hint}}",
+    manageSummaryNoCount: "{{folders}}. {{hint}}",
+    defaultLocked: "기본 폴더는 바꾸거나 지울 수 없어요",
+    // 기본 폴더 행 아래 줄
+    defaultRowCaption: "{{items}} · {{locked}}",
+    renameLabel: "{{name}} 이름 변경",
+    deleteLabel: "{{name}} 삭제",
+    dragLabel: "{{name}} 순서 바꾸기",
+    dragA11yHint: "위로 · 아래로 옮기기 동작으로 순서를 바꿀 수 있어요",
+    // 순서 손잡이의 화면 읽기 동작 (끌기 대신)
+    moveUp: "위로 옮기기",
+    moveDown: "아래로 옮기기",
+    reorderFailed: "순서를 저장하지 못했어요",
+    deleteInfoTitle: "폴더를 삭제하면",
+    deleteInfo: "폴더 안의 아이템은 기본 폴더로 옮겨져요. 삭제 전에 한 번 더 확인 창이 나타나요.",
+    // 이름 변경 · 새 폴더 시트
+    renameTitle: "폴더 이름 변경",
+    nameLabel: "폴더 이름",
+    rename: "변경",
+    renameFailed: "이름을 바꾸지 못했어요",
+    // 삭제 확인 시트
+    deleteTitle: "'{{name}}' 폴더를 삭제할까요?",
+    deleteMoveMessage_one:
+      "폴더 안의 아이템 <bold>{{count, number}}개</bold>는 기본 폴더로 옮겨져요.",
+    deleteMoveMessage_other:
+      "폴더 안의 아이템 <bold>{{count, number}}개</bold>는 기본 폴더로 옮겨져요.",
+    deleteEmptyMessage: "폴더 안에 아이템이 없어요.",
+    // 옮겨질 아이템 미리보기. 앞의 이름 최대 3개(a · b · c) 뒤에 남은 개수
+    deletePreview1: "{{a}}",
+    deletePreview2: "{{a}}, {{b}}",
+    deletePreview3: "{{a}}, {{b}}, {{c}}",
+    deletePreviewMore_one: "{{a}}, {{b}}, {{c}} 외 {{count, number}}개",
+    deletePreviewMore_other: "{{a}}, {{b}}, {{c}} 외 {{count, number}}개",
+    delete: "삭제",
+    deleteFailed: "폴더를 삭제하지 못했어요",
   },
   item: {
     // 아이템 추가 · 수정 시트 (상세에서 연다)
@@ -213,6 +257,13 @@ export const ko = {
     // 저장 실패 토스트의 둘째 줄 (토스트는 시트를 연 화면이 띄운다)
     saveFailedReason: "잠시 뒤 다시 시도해 주세요.",
     deleteFailed: "삭제하지 못했어요",
+    // 사진 사본을 앱에 저장하지 못했을 때 (기록은 저장된 뒤 시트가 닫히고 토스트로 알린다)
+    photoSaveFailed: "사진을 저장하지 못했어요",
+    photoSaveFailedAdded: "사진 없이 추가했어요. 수정에서 다시 넣어 주세요.",
+    photoSaveFailedKept: "사진은 바꾸지 않고 저장했어요.",
+    // 시스템 사진 선택기를 열지 못했을 때 (권한을 쓰지 않아 설정에서 고칠 것이 없다)
+    photoPickerFailed: "사진을 열지 못했어요",
+    photoPickerFailedHint: "잠시 뒤 다시 시도해 주세요. 사진 없이도 저장할 수 있어요.",
     // 삭제 확인 시트
     deleteTitle: "이 아이템을 삭제할까요?",
     deleteMessage: "사진과 메모도 함께 지워지고,\n삭제한 뒤에는 되돌릴 수 없어요.",
@@ -221,6 +272,11 @@ export const ko = {
       "이 가챠의 소장 수가 <bold>{{from, number}} → {{to, number}}</bold>로 바뀌어요.",
     wishBadge: "WISH",
     getBadge: "GET",
+    // WISH · GET 태그 버튼의 화면 읽기 이름 · 힌트 (상세 내 아이템). type 은 wishBadge · getBadge 문구
+    typeTagLabel: "{{name}}, 현재 {{type}}",
+    toggleToGetHint: "누르면 GET 으로 바뀌어요",
+    toggleToWishHint: "누르면 WISH 로 바뀌어요",
+    toggleFailed: "상태를 바꾸지 못했어요",
   },
   notice: {
     title: "공지사항",

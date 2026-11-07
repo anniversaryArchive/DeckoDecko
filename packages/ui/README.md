@@ -100,10 +100,10 @@ toast.show({ title: t("item.saveFailed"), message: t("item.duplicateName"), acti
 | `Segment`     | `options` 의 `tone`: `primary` · `wish` · `get` (선택된 항목의 면)                                                                                                                                              | 항목 40               |
 | `Input`       | `label`, `helperText`, 안쪽 `leading` · `trailing`, `multiline`. 글자가 있으면 지우기 버튼이 나온다 (읽기 이름 `clearLabel` 을 넘겨야 그린다, `clearable={false}` 로 끔). `ref` 로 입력창에 포커스를 줄 수 있다 | 48, 여러 줄은 72 이상 |
 | `Card`        | `variant`: `default` · `highlight`, `onPress` 를 넘기면 눌리는 카드. 안쪽 여백은 `style` 로                                                                                                                     | 내용에 맞춤           |
-| `BottomSheet` | `open` · `onClose` 로 연다. `title`, `closeLabel`(넘기면 닫기 버튼). 열고 닫을 때 0.45초 동안 올라오고 내려간다                                                                                                 | 내용에 맞춤           |
+| `BottomSheet` | `open` · `onClose` 로 연다. `title`, `closeLabel`(넘기면 닫기 버튼), `dismissible={false}` 면 사용자가 닫지 못함. 열고 닫을 때 0.45초 동안 올라오고 내려간다                                                    | 내용에 맞춤           |
 | `GoodsCard`   | `layout`: `vertical`(`size` `md` 156 · `sm` 124) · `horizontal`(썸네일 96). `badge`(`accent` · `get`), 가로는 `priceNote` · `meta` · 오른쪽 `accessory`                                                         | 내용에 맞춤           |
 | `ProgressBar` | `variant`: `summary`(`value` 0 – 1) · `segments`(`get` · `wish` · `total`, `legend`)                                                                                                                            | 10 · 8                |
-| `TabBar`      | `items`: `label` · `renderIcon` · `selected` · `onPress`. 선택된 탭만 이름이 보인다                                                                                                                             | 탭 40                 |
+| `TabBar`      | `items`: `label` · `renderIcon` · `selected` · `onPress` · `onLongPress` · `accessibilityLabel`. 선택된 탭만 이름이 보인다                                                                                      | 탭 40                 |
 | `useToast`    | `show({ title, message, actionLabel, onAction, duration })` · `hide()`. `duration` 기본 4초(0 이하도 4초), `null` 이면 안 사라짐. 위로 밀거나 탭하면 닫힘. 앱 루트에 `ToastProvider closeLabel closeHint`       | 내용에 맞춤           |
 
 - 글자는 모두 props 로 받는다. 컴포넌트 안에 한글을 적지 않는다 (닫기 버튼의 읽기 이름도 `closeLabel` 로).
@@ -114,10 +114,11 @@ toast.show({ title: t("item.saveFailed"), message: t("item.duplicateName"), acti
 - `GoodsCard` 는 가챠 카드다. 세로는 홈 "새로 나왔어요"(`size="md"`) · 검색 "최근 본 굿즈"(`size="sm"`, 가격 없음), 가로(`layout="horizontal"`)는 "지금 인기" · "인기 검색 굿즈" · 검색 결과에 쓴다. 사진은 `image` 로 넘기고 카드가 정한 자리를 채운다 (자리 표시 포함, 앱의 썸네일 컴포넌트). `accessibilityLabel` 을 생략하면 배지 · 작품명 · 이름 · 가격 · 보조 정보를 이어서 읽는다.
 - 세로 카드는 작품명 · 가격이 없거나 이름이 한 줄이어도 높이가 같다 (가로 스크롤에서 나란히 놓여서). 가로 카드의 `accessory` 는 카드를 누르는 영역 밖에 있어서, 안의 버튼을 화면 읽기 프로그램이 따로 고를 수 있다.
 - `ProgressBar` 는 진행 막대다. 지금은 소장률에 쓴다. `summary` 는 강조 면(`Card variant="highlight"`) 위에 둔다 (막대 바탕이 흰 면). `segments` 는 아이템 하나가 한 칸이고 GET → WISH → 미등록 순으로 칠한다. 20칸이 넘으면 칸 사이가 좁아진다. `legend` 를 넘기면 화면 읽기 프로그램이 범례 글자를 막대의 값으로 읽는다 (없으면 GET 수만 읽어서 WISH 수가 빠진다).
-- `TabBar` 는 탭마다 같은 폭의 칸에 놓여서, 선택이 바뀌어도 다른 탭의 아이콘은 움직이지 않는다. 그리기만 한다: 내비게이션 연결 · safe area · 키보드가 뜰 때 숨기기는 앱의 탭 레이아웃(`Tabs` 의 `tabBar`)이 맡는다. 아이콘도 앱이 `renderIcon` 으로 그린다 (탭 바가 색 · 크기를 넘긴다).
+- `TabBar` 는 탭마다 같은 폭의 칸에 놓여서, 선택이 바뀌어도 다른 탭의 아이콘은 움직이지 않는다. 그리기만 한다: 내비게이션 연결 · safe area 는 앱의 탭 레이아웃(`Tabs` 의 `tabBar`)이 맡는다. iOS 는 탭을 버튼으로 읽혀서, 탭이라는 것 · 위치는 앱이 `accessibilityLabel` 에 넣어 넘긴다. 아이콘도 앱이 `renderIcon` 으로 그린다 (탭 바가 색 · 크기를 넘긴다).
 - 토스트는 앱 루트(`apps/mobile/app/_layout.tsx`)의 `ToastProvider` 가 그린다. 화면 맨 위, 상태 바 바로 아래(머리글과 같은 높이)에 머리글 · 바텀 시트 위로 겹쳐 뜬다. 화면에서는 `useToast()` 로 띄운다. 이미 떠 있을 때 다시 `show` 하면 그 자리에서 내용만 바꾸고 시간을 다시 잰다. 화면 읽기 프로그램이 켜져 있고 동작 버튼이 있으면 저절로 사라지지 않는다 (버튼까지 가기 전에 사라지지 않게). 화면 읽기 프로그램은 밀기를 쓸 수 없어서 두 번 탭, 동작 목록의 닫기(`closeLabel`), iOS 문지르기로 닫는다. iOS 는 내용 다음에 `closeHint` 를 읽는다.
 - 선 아이콘 `CloseIcon`(×) · `ChevronDownIcon`(⌄) · `AlertIcon`(!)은 `size` · `color`(색 역할)를 받는다. 칩의 펼침 표시는 `<Chip trailing={<ChevronDownIcon size={14} color="text" />}>`.
 - `Input` 은 RN `TextInput` 이 글꼴을 하나만 쓸 수 있어서 Noto Sans KR 로 고정한다.
+- 색을 서서히 바꿀 때는 `useColorTransition(color)` 를 쓴다 (`COLOR_TRANSITION_DURATION` 250ms, "동작 줄이기"면 바로). 돌려받은 값을 `useAnimatedStyle` 안에서 읽는다. 소장률 막대 칸과 WISH/GET 태그가 같은 속도로 바뀌게 하려고 한 곳에 둔다.
 - 시안에 오류 상태 색이 없어서 `Input` 에는 오류 표시가 아직 없다. 필요해지면 색 역할(`danger` 등)부터 추가한다.
 
 ### 글꼴 굵기 추가

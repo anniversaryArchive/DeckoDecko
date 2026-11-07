@@ -1,10 +1,10 @@
-import { useEffect } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 import { useTheme } from "../theme";
 import { radius, space, type ThemeColors } from "../tokens";
 import { Text } from "./Text";
+import { useColorTransition } from "./useColorTransition";
 
 /** 요약 막대 높이 (홈 소장률 카드) */
 const SUMMARY_HEIGHT = 10;
@@ -14,8 +14,6 @@ const SEGMENT_HEIGHT = 8;
 const LEGEND_DOT = 8;
 /** 칸이 이보다 많으면 칸 사이를 좁힌다 (칸이 너무 가늘어지지 않게) */
 const DENSE_SEGMENTS = 20;
-/** 칸 색이 바뀌는 데 걸리는 시간(ms) */
-const SEGMENT_COLOR_DURATION = 250;
 
 type CommonProps = {
   /** 화면 읽기 프로그램이 읽을 이름 ("내 굿즈 소장률") */
@@ -132,13 +130,10 @@ function SegmentBar({
   );
 }
 
-// 기록을 추가하거나 WISH ↔ GET 을 바꾸면 칸 색이 서서히 바뀐다. "동작 줄이기"가 켜져 있으면 withTiming 이 바로 바꾼다
+// 기록을 추가하거나 WISH ↔ GET 을 바꾸면 칸 색이 서서히 바뀐다
 function Segment({ color }: { color: keyof ThemeColors }) {
   const { colors } = useTheme();
-  const background = useSharedValue(colors[color]);
-  useEffect(() => {
-    background.value = withTiming(colors[color], { duration: SEGMENT_COLOR_DURATION });
-  }, [background, colors, color]);
+  const background = useColorTransition(colors[color]);
   const animated = useAnimatedStyle(() => ({ backgroundColor: background.value }));
   return (
     <Animated.View

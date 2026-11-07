@@ -1,0 +1,2826 @@
+{
+  "source": "https://gashapon.jp",
+  "collectedAt": "2026-10-29",
+  "entries": [
+    {
+      "gachaId": 201,
+      "animeId": 1079,
+      "animeTitle": "하이큐!!",
+      "name": "【ジャンボカードダス/フラットガシャポン】劇場版ハイキュー!! ゴミ捨て場の決戦 ジャンボシールダス",
+      "nameKr": "[점보 카드 다스/플랫 가샤폰] 극장판 하이큐!! 쓰레기장 결전 점보 스티커 다스",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769846687000",
+      "releaseMonth": "2025-11",
+      "price": 200,
+      "items": [
+        {
+          "name": "デザインA",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_2.jpg",
+          "nameKr": "디자인 A"
+        },
+        {
+          "name": "デザインB",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_3.jpg",
+          "nameKr": "디자인 B"
+        },
+        {
+          "name": "デザインC",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_4.jpg",
+          "nameKr": "디자인 C"
+        },
+        {
+          "name": "デザインD",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_5.jpg",
+          "nameKr": "디자인 D"
+        },
+        {
+          "name": "デザインE",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_6.jpg",
+          "nameKr": "디자인 E"
+        },
+        {
+          "name": "デザインF",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_7.jpg",
+          "nameKr": "디자인 F"
+        },
+        {
+          "name": "デザインG",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_8.jpg",
+          "nameKr": "디자인 G"
+        },
+        {
+          "name": "デザインH",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_9.jpg",
+          "nameKr": "디자인 H"
+        },
+        {
+          "name": "デザインI",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_10.jpg",
+          "nameKr": "디자인 I"
+        },
+        {
+          "name": "デザインJ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_11.jpg",
+          "nameKr": "디자인 J"
+        },
+        {
+          "name": "デザインK",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_12.jpg",
+          "nameKr": "디자인 K"
+        },
+        {
+          "name": "デザインL",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000230967_13.jpg",
+          "nameKr": "디자인 L"
+        }
+      ]
+    },
+    {
+      "gachaId": 1062,
+      "animeId": 39,
+      "animeTitle": "건담",
+      "name": "機動戦士ガンダム ガシャポン戦士 ダイキャストガンケシ",
+      "nameKr": "기동전사 건담 가샤폰 전사 다이캐스트 건케시",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769927584000",
+      "releaseMonth": "2025-10",
+      "price": 500,
+      "items": [
+        {
+          "name": "RX-78-2 ガンダム(GOLD)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_2.jpg",
+          "nameKr": "RX-78-2 건담(GOLD)"
+        },
+        {
+          "name": "ガンキャノン(GOLD)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_3.jpg",
+          "nameKr": "건캐논(GOLD)"
+        },
+        {
+          "name": "ガンタンク(GOLD)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_4.jpg",
+          "nameKr": "건탱크(GOLD)"
+        },
+        {
+          "name": "シャア専用ザク(GOLD)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_5.jpg",
+          "nameKr": "샤아 전용 자쿠(GOLD)"
+        },
+        {
+          "name": "量産型ザク(GOLD)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_6.jpg",
+          "nameKr": "양산형 자쿠(GOLD)"
+        },
+        {
+          "name": "ザクレロ(GOLD)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_7.jpg",
+          "nameKr": "자쿠렐로(GOLD)"
+        },
+        {
+          "name": "RX-78-2 ガンダム(SILVER)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_8.jpg",
+          "nameKr": "RX-78-2 건담(SILVER)"
+        },
+        {
+          "name": "ガンキャノン(SILVER)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_9.jpg",
+          "nameKr": "건캐논(SILVER)"
+        },
+        {
+          "name": "ガンタンク(SILVER)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_10.jpg",
+          "nameKr": "건탱크(SILVER)"
+        },
+        {
+          "name": "シャア専用ザク(SILVER)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_11.jpg",
+          "nameKr": "샤아 전용 자쿠(SILVER)"
+        },
+        {
+          "name": "量産型ザク(SILVER)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_12.jpg",
+          "nameKr": "양산형 자쿠(SILVER)"
+        },
+        {
+          "name": "ザクレロ(SILVER)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237801_13.jpg",
+          "nameKr": "자쿠렐로(SILVER)"
+        }
+      ]
+    },
+    {
+      "gachaId": 1061,
+      "animeId": 347,
+      "animeTitle": "망각 배터리",
+      "name": "忘却バッテリー フォンタブ",
+      "nameKr": "망각 배터리 폰탭",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769917417000",
+      "releaseMonth": "2025-10",
+      "price": 400,
+      "items": [
+        {
+          "name": "清峰 葉流火",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237803_2.jpg",
+          "nameKr": "키요미네 하루카"
+        },
+        {
+          "name": "要 圭",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237803_3.jpg",
+          "nameKr": "카나메 케이"
+        },
+        {
+          "name": "藤堂 葵",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237803_4.jpg",
+          "nameKr": "토도 아오이"
+        },
+        {
+          "name": "千早 瞬平",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237803_5.jpg",
+          "nameKr": "치하야 슌페이"
+        },
+        {
+          "name": "山田 太郎",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237803_6.jpg",
+          "nameKr": "야마다 타로"
+        }
+      ]
+    },
+    {
+      "gachaId": 1060,
+      "animeId": 405,
+      "animeTitle": "바보와 시험과 소환수",
+      "name": "バカとテストと召喚獣 アクリルチャーム",
+      "nameKr": "바보와 시험과 소환수 아크릴 참",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769917363000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "吉井 明久",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237804_2.jpg",
+          "nameKr": "요시이 아키히사"
+        },
+        {
+          "name": "姫路 瑞希",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237804_3.jpg",
+          "nameKr": "히메지 미즈키"
+        },
+        {
+          "name": "島田 美波",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237804_4.jpg",
+          "nameKr": "시마다 미나미"
+        },
+        {
+          "name": "坂本 雄二",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237804_5.jpg",
+          "nameKr": "사카모토 유지"
+        },
+        {
+          "name": "木下 秀吉",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237804_6.jpg",
+          "nameKr": "키노시타 히데요시"
+        },
+        {
+          "name": "土屋 康太",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237804_7.jpg",
+          "nameKr": "츠치야 코타"
+        },
+        {
+          "name": "霧島 翔子",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237804_8.jpg",
+          "nameKr": "키리시마 쇼코"
+        }
+      ]
+    },
+    {
+      "gachaId": 1059,
+      "animeId": 995,
+      "animeTitle": "킹덤",
+      "name": "キングダム まちぼうけ3",
+      "nameKr": "킹덤 언제오려나(마치보우케) 3탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769916304000",
+      "releaseMonth": "2025-10",
+      "price": 400,
+      "items": [
+        {
+          "name": "桓騎",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237808_2.jpg",
+          "nameKr": "환기"
+        },
+        {
+          "name": "王翦",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237808_3.jpg",
+          "nameKr": "왕전"
+        },
+        {
+          "name": "楊端和",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237808_4.jpg",
+          "nameKr": "양단화"
+        },
+        {
+          "name": "バジオウ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237808_5.jpg",
+          "nameKr": "바지오"
+        }
+      ]
+    },
+    {
+      "gachaId": 1057,
+      "animeId": 420,
+      "animeTitle": "배틀스피리츠",
+      "name": "バトルスピリッツ アクリルチャームコレクション",
+      "nameKr": "배틀 스피리츠 아크릴 참 컬렉션",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769916182000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "超神星龍ジークヴルム・ノヴァ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_2.jpg",
+          "nameKr": "초신성룡 지크부름 노바"
+        },
+        {
+          "name": "宝瓶神機アクア・エリシオン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_3.jpg",
+          "nameKr": "보병신기 아쿠아 엘리시온"
+        },
+        {
+          "name": "砲凰竜フェニック・キャノン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_4.jpg",
+          "nameKr": "포황룡 페닉 캐논"
+        },
+        {
+          "name": "魔導双神ジェミナイズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_5.jpg",
+          "nameKr": "마도쌍신 제미나이즈"
+        },
+        {
+          "name": "双魚賊神ピスケガレオン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_6.jpg",
+          "nameKr": "쌍어적신 피스케갈레온"
+        },
+        {
+          "name": "天秤造神リブラ・ゴレム",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_7.jpg",
+          "nameKr": "천칭조신 리브라 골렘"
+        },
+        {
+          "name": "巨蟹武神キャンサード",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_8.jpg",
+          "nameKr": "거해무신 캔서드"
+        },
+        {
+          "name": "金牛龍神ドラゴニック・タウラス",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_9.jpg",
+          "nameKr": "금우룡신 드래고닉 타우러스"
+        },
+        {
+          "name": "堕天神龍ヴィーナ・ルシファー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_10.jpg",
+          "nameKr": "타천신룡 비나 루시퍼"
+        },
+        {
+          "name": "魔羯邪神シュタイン・ボルグ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_11.jpg",
+          "nameKr": "마갈사신 슈타인 볼그"
+        },
+        {
+          "name": "天蠍神騎スコル・スピア",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_12.jpg",
+          "nameKr": "천갈신기 스콜 스피어"
+        },
+        {
+          "name": "戦神乙女ヴィエルジェ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_13.jpg",
+          "nameKr": "전신을녀 비에르제"
+        },
+        {
+          "name": "闇の聖剣",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_14.jpg",
+          "nameKr": "어둠의 성검"
+        },
+        {
+          "name": "光龍騎神サジット・アポロドラゴン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_15.jpg",
+          "nameKr": "광룡기신 사지트 아폴로드래곤"
+        },
+        {
+          "name": "デルタバリア",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_16.jpg",
+          "nameKr": "델타 배리어"
+        },
+        {
+          "name": "白羊樹神セフィロ・アリエス",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_17.jpg",
+          "nameKr": "백양수신 세피로 아리에스"
+        },
+        {
+          "name": "太陽神龍ライジング・アポロドラゴン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_18.jpg",
+          "nameKr": "태양신룡 라이징 아폴로드래곤"
+        },
+        {
+          "name": "獅機龍神ストライクヴルム・レオ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_19.jpg",
+          "nameKr": "사기룡신 스트라이크부름 레오"
+        },
+        {
+          "name": "滅神星龍ダークヴルム・ノヴァ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_20.jpg",
+          "nameKr": "멸신성룡 다크부름 노바"
+        },
+        {
+          "name": "牙皇ケルベロード",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237811_21.jpg",
+          "nameKr": "아황 케르베로드"
+        }
+      ]
+    },
+    {
+      "gachaId": 1054,
+      "animeId": 1055,
+      "animeTitle": "프리파라",
+      "name": "アイカツ！×プリパラ めじるしアクセサリー",
+      "nameKr": "아이엠스타! 꿈의 오디션!×프리파라 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769911156000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "大空あかり",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_2.jpg",
+          "nameKr": "오오조라 아카리"
+        },
+        {
+          "name": "氷上スミレ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_3.jpg",
+          "nameKr": "히카미 스미레"
+        },
+        {
+          "name": "新条ひなき",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_4.jpg",
+          "nameKr": "신조 히나키"
+        },
+        {
+          "name": "真中らぁら",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_5.jpg",
+          "nameKr": "마나카 라라"
+        },
+        {
+          "name": "南みれぃ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_6.jpg",
+          "nameKr": "미나미 미레이"
+        },
+        {
+          "name": "北条そふぃ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237817_7.jpg",
+          "nameKr": "호조 소피"
+        }
+      ]
+    },
+    {
+      "gachaId": 1051,
+      "animeId": 120,
+      "animeTitle": "꼬마마법사 레미",
+      "name": "おジャ魔女どれみ めじるしアクセサリー4",
+      "nameKr": "꼬마 마법사 레미 메지루시 액세서리 4",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769898266000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "見習い服 どれみ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_2.jpg",
+          "nameKr": "견습복 레미"
+        },
+        {
+          "name": "見習い服 はづき",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_3.jpg",
+          "nameKr": "견습복 장메이"
+        },
+        {
+          "name": "見習い服 あいこ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_4.jpg",
+          "nameKr": "견습복 유사랑"
+        },
+        {
+          "name": "クルリンコール",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_5.jpg",
+          "nameKr": "쿠루링 콜"
+        },
+        {
+          "name": "ハナ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_6.jpg",
+          "nameKr": "오하나"
+        },
+        {
+          "name": "パティシエ日記",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_7.jpg",
+          "nameKr": "파티시에 일기"
+        },
+        {
+          "name": "おんぷ（ハムスター）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_8.jpg",
+          "nameKr": "진보라(햄스터)"
+        },
+        {
+          "name": "ももこ（ハムスター）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_9.jpg",
+          "nameKr": "나모모(햄스터)"
+        },
+        {
+          "name": "ハナ（ハムスター）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237824_10.jpg",
+          "nameKr": "오하나(햄스터)"
+        }
+      ]
+    },
+    {
+      "gachaId": 1050,
+      "animeId": 106,
+      "animeTitle": "근육맨",
+      "name": "キン肉マン グレートマッスル ブリスターチャームコレクション",
+      "nameKr": "근육맨 그레이트 머슬 블리스터 참 컬렉션",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769897801000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "キン肉マン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237825_2.jpg",
+          "nameKr": "근육맨"
+        },
+        {
+          "name": "テリーマン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237825_3.jpg",
+          "nameKr": "테리맨"
+        },
+        {
+          "name": "ロビンマスク",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237825_4.jpg",
+          "nameKr": "로빈 마스크"
+        },
+        {
+          "name": "ブロッケンJr.",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237825_5.jpg",
+          "nameKr": "브로켄 Jr."
+        },
+        {
+          "name": "ザ・ニンジャ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237825_6.jpg",
+          "nameKr": "더 닌자"
+        },
+        {
+          "name": "悪魔将軍",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237825_7.jpg",
+          "nameKr": "악마장군"
+        }
+      ]
+    },
+    {
+      "gachaId": 1049,
+      "animeId": 259,
+      "animeTitle": "드래곤볼",
+      "name": "DRAGON BALL Comics Charm Collection02",
+      "nameKr": "드래곤볼 코믹스 참 컬렉션 02",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769897757000",
+      "releaseMonth": "2025-10",
+      "price": 400,
+      "items": [
+        {
+          "name": "巻十五",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_2.jpg",
+          "nameKr": "15권"
+        },
+        {
+          "name": "巻十六",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_3.jpg",
+          "nameKr": "16권"
+        },
+        {
+          "name": "巻十七",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_4.jpg",
+          "nameKr": "17권"
+        },
+        {
+          "name": "巻十八",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_5.jpg",
+          "nameKr": "18권"
+        },
+        {
+          "name": "巻十九",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_6.jpg",
+          "nameKr": "19권"
+        },
+        {
+          "name": "巻二十",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_7.jpg",
+          "nameKr": "20권"
+        },
+        {
+          "name": "巻二十一",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_8.jpg",
+          "nameKr": "21권"
+        },
+        {
+          "name": "巻二十二",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_9.jpg",
+          "nameKr": "22권"
+        },
+        {
+          "name": "巻二十三",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_10.jpg",
+          "nameKr": "23권"
+        },
+        {
+          "name": "巻二十四",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_11.jpg",
+          "nameKr": "24권"
+        },
+        {
+          "name": "巻二十五",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_12.jpg",
+          "nameKr": "25권"
+        },
+        {
+          "name": "巻二十六",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_13.jpg",
+          "nameKr": "26권"
+        },
+        {
+          "name": "巻二十七",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_14.jpg",
+          "nameKr": "27권"
+        },
+        {
+          "name": "巻二十八",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236223_15.jpg",
+          "nameKr": "28권"
+        }
+      ]
+    },
+    {
+      "gachaId": 1043,
+      "animeId": 844,
+      "animeTitle": "장송의 프리렌",
+      "name": "葬送のフリーレン めじるしアクセサリー",
+      "nameKr": "장송의 프리렌 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769889837000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "フリーレン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_2.jpg",
+          "nameKr": "프리렌"
+        },
+        {
+          "name": "フェルン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_3.jpg",
+          "nameKr": "페른"
+        },
+        {
+          "name": "シュタルク",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_4.jpg",
+          "nameKr": "슈타르크"
+        },
+        {
+          "name": "ザイン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_5.jpg",
+          "nameKr": "자인"
+        },
+        {
+          "name": "ヒンメル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_6.jpg",
+          "nameKr": "힘멜"
+        },
+        {
+          "name": "ハイター",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_7.jpg",
+          "nameKr": "하이터"
+        },
+        {
+          "name": "アイゼン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_8.jpg",
+          "nameKr": "아이젠"
+        },
+        {
+          "name": "アウラ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237839_9.jpg",
+          "nameKr": "아우라"
+        }
+      ]
+    },
+    {
+      "gachaId": 1040,
+      "animeId": 570,
+      "animeTitle": "스파이 패밀리",
+      "name": "SPY×FAMILY めじるしアクセサリー",
+      "nameKr": "스파이 패밀리 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769889011000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "アーニャ(A)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237847_2.jpg",
+          "nameKr": "아냐(A)"
+        },
+        {
+          "name": "アーニャ(B)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237847_3.jpg",
+          "nameKr": "아냐(B)"
+        },
+        {
+          "name": "アーニャ(C)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237847_4.jpg",
+          "nameKr": "아냐(C)"
+        },
+        {
+          "name": "ダミアン・デズモンド",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237847_5.jpg",
+          "nameKr": "데미안 데스몬드"
+        },
+        {
+          "name": "ベッキー・ブラックベル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237847_6.jpg",
+          "nameKr": "베키 블랙벨"
+        }
+      ]
+    },
+    {
+      "gachaId": 1039,
+      "animeId": 462,
+      "animeTitle": "블루 록",
+      "name": "ブルーロック ねむらせ隊 寝起きver.",
+      "nameKr": "블루락 네무라세타이 잠에서 깬 버전",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769888816000",
+      "releaseMonth": "2025-10",
+      "price": 400,
+      "items": [
+        {
+          "name": "潔 世一",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237849_2.jpg",
+          "nameKr": "이사기 요이치"
+        },
+        {
+          "name": "蜂楽 廻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237849_3.jpg",
+          "nameKr": "바치라 메구루"
+        },
+        {
+          "name": "千切 豹馬",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237849_4.jpg",
+          "nameKr": "치기리 효마"
+        },
+        {
+          "name": "凪 誠士郎",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237849_5.jpg",
+          "nameKr": "나기 세이시로"
+        },
+        {
+          "name": "糸師 凛",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237849_6.jpg",
+          "nameKr": "이토시 린"
+        }
+      ]
+    },
+    {
+      "gachaId": 1038,
+      "animeId": 141,
+      "animeTitle": "나의 히어로 아카데미아",
+      "name": "僕のヒーローアカデミア めじるしアクセサリー2",
+      "nameKr": "나의 히어로 아카데미아 메지루시 액세서리 2탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769888793000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "緑谷出久",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_2.jpg",
+          "nameKr": "미도리야 이즈쿠"
+        },
+        {
+          "name": "爆豪勝己",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_3.jpg",
+          "nameKr": "바쿠고 카츠키"
+        },
+        {
+          "name": "麗日お茶子",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_4.jpg",
+          "nameKr": "우라라카 오차코"
+        },
+        {
+          "name": "飯田天哉",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_5.jpg",
+          "nameKr": "이이다 텐야"
+        },
+        {
+          "name": "轟焦凍",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_6.jpg",
+          "nameKr": "토도로키 쇼토"
+        },
+        {
+          "name": "蛙吹梅雨",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_7.jpg",
+          "nameKr": "아스이 츠유"
+        },
+        {
+          "name": "死柄木弔",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_8.jpg",
+          "nameKr": "시가라키 토무라"
+        },
+        {
+          "name": "荼毘",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_9.jpg",
+          "nameKr": "다비"
+        },
+        {
+          "name": "トガヒミコ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237928_10.jpg",
+          "nameKr": "토가 히미코"
+        }
+      ]
+    },
+    {
+      "gachaId": 1032,
+      "animeId": 315,
+      "animeTitle": "마법기사 레이어스",
+      "name": "魔法騎士レイアース ビデオテープミニチュアチャームコレクション02",
+      "nameKr": "마법기사 레이어스 비디오테이프 미니어처 참 컬렉션 02",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769875779000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "TVアニメ第二章1巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_2.jpg",
+          "nameKr": "TV 애니메이션 제2장 1권"
+        },
+        {
+          "name": "TVアニメ第二章2巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_3.jpg",
+          "nameKr": "TV 애니메이션 제2장 2권"
+        },
+        {
+          "name": "TVアニメ第二章3巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_4.jpg",
+          "nameKr": "TV 애니메이션 제2장 3권"
+        },
+        {
+          "name": "TVアニメ第二章4巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_5.jpg",
+          "nameKr": "TV 애니메이션 제2장 4권"
+        },
+        {
+          "name": "TVアニメ第二章5巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_6.jpg",
+          "nameKr": "TV 애니메이션 제2장 5권"
+        },
+        {
+          "name": "TVアニメ第二章6巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_7.jpg",
+          "nameKr": "TV 애니메이션 제2장 6권"
+        },
+        {
+          "name": "TVアニメ第二章7巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_8.jpg",
+          "nameKr": "TV 애니메이션 제2장 7권"
+        },
+        {
+          "name": "TVアニメ第二章8巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_9.jpg",
+          "nameKr": "TV 애니메이션 제2장 8권"
+        },
+        {
+          "name": "TVアニメ第二章9巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_10.jpg",
+          "nameKr": "TV 애니메이션 제2장 9권"
+        },
+        {
+          "name": "TVアニメ第二章10巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237862_11.jpg",
+          "nameKr": "TV 애니메이션 제2장 10권"
+        }
+      ]
+    },
+    {
+      "gachaId": 1026,
+      "animeId": 879,
+      "animeTitle": "죠죠의 기묘한 모험",
+      "name": "ジョジョの奇妙な冒険 カプセルフィギュアコレクション GOLD WIND",
+      "nameKr": "조조의 기묘한 모험 캡슐 피규어 컬렉션 황금의 바람",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769846885000",
+      "releaseMonth": "2025-10",
+      "price": 500,
+      "items": [
+        {
+          "name": "ジョルノ・ジョバァーナ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237885_2.jpg",
+          "nameKr": "죠르노 죠바나"
+        },
+        {
+          "name": "ジャン・ピエール・ポルナレフ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237885_3.jpg",
+          "nameKr": "장 피에르 폴나레프"
+        },
+        {
+          "name": "ポルポ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237885_4.jpg",
+          "nameKr": "폴포"
+        },
+        {
+          "name": "B・S",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237885_5.jpg",
+          "nameKr": "B・S"
+        },
+        {
+          "name": "C・J",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237885_6.jpg",
+          "nameKr": "C・J"
+        }
+      ]
+    },
+    {
+      "gachaId": 1023,
+      "animeId": 899,
+      "animeTitle": "짱구는 못말려",
+      "name": "ねぐせついてるよ。 クレヨンしんちゃん",
+      "nameKr": "졸고 있어 짱구는 못말려 ",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769842375000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "しんちゃん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237892_2.jpg",
+          "nameKr": "짱구"
+        },
+        {
+          "name": "シロ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237892_3.jpg",
+          "nameKr": "흰둥이"
+        },
+        {
+          "name": "かざまくん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237892_4.jpg",
+          "nameKr": "철수"
+        },
+        {
+          "name": "ネネちゃん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237892_5.jpg",
+          "nameKr": "유리"
+        },
+        {
+          "name": "マサオくん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237892_6.jpg",
+          "nameKr": "훈이"
+        },
+        {
+          "name": "ボーちゃん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237892_7.jpg",
+          "nameKr": "맹구"
+        }
+      ]
+    },
+    {
+      "gachaId": 1022,
+      "animeId": 360,
+      "animeTitle": "메이드 인 어비스",
+      "name": "メイドインアビス とろり～んマスコット２",
+      "nameKr": "메이드 인 어비스 주르륵(토로린)~ 마스코트 2탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769842139000",
+      "releaseMonth": "2025-10",
+      "price": 500,
+      "items": [
+        {
+          "name": "レグ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237894_2.jpg",
+          "nameKr": "레그"
+        },
+        {
+          "name": "プルシュカ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237894_3.jpg",
+          "nameKr": "프루슈카"
+        },
+        {
+          "name": "ナナチ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237894_4.jpg",
+          "nameKr": "나나치"
+        },
+        {
+          "name": "ミーティ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237894_5.jpg",
+          "nameKr": "미티"
+        }
+      ]
+    },
+    {
+      "gachaId": 1020,
+      "animeId": 949,
+      "animeTitle": "카드캡터 사쿠라",
+      "name": "カードキャプターさくら Q posket（キューポスケット）ミニチュアコレクション2",
+      "nameKr": "카드캡터 체리 큐포스켓 미니어처 컬렉션 2탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769832550000",
+      "releaseMonth": "2025-10",
+      "price": 500,
+      "items": [
+        {
+          "name": "木之本 桜-クロウカード編-",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237929_2.jpg",
+          "nameKr": "유체리 -크로우 카드 편-"
+        },
+        {
+          "name": "木之本 桜 A-クリアカード編-",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237929_3.jpg",
+          "nameKr": "유체리 A -클리어 카드 편-"
+        },
+        {
+          "name": "木之本 桜 B-クリアカード編-",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237929_4.jpg",
+          "nameKr": "유체리 B -클리어 카드 편-"
+        },
+        {
+          "name": "大道寺 知世-クリアカード編-",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237929_5.jpg",
+          "nameKr": "신지수 -클리어 카드 편-"
+        }
+      ]
+    },
+    {
+      "gachaId": 1017,
+      "animeId": 399,
+      "animeTitle": "믿었던 동료들에게 던전 오지에서 살해당할 뻔했지만 기프트 『무한 가챠』로 레벨 9999의 동료들을 손에 넣어 전 파티 멤버와 세계에 복수& 『참교육!』합니다!",
+      "name": "信じていた仲間達にダンジョン奥地で殺されかけたがギフト『無限ガチャ』でレベル9999の仲間達を手に入れて元パーティーメンバーと世界に復讐＆『ざまぁ！』します！ カプセルラバーマスコット",
+      "nameKr": "믿었던 동료들에게 던전 오지에서 살해당할 뻔했지만 기프트 『무한 뽑기』로 레벨 9999의 동료들을 손에 넣어 전 파티 멤버와 세계에 복수&『참교육!』 합니다! 캡슐 고무 마스코트",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769739477000",
+      "releaseMonth": "2025-10",
+      "price": 300,
+      "items": [
+        {
+          "name": "ライト",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_2.jpg",
+          "nameKr": "라이트"
+        },
+        {
+          "name": "メイ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_3.jpg",
+          "nameKr": "메이"
+        },
+        {
+          "name": "ナズナ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_4.jpg",
+          "nameKr": "나즈나"
+        },
+        {
+          "name": "アオユキ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_5.jpg",
+          "nameKr": "아오유키"
+        },
+        {
+          "name": "エリー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_6.jpg",
+          "nameKr": "엘리"
+        },
+        {
+          "name": "ネムム",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_7.jpg",
+          "nameKr": "네무무"
+        },
+        {
+          "name": "ゴールド",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_8.jpg",
+          "nameKr": "골드"
+        },
+        {
+          "name": "アイスヒート",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_9.jpg",
+          "nameKr": "아이스히트"
+        },
+        {
+          "name": "スズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_10.jpg",
+          "nameKr": "스즈"
+        },
+        {
+          "name": "ダーク(ライト)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237908_11.jpg",
+          "nameKr": "다크(라이트)"
+        }
+      ]
+    },
+    {
+      "gachaId": 1004,
+      "animeId": 29,
+      "animeTitle": "개구리 중사 케로로",
+      "name": "ケロロ軍曹 ケロロボール",
+      "nameKr": "케로로 중사 케로로  케로로공",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769842092000",
+      "releaseMonth": "2025-10",
+      "price": 400,
+      "items": [
+        {
+          "name": "ケロロ軍曹",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237895_2.jpg",
+          "nameKr": "케로로 중사"
+        },
+        {
+          "name": "タママ二等兵",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237895_3.jpg",
+          "nameKr": "타마마 이등병"
+        },
+        {
+          "name": "ギロロ伍長",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237895_4.jpg",
+          "nameKr": "기로로 하사"
+        },
+        {
+          "name": "クルル曹長",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237895_5.jpg",
+          "nameKr": "쿠루루 상사"
+        },
+        {
+          "name": "ドロロ兵長",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000237895_6.jpg",
+          "nameKr": "도로로 병장"
+        }
+      ]
+    },
+    {
+      "gachaId": 1201,
+      "animeId": 62,
+      "animeTitle": "고스트 바둑왕",
+      "name": "ヒカルの碁 コミックスチャーム",
+      "nameKr": "히카루의 바둑 코믹스 참",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769889028000",
+      "releaseMonth": "2025-09",
+      "price": 300,
+      "items": [
+        {
+          "name": "1巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_2.jpg",
+          "nameKr": "1권"
+        },
+        {
+          "name": "2巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_3.jpg",
+          "nameKr": "2권"
+        },
+        {
+          "name": "3巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_4.jpg",
+          "nameKr": "3권"
+        },
+        {
+          "name": "4巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_5.jpg",
+          "nameKr": "4권"
+        },
+        {
+          "name": "5巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_6.jpg",
+          "nameKr": "5권"
+        },
+        {
+          "name": "6巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_7.jpg",
+          "nameKr": "6권"
+        },
+        {
+          "name": "7巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_8.jpg",
+          "nameKr": "7권"
+        },
+        {
+          "name": "8巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_9.jpg",
+          "nameKr": "8권"
+        },
+        {
+          "name": "9巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_10.jpg",
+          "nameKr": "9권"
+        },
+        {
+          "name": "10巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_11.jpg",
+          "nameKr": "10권"
+        },
+        {
+          "name": "11巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_12.jpg",
+          "nameKr": "11권"
+        },
+        {
+          "name": "12巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_13.jpg",
+          "nameKr": "12권"
+        },
+        {
+          "name": "13巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_14.jpg",
+          "nameKr": "13권"
+        },
+        {
+          "name": "14巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_15.jpg",
+          "nameKr": "14권"
+        },
+        {
+          "name": "15巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_16.jpg",
+          "nameKr": "15권"
+        },
+        {
+          "name": "16巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_17.jpg",
+          "nameKr": "16권"
+        },
+        {
+          "name": "17巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_18.jpg",
+          "nameKr": "17권"
+        },
+        {
+          "name": "18巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_19.jpg",
+          "nameKr": "18권"
+        },
+        {
+          "name": "19巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_20.jpg",
+          "nameKr": "19권"
+        },
+        {
+          "name": "20巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_21.jpg",
+          "nameKr": "20권"
+        },
+        {
+          "name": "21巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_22.jpg",
+          "nameKr": "21권"
+        },
+        {
+          "name": "22巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_23.jpg",
+          "nameKr": "22권"
+        },
+        {
+          "name": "23巻",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235934_24.jpg",
+          "nameKr": "23권"
+        }
+      ]
+    },
+    {
+      "gachaId": 1174,
+      "animeId": 1054,
+      "animeTitle": "프리큐어",
+      "name": "プリキュアオールスターズ ミニチュアライトセレクション",
+      "nameKr": "프리큐어 올스타즈 미니어처 라이트 셀렉션",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769890123000",
+      "releaseMonth": "2025-09",
+      "price": 500,
+      "items": [
+        {
+          "name": "カードコミューン(キュアブラック)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235925_2.jpg",
+          "nameKr": "카드 커뮨(큐어 블랙)"
+        },
+        {
+          "name": "カードコミューン(キュアホワイト)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235925_3.jpg",
+          "nameKr": "카드 커뮨(큐어 화이트)"
+        },
+        {
+          "name": "変身ブローチ キュアモジューレ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235925_4.jpg",
+          "nameKr": "변신 브로치 큐어 모쥴레"
+        },
+        {
+          "name": "スターカラーペンダント",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235925_5.jpg",
+          "nameKr": "스타 컬러 펜던트"
+        }
+      ]
+    },
+    {
+      "gachaId": 1156,
+      "animeId": 766,
+      "animeTitle": "원피스",
+      "name": "ONE PIECE めじるしアクセサリー POPstyle!2",
+      "nameKr": "원피스 메지루시 악세사리 POPstyle! 2탄 ",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769866197000",
+      "releaseMonth": "2025-09",
+      "price": 300,
+      "items": [
+        {
+          "name": "ニコ・ロビン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235958_2.jpg",
+          "nameKr": "니코 로빈"
+        },
+        {
+          "name": "ブルック",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235958_3.jpg",
+          "nameKr": "브룩"
+        },
+        {
+          "name": "クロコダイル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235958_4.jpg",
+          "nameKr": "크로커다일"
+        },
+        {
+          "name": "ポートガス・D・エース",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235958_5.jpg",
+          "nameKr": "포트거스 D. 에이스"
+        },
+        {
+          "name": "ユースタス・キッド",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235958_6.jpg",
+          "nameKr": "유스타스 키드"
+        }
+      ]
+    },
+    {
+      "gachaId": 1132,
+      "animeId": 503,
+      "animeTitle": "새벽의 연화",
+      "name": "暁のヨナ カプセルラバーマスコット",
+      "nameKr": "새벽의 연화 캡슐 고무 마스코트",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769822841000",
+      "releaseMonth": "2025-09",
+      "price": 300,
+      "items": [
+        {
+          "name": "ヨナ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_2.jpg",
+          "nameKr": "요나"
+        },
+        {
+          "name": "ハク",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_3.jpg",
+          "nameKr": "하크"
+        },
+        {
+          "name": "スウォン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_4.jpg",
+          "nameKr": "수원"
+        },
+        {
+          "name": "キジャ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_5.jpg",
+          "nameKr": "키자"
+        },
+        {
+          "name": "シンア＆アオ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_6.jpg",
+          "nameKr": "신아 & 아오"
+        },
+        {
+          "name": "ジェハ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_7.jpg",
+          "nameKr": "제하"
+        },
+        {
+          "name": "ゼノ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_8.jpg",
+          "nameKr": "제노"
+        },
+        {
+          "name": "ユン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_9.jpg",
+          "nameKr": "윤"
+        },
+        {
+          "name": "ヨナ&ハク&スウォン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235990_10.jpg",
+          "nameKr": "요나 & 하크 & 수원"
+        }
+      ]
+    },
+    {
+      "gachaId": 1126,
+      "animeId": 232,
+      "animeTitle": "도라에몽",
+      "name": "ドラえもん 刺繍チャーム",
+      "nameKr": "도라에몽 자수 참",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769934940000",
+      "releaseMonth": "2025-09",
+      "price": 300,
+      "items": [
+        {
+          "name": "ドラえもん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235898_2.jpg",
+          "nameKr": "도라에몽"
+        },
+        {
+          "name": "のび太",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235898_3.jpg",
+          "nameKr": "노진구"
+        },
+        {
+          "name": "ジャイアン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235898_4.jpg",
+          "nameKr": "퉁퉁이"
+        },
+        {
+          "name": "スネ夫",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235898_5.jpg",
+          "nameKr": "비실이"
+        },
+        {
+          "name": "しずか",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235898_6.jpg",
+          "nameKr": "이슬이"
+        },
+        {
+          "name": "ドラミ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235898_7.jpg",
+          "nameKr": "도라미"
+        }
+      ]
+    },
+    {
+      "gachaId": 1118,
+      "animeId": 211,
+      "animeTitle": "단다단",
+      "name": "TVアニメ 『ダンダダン』 めじるしアクセサリー",
+      "nameKr": "TV 애니메이션 『단다단』 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769897702000",
+      "releaseMonth": "2025-09",
+      "price": 300,
+      "items": [
+        {
+          "name": "モモ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235916_2.jpg",
+          "nameKr": "모모"
+        },
+        {
+          "name": "オカルン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235916_3.jpg",
+          "nameKr": "오카룽"
+        },
+        {
+          "name": "オカルン(変身)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235916_4.jpg",
+          "nameKr": "오카룽(변신)"
+        },
+        {
+          "name": "ターボババア(招き猫)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235916_5.jpg",
+          "nameKr": "터보 할멈(마네키네코)"
+        },
+        {
+          "name": "アイラ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235916_6.jpg",
+          "nameKr": "아이라"
+        },
+        {
+          "name": "ジジ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235916_7.jpg",
+          "nameKr": "지지"
+        },
+        {
+          "name": "セルポ星人",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000235916_8.jpg",
+          "nameKr": "세르포 성인"
+        }
+      ]
+    },
+    {
+      "gachaId": 1106,
+      "animeId": 921,
+      "animeTitle": "체인소 맨",
+      "name": "【ジャンボカードダス/フラットガシャポン】劇場版『チェンソーマン レゼ篇』 miniクリアファイルコレクション",
+      "nameKr": "[점보 카드 다스/플랫 가샤폰] 극장판 『체인소 맨: 레제편』 미니 클리어 파일 컬렉션",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769846717000",
+      "releaseMonth": "2025-09",
+      "price": 200,
+      "items": [
+        {
+          "name": "デザインA",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_2.jpg",
+          "nameKr": "디자인 A"
+        },
+        {
+          "name": "デザインB",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_3.jpg",
+          "nameKr": "디자인 B"
+        },
+        {
+          "name": "デザインC",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_4.jpg",
+          "nameKr": "디자인 C"
+        },
+        {
+          "name": "デザインD",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_5.jpg",
+          "nameKr": "디자인 D"
+        },
+        {
+          "name": "デザインE",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_6.jpg",
+          "nameKr": "디자인 E"
+        },
+        {
+          "name": "デザインF",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_7.jpg",
+          "nameKr": "디자인 F"
+        },
+        {
+          "name": "デザインG",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_8.jpg",
+          "nameKr": "디자인 G"
+        },
+        {
+          "name": "デザインH",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000236017_9.jpg",
+          "nameKr": "디자인 H"
+        }
+      ]
+    },
+    {
+      "gachaId": 634,
+      "animeId": 941,
+      "animeTitle": "치이카와",
+      "name": "ちいかわ スヤスヤ Zzz... ますこっと2",
+      "nameKr": "먼작귀 새근새근 Zzz... 마스코트 2탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4570118209160000",
+      "releaseMonth": "2025-09",
+      "price": 300,
+      "items": [
+        {
+          "name": "ちいかわ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000226637_2.jpg",
+          "nameKr": "치이카와"
+        },
+        {
+          "name": "ハチワレ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000226637_3.jpg",
+          "nameKr": "하치와레"
+        },
+        {
+          "name": "うさぎ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000226637_4.jpg",
+          "nameKr": "우사기"
+        },
+        {
+          "name": "モモンガ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000226637_5.jpg",
+          "nameKr": "모몽가"
+        }
+      ]
+    },
+    {
+      "gachaId": 1219,
+      "animeId": 780,
+      "animeTitle": "유루캠△",
+      "name": "ゆるキャン△ SEASON3 机deキャンプ",
+      "nameKr": "유루캠△ 시즌3 책상 위 캠핑",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4570118129178000",
+      "releaseMonth": "2025-08",
+      "price": 500,
+      "items": [
+        {
+          "name": "各務原なでしこ＋ランプ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234211_2.jpg",
+          "nameKr": "카가미하라 나데시코 + 랜턴"
+        },
+        {
+          "name": "志摩リン＋焚火グリル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234211_3.jpg",
+          "nameKr": "시마 린 + 모닥불 그릴"
+        },
+        {
+          "name": "土岐綾乃＋ストーブ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234211_4.jpg",
+          "nameKr": "토키 아야노 + 스토브"
+        },
+        {
+          "name": "大垣千明＋チェア",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234211_5.jpg",
+          "nameKr": "오가키 치아키 + 의자"
+        },
+        {
+          "name": "犬山あおい＋チェア",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234211_6.jpg",
+          "nameKr": "이누야마 아오이 + 의자"
+        },
+        {
+          "name": "斉藤恵那＋ちくわ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234211_7.jpg",
+          "nameKr": "사이토 에나 + 치쿠와"
+        }
+      ]
+    },
+    {
+      "gachaId": 818,
+      "animeId": 1349,
+      "animeTitle": "가면라이더",
+      "name": "まちぼうけ 仮面ライダーの場合",
+      "nameKr": "가면라이더 언제오려나(마치보우케)",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769739521000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "仮面ライダーファイズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223523_2.jpg",
+          "nameKr": "가면라이더 파이즈"
+        },
+        {
+          "name": "仮面ライダーカブト",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223523_3.jpg",
+          "nameKr": "가면라이더 카부토"
+        },
+        {
+          "name": "仮面ライダー電王",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223523_4.jpg",
+          "nameKr": "가면라이더 덴오"
+        },
+        {
+          "name": "仮面ライダーオーズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223523_5.jpg",
+          "nameKr": "가면라이더 오즈"
+        }
+      ]
+    },
+    {
+      "gachaId": 535,
+      "animeId": 1372,
+      "animeTitle": "아이엠스타 -꿈의 오디션!-",
+      "name": "【フラットガシャポン】アイカツ！ クリアファイル",
+      "nameKr": "[플랫 가샤폰] 아이엠스타! 꿈의 오디션! 클리어 파일",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769866616000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "コーデ集：星宮 いちご",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_2.jpg",
+          "nameKr": "코디집: 라임"
+        },
+        {
+          "name": "コーデ集：霧矢 あおい",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_3.jpg",
+          "nameKr": "코디집: 마린"
+        },
+        {
+          "name": "コーデ集：紫吹 蘭",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_4.jpg",
+          "nameKr": "코디집: 보라"
+        },
+        {
+          "name": "コーデ集：有栖川 おとめ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_5.jpg",
+          "nameKr": "코디집: 슈"
+        },
+        {
+          "name": "コーデ集：藤堂 ユリカ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_6.jpg",
+          "nameKr": "코디집: 유리"
+        },
+        {
+          "name": "アイカツ！カードデザイン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_7.jpg",
+          "nameKr": "아이엠스타! 카드 디자인"
+        },
+        {
+          "name": "STAR☆ANIS",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_8.jpg",
+          "nameKr": "STAR☆ANIS"
+        },
+        {
+          "name": "シークレット",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000227858_9.jpg",
+          "nameKr": "시크릿"
+        }
+      ]
+    },
+    {
+      "gachaId": 106,
+      "animeId": 1376,
+      "animeTitle": "슈퍼 전대",
+      "name": "スーパー戦隊シリーズ レジェンドカプセルラバーマスコット vol.2",
+      "nameKr": "슈퍼전대 시리즈 레전드 캡슐 고무 마스코트 vol.2",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769889653000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "アカレンジャー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_2.jpg",
+          "nameKr": "아카레인저"
+        },
+        {
+          "name": "レッドレーサー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_3.jpg",
+          "nameKr": "레드 레이서"
+        },
+        {
+          "name": "ティラノレンジャー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_4.jpg",
+          "nameKr": "티라노 레인저"
+        },
+        {
+          "name": "ガオレッド",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_5.jpg",
+          "nameKr": "가오 레드"
+        },
+        {
+          "name": "マジレッド",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_6.jpg",
+          "nameKr": "매지 레드"
+        },
+        {
+          "name": "ルパンレッド",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_7.jpg",
+          "nameKr": "루팡 레드"
+        },
+        {
+          "name": "パトレン1号",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_8.jpg",
+          "nameKr": "패트렌 1호"
+        },
+        {
+          "name": "ゼンカイザー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_9.jpg",
+          "nameKr": "젠카이저"
+        },
+        {
+          "name": "クワガタオージャー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_10.jpg",
+          "nameKr": "쿠와가타 오저"
+        },
+        {
+          "name": "ゴジュウウルフ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234108_11.jpg",
+          "nameKr": "고쥬 울프"
+        }
+      ]
+    },
+    {
+      "gachaId": 97,
+      "animeId": 1204,
+      "animeTitle": "호빵맨",
+      "name": "それいけ！アンパンマン おっきなぷらりんアンパンマン7",
+      "nameKr": "날아라! 호빵맨 크고 둥근 호빵맨 7탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769866753000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "アンパンマン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_2.jpg",
+          "nameKr": "호빵맨"
+        },
+        {
+          "name": "ばいきんまん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_3.jpg",
+          "nameKr": "세균맨"
+        },
+        {
+          "name": "ドキンちゃん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_4.jpg",
+          "nameKr": "짤랑이"
+        },
+        {
+          "name": "あかちゃんまん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_5.jpg",
+          "nameKr": "베이비맨"
+        },
+        {
+          "name": "クリームパンダ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234128_6.jpg",
+          "nameKr": "크림판다"
+        }
+      ]
+    },
+    {
+      "gachaId": 93,
+      "animeId": 1373,
+      "animeTitle": "괴혼",
+      "name": "めじるしアクセサリー 塊魂3",
+      "nameKr": "메지루시 액세서리 괴혼 3탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769866371000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "ジュン & 塊（プレート）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234134_2.jpg",
+          "nameKr": "준 & 괴(플레이트)"
+        },
+        {
+          "name": "クロ & 塊（プレート）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234134_3.jpg",
+          "nameKr": "쿠로 & 괴(플레이트)"
+        },
+        {
+          "name": "王子 & セルフィー（プレート）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234134_4.jpg",
+          "nameKr": "왕자 & 셀피(플레이트)"
+        },
+        {
+          "name": "ワーイ & 塊（プレート）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234134_5.jpg",
+          "nameKr": "와이 & 괴(플레이트)"
+        },
+        {
+          "name": "ラ・マーン & 塊（プレート）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234134_6.jpg",
+          "nameKr": "라 만 & 괴(플레이트)"
+        }
+      ]
+    },
+    {
+      "gachaId": 90,
+      "animeId": 1415,
+      "animeTitle": "나메코 재배키트",
+      "name": "【フラットガシャポン】なめこ栽培キット クリアラバーコースター",
+      "nameKr": "[플랫 가샤폰] 나메코 재배 킷트 투명 고무 코스터",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769865749000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "なめこ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234221_2.jpg",
+          "nameKr": "나메코"
+        },
+        {
+          "name": "マサル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234221_3.jpg",
+          "nameKr": "마사루"
+        },
+        {
+          "name": "王様なめこ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234221_4.jpg",
+          "nameKr": "임금님 나메코"
+        },
+        {
+          "name": "なめこ盛り合わせ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234221_5.jpg",
+          "nameKr": "나메코 모둠"
+        },
+        {
+          "name": "フルーツのなめこたち",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234221_6.jpg",
+          "nameKr": "과일 나메코들"
+        },
+        {
+          "name": "天使のなめこたち",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234221_7.jpg",
+          "nameKr": "천사 나메코들"
+        }
+      ]
+    },
+    {
+      "gachaId": 87,
+      "animeId": 1268,
+      "animeTitle": "마메시바",
+      "name": "豆しば めじるしアクセサリー2",
+      "nameKr": "마메시바 메지루시 액세서리 2탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769846984000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "枝豆しば(目がうるうる)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234150_2.jpg",
+          "nameKr": "에다마메시바(글썽이는 눈)"
+        },
+        {
+          "name": "黒豆しば",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234150_3.jpg",
+          "nameKr": "쿠로마메시바"
+        },
+        {
+          "name": "アーモンドしば",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234150_4.jpg",
+          "nameKr": "아몬드시바"
+        },
+        {
+          "name": "ピスタチオしば",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234150_5.jpg",
+          "nameKr": "피스타치오시바"
+        },
+        {
+          "name": "だる豆しば",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234150_6.jpg",
+          "nameKr": "다루마메시바"
+        },
+        {
+          "name": "ジェリービーンしば(ピーチ)",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234150_7.jpg",
+          "nameKr": "젤리빈시바(피치)"
+        },
+        {
+          "name": "虎豆しば",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234150_8.jpg",
+          "nameKr": "토라마메시바"
+        }
+      ]
+    },
+    {
+      "gachaId": 84,
+      "animeId": 1423,
+      "animeTitle": "파워프로군 포켓",
+      "name": "パワプロくん ならぶんです。 パシフィック・リーグ ビジターVer.",
+      "nameKr": "파워프로군 나란히 줄서요(나라분데스) 퍼시픽 리그 원정 Ver.",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769842504000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "福岡ソフトバンクホークス",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234153_2.jpg",
+          "nameKr": "후쿠오카 소프트뱅크 호크스"
+        },
+        {
+          "name": "北海道日本ハムファイターズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234153_3.jpg",
+          "nameKr": "홋카이도 닛폰햄 파이터스"
+        },
+        {
+          "name": "千葉ロッテマリーンズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234153_4.jpg",
+          "nameKr": "지바 롯데 마린스"
+        },
+        {
+          "name": "東北楽天ゴールデンイーグルス",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234153_5.jpg",
+          "nameKr": "도호쿠 라쿠텐 골든 이글스"
+        },
+        {
+          "name": "オリックス・バファローズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234153_6.jpg",
+          "nameKr": "오릭스 버펄로스"
+        },
+        {
+          "name": "埼玉西武ライオンズ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234153_7.jpg",
+          "nameKr": "사이타마 세이부 라이온스"
+        }
+      ]
+    },
+    {
+      "gachaId": 79,
+      "animeId": 1232,
+      "animeTitle": "스미코구라시",
+      "name": "【フラットガシャポン】すみっコぐらし クリアラバーコースター2",
+      "nameKr": "[플랫 가샤폰] 스미코구라시 투명 고무 코스터 2탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769841897000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "しろくま＆ふろしき",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234223_2.jpg",
+          "nameKr": "시로쿠마 & 보자기"
+        },
+        {
+          "name": "ぺんぎん？＆すずめ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234223_3.jpg",
+          "nameKr": "펭귄? & 참새"
+        },
+        {
+          "name": "とんかつ＆えびふらいのしっぽ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234223_4.jpg",
+          "nameKr": "돈카츠 & 새우튀김 꼬리"
+        },
+        {
+          "name": "ねこ＆ざっそう",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234223_5.jpg",
+          "nameKr": "고양이 & 잡초"
+        },
+        {
+          "name": "とかげ＆にせつむり＆えびてんのしっぽ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234223_6.jpg",
+          "nameKr": "도마뱀 & 가짜 달팽이 & 새우덴푸라 꼬리"
+        },
+        {
+          "name": "えびふらいのしっぽ＆えびてんのしっぽ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234223_7.jpg",
+          "nameKr": "새우튀김 꼬리 & 새우덴푸라 꼬리"
+        }
+      ]
+    },
+    {
+      "gachaId": 78,
+      "animeId": 1195,
+      "animeTitle": "외출하는 아기 상어",
+      "name": "おでかけ子ザメ めじるしアクセサリー2",
+      "nameKr": "아기 상어의 외출 메지루시 액세서리 2탄",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769836817000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "にっこり子ザメ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234169_2.jpg",
+          "nameKr": "방긋 아기상어"
+        },
+        {
+          "name": "パイナップル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234169_3.jpg",
+          "nameKr": "파인애플"
+        },
+        {
+          "name": "うさめ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234169_4.jpg",
+          "nameKr": "우사메"
+        },
+        {
+          "name": "あんこう",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234169_5.jpg",
+          "nameKr": "아귀"
+        },
+        {
+          "name": "ベビー子ザメ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234169_6.jpg",
+          "nameKr": "베이비 아기상어"
+        }
+      ]
+    },
+    {
+      "gachaId": 77,
+      "animeId": 48,
+      "animeTitle": "게게게의 키타로",
+      "name": "ゲゲゲの鬼太郎（第4期） めじるしアクセサリー",
+      "nameKr": "게게게의 기타로(4기) 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769836558000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "鬼太郎",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234170_2.jpg",
+          "nameKr": "키타로"
+        },
+        {
+          "name": "目玉おやじ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234170_3.jpg",
+          "nameKr": "눈알 아버지"
+        },
+        {
+          "name": "ねずみ男",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234170_4.jpg",
+          "nameKr": "쥐 사나이"
+        },
+        {
+          "name": "ねこ娘",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234170_5.jpg",
+          "nameKr": "고양이 소녀"
+        },
+        {
+          "name": "ぬりかべ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234170_6.jpg",
+          "nameKr": "누리카베"
+        }
+      ]
+    },
+    {
+      "gachaId": 74,
+      "animeId": 415,
+      "animeTitle": "방가방가 햄토리",
+      "name": "とっとこハム太郎 スイングマスコット",
+      "nameKr": "방가방가 햄토리 키링 마스코트",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769832574000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "ハム太郎",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234175_2.jpg",
+          "nameKr": "햄토리"
+        },
+        {
+          "name": "リボンちゃん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234175_3.jpg",
+          "nameKr": "리본"
+        },
+        {
+          "name": "こうしくん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234175_4.jpg",
+          "nameKr": "코시"
+        },
+        {
+          "name": "マフラーちゃん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234175_5.jpg",
+          "nameKr": "머플러"
+        },
+        {
+          "name": "ちび丸ちゃん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234175_6.jpg",
+          "nameKr": "미니미니"
+        }
+      ]
+    },
+    {
+      "gachaId": 73,
+      "animeId": 1247,
+      "animeTitle": "디즈니",
+      "name": "“ディズニーキャラクター” なかよしペアスイング",
+      "nameKr": "디즈니 캐릭터 사이좋은 페어 키링",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769832390000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "スティッチ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234176_2.jpg",
+          "nameKr": "스티치"
+        },
+        {
+          "name": "エンジェル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234176_3.jpg",
+          "nameKr": "엔젤"
+        },
+        {
+          "name": "ニック",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234176_4.jpg",
+          "nameKr": "닉"
+        },
+        {
+          "name": "ジュディ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234176_5.jpg",
+          "nameKr": "주디"
+        }
+      ]
+    },
+    {
+      "gachaId": 69,
+      "animeId": 1201,
+      "animeTitle": "Sky: 빛의 아이들",
+      "name": "Sky 星を紡ぐ子どもたち カプセルラバーマスコット2 Skyの生きものたち",
+      "nameKr": "Sky: 빛의 아이들 캡슐 고무 마스코트 2탄 Sky의 생물들",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769823169000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "光のマナティ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_2.jpg",
+          "nameKr": "빛의 매너티"
+        },
+        {
+          "name": "光のクラゲ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_3.jpg",
+          "nameKr": "빛의 해파리"
+        },
+        {
+          "name": "光のマンタ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_4.jpg",
+          "nameKr": "빛의 만타"
+        },
+        {
+          "name": "闇の蟹",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_5.jpg",
+          "nameKr": "어둠의 게"
+        },
+        {
+          "name": "暗黒竜",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_6.jpg",
+          "nameKr": "암흑룡"
+        },
+        {
+          "name": "光の鳥",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_7.jpg",
+          "nameKr": "빛의 새"
+        },
+        {
+          "name": "暗黒竜猫",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_8.jpg",
+          "nameKr": "암흑룡 고양이"
+        },
+        {
+          "name": "リトルオレオ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_9.jpg",
+          "nameKr": "리틀 오레오"
+        },
+        {
+          "name": "闇のモンスター",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000233657_10.jpg",
+          "nameKr": "어둠의 몬스터"
+        }
+      ]
+    },
+    {
+      "gachaId": 68,
+      "animeId": 641,
+      "animeTitle": "암살교실",
+      "name": "暗殺教室 殺せんせー めじるしアクセサリー",
+      "nameKr": "암살교실 살생님 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769823091000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "ノーマル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_2.jpg",
+          "nameKr": "노멀"
+        },
+        {
+          "name": "ナメてる",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_3.jpg",
+          "nameKr": "깔보는 얼굴"
+        },
+        {
+          "name": "リラックス",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_4.jpg",
+          "nameKr": "릴랙스"
+        },
+        {
+          "name": "真顔",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_5.jpg",
+          "nameKr": "정색"
+        },
+        {
+          "name": "マル",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_6.jpg",
+          "nameKr": "동그라미"
+        },
+        {
+          "name": "バツ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_7.jpg",
+          "nameKr": "가위표"
+        },
+        {
+          "name": "怒り",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_8.jpg",
+          "nameKr": "화남"
+        },
+        {
+          "name": "猫舌",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234178_9.jpg",
+          "nameKr": "고양이 혀"
+        }
+      ]
+    },
+    {
+      "gachaId": 66,
+      "animeId": 1399,
+      "animeTitle": "오차켄",
+      "name": "お茶犬 まちぼうけ",
+      "nameKr": "오차켄 언제오려나(마치보우케)",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769822384000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "リョク",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234181_2.jpg",
+          "nameKr": "료쿠"
+        },
+        {
+          "name": "ハナ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234181_3.jpg",
+          "nameKr": "하나"
+        },
+        {
+          "name": "チャイ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234181_4.jpg",
+          "nameKr": "차이"
+        },
+        {
+          "name": "アール",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234181_5.jpg",
+          "nameKr": "아루"
+        },
+        {
+          "name": "ロン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234181_6.jpg",
+          "nameKr": "론"
+        }
+      ]
+    },
+    {
+      "gachaId": 63,
+      "animeId": 1332,
+      "animeTitle": "산리오",
+      "name": "はぴだんぶい グラサンばちばちフィギュア",
+      "nameKr": "하피단부이 선글라스 번쩍번쩍 피규어",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769822261000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "POCHACCO",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234184_2.jpg",
+          "nameKr": "POCHACCO"
+        },
+        {
+          "name": "TUXEDOSAM",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234184_3.jpg",
+          "nameKr": "TUXEDOSAM"
+        },
+        {
+          "name": "AHIRUNOPEKKLE",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234184_4.jpg",
+          "nameKr": "AHIRUNOPEKKLE"
+        },
+        {
+          "name": "BAD BADTZ-MARU",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234184_5.jpg",
+          "nameKr": "BAD BADTZ-MARU"
+        },
+        {
+          "name": "KEROKEROKEROPPI",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234184_6.jpg",
+          "nameKr": "KEROKEROKEROPPI"
+        },
+        {
+          "name": "HANGYODON",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234184_7.jpg",
+          "nameKr": "HANGYODON"
+        }
+      ]
+    },
+    {
+      "gachaId": 53,
+      "animeId": 1289,
+      "animeTitle": "해리 포터",
+      "name": "ハリー・ポッター ミラーチャームコレクション",
+      "nameKr": "해리포터 미러 참 컬렉션",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769775758000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "グリフィンドール",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234196_2.jpg",
+          "nameKr": "그리핀도르"
+        },
+        {
+          "name": "レイブンクロー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234196_3.jpg",
+          "nameKr": "래번클로"
+        },
+        {
+          "name": "ハッフルパフ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234196_4.jpg",
+          "nameKr": "후플푸프"
+        },
+        {
+          "name": "スリザリン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234196_5.jpg",
+          "nameKr": "슬리데린"
+        },
+        {
+          "name": "ホグワーツ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234196_6.jpg",
+          "nameKr": "호그와트"
+        }
+      ]
+    },
+    {
+      "gachaId": 51,
+      "animeId": 1328,
+      "animeTitle": "컵헤드",
+      "name": "CUPHEAD めじるしアクセサリー",
+      "nameKr": "CUPHEAD 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769769665000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "カップヘッドA",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234199_2.jpg",
+          "nameKr": "컵헤드 A"
+        },
+        {
+          "name": "マグマンA",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234199_3.jpg",
+          "nameKr": "머그맨 A"
+        },
+        {
+          "name": "カップヘッドB",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234199_4.jpg",
+          "nameKr": "컵헤드 B"
+        },
+        {
+          "name": "マグマンB",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234199_5.jpg",
+          "nameKr": "머그맨 B"
+        },
+        {
+          "name": "キャグニーカーネーション",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234199_6.jpg",
+          "nameKr": "캐그니 카네이션"
+        }
+      ]
+    },
+    {
+      "gachaId": 34,
+      "animeId": 262,
+      "animeTitle": "디 그레이맨",
+      "name": "D.Gray-man まちぼうけ",
+      "nameKr": "디그레이맨 언제오려나(마치보우케)",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769836206000",
+      "releaseMonth": "2025-08",
+      "price": 500,
+      "items": [
+        {
+          "name": "アレン・ウォーカー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234173_2.jpg",
+          "nameKr": "알렌 워커"
+        },
+        {
+          "name": "神田ユウ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234173_3.jpg",
+          "nameKr": "칸다 유"
+        },
+        {
+          "name": "ラビ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234173_4.jpg",
+          "nameKr": "라비"
+        },
+        {
+          "name": "リナリー・リー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234173_5.jpg",
+          "nameKr": "리나리 리"
+        },
+        {
+          "name": "ティムキャンピー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234173_6.jpg",
+          "nameKr": "팀캠피"
+        }
+      ]
+    },
+    {
+      "gachaId": 33,
+      "animeId": 1193,
+      "animeTitle": "도검난무",
+      "name": "ポンデクルール 刀剣乱舞ONLINE vol.2 マルチカラーパウダー",
+      "nameKr": "Pon de Couleur 도검난무-ONLINE- vol.2 멀티컬러 파우더",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769758614000",
+      "releaseMonth": "2025-08",
+      "price": 500,
+      "items": [
+        {
+          "name": "山姥切長義（カラー・ペールブルー）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_2.jpg",
+          "nameKr": "야만바기리 쵸기(컬러・페일 블루)"
+        },
+        {
+          "name": "にっかり青江（カラー・グリーン）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_3.jpg",
+          "nameKr": "닛카리 아오에(컬러・그린)"
+        },
+        {
+          "name": "乱藤四郎（カラー・ピンク）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_4.jpg",
+          "nameKr": "미다레 토시로(컬러・핑크)"
+        },
+        {
+          "name": "髭切（カラー・ベージュ）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_5.jpg",
+          "nameKr": "히게키리(컬러・베이지)"
+        },
+        {
+          "name": "膝丸（カラー・ブラウン）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_6.jpg",
+          "nameKr": "히자마루(컬러・브라운)"
+        },
+        {
+          "name": "大倶利伽羅（カラー・ブラウン）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_7.jpg",
+          "nameKr": "오오쿠리카라(컬러・브라운)"
+        },
+        {
+          "name": "へし切長谷部（カラー・パープル）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_8.jpg",
+          "nameKr": "헤시키리 하세베(컬러・퍼플)"
+        },
+        {
+          "name": "実休光忠（カラー・ブルー）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_9.jpg",
+          "nameKr": "짓큐 미츠타다(컬러・블루)"
+        },
+        {
+          "name": "京極正宗（カラー・ローズレッド）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_10.jpg",
+          "nameKr": "쿄고쿠 마사무네(컬러・로즈 레드)"
+        },
+        {
+          "name": "火車切（カラー・オレンジ）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234084_11.jpg",
+          "nameKr": "카샤기리(컬러・오렌지)"
+        }
+      ]
+    },
+    {
+      "gachaId": 23,
+      "animeId": 1360,
+      "animeTitle": "제로베이스원",
+      "name": "zeroni #ハッシュタグつける",
+      "nameKr": "zeroni #해시태그 달기",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769888588000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "binini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_2.jpg",
+          "nameKr": "binini"
+        },
+        {
+          "name": "woongnini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_3.jpg",
+          "nameKr": "woongnini"
+        },
+        {
+          "name": "hanini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_4.jpg",
+          "nameKr": "hanini"
+        },
+        {
+          "name": "thewnini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_5.jpg",
+          "nameKr": "thewnini"
+        },
+        {
+          "name": "taenini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_6.jpg",
+          "nameKr": "taenini"
+        },
+        {
+          "name": "rinini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_7.jpg",
+          "nameKr": "rinini"
+        },
+        {
+          "name": "gyunini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_8.jpg",
+          "nameKr": "gyunini"
+        },
+        {
+          "name": "gunini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_9.jpg",
+          "nameKr": "gunini"
+        },
+        {
+          "name": "yunini",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234115_10.jpg",
+          "nameKr": "yunini"
+        }
+      ]
+    },
+    {
+      "gachaId": 12,
+      "animeId": 1291,
+      "animeTitle": "페넬로페",
+      "name": "うっかりペネロペ めじるしアクセサリー",
+      "nameKr": "깜빡이 페넬로페 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769842153000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "ペネロペ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234161_2.jpg",
+          "nameKr": "페넬로페"
+        },
+        {
+          "name": "フィーフィ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234161_3.jpg",
+          "nameKr": "피피"
+        },
+        {
+          "name": "タータ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234161_4.jpg",
+          "nameKr": "타타"
+        },
+        {
+          "name": "ペネロペ（レインコート）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234161_5.jpg",
+          "nameKr": "페넬로페(우비)"
+        },
+        {
+          "name": "ペネロペ（ハチ）",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234161_6.jpg",
+          "nameKr": "페넬로페(꿀벌)"
+        }
+      ]
+    },
+    {
+      "gachaId": 11,
+      "animeId": 1341,
+      "animeTitle": "슈가 버니스",
+      "name": "シュガーバニーズ めじるしアクセサリー",
+      "nameKr": "슈가바니즈 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769841934000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "しろうさ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234163_2.jpg",
+          "nameKr": "시로우사"
+        },
+        {
+          "name": "くろうさ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234163_3.jpg",
+          "nameKr": "쿠로우사"
+        },
+        {
+          "name": "ももうさ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234163_4.jpg",
+          "nameKr": "모모우사"
+        },
+        {
+          "name": "はなうさ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234163_5.jpg",
+          "nameKr": "하나우사"
+        },
+        {
+          "name": "ストロベリーうさ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234163_6.jpg",
+          "nameKr": "스트로베리우사"
+        },
+        {
+          "name": "ブルーベリーうさ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234163_7.jpg",
+          "nameKr": "블루베리우사"
+        }
+      ]
+    },
+    {
+      "gachaId": 10,
+      "animeId": 1300,
+      "animeTitle": "팩맨",
+      "name": "パックマン ブリスターチャームコレクション",
+      "nameKr": "팩맨 블리스터 참 컬렉션",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769810015000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "PAC-MAN",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234189_2.jpg",
+          "nameKr": "PAC-MAN"
+        },
+        {
+          "name": "BLINKY",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234189_3.jpg",
+          "nameKr": "BLINKY"
+        },
+        {
+          "name": "INKY",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234189_4.jpg",
+          "nameKr": "INKY"
+        },
+        {
+          "name": "CLYDE",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234189_5.jpg",
+          "nameKr": "CLYDE"
+        },
+        {
+          "name": "PINKY",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234189_6.jpg",
+          "nameKr": "PINKY"
+        }
+      ]
+    },
+    {
+      "gachaId": 8,
+      "animeId": 1103,
+      "animeTitle": "헌터×헌터",
+      "name": "【フラットガシャポン】HUNTER×HUNTER ビッグラバーコースター キメラアント編",
+      "nameKr": "[플랫 가샤폰] 헌터×헌터 빅 고무 코스터 키메라 앤트 편",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769809316000",
+      "releaseMonth": "2025-08",
+      "price": 400,
+      "items": [
+        {
+          "name": "ゴン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234230_2.jpg",
+          "nameKr": "곤"
+        },
+        {
+          "name": "キルア",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234230_3.jpg",
+          "nameKr": "키르아"
+        },
+        {
+          "name": "メルエム",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234230_4.jpg",
+          "nameKr": "메르엠"
+        },
+        {
+          "name": "コムギ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234230_5.jpg",
+          "nameKr": "코무기"
+        },
+        {
+          "name": "ネフェルピトー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234230_6.jpg",
+          "nameKr": "네페르피토"
+        },
+        {
+          "name": "カイト",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234230_7.jpg",
+          "nameKr": "카이트"
+        }
+      ]
+    },
+    {
+      "gachaId": 3,
+      "animeId": 602,
+      "animeTitle": "신풍괴도 잔느",
+      "name": "神風怪盗ジャンヌ ぷっくりめじるしアクセサリー",
+      "nameKr": "신풍괴도 쟌느 볼록 메지루시 액세서리",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769722851000",
+      "releaseMonth": "2025-08",
+      "price": 300,
+      "items": [
+        {
+          "name": "怪盗ジャンヌ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234204_2.jpg",
+          "nameKr": "괴도 잔느"
+        },
+        {
+          "name": "怪盗シンドバッド",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234204_3.jpg",
+          "nameKr": "괴도 신드바드"
+        },
+        {
+          "name": "日下部まろん",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234204_4.jpg",
+          "nameKr": "쿠사카베 마론"
+        },
+        {
+          "name": "フィン・フィッシュ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234204_5.jpg",
+          "nameKr": "핀 피쉬"
+        },
+        {
+          "name": "ロザリオ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000234204_6.jpg",
+          "nameKr": "로자리오"
+        }
+      ]
+    },
+    {
+      "gachaId": 844,
+      "animeId": 1310,
+      "animeTitle": "도코데모 잇쇼",
+      "name": "どこでもいっしょ まちぼうけ",
+      "nameKr": "어디서나 함께 토로와 친구들 언제오려나(마치보우케)",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4570118210562000",
+      "releaseMonth": "2025-07",
+      "price": 300,
+      "items": [
+        {
+          "name": "トロ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223484_2.jpg",
+          "nameKr": "토로"
+        },
+        {
+          "name": "リッキー",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223484_3.jpg",
+          "nameKr": "리키"
+        },
+        {
+          "name": "スズキ",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223484_4.jpg",
+          "nameKr": "스즈키"
+        },
+        {
+          "name": "ジュン",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223484_5.jpg",
+          "nameKr": "준"
+        },
+        {
+          "name": "ピエール",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223484_6.jpg",
+          "nameKr": "피에르"
+        }
+      ]
+    },
+    {
+      "gachaId": 821,
+      "animeId": 230,
+      "animeTitle": "데스노트",
+      "name": "豆ガシャ本 「DEATH NOTE」",
+      "nameKr": "콩가샤 책 「데스노트」",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769739927000",
+      "releaseMonth": "2025-07",
+      "price": 500,
+      "items": [
+        {
+          "name": "DEATH NOTE 1",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223515_2.jpg",
+          "nameKr": "DEATH NOTE 1"
+        },
+        {
+          "name": "DEATH NOTE 2",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223515_3.jpg",
+          "nameKr": "DEATH NOTE 2"
+        },
+        {
+          "name": "DEATH NOTE 3",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223515_4.jpg",
+          "nameKr": "DEATH NOTE 3"
+        },
+        {
+          "name": "DEATH NOTE 4",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223515_5.jpg",
+          "nameKr": "DEATH NOTE 4"
+        },
+        {
+          "name": "DEATH NOTE 5",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223515_6.jpg",
+          "nameKr": "DEATH NOTE 5"
+        },
+        {
+          "name": "DEATH NOTE 6",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000223515_7.jpg",
+          "nameKr": "DEATH NOTE 6"
+        }
+      ]
+    },
+    {
+      "gachaId": 755,
+      "animeId": 1395,
+      "animeTitle": "피너츠",
+      "name": "PEANUTS パッケージミニチュアコレクション",
+      "nameKr": "피너츠 패키지 미니어처 컬렉션",
+      "sourceUrl": "https://gashapon.jp/products/detail.php?jan_code=4582769752902000",
+      "releaseMonth": "2025-07",
+      "price": 400,
+      "items": [
+        {
+          "name": "1950s",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000224852_2.jpg",
+          "nameKr": "1950s"
+        },
+        {
+          "name": "1960s",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000224852_3.jpg",
+          "nameKr": "1960s"
+        },
+        {
+          "name": "1970s",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000224852_4.jpg",
+          "nameKr": "1970s"
+        },
+        {
+          "name": "1980s",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000224852_5.jpg",
+          "nameKr": "1980s"
+        },
+        {
+          "name": "1990s",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000224852_6.jpg",
+          "nameKr": "1990s"
+        },
+        {
+          "name": "2000s",
+          "imageLink": "https://bandai-a.akamaihd.net/bc/img/model/xl/1000224852_7.jpg",
+          "nameKr": "2000s"
+        }
+      ]
+    }
+  ]
+}
