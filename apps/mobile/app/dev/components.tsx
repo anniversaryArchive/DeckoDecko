@@ -33,6 +33,7 @@ import {
 
 import { FolderSelectSheet } from "@/components/FolderSelectSheet";
 import { ItemSheet } from "@/components/ItemSheet";
+import { TAB_ICONS } from "@/lib/tabIcons";
 
 /** 색 견본 한 칸의 크기 */
 const SWATCH = 36;
@@ -53,11 +54,11 @@ const GOODS_ICON = 32;
 const WISH_BUTTON = 36;
 const WISH_ICON = 18;
 
-/** TabBar 견본의 탭 (앱의 하단 탭과 같은 아이콘) */
+/** TabBar 견본의 탭. key 는 앱의 탭 라우트라 아이콘(TAB_ICONS)을 같이 쓴다 */
 const TABS = [
-  { key: "home", label: "홈", icon: "home", iconOff: "home-outline" },
-  { key: "goods", label: "내 굿즈", icon: "folder", iconOff: "folder-outline" },
-  { key: "search", label: "검색", icon: "search", iconOff: "search" },
+  { key: "index", label: "홈" },
+  { key: "goods", label: "내 굿즈" },
+  { key: "search", label: "검색" },
 ] as const;
 
 /** Toast 견본 문구 (시안 "아이템 추가 실패") */
@@ -113,7 +114,7 @@ function Catalog() {
   const [tab, setTab] = useState<"wish" | "get">("get");
   const [itemName, setItemName] = useState("토끼 (당근 바구니)");
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [tabKey, setTabKey] = useState<(typeof TABS)[number]["key"]>("home");
+  const [tabKey, setTabKey] = useState<(typeof TABS)[number]["key"]>("index");
   const [folderSheetOpen, setFolderSheetOpen] = useState(false);
   const [folderId, setFolderId] = useState<string>();
   const folders = useFolders();
@@ -364,7 +365,11 @@ function Catalog() {
             selected: tab.key === tabKey,
             onPress: () => setTabKey(tab.key),
             renderIcon: ({ color, size, selected }) => (
-              <Ionicons name={selected ? tab.icon : tab.iconOff} color={color} size={size} />
+              <Ionicons
+                name={selected ? TAB_ICONS[tab.key].on : TAB_ICONS[tab.key].off}
+                color={color}
+                size={size}
+              />
             ),
           }))}
         />

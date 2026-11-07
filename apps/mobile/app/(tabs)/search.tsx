@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useScrollToTop } from "expo-router";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard, ScrollView, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -97,8 +98,11 @@ function isEmpty(value: string) {
  * 섹션마다 좌우 여백을 준다 (최근 섹션의 가로 스크롤이 화면 끝까지 닿아야 해서).
  */
 function BeforeSearch({ onSelectRecent }: { onSelectRecent: (keyword: string) => void }) {
+  const scrollRef = useRef<ScrollView>(null);
+  useScrollToTop(scrollRef);
   return (
     <ScrollView
+      ref={scrollRef}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       contentContainerStyle={{ paddingTop: space[14], paddingBottom: space[24], gap: space[24] }}

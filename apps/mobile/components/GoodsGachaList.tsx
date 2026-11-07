@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useScrollToTop } from "expo-router";
+import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 
@@ -7,7 +8,7 @@ import { gutter, space } from "@deckodecko/ui";
 
 import { GoodsGachaRow } from "@/components/GoodsGachaRow";
 import { useFolderNames } from "@/hooks/useFolderNames";
-import { countByFolder, groupByGacha } from "@/lib/goods";
+import { countByFolder, groupByGacha, type GachaGroup } from "@/lib/goods";
 import { openGacha } from "@/lib/routes";
 
 type Props = {
@@ -25,6 +26,8 @@ export function GoodsGachaList({ items, type, gachas, gachasLoaded, folders }: P
   const { t } = useTranslation();
   const folderNames = useFolderNames(folders);
   const groups = useMemo(() => groupByGacha(items), [items]);
+  const listRef = useRef<FlatList<GachaGroup>>(null);
+  useScrollToTop(listRef);
   // 폴더 분포는 폴더 목록 순서로: "기본 폴더 1, 별의 숲 2". 폴더가 하나면 이름만
   function folderSummary(list: Item[]) {
     const counts = countByFolder(list);
@@ -36,6 +39,7 @@ export function GoodsGachaList({ items, type, gachas, gachasLoaded, folders }: P
   }
   return (
     <FlatList
+      ref={listRef}
       data={groups}
       keyExtractor={(group) => group.gachaId}
       renderItem={({ item: group }) => (
