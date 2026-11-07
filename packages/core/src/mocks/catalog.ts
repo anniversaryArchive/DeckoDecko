@@ -13,6 +13,8 @@ const media = {
     titleJa: "星の森",
     titleEn: "Starry Forest",
     kind: "anime",
+    // seed.sql 의 별의 숲 별칭과 같다. 목 모드에서도 "별숲" 으로 찾을 수 있게.
+    aliases: ["별숲", "호시모리"],
   },
   catCafe: {
     id: "m-cat-cafe",
@@ -20,6 +22,8 @@ const media = {
     titleJa: "ねこカフェ日記",
     titleEn: "Cat Cafe Diary",
     kind: "anime",
+    // 목 데이터에만 있는 작품이라 seed.sql 에는 없다. 작품명에 없는 줄임말로 별칭 검색을 확인할 수 있게.
+    aliases: ["냥카페"],
   },
 } satisfies Record<string, Media>;
 
