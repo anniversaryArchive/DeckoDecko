@@ -106,7 +106,7 @@ describe("앱 저장소 묶음", () => {
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("localhost:54321/rest/v1/anime");
   });
 
-  it("요청 · 문의 저장소는 개발 빌드에만 넣는다 (#185 전)", async () => {
+  it("요청 · 문의 저장소는 개발 빌드에만 넣는다 (#250 전)", async () => {
     const dev = await loadRepositories({ EXPO_PUBLIC_DATA_SOURCE: "", ...SUPABASE_ENV });
     expect(dev.feedback).toBeDefined();
 

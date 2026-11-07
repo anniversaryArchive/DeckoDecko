@@ -72,13 +72,12 @@ function devNotice(): Pick<Repositories, "notice"> {
   return __DEV__ ? { notice: createMemoryNoticeRepository(mockNotices) } : {};
 }
 
-// feedback 테이블(#185) 전까지 요청 · 문의는 개발 빌드에서만 메모리 저장소다. 출시 빌드는 넘기지 않아 화면이 보내기 진입점을 숨긴다
-// (메모리 저장소를 출시 빌드에 넣으면 보낸 내용이 앱을 끌 때 사라진다).
+// Supabase 저장소(#250) 전까지 요청 · 문의는 개발 빌드에서만 메모리 저장소다 (출시 빌드에 넣으면 보낸 내용이 앱을 끌 때 사라진다).
 function devFeedback(): Pick<Repositories, "feedback"> {
   return __DEV__ ? { feedback: createMemoryFeedbackRepository({ getDeviceId }) } : {};
 }
 
-// Repositories 는 로컬 기록 · recent · preferences · viewLog 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
+// Repositories 는 로컬 기록 · recent · preferences · viewLog · media 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
 type AppRepositories = Repositories &
   LocalRepositories &
   Required<Pick<Repositories, "media">> & {

@@ -58,17 +58,17 @@ describe("createMemoryFeedbackRepository", () => {
     expect(result).toEqual({ id: repo.snapshot()[0]!.id });
   });
 
-  it("가챠 등록 요청: 고른 작품은 mediaId, 직접 적은 작품은 mediaText 로 저장한다", async () => {
+  it("가챠 등록 요청: 고른 작품은 mediaId 와 보인 이름, 직접 적은 작품은 mediaText 만 저장한다", async () => {
     const { send } = setup();
     const picked = await send({
       kind: "request",
       gachaName: " 별의 숲 미니 피규어 ",
-      media: { id: "m-starry-forest" },
+      media: { id: "m-starry-forest", text: " 별의 숲 " },
     });
     expect(picked).toMatchObject({
       gachaName: "별의 숲 미니 피규어",
       mediaId: "m-starry-forest",
-      mediaText: null,
+      mediaText: "별의 숲",
       content: null, // 비운 "자세히"
     });
 
@@ -80,13 +80,8 @@ describe("createMemoryFeedbackRepository", () => {
     });
     expect(typed).toMatchObject({ mediaId: null, mediaText: "없는 작품", content: "3월 발매" });
 
-    // 타입은 막지만, 런타임에 둘 다 오면 고른 작품을 쓴다
-    const both = await send({
-      kind: "request",
-      gachaName: "새 가챠",
-      media: { id: "m-1", text: "적은 글자" } as unknown as { id: string },
-    });
-    expect(both).toMatchObject({ mediaId: "m-1", mediaText: null });
+    const idOnly = await send({ kind: "request", gachaName: "새 가챠", media: { id: "m-1" } });
+    expect(idOnly).toMatchObject({ mediaId: "m-1", mediaText: null });
 
     const blankId = await send({
       kind: "request",
@@ -173,12 +168,12 @@ describe("feedback 도우미", () => {
     expect(isFeedbackLimitError(new Error("other"))).toBe(false);
   });
 
-  it("작품 칸에 id 와 text 를 같이 넣으면 타입 오류다", () => {
+  it("작품 칸에 id 도 text 도 없으면 타입 오류다", () => {
     const input: SendFeedbackInput = {
       kind: "request",
       gachaName: "g",
-      // @ts-expect-error 고른 작품(id)과 적은 글자(text) 중 하나만
-      media: { id: "1", text: "t" },
+      // @ts-expect-error 고른 작품(id) 이나 적은 글자(text) 중 하나는 있어야 한다
+      media: {},
     };
     expect(input.kind).toBe("request");
   });

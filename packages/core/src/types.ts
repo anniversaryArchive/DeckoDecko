@@ -105,7 +105,7 @@ export type Feedback = {
   kind: FeedbackKind;
   gachaName: string | null; // 가챠 등록 요청만
   mediaId: string | null; // 자동완성에서 고른 작품
-  mediaText: string | null; // 목록에 없어 직접 적은 작품 이름
+  mediaText: string | null; // 적은 작품 이름 (고른 작품이면 그때 보인 이름)
   content: string | null; // 비었으면 null
   photoPath: string | null; // Storage 안의 경로 (버킷 이름 제외)
   deviceId: string;

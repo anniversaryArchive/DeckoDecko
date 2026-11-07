@@ -19,8 +19,11 @@ export type FeedbackPhoto = {
   mimeType?: string | null; // 모르면 비워 둔다 (jpg 로 본다). 피커 결과를 그대로 넘기면 된다
 };
 
-/** 작품 칸. 자동완성에서 고르면 id, 목록에 없어 직접 적으면 text. 둘을 같이 넘기면 타입 오류다 */
-export type FeedbackMediaInput = { id: string; text?: never } | { text: string; id?: never };
+/**
+ * 작품 칸. 자동완성에서 고르면 id 와 화면에 보인 이름(text), 목록에 없어 직접 적으면 text 만.
+ * 고른 작품도 text 를 같이 넘긴다: 작품 행이 지워지면 서버가 media_id 를 비우고 text 만 남는다.
+ */
+export type FeedbackMediaInput = { id: string; text?: string } | { text: string; id?: never };
 
 type CommonInput = {
   photo?: FeedbackPhoto | null;
@@ -60,8 +63,8 @@ export function isFeedbackLimitError(error: unknown): error is FeedbackLimitErro
 
 /**
  * 요청 · 문의 보내기. 화면은 useSendFeedback 훅만 쓴다.
- *   createMemoryFeedbackRepository: feedback 테이블(#185) 전, 개발 빌드에서만
- *   Supabase 구현(#185 뒤): 사진을 클라이언트 UUID 경로로 먼저 올리고 → submit_feedback RPC(하루 건수 확인 + 저장).
+ *   createMemoryFeedbackRepository: Supabase 구현(#250) 전, 개발 빌드에서만
+ *   Supabase 구현(#250): 사진을 클라이언트 UUID 경로로 먼저 올리고 → submit_feedback RPC(하루 건수 확인 + 저장).
  *     RPC 가 PT429 로 거절하면 FeedbackLimitError 로 바꿔 던지고, 먼저 올린 사진은 지운다
  */
 export interface FeedbackRepository {
@@ -91,7 +94,7 @@ export function cleanFeedbackInput(
     checkLength("gachaName", gachaName);
     const media = input.media;
     const mediaId = media?.id?.trim() || null;
-    const mediaText = mediaId ? null : media?.text?.trim() || null;
+    const mediaText = media?.text?.trim() || null;
     checkLength("mediaText", mediaText);
     return { kind: input.kind, gachaName, mediaId, mediaText, content };
   }
