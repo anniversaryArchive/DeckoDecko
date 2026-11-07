@@ -4,7 +4,7 @@
 
 ```ts
 // 화면 (클라이언트 컴포넌트)
-import { useGachaList, useGachaSearch } from "@deckodecko/core/react";
+import { useGachaList, useGachaSearchPages } from "@deckodecko/core/react";
 
 // 루트 레이아웃
 import { CoreProvider } from "@deckodecko/core/react";
@@ -27,7 +27,7 @@ const list = await repositories.gacha.listGacha();
 | `src/queryKeys.ts`      | React Query 키 규칙                                                                                                                                           | 없음  |
 | `src/storageKeys.ts`    | 기기 키-값 저장소(AsyncStorage) 키. 키는 여기 한 곳에만 둔다                                                                                                  | 없음  |
 | `src/mocks/`            | 개발 · 테스트용 목 카탈로그 (`@deckodecko/core/mocks`). 앱 · 백오피스 · 테스트가 공유                                                                         | 없음  |
-| `src/react/`            | `CoreProvider`, 도메인별 훅 `<도메인>.hooks.ts` (`useGachaList` · `usePopularGacha` · `useGacha` · `useGachaSearch`, 최근 기록 `recent.hooks.ts`)             | 있음  |
+| `src/react/`            | `CoreProvider`, 도메인별 훅 `<도메인>.hooks.ts` (`useGachaList` · `usePopularGacha` · `useGacha` · `useGachaSearchPages`, 최근 기록 `recent.hooks.ts`)        | 있음  |
 
 엔트리가 둘인 이유: `@deckodecko/core` 는 React 가 없어 Next.js 서버 컴포넌트 · 스크립트에서 import 해도 되고, `@deckodecko/core/react` 는 클라이언트 전용이다.
 

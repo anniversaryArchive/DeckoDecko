@@ -1,3 +1,4 @@
+import type { GachaSort, ResolvedGachaFilter } from "./repositories/gacha";
 import type { ItemType } from "./types";
 
 /**
@@ -13,8 +14,14 @@ export const queryKeys = {
     popular: (limit: number) => ["gacha", "popular", limit] as const,
     byIds: (ids: readonly string[]) => ["gacha", "byIds", ids] as const,
     detail: (id: string) => ["gacha", "detail", id] as const,
-    search: (keyword: string, offset: number, limit: number) =>
-      ["gacha", "search", keyword, offset, limit] as const,
+    /** 검색 결과 무한 스크롤. 필터는 resolveGachaFilter 를 거친 값, month 는 신상품 · 발매 예정의 기준 달(toYearMonth) */
+    searchPages: (
+      keyword: string,
+      filter: ResolvedGachaFilter,
+      sort: GachaSort,
+      pageSize: number,
+      month: string
+    ) => ["gacha", "searchPages", keyword, filter, sort, pageSize, month] as const,
   },
   notice: {
     all: ["notice"] as const,
@@ -24,14 +31,22 @@ export const queryKeys = {
   },
   items: {
     all: ["items"] as const,
+    lists: ["items", "list"] as const,
     // 거르지 않는 조건은 null
-    list: (gachaId: string | null, type: ItemType | null, folderId: string | null) =>
-      ["items", "list", gachaId, type, folderId] as const,
+    list: (
+      gachaId: string | null,
+      type: ItemType | null,
+      folderId: string | null,
+      limit: number | null
+    ) => ["items", "list", gachaId, type, folderId, limit] as const,
     detail: (id: string) => ["items", "detail", id] as const,
     counts: (gachaId: string | null) => ["items", "counts", gachaId] as const,
     countsByFolder: () => ["items", "countsByFolder"] as const,
+    countsByGacha: () => ["items", "countsByGacha"] as const,
     nameTaken: (gachaId: string, name: string, excludeId: string | null) =>
       ["items", "nameTaken", gachaId, name, excludeId] as const,
+    // mutation 키. 저장 중인 WISH · GET 을 mutation 캐시에서 찾을 때 쓴다 (useDisplayedItemType)
+    setType: ["items", "setType"] as const,
   },
   folders: {
     all: ["folders"] as const,
@@ -44,5 +59,10 @@ export const queryKeys = {
     all: ["recent"] as const,
     searches: () => ["recent", "searches"] as const,
     gachaIds: () => ["recent", "gachaIds"] as const,
+  },
+  // 기기 설정. 쓰기 훅이 캐시를 바로 바꾼다.
+  preferences: {
+    all: ["preferences"] as const,
+    goodsViewMode: () => ["preferences", "goodsViewMode"] as const,
   },
 } as const;

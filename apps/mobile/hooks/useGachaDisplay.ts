@@ -17,6 +17,8 @@ export type GachaDisplay = {
   pricePerPlay: string | null;
   /** 발매월 ("2026년 10월 발매") */
   release: string | null;
+  /** 발매 예정일 때의 발매월 ("2026년 11월 발매 예정"). 예정인지는 쓰는 쪽이 releaseStatus 로 정한다 */
+  releaseUpcoming: string | null;
   /** 종 수 ("전 6종") */
   itemTotal: string | null;
 };
@@ -34,6 +36,10 @@ export function useGachaDisplay(
     release:
       gacha.releaseMonth != null
         ? t("common.released", { month: formatMonth(gacha.releaseMonth) })
+        : null,
+    releaseUpcoming:
+      gacha.releaseMonth != null
+        ? t("common.releaseUpcoming", { month: formatMonth(gacha.releaseMonth) })
         : null,
     itemTotal:
       gacha.itemCount != null

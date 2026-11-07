@@ -1,17 +1,10 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
-import { StateMessage } from "./StateMessage";
+import { recheckNetworkState } from "@/lib/network";
+import { queryView, type QueryLike } from "@/lib/queryView";
 
-/** React Query 결과 중 여기서 보는 것만. 화면이 @tanstack/react-query 에 직접 기대지 않게 모양만 받는다. */
-type QueryLike<T> = {
-  data: T | undefined;
-  isLoading: boolean;
-  /** 새 키를 불러오는 동안 이전 결과를 대신 들고 있는지 (keepPreviousData 를 쓰는 검색) */
-  isPlaceholderData?: boolean;
-  isError: boolean;
-  refetch: () => unknown;
-};
+import { StateMessage } from "./StateMessage";
 
 type Props<T> = {
   query: QueryLike<T>;
@@ -24,26 +17,28 @@ type Props<T> = {
   children: (data: NonNullable<T>) => ReactNode;
 };
 
-/**
- * 쿼리 하나의 로딩 · 에러(다시 시도) · 빈 상태 · 내용을 고른다.
- * 로딩은 isLoading 으로 본다. 꺼진 쿼리(빈 id · 빈 검색어)는 isPending 이 계속 true 라서다.
- * 이전 결과를 대신 들고 있는 동안(isPlaceholderData)도 로딩이다. 그 결과로 "결과 없음"을 그리면 새 검색어의 결과처럼 보인다.
- */
+/** 쿼리 하나의 오프라인 · 로딩 · 에러(다시 시도) · 빈 상태 · 내용을 고른다. 고르는 규칙은 lib/queryView.ts */
 export function QueryState<T>({ query, isEmpty, empty, fill, children }: Props<T>) {
   const { t } = useTranslation();
-  if (query.isLoading || query.isPlaceholderData) {
-    return <StateMessage fill={fill} loading message={t("common.loading")} />;
+  switch (queryView(query, isEmpty)) {
+    case "offline":
+      return (
+        <StateMessage fill={fill} message={t("common.offlineLoad")} onRetry={recheckNetworkState} />
+      );
+    case "loading":
+      return <StateMessage fill={fill} loading message={t("common.loading")} />;
+    case "error":
+      return (
+        <StateMessage
+          fill={fill}
+          message={t("common.loadFailed")}
+          onRetry={() => void query.refetch()}
+        />
+      );
+    case "empty":
+      return <>{empty}</>;
+    case "content":
+      // queryView 가 content 를 고르면 data 는 null 이 아니다. 타입만 좁힌다
+      return query.data == null ? null : <>{children(query.data)}</>;
   }
-  if (query.isError) {
-    return (
-      <StateMessage
-        fill={fill}
-        message={t("common.loadFailed")}
-        onRetry={() => void query.refetch()}
-      />
-    );
-  }
-  const data = query.data;
-  if (data == null || isEmpty?.(data)) return <>{empty}</>;
-  return <>{children(data)}</>;
 }

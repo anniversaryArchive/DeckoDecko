@@ -8,7 +8,9 @@ import { useDeleteItem, useFolders, useGacha, useItemCounts } from "@deckodecko/
 import { border, radius, space, useTheme } from "@deckodecko/ui";
 import { Button, BottomSheet, Text } from "@deckodecko/ui/native";
 
+import { ITEM_TYPE_BADGE, ITEM_TYPE_COLORS } from "@/components/ItemTypeTag";
 import { folderName, gachaName } from "@/lib/displayName";
+import { photoUri } from "@/lib/photos";
 
 /** 위쪽 휴지통 원 지름 */
 const ICON_CIRCLE_SIZE = 56;
@@ -114,7 +116,7 @@ function ItemSummary({ item }: { item: Item }) {
   ]
     .filter((part): part is string => !!part)
     .join(" · ");
-  const get = item.type === "GET";
+  const typeColors = ITEM_TYPE_COLORS[item.type];
 
   return (
     <View
@@ -143,7 +145,7 @@ function ItemSummary({ item }: { item: Item }) {
       >
         {item.thumbnail ? (
           <Image
-            source={{ uri: item.thumbnail }}
+            source={{ uri: photoUri(item.thumbnail) }}
             style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
           />
@@ -156,16 +158,16 @@ function ItemSummary({ item }: { item: Item }) {
           <Text
             variant="captionSm"
             weight="bold"
-            color={get ? "onGet" : "onWish"}
+            color={typeColors.label}
             style={{
-              backgroundColor: get ? colors.getSurface : colors.wishSurface,
+              backgroundColor: colors[typeColors.surface],
               borderRadius: radius.full,
               overflow: "hidden",
               paddingHorizontal: space[8],
               paddingVertical: space[2],
             }}
           >
-            {get ? t("item.getBadge") : t("item.wishBadge")}
+            {t(ITEM_TYPE_BADGE[item.type])}
           </Text>
           <Text variant="bodyStrong" numberOfLines={1} style={{ flexShrink: 1 }}>
             {item.name}

@@ -340,6 +340,135 @@ describe("createMemoryGachaRepository", () => {
         }
       });
     });
+
+    describe("필터 · 정렬", () => {
+      // 기준 달 2026-10 (기기 시간). 이름은 모두 "hit" 이라 검색어로는 걸러지지 않는다.
+      const now = () => new Date(2026, 9, 15, 12);
+      const other: Media = { ...starry, id: "m-other", title: "다른 작품" };
+      const seed: GachaDetail[] = [
+        gacha("sep", { name: "hit", releaseMonth: "2026-09", price: 500, media: starry }),
+        gacha("oct", { name: "hit", releaseMonth: "2026-10", price: 300, media: starry }),
+        gacha("nov", { name: "hit", releaseMonth: "2026-11", price: 400, media: other }),
+        gacha("dec", { name: "hit", releaseMonth: "2027-01", price: null, media: starry }),
+        gacha("unknown", { name: "hit", releaseMonth: null, price: 600, media: null }),
+        gacha("oct2", { name: "hit", releaseMonth: "2026-10", price: 400, media: other }),
+        gacha("miss", { name: "관계없음", releaseMonth: "2026-10", price: 300, media: null }),
+      ];
+      const repo = createMemoryGachaRepository(seed, { now });
+      const search = (params: Omit<Parameters<typeof repo.searchGacha>[0], "keyword">) =>
+        repo.searchGacha({ keyword: "hit", ...params });
+
+      it("기본 정렬은 발매일순: 늦은 달부터, 발매월 모름은 맨 뒤, 같은 달은 원래 순서", async () => {
+        const page = await search({});
+        expect(ids(page.items)).toEqual(["dec", "nov", "oct", "oct2", "sep", "unknown"]);
+        expect(page.total).toBe(6);
+      });
+
+      it("release: all 은 거르지 않는다", async () => {
+        expect((await search({ filter: { release: "all" } })).total).toBe(6);
+      });
+
+      it("신상품(new) 은 이번 달 발매만", async () => {
+        const page = await search({ filter: { release: "new" } });
+        expect(ids(page.items)).toEqual(["oct", "oct2"]);
+        expect(page.total).toBe(2);
+      });
+
+      it("발매 예정(upcoming) 은 다음 달 이후, 해가 바뀌어도", async () => {
+        const page = await search({ filter: { release: "upcoming" } });
+        expect(ids(page.items)).toEqual(["dec", "nov"]);
+        expect(page.total).toBe(2);
+      });
+
+      it("기준 달은 호출할 때의 now 로 정한다", async () => {
+        let current = new Date(2026, 9, 31, 23, 59);
+        const moving = createMemoryGachaRepository(seed, { now: () => current });
+        const newIds = async () =>
+          ids((await moving.searchGacha({ keyword: "hit", filter: { release: "new" } })).items);
+        expect(await newIds()).toEqual(["oct", "oct2"]);
+        current = new Date(2026, 10, 1, 0, 0);
+        expect(await newIds()).toEqual(["nov"]);
+      });
+
+      it("작품(mediaId) 으로 거른다. null 이면 거르지 않는다", async () => {
+        expect(ids((await search({ filter: { mediaId: "m-other" } })).items)).toEqual([
+          "nov",
+          "oct2",
+        ]);
+        expect((await search({ filter: { mediaId: null } })).total).toBe(6);
+      });
+
+      it("가격 범위는 양 끝을 포함하고 가격 모름은 뺀다", async () => {
+        const page = await search({ filter: { priceMin: 400, priceMax: 500 } });
+        expect(ids(page.items)).toEqual(["nov", "oct2", "sep"]);
+        expect(ids((await search({ filter: { priceMax: 300 } })).items)).toEqual(["oct"]);
+        expect(ids((await search({ filter: { priceMin: 600 } })).items)).toEqual(["unknown"]);
+      });
+
+      it("가격이 유한한 숫자가 아니면 조건 없음", async () => {
+        expect((await search({ filter: { priceMin: Number.NaN, priceMax: null } })).total).toBe(6);
+      });
+
+      it("필터를 여러 개 주면 모두 만족해야 한다 (AND)", async () => {
+        const page = await search({
+          filter: { release: "new", mediaId: "m-other", priceMax: 400 },
+        });
+        expect(ids(page.items)).toEqual(["oct2"]);
+        expect(page.total).toBe(1);
+        expect(
+          await search({ filter: { release: "upcoming", mediaId: "m-other", priceMin: 500 } })
+        ).toEqual({ items: [], total: 0 });
+      });
+
+      it("가격 낮은순 · 높은순, 가격 모름은 둘 다 맨 뒤", async () => {
+        expect(ids((await search({ sort: "priceAsc" })).items)).toEqual([
+          "oct",
+          "nov",
+          "oct2",
+          "sep",
+          "unknown",
+          "dec",
+        ]);
+        expect(ids((await search({ sort: "priceDesc" })).items)).toEqual([
+          "unknown",
+          "sep",
+          "nov",
+          "oct2",
+          "oct",
+          "dec",
+        ]);
+      });
+
+      it("필터 · 정렬을 적용한 뒤에 페이지를 자르고, total 은 필터 적용 개수", async () => {
+        const page1 = await search({ filter: { priceMin: 300 }, sort: "priceAsc", limit: 2 });
+        const page2 = await search({
+          filter: { priceMin: 300 },
+          sort: "priceAsc",
+          limit: 2,
+          offset: 2,
+        });
+        const page3 = await search({
+          filter: { priceMin: 300 },
+          sort: "priceAsc",
+          limit: 2,
+          offset: 4,
+        });
+        expect(ids(page1.items)).toEqual(["oct", "nov"]);
+        expect(ids(page2.items)).toEqual(["oct2", "sep"]);
+        expect(ids(page3.items)).toEqual(["unknown"]);
+        expect([page1.total, page2.total, page3.total]).toEqual([5, 5, 5]);
+      });
+
+      it("모르는 정렬 값이 오면 발매일순", async () => {
+        const page = await search({ sort: "nope" as never });
+        expect(ids(page.items)).toEqual(["dec", "nov", "oct", "oct2", "sep", "unknown"]);
+      });
+
+      it("필터 · 정렬해도 seed 순서(listGacha) 는 바뀌지 않는다", async () => {
+        await search({ sort: "priceDesc" });
+        expect(ids(await repo.listGacha())).toEqual(ids(seed));
+      });
+    });
   });
 
   describe("seed 배열 격리", () => {

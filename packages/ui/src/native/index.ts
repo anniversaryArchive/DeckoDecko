@@ -16,3 +16,4 @@ export { Segment, type SegmentOption, type SegmentProps, type SegmentTone } from
 export { TabBar, type TabBarItem, type TabBarProps } from "./TabBar";
 export { Text, type TextProps } from "./Text";
 export { ToastProvider, useToast, type ToastOptions, type ToastProviderProps } from "./Toast";
+export { COLOR_TRANSITION_DURATION, useColorTransition } from "./useColorTransition";

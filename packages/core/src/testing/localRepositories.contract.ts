@@ -97,6 +97,15 @@ export function describeLocalRepositories(
         expect(await repos.items.listItems({ gachaId: "none" })).toEqual([]);
       });
 
+      it("limit 이면 최근 것부터 그만큼만", async () => {
+        const a = await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "a" });
+        const b = await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "b" });
+        const c = await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "c" });
+
+        expect(ids(await repos.items.listItems({ limit: 2 }))).toEqual([c.id, b.id]);
+        expect(ids(await repos.items.listItems({ limit: 5 }))).toEqual([c.id, b.id, a.id]);
+      });
+
       it("없는 id 를 읽으면 null", async () => {
         expect(await repos.items.getItem("nope")).toBeNull();
       });
@@ -183,6 +192,18 @@ export function describeLocalRepositories(
         await repos.items.createItem({ gachaId: "g1", type: "GET", name: "b", folderId: bag.id });
         await repos.items.createItem({ gachaId: "g2", type: "WISH", name: "c", folderId: bag.id });
         expect(await repos.items.countItemsByFolder()).toEqual({ [fallback]: 1, [bag.id]: 2 });
+      });
+
+      it("가챠별 개수: WISH / GET 따로, 기록이 없는 가챠는 빠진다", async () => {
+        expect(await repos.items.countItemsByGacha()).toEqual({});
+        await repos.items.createItem({ gachaId: "g1", type: "WISH", name: "a" });
+        await repos.items.createItem({ gachaId: "g1", type: "GET", name: "b" });
+        await repos.items.createItem({ gachaId: "g1", type: "GET", name: "c" });
+        await repos.items.createItem({ gachaId: "g2", type: "WISH", name: "d" });
+        expect(await repos.items.countItemsByGacha()).toEqual({
+          g1: { wish: 1, get: 2 },
+          g2: { wish: 1, get: 0 },
+        });
       });
 
       describe("이름 중복 검사", () => {
@@ -285,6 +306,36 @@ export function describeLocalRepositories(
       it("기본 폴더는 지울 수 없다. 없는 id 는 아무 일도 없다", async () => {
         await expect(repos.folders.deleteFolder((await defaultFolder()).id)).rejects.toThrow();
         await repos.folders.deleteFolder("nope");
+        expect(await repos.folders.listFolders()).toHaveLength(1);
+      });
+
+      it("순서 바꾸기. 일반 폴더를 ids 순서로 두고 기본 폴더는 맨 앞에 남는다", async () => {
+        const a = await repos.folders.createFolder("가방");
+        const b = await repos.folders.createFolder("책상");
+        const c = await repos.folders.createFolder("서랍");
+        await repos.folders.reorderFolders([c.id, a.id, b.id]);
+        const fallback = (await defaultFolder()).id;
+        const list = await repos.folders.listFolders();
+        expect(ids(list)).toEqual([fallback, c.id, a.id, b.id]);
+        expect(list.map((f) => f.sequence)).toEqual([0, 1, 2, 3]);
+        // 바꾼 뒤 새 폴더는 맨 뒤
+        const d = await repos.folders.createFolder("상자");
+        expect(ids(await repos.folders.listFolders()).at(-1)).toBe(d.id);
+      });
+
+      it("순서 목록이 지금 폴더와 다르면 아무것도 바꾸지 않고 던진다", async () => {
+        const a = await repos.folders.createFolder("가방");
+        const b = await repos.folders.createFolder("책상");
+        const before = ids(await repos.folders.listFolders());
+        const fallback = (await defaultFolder()).id;
+        for (const order of [[a.id], [a.id, b.id, "nope"], [a.id, a.id], [fallback, a.id, b.id]]) {
+          await expect(repos.folders.reorderFolders(order)).rejects.toThrow();
+        }
+        expect(ids(await repos.folders.listFolders())).toEqual(before);
+      });
+
+      it("일반 폴더가 없으면 빈 목록으로 바꿔도 된다", async () => {
+        await repos.folders.reorderFolders([]);
         expect(await repos.folders.listFolders()).toHaveLength(1);
       });
 

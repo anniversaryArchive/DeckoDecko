@@ -4,6 +4,7 @@ import { skipToken, useQuery } from "@tanstack/react-query";
 
 import { queryKeys } from "../queryKeys";
 import { useRepositories } from "./provider";
+import { serverNetworkMode } from "./queryClient";
 import { NOTICE_DEFAULTS } from "../repositories/notice";
 
 /**
@@ -13,6 +14,7 @@ import { NOTICE_DEFAULTS } from "../repositories/notice";
 export function useNotices(limit: number = NOTICE_DEFAULTS.listLimit) {
   const { notice } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.notice.list(limit),
     queryFn: notice ? () => notice.listNotices({ limit }) : skipToken,
   });
@@ -23,6 +25,7 @@ export function useHomeNotices() {
   const { notice } = useRepositories();
   const limit = NOTICE_DEFAULTS.homeLimit;
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.notice.home(limit),
     queryFn: notice ? () => notice.listNotices({ limit, fixedOnly: true }) : skipToken,
   });
@@ -32,6 +35,7 @@ export function useHomeNotices() {
 export function useNotice(id: string | undefined) {
   const { notice } = useRepositories();
   return useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.notice.detail(id ?? ""),
     queryFn: id && notice ? () => notice.getNotice(id) : skipToken,
   });

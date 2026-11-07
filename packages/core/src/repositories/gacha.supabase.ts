@@ -1,14 +1,33 @@
 import type { DeckoSupabaseClient } from "../supabase";
-import { count, GACHA_DEFAULTS } from "./gacha";
-import type { GachaRepository, ListGachaParams, SearchGachaParams } from "./gacha";
-import { toGacha, toGachaDetail } from "./gacha.supabase.mappers";
-import { ilikeAny, toDbId } from "./gacha.supabase.params";
-import { DETAIL_SELECT, SUMMARY_SELECT } from "./gacha.supabase.rows";
+import { count, GACHA_DEFAULTS, resolveGachaFilter, toYearMonth } from "./gacha";
+import type {
+  GachaRepository,
+  GachaRepositoryOptions,
+  ListGachaParams,
+  SearchGachaParams,
+} from "./gacha";
+import { toGacha, toGachaDetail, toGachaFromRpc } from "./gacha.supabase.mappers";
+import {
+  ilikeAny,
+  toDbId,
+  toFilterConditions,
+  toOrderBy,
+  type FilterCondition,
+} from "./gacha.supabase.params";
+import { DETAIL_SELECT, SUMMARY_SELECT, type GachaRpcRow } from "./gacha.supabase.rows";
 
 /** offset 이 전체 개수를 넘으면 PostgREST 가 416(PGRST103)을 준다. 에러가 아니라 빈 페이지로 본다. */
 const RANGE_NOT_SATISFIABLE = "PGRST103";
 
 type PostgrestErrorLike = { message: string; code?: string };
+
+/** 쿼리에 필터 조건을 모두 붙인다 (AND). */
+function withConditions<Q extends { filter(column: string, operator: string, value: unknown): Q }>(
+  query: Q,
+  conditions: readonly FilterCondition[]
+): Q {
+  return conditions.reduce((q, c) => q.filter(c.column, c.operator, c.value), query);
+}
 
 /** 실패는 throw 해서 React Query 의 error 상태로 보낸다. 빈 결과(빈 배열 · null)와 섞이지 않게 한다. */
 function fail(action: string, error: PostgrestErrorLike): never {
@@ -18,13 +37,18 @@ function fail(action: string, error: PostgrestErrorLike): never {
 /**
  * Supabase(PostgREST) 로 읽는 가챠 저장소. 계약은 GachaRepository 와 같다.
  *   - 최신순: created_at → id 내림차순.
- *   - 인기: 임시. 집계 RPC(#137, get_top_gacha_views) 전까지 오래 등록된 순(id 오름차순)이라 실제 인기와 상관없다.
- *     조회 로그는 anon 이 읽을 수 없어 클라이언트에서 집계하지 않는다. RPC 가 오면 이 함수의 호출만 바꾼다.
+ *   - 인기: RPC get_top_gacha_views. 최근 10일 조회 수가 많은 순이고, 조회가 없는 가챠는 빠진다 (그래서 limit 보다 적을 수 있다).
+ *     조회 로그는 anon 이 읽을 수 없어 서버가 센다.
  *   - 검색: RPC(#136) 전까지 ilike. 가챠 이름(원문 · 한국어) 또는 작품명(한 · 일 · 영)에 부분 일치, 대소문자 무시.
+ *     필터 · 정렬 규칙은 GachaFilter · GachaSort 와 메모리 구현과 같다 (변환은 gacha.supabase.params).
  * 행 타입 · select 는 gacha.supabase.rows, 행 → 도메인 매핑은 gacha.supabase.mappers, 요청 값 만들기는 gacha.supabase.params.
  */
-export function createSupabaseGachaRepository(client: DeckoSupabaseClient): GachaRepository {
+export function createSupabaseGachaRepository(
+  client: DeckoSupabaseClient,
+  options: GachaRepositoryOptions = {}
+): GachaRepository {
   const gachaTable = () => client.from("gacha");
+  const now = options.now ?? (() => new Date());
 
   // PostgREST 는 가챠 · 작품 컬럼을 한 or() 로 못 묶어서, 맞는 작품 id 를 먼저 받아 anime_id.in 으로 넣는다.
   async function searchFilter(keyword: string): Promise<string> {
@@ -41,10 +65,14 @@ export function createSupabaseGachaRepository(client: DeckoSupabaseClient): Gach
   }
 
   /** 조건에 맞는 전체 개수만 센다 (행은 받지 않는다). */
-  async function countOnly(filter: string): Promise<number> {
-    const { count: total, error } = await gachaTable()
-      .select("id", { count: "exact", head: true })
-      .or(filter);
+  async function countOnly(
+    filter: string,
+    conditions: readonly FilterCondition[]
+  ): Promise<number> {
+    const { count: total, error } = await withConditions(
+      gachaTable().select("id", { count: "exact", head: true }).or(filter),
+      conditions
+    );
     if (error) fail("searchGacha.count", error);
     return total ?? 0;
   }
@@ -61,12 +89,13 @@ export function createSupabaseGachaRepository(client: DeckoSupabaseClient): Gach
     },
 
     async listPopularGacha(limit?: number) {
-      const { data, error } = await gachaTable()
-        .select(SUMMARY_SELECT)
-        .order("id", { ascending: true })
-        .limit(count(limit, GACHA_DEFAULTS.popularLimit));
+      // 상한(50)은 RPC 가 건다
+      const { data, error } = await client.rpc("get_top_gacha_views", {
+        limit_count: count(limit, GACHA_DEFAULTS.popularLimit),
+      });
       if (error) fail("listPopularGacha", error);
-      return data.map(toGacha);
+      const rows: GachaRpcRow[] = data;
+      return rows.map(toGachaFromRpc);
     },
 
     async listGachaByIds(ids: readonly string[]) {
@@ -92,23 +121,23 @@ export function createSupabaseGachaRepository(client: DeckoSupabaseClient): Gach
       const offset = count(params.offset, GACHA_DEFAULTS.searchOffset, 0);
       const keyword = params.keyword.normalize("NFKC").trim();
       if (!keyword) return { items: [], total: 0 };
+      const conditions = toFilterConditions(resolveGachaFilter(params.filter), toYearMonth(now()));
+      if (conditions === null) return { items: [], total: 0 };
 
       const filter = await searchFilter(keyword);
-      // 결과와 전체 개수를 한 요청으로 받는다 (count 는 range 와 상관없이 전체 개수)
-      const {
-        data,
-        error,
-        count: total,
-      } = await gachaTable()
-        .select(SUMMARY_SELECT, { count: "exact" })
-        .or(filter)
-        .order("created_at", { ascending: false, nullsFirst: false })
-        .order("id", { ascending: false })
-        .range(offset, offset + limit - 1);
+      // 결과와 전체 개수를 한 요청으로 받는다 (count 는 range 와 상관없이 필터까지 적용한 전체 개수)
+      const ordered = toOrderBy(params.sort).reduce(
+        (q, o) => q.order(o.column, { ascending: o.ascending, nullsFirst: false }),
+        withConditions(
+          gachaTable().select(SUMMARY_SELECT, { count: "exact" }).or(filter),
+          conditions
+        )
+      );
+      const { data, error, count: total } = await ordered.range(offset, offset + limit - 1);
 
       // 무한 스크롤은 total 에서 멈추므로, 여기는 검색 중에 결과가 줄었을 때만 온다. 그래서 개수를 다시 센다.
       if (error?.code === RANGE_NOT_SATISFIABLE) {
-        return { items: [], total: await countOnly(filter) };
+        return { items: [], total: await countOnly(filter, conditions) };
       }
       if (error) fail("searchGacha", error);
       return { items: data.map(toGacha), total: total ?? data.length };

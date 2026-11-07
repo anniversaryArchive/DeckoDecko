@@ -1,5 +1,5 @@
-import { Link, router } from "expo-router";
-import type { ReactNode } from "react";
+import { Link, router, useScrollToTop } from "expo-router";
+import { useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,14 +21,16 @@ import { StateMessage } from "@/components/StateMessage";
 const HOME_LIST_LIMIT = 5;
 
 /**
- * 홈. 상단 바 · 공지 띠 · 내 굿즈 소장률 · 새로 나왔어요(세로 카드 가로 스크롤) · 지금 인기(가로 카드 목록).
- * 시안의 상단 설정 버튼은 설정 화면 작업 때 붙인다.
+ * 홈. 상단 바(검색 · 설정) · 공지 띠 · 내 굿즈 소장률 · 새로 나왔어요(세로 카드 가로 스크롤) · 지금 인기(가로 카드 목록).
  */
 export default function HomeScreen() {
+  const scrollRef = useRef<ScrollView>(null);
+  useScrollToTop(scrollRef);
   return (
     <View style={{ flex: 1 }}>
       <HomeHeader />
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={{ paddingTop: space[6], paddingBottom: space[24], gap: space[24] }}
       >
         <View style={{ paddingHorizontal: gutter, gap: space[24] }}>
@@ -67,12 +69,20 @@ function HomeHeader() {
       <Text variant="headingSm" accessibilityRole="header">
         {t("common.appName")}
       </Text>
-      <HeaderIconButton
-        icon="search"
-        variant="outline"
-        label={t("search.title")}
-        onPress={() => router.push("/search")}
-      />
+      <View style={{ flexDirection: "row", gap: space[8] }}>
+        <HeaderIconButton
+          icon="search"
+          variant="outline"
+          label={t("search.title")}
+          onPress={() => router.push("/search")}
+        />
+        <HeaderIconButton
+          icon="settings-outline"
+          variant="outline"
+          label={t("settings.title")}
+          onPress={() => router.push("/settings")}
+        />
+      </View>
     </View>
   );
 }

@@ -59,7 +59,7 @@ export type Notice = {
   createdAt: string; // ISO 8601 UTC
 };
 
-/** WISH = 갖고 싶음, GET = 가졌음. 목록 · 상세에서 원탭으로 바꾼다 (useSetItemType). */
+/** WISH = 갖고 싶음, GET = 가졌음. 목록 · 상세에서 태그를 눌러 바꾼다 (useToggleItemType). */
 export type ItemType = "WISH" | "GET";
 
 /**
@@ -72,7 +72,7 @@ export type Item = {
   folderId: string; // 폴더를 고르지 않으면 기본 폴더
   type: ItemType;
   name: string; // 앞뒤 공백만 지우고 입력한 모양 그대로 저장
-  thumbnail: string | null; // 사진의 로컬 파일 URI (file://)
+  thumbnail: string | null; // 앱 문서 폴더 기준 상대 경로 (photos/<id>.jpg). 화면에서는 앱의 photoUri 로 주소를 만든다
   memo: string | null;
   createdAt: string; // ISO 8601 UTC. 목록은 이것의 역순
   updatedAt: string;
@@ -92,3 +92,6 @@ export type ItemCounts = {
   wish: number;
   get: number;
 };
+
+/** 내 굿즈 보기 방식. items = 풀어보기(아이템 2열 그리드), gachas = 묶어보기(가챠별 한 줄). 기기에 기억한다 */
+export type GoodsViewMode = "items" | "gachas";

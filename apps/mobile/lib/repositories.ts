@@ -3,19 +3,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createMemoryGachaRepository,
   createMemoryNoticeRepository,
+  createMemoryViewLogRepository,
   createSupabaseClient,
   createSupabaseGachaRepository,
+  createStoragePreferencesRepository,
   createStorageRecentRepository,
+  createSupabaseViewLogRepository,
   type LocalRepositories,
+  type PreferencesRepository,
   type RecentRepository,
   type Repositories,
+  type ViewLogRepository,
 } from "@deckodecko/core";
 import { mockCatalog, mockNotices } from "@deckodecko/core/mocks";
 
 import { localRepositories } from "./db/local";
+import { getDeviceId } from "./deviceId";
 
-// 최근 검색어 · 최근 본 가챠는 데이터 소스와 관계없이 기기 AsyncStorage (키는 @deckodecko/core 의 storageKeys).
+// 최근 검색어 · 최근 본 가챠 · 기기 설정은 데이터 소스와 관계없이 기기 AsyncStorage (키는 @deckodecko/core 의 storageKeys).
 const recent = createStorageRecentRepository(AsyncStorage);
+const preferences = createStoragePreferencesRepository(AsyncStorage);
 
 // 모드 규칙은 README 의 "데이터 소스". process.env.EXPO_PUBLIC_* 는 번들 때 값으로 바뀌므로 구조 분해하지 않는다.
 function createRepositories(): AppRepositories {
@@ -35,6 +42,8 @@ function createRepositories(): AppRepositories {
   return {
     gacha: createSupabaseGachaRepository(client),
     recent,
+    preferences,
+    viewLog: createSupabaseViewLogRepository(client, getDeviceId),
     ...devNotice(),
     ...localRepositories,
   };
@@ -44,6 +53,8 @@ function createMockRepositories(): AppRepositories {
   return {
     gacha: createMemoryGachaRepository(mockCatalog),
     recent,
+    preferences,
+    viewLog: createMemoryViewLogRepository(),
     ...devNotice(),
     ...localRepositories,
   };
@@ -54,7 +65,12 @@ function devNotice(): Pick<Repositories, "notice"> {
   return __DEV__ ? { notice: createMemoryNoticeRepository(mockNotices) } : {};
 }
 
-// Repositories 는 로컬 기록 · recent 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
-type AppRepositories = Repositories & LocalRepositories & { recent: RecentRepository };
+// Repositories 는 로컬 기록 · recent · preferences · viewLog 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
+type AppRepositories = Repositories &
+  LocalRepositories & {
+    recent: RecentRepository;
+    preferences: PreferencesRepository;
+    viewLog: ViewLogRepository;
+  };
 
 export const repositories: AppRepositories = createRepositories();

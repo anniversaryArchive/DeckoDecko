@@ -10,7 +10,9 @@ import {
 import { useEffect } from "react";
 
 import { queryKeys } from "../queryKeys";
+import { combineQueryStatus, refetchQueries, type QueryStatus } from "./combineQueries";
 import { useRepositories } from "./provider";
+import { localNetworkMode, serverNetworkMode } from "./queryClient";
 import type { RecentRepository } from "../repositories/recent";
 
 /** 최근 기록 저장소. CoreProvider 에 recent 를 넘기지 않은 앱(백오피스)에서 쓰면 던진다. */
@@ -32,6 +34,7 @@ function useRecentMutation<TVariables>(
 ) {
   const queryClient = useQueryClient();
   return useMutation({
+    ...localNetworkMode,
     mutationFn,
     onSuccess: (list) => queryClient.setQueryData(queryKey, list),
   });
@@ -43,6 +46,7 @@ function useRecentMutation<TVariables>(
 export function useRecentSearches() {
   const recent = useRecentRepository();
   return useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.recent.searches(),
     queryFn: () => recent.listSearches(),
   });
@@ -90,7 +94,7 @@ export function useClearRecentGacha() {
   return useRecentMutation(queryKeys.recent.gachaIds(), () => recent.clearGachaIds());
 }
 
-type QueryPart<T> = { data: T | undefined; isLoading: boolean; isError: boolean };
+type QueryPart<T> = QueryStatus & { data: T | undefined };
 
 /**
  * 저장된 id 목록 쿼리와 가챠 목록 쿼리를 하나의 결과로 합친다 (useRecentGacha 안쪽, 테스트용으로 뺐다).
@@ -110,8 +114,7 @@ export function combineRecentGacha<T extends { id: string }>(
         : ids.data.length === 0
           ? []
           : list.data?.filter((g) => idSet.has(g.id)),
-    isLoading: ids.isLoading || list.isLoading,
-    isError: ids.isError || list.isError,
+    ...combineQueryStatus([ids, list]),
   };
 }
 
@@ -124,12 +127,15 @@ export function combineRecentGacha<T extends { id: string }>(
 export function useRecentGacha() {
   const { gacha } = useRepositories();
   const recent = useRecentRepository();
+  // id 목록은 기기 저장소, 가챠 목록은 서버라 id 목록만 오프라인에서도 읽는다
   const ids = useQuery({
+    ...localNetworkMode,
     queryKey: queryKeys.recent.gachaIds(),
     queryFn: () => recent.listGachaIds(),
   });
   const idList = ids.data ?? [];
   const list = useQuery({
+    ...serverNetworkMode,
     queryKey: queryKeys.gacha.byIds(idList),
     queryFn: idList.length > 0 ? () => gacha.listGachaByIds(idList) : skipToken,
     placeholderData: keepPreviousData,
@@ -137,6 +143,6 @@ export function useRecentGacha() {
 
   return {
     ...combineRecentGacha(ids, list),
-    refetch: () => (ids.isError ? ids.refetch() : list.refetch()),
+    refetch: refetchQueries([ids, list]),
   };
 }
