@@ -34,6 +34,7 @@ import { MyItemRow } from "@/components/MyItemRow";
 import { QueryState } from "@/components/QueryState";
 import { StateMessage } from "@/components/StateMessage";
 import { joinDot, useGachaDisplay } from "@/hooks/useGachaDisplay";
+import { features } from "@/lib/features";
 import { goBackOrHome } from "@/lib/routes";
 
 /** 아이템 추가 버튼의 + 아이콘 */
@@ -74,7 +75,7 @@ export default function GachaDetailScreen() {
   );
 }
 
-// TODO(혜진): 사진 인식 화면이 생기면 연결한다. 그 전까지는 눌러도 아무 일도 없다.
+// TODO(혜진): 사진 인식 화면이 생기면 연결하고 features.aiScan 을 켠다.
 function openAiScan(_gachaId: string) {}
 
 /** 시트 저장 실패 토스트. "다시 열기"를 누르면 reopen 으로 시트를 다시 연다 */
@@ -200,13 +201,15 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
           paddingBottom: insets.bottom + space[12],
         }}
       >
-        <HeaderIconButton
-          icon="camera-outline"
-          variant="accent"
-          size="lg"
-          label={t("detail.aiScan")}
-          onPress={() => openAiScan(gacha.id)}
-        />
+        {features.aiScan && (
+          <HeaderIconButton
+            icon="camera-outline"
+            variant="accent"
+            size="lg"
+            label={t("detail.aiScan")}
+            onPress={() => openAiScan(gacha.id)}
+          />
+        )}
         <Button
           icon={<Ionicons name="add" size={ADD_ICON_SIZE} color={colors.onPrimary} />}
           onPress={() => openSheet()}
