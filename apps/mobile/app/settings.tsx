@@ -8,9 +8,9 @@ import { useCanSendFeedback } from "@deckodecko/core/react";
 import { border, gutter, radius, space, useTheme } from "@deckodecko/ui";
 import { Card, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
-import { HEADER_ICON_BUTTON_SIZE, HeaderIconButton } from "@/components/HeaderIconButton";
+import { ScreenHeader } from "@/components/ScreenHeader";
 import { chooseLanguage, isLanguage, type Language } from "@/lib/i18n";
-import { goBackOrHome, openFeedback } from "@/lib/routes";
+import { openFeedback } from "@/lib/routes";
 
 /** 스토어 등록 정보와 같은 주소로 둔다. 바꾸면 docs/image-takedown.md 도 같이 고친다. */
 const CONTACT_EMAIL = "anniversaryarchive@gmail.com";
@@ -35,28 +35,7 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   return (
     <View style={{ flex: 1 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingTop: insets.top + space[16],
-          paddingHorizontal: gutter,
-          paddingBottom: space[8],
-        }}
-      >
-        <HeaderIconButton
-          icon="chevron-back"
-          variant="outline"
-          label={t("common.back")}
-          onPress={goBackOrHome}
-        />
-        <Text variant="titleLg" accessibilityRole="header">
-          {t("settings.title")}
-        </Text>
-        {/* 제목을 가운데에 두려고 뒤로 버튼만큼 자리를 둔다 */}
-        <View style={{ width: HEADER_ICON_BUTTON_SIZE }} />
-      </View>
+      <ScreenHeader title={t("settings.title")} />
       <ScrollView
         contentContainerStyle={{
           paddingTop: space[10],

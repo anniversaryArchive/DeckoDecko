@@ -5,6 +5,11 @@ export function openGacha(id: string) {
   router.push({ pathname: "/gacha/[id]", params: { id } });
 }
 
+/** 공지 상세로 이동 (공지 목록) */
+export function openNotice(id: string) {
+  router.push({ pathname: "/notice/[id]", params: { id } });
+}
+
 /** 요청 · 문의 보내기로 이동. gachaName 을 넘기면 가챠 이름 칸을 채워 둔다 (검색 결과 없음). */
 export function openFeedback(gachaName?: string) {
   router.push({ pathname: "/feedback", params: gachaName ? { gachaName } : {} });

@@ -1,8 +1,9 @@
 "use client";
 
-import { skipToken, useQuery } from "@tanstack/react-query";
+import { skipToken, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "../queryKeys";
+import type { Notice } from "../types";
 import { useRepositories } from "./provider";
 import { serverNetworkMode } from "./queryClient";
 import { NOTICE_DEFAULTS } from "../repositories/notice";
@@ -31,12 +32,20 @@ export function useHomeNotices() {
   });
 }
 
-/** 공지 상세. id 가 비었거나 공지 저장소가 없으면 요청하지 않는다 (로딩 확인은 isLoading 으로). */
+/**
+ * 공지 상세. id 가 비었거나 공지 저장소가 없으면 요청하지 않는다 (로딩 확인은 isLoading 으로).
+ * 공지 목록 캐시에 같은 공지가 있으면 그 본문을 먼저 보여 준다 (오프라인이어도 열리고, 목록과 같은 시점이면 다시 받지 않는다).
+ */
 export function useNotice(id: string | undefined) {
   const { notice } = useRepositories();
+  const queryClient = useQueryClient();
+  const listKey = queryKeys.notice.list(NOTICE_DEFAULTS.listLimit);
   return useQuery({
     ...serverNetworkMode,
     queryKey: queryKeys.notice.detail(id ?? ""),
     queryFn: id && notice ? () => notice.getNotice(id) : skipToken,
+    // placeholderData 는 queryView 가 로딩으로 그려서 initialData 를 쓴다
+    initialData: () => queryClient.getQueryData<Notice[]>(listKey)?.find((n) => n.id === id),
+    initialDataUpdatedAt: () => queryClient.getQueryState(listKey)?.dataUpdatedAt,
   });
 }

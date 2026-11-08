@@ -18,6 +18,8 @@ export const ko = {
     percent: "{{value, number}}%",
     // formatShortDate 가 쓴다 (month · day 는 두 자리)
     shortDate: "{{year}}.{{month}}.{{day}}",
+    // formatDateTime 이 쓴다. date 는 shortDate
+    dateTime: "{{date}} {{hour}}:{{minute}}",
     appName: "가챠 탐색대",
     back: "뒤로",
     last10Days: "최근 10일",
@@ -279,8 +281,15 @@ export const ko = {
   },
   notice: {
     title: "공지사항",
-    // 공지 목록 화면이 생기기 전까지 자리에 보이는 문구
-    comingSoon: "공지 목록은 준비 중이에요.",
+    // 목록 · 상세에서 고정 공지 앞에 붙는 배지
+    fixedBadge: "고정",
+    emptyTitle: "아직 공지가 없어요",
+    emptyDescription: "새 가챠 소식이나 앱 안내가 생기면\n여기에서 알려 드릴게요.",
+    goHome: "홈으로 돌아가기",
+    // 지워졌거나 없는 공지를 열었을 때 (목록을 받은 뒤 운영자가 지웠거나 링크가 잘못된 경우)
+    notFoundTitle: "공지를 찾을 수 없어요",
+    notFoundDescription: "지워졌거나 더 이상 볼 수 없는 공지예요.",
+    backToList: "공지 목록으로",
   },
   settings: {
     title: "설정",
