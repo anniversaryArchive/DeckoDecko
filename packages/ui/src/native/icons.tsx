@@ -75,6 +75,32 @@ export function AlertIcon({ size = 16, color = "textMuted" }: LineIconProps) {
   );
 }
 
+/** 체크 ✓ (완료 토스트). 두 변만 칠한 사각형을 45° 돌려 그린다 */
+export function CheckIcon({ size = 16, color = "textMuted" }: LineIconProps) {
+  const { colors } = useTheme();
+  const t = thickness(size);
+  return (
+    <View
+      style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
+      <View
+        style={{
+          // 짧은 변(왼쪽 아래)과 긴 변(오른쪽 위)의 비율이 시안의 체크와 비슷하도록
+          width: size * 0.35,
+          height: size * 0.7,
+          marginTop: -size * 0.15,
+          borderRightWidth: t,
+          borderBottomWidth: t,
+          borderColor: colors[color],
+          transform: [{ rotate: "45deg" }],
+        }}
+      />
+    </View>
+  );
+}
+
 /** 아래 화살표 ⌄ (펼치기 · 고르기) */
 export function ChevronDownIcon({ size = 16, color = "textMuted" }: LineIconProps) {
   const { colors } = useTheme();

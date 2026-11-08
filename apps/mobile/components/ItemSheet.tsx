@@ -417,13 +417,14 @@ function PhotoPicker({
 }) {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const toast = useToast();
 
   const pick = async () => {
     let result: ImagePicker.ImagePickerResult;
     try {
       result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"] });
     } catch {
-      // 선택기를 열지 못하면 사진을 그대로 둔다. 다시 누르면 된다
+      toast.show({ title: t("item.photoPickerFailed"), message: t("item.photoPickerFailedHint") });
       return;
     }
     const picked = result.canceled ? undefined : result.assets[0];

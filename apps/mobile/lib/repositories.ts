@@ -1,12 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
+  createMemoryFeedbackRepository,
   createMemoryGachaRepository,
+  createMemoryMediaRepository,
   createMemoryNoticeRepository,
   createMemoryViewLogRepository,
   createSupabaseClient,
   createSupabaseGachaRepository,
   createStoragePreferencesRepository,
+  createSupabaseMediaRepository,
   createStorageRecentRepository,
   createSupabaseViewLogRepository,
   type LocalRepositories,
@@ -15,7 +18,7 @@ import {
   type Repositories,
   type ViewLogRepository,
 } from "@deckodecko/core";
-import { mockCatalog, mockNotices } from "@deckodecko/core/mocks";
+import { mockCatalog, mockMedia, mockNotices } from "@deckodecko/core/mocks";
 
 import { localRepositories } from "./db/local";
 import { getDeviceId } from "./deviceId";
@@ -41,10 +44,12 @@ function createRepositories(): AppRepositories {
   const client = createSupabaseClient(url, publishableKey);
   return {
     gacha: createSupabaseGachaRepository(client),
+    media: createSupabaseMediaRepository(client),
     recent,
     preferences,
     viewLog: createSupabaseViewLogRepository(client, getDeviceId),
     ...devNotice(),
+    ...devFeedback(),
     ...localRepositories,
   };
 }
@@ -52,10 +57,12 @@ function createRepositories(): AppRepositories {
 function createMockRepositories(): AppRepositories {
   return {
     gacha: createMemoryGachaRepository(mockCatalog),
+    media: createMemoryMediaRepository(mockMedia),
     recent,
     preferences,
     viewLog: createMemoryViewLogRepository(),
     ...devNotice(),
+    ...devFeedback(),
     ...localRepositories,
   };
 }
@@ -65,9 +72,15 @@ function devNotice(): Pick<Repositories, "notice"> {
   return __DEV__ ? { notice: createMemoryNoticeRepository(mockNotices) } : {};
 }
 
-// Repositories 는 로컬 기록 · recent · preferences · viewLog 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
+// Supabase 저장소(#250) 전까지 요청 · 문의는 개발 빌드에서만 메모리 저장소다 (출시 빌드에 넣으면 보낸 내용이 앱을 끌 때 사라진다).
+function devFeedback(): Pick<Repositories, "feedback"> {
+  return __DEV__ ? { feedback: createMemoryFeedbackRepository({ getDeviceId }) } : {};
+}
+
+// Repositories 는 로컬 기록 · recent · preferences · viewLog · media 가 선택이라, 앱에서는 빠뜨리면 typecheck 에서 잡히게 필수로 좁힌다.
 type AppRepositories = Repositories &
-  LocalRepositories & {
+  LocalRepositories &
+  Required<Pick<Repositories, "media">> & {
     recent: RecentRepository;
     preferences: PreferencesRepository;
     viewLog: ViewLogRepository;

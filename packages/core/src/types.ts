@@ -15,6 +15,11 @@ export type Media = {
   titleJa: string | null;
   titleEn: string | null;
   kind: MediaKind | null;
+  /**
+   * 검색에만 쓰는 별칭 ("별숲" 같은 줄임말). 화면에는 보이지 않는다.
+   * 메모리 저장소 · 목 데이터만 채운다. Supabase 저장소는 검색 RPC 가 서버에서 별칭을 찾아서 받아 오지 않는다.
+   */
+  aliases?: readonly string[];
 };
 
 /** 가챠 한 종의 라인업 아이템. WISH / GET 기록의 기본 단위. */
@@ -95,3 +100,19 @@ export type ItemCounts = {
 
 /** 내 굿즈 보기 방식. items = 풀어보기(아이템 2열 그리드), gachas = 묶어보기(가챠별 한 줄). 기기에 기억한다 */
 export type GoodsViewMode = "items" | "gachas";
+
+/** 요청 · 문의 종류 (feedback 테이블의 kind 와 같은 값). request 가챠 등록 요청은 검색 결과 없음에서, bug 버그 · idea 제안은 설정에서 들어온다. */
+export type FeedbackKind = "request" | "bug" | "idea";
+
+/** 저장된 요청 · 문의 한 건 (feedback 테이블 한 행). */
+export type Feedback = {
+  id: string;
+  kind: FeedbackKind;
+  gachaName: string | null; // 가챠 등록 요청만
+  mediaId: string | null; // 자동완성에서 고른 작품
+  mediaText: string | null; // 적은 작품 이름 (고른 작품이면 그때 보인 이름)
+  content: string | null; // 비었으면 null
+  photoPath: string | null; // Storage 안의 경로 (버킷 이름 제외)
+  deviceId: string;
+  createdAt: string; // ISO 8601 UTC
+};

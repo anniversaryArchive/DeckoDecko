@@ -8,6 +8,8 @@
  * 만든 클라이언트 인스턴스는 저장소에만 넘긴다.
  */
 export type {
+  Feedback,
+  FeedbackKind,
   Folder,
   Gacha,
   GachaDetail,
@@ -84,5 +86,22 @@ export { createMemoryViewLogRepository } from "./repositories/viewLog.memory";
 export { createSupabaseViewLogRepository } from "./repositories/viewLog.supabase";
 export { createStorageDeviceId } from "./deviceId";
 export { createSupabaseClient, type DeckoSupabaseClient } from "./supabase";
+export type {
+  FeedbackMediaInput,
+  FeedbackPhoto,
+  FeedbackRepository,
+  SendFeedbackInput,
+} from "./repositories/feedback";
+export {
+  FEEDBACK_DAILY_LIMIT,
+  FEEDBACK_MAX_LENGTH,
+  FeedbackLimitError,
+  isFeedbackLimitError,
+} from "./repositories/feedback";
+export { createMemoryFeedbackRepository } from "./repositories/feedback.memory";
+export type { MediaEntry, MediaRepository, SearchMediaParams } from "./repositories/media";
+export { MEDIA_DEFAULTS } from "./repositories/media";
+export { createMemoryMediaRepository } from "./repositories/media.memory";
+export { createSupabaseMediaRepository } from "./repositories/media.supabase";
 export { queryKeys } from "./queryKeys";
 export { storageKeys, type StorageKey } from "./storageKeys";

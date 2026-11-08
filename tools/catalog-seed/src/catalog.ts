@@ -28,7 +28,8 @@ export interface CatalogItem {
   name: string;
   /** 번역 전이면 null. Claude Code 세션에서 JSON 을 직접 채운다 (README). */
   nameKr: string | null;
-  imageLink: string;
+  /** 권리자 요청 등으로 내린 이미지는 null 로 둔다. `sql` 재실행은 null 을 지키지만 `collect` 는 새로 채우므로 다시 null 로 바꾼다 (docs/image-takedown.md). */
+  imageLink: string | null;
 }
 
 export const CATALOG_JSON = new URL("../../../supabase/catalog/legacy-60.json", import.meta.url);
