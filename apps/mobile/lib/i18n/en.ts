@@ -247,6 +247,8 @@ export const en: Messages = {
     contactHint: "For image removal or other rights requests, please email us here.",
     contactOpenHint: "Opens your mail app",
     info: "About",
+    privacyPolicy: "Privacy Policy",
+    privacyOpenHint: "Opens in your browser",
   },
   feedback: {
     title: "Send a request",
