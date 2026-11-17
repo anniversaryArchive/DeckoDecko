@@ -67,5 +67,10 @@
     "sql.js": "^1.15.1",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
+  },
+  "reanimated": {
+    "staticFeatureFlags": {
+      "FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS": false
+    }
   }
 }
