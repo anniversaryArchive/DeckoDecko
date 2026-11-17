@@ -43,6 +43,12 @@ export const ko = {
     // 오프라인: 화면 위 배너 한 줄, 캐시가 없는 화면의 안내 (QueryState). 배너가 늘 같이 떠서 안내는 "오프라인"을 다시 말하지 않는다
     offline: "오프라인 상태예요",
     offlineLoad: "인터넷에 연결되면 자동으로 불러와요.",
+    // 공식 이미지가 보이는 화면 아래 출처 한 줄 (ImageCredit). sources 는 imageSource 문구를 " · " 로 이은 것
+    imageCredit: "이미지 출처 {{sources}}",
+    // 권리자 표기라 언어와 관계없이 원문 그대로 쓴다
+    imageSource: {
+      bandai: "© BANDAI",
+    },
   },
   startup: {
     // 로컬 DB 마이그레이션 실패 (루트 레이아웃의 실패 화면)
@@ -112,6 +118,9 @@ export const ko = {
     },
   },
   detail: {
+    // 상세 큰 이미지의 화면 읽기 라벨. credit 은 common.imageCredit 문구
+    heroImage: "{{name}} 이미지",
+    heroImageCredit: "{{name}} 이미지, {{credit}}",
     title: "가챠 상세",
     notFound: "없는 가챠예요 (id: {{id}})",
     collectionTitle: "이 가챠 소장률",

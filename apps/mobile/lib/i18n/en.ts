@@ -29,6 +29,10 @@ export const en: Messages = {
     closeToastHint: "Dismisses the alert.",
     offline: "You're offline",
     offlineLoad: "This will load once you're back online.",
+    imageCredit: "Images {{sources}}",
+    imageSource: {
+      bandai: "© BANDAI",
+    },
   },
   startup: {
     localDbFailed: "Couldn't load your saved goods.\nPlease try again.",
@@ -89,6 +93,8 @@ export const en: Messages = {
     },
   },
   detail: {
+    heroImage: "{{name}} image",
+    heroImageCredit: "{{name}} image, {{credit}}",
     title: "Gacha details",
     notFound: "This gacha doesn't exist (id: {{id}})",
     collectionTitle: "Collected in this gacha",

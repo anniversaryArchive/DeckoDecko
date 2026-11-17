@@ -29,6 +29,7 @@ import { Button, Card, Text, useToast } from "@deckodecko/ui/native";
 import { GachaCollectionCard } from "@/components/GachaCollectionCard";
 import { GACHA_HERO_HEIGHT, GachaHero } from "@/components/GachaHero";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { ImageCredit, useImageCredit } from "@/components/ImageCredit";
 import { ItemSheet } from "@/components/ItemSheet";
 import { MyItemRow } from "@/components/MyItemRow";
 import { QueryState } from "@/components/QueryState";
@@ -99,6 +100,7 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
   // 가격 뒤에 붙는 보조 문구: "(세금 포함) · 전 6종". 가격이 없으면 종 수만.
   const priceTail = joinDot([pricePerPlay != null ? t("common.taxIncluded") : null, itemTotal]);
   const showSaveFailed = useSaveFailedToast();
+  const heroCredit = useImageCredit([[gacha]]);
   const [sheetOpen, setSheetOpen] = useState(false);
   /** 수정할 기록. 비어 있으면 추가 시트 */
   const [sheetItemId, setSheetItemId] = useState<string | undefined>();
@@ -129,7 +131,22 @@ function DetailContent({ gacha }: { gacha: GachaDetail }) {
         scrollEventThrottle={16}
         contentContainerStyle={{ paddingBottom: space[24] }}
       >
-        <GachaHero imageUrl={gacha.imageUrl} />
+        {/* 출처가 맥락 없이 먼저 읽히지 않게 이미지와 한 요소로 묶고, 라벨은 가챠 이름부터 읽는다 */}
+        <View
+          accessible={gacha.imageUrl != null}
+          accessibilityRole="image"
+          accessibilityLabel={
+            heroCredit
+              ? t("detail.heroImageCredit", { name, credit: heroCredit })
+              : t("detail.heroImage", { name })
+          }
+        >
+          <GachaHero imageUrl={gacha.imageUrl} />
+          <ImageCredit
+            lists={[[gacha]]}
+            style={{ paddingTop: space[8], paddingHorizontal: gutter, alignItems: "flex-end" }}
+          />
+        </View>
 
         <View style={{ paddingVertical: space[20], paddingHorizontal: gutter, gap: space[6] }}>
           {(media != null || release != null) && (
