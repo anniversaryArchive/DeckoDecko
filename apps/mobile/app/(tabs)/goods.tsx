@@ -119,7 +119,7 @@ function GoodsHeader({
           icon="folder-open-outline"
           variant="outline"
           label={t("goods.manageFolders")}
-          onPress={() => router.push("/folders")}
+          onPress={() => router.navigate("/folders")}
         />
       </View>
       <Segment

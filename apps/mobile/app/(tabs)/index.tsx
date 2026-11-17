@@ -80,7 +80,7 @@ function HomeHeader() {
           icon="settings-outline"
           variant="outline"
           label={t("settings.title")}
-          onPress={() => router.push("/settings")}
+          onPress={() => router.navigate("/settings")}
         />
       </View>
     </View>
