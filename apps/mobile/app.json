@@ -12,7 +12,8 @@
       "bundleIdentifier": "com.anniversaryarchive.deckodecko",
       "supportsTablet": false,
       "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true
+        "CFBundleAllowMixedLocalizations": true,
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
