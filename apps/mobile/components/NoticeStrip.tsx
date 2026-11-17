@@ -23,7 +23,7 @@ export function NoticeStrip() {
 
   return (
     <Pressable
-      onPress={() => router.push("/notice")}
+      onPress={() => router.navigate("/notice")}
       accessibilityRole="link"
       accessibilityLabel={[t("home.noticeAll"), ...list.map((n) => n.title)].join(", ")}
       style={({ pressed }) => ({
