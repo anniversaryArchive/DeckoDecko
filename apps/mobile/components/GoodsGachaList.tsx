@@ -54,7 +54,7 @@ export function GoodsGachaList({ items, type, gachas, gachasLoaded, folders }: P
         />
       )}
       ListFooterComponent={
-        <ImageCredit urls={groups.map((group) => gachas.get(group.gachaId)?.imageUrl)} />
+        <ImageCredit lists={[groups.map((group) => gachas.get(group.gachaId))]} />
       }
       contentContainerStyle={{
         paddingHorizontal: gutter,

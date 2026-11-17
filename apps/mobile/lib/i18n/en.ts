@@ -93,6 +93,8 @@ export const en: Messages = {
     },
   },
   detail: {
+    heroImage: "{{name}} image",
+    heroImageCredit: "{{name}} image, {{credit}}",
     title: "Gacha details",
     notFound: "This gacha doesn't exist (id: {{id}})",
     collectionTitle: "Collected in this gacha",

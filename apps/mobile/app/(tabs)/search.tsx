@@ -118,14 +118,16 @@ function BeforeSearch({ onSelectRecent }: { onSelectRecent: (keyword: string) =>
 
 /** 최근 본 굿즈 · 인기 카드의 이미지 출처를 맨 아래에 한 번. 위 섹션과 같은 쿼리 키라 다시 요청하지 않는다. */
 function BeforeSearchImageCredit() {
+  // 위 섹션의 훅 · limit 을 바꾸면 여기도 같이 바꾼다 (다르면 보이는 카드와 출처가 어긋난다)
   const recent = useRecentGacha();
   const popular = usePopularGacha();
   const { layout } = useRecentMotion();
-  const urls = [...(recent.data ?? []), ...(popular.data ?? [])].map((gacha) => gacha.imageUrl);
   return (
-    <Animated.View layout={layout} style={{ paddingHorizontal: gutter }}>
-      <ImageCredit urls={urls} />
-    </Animated.View>
+    <ImageCredit
+      lists={[recent.data, popular.data]}
+      layout={layout}
+      style={{ paddingHorizontal: gutter }}
+    />
   );
 }
 

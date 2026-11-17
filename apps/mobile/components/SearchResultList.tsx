@@ -179,11 +179,9 @@ export function SearchResultList({
               message={t("common.loadFailed")}
               onRetry={() => void search.fetchNextPage()}
             />
-          ) : (
-            <ImageCredit
-              urls={(result?.items ?? []).map((gacha) => gacha.imageUrl)}
-              style={{ paddingTop: space[14] }}
-            />
+          ) : search.hasNextPage ? null : (
+            // 다음 페이지가 남아 있으면 끝에 닿을 때 로딩 줄로 바뀌어 흔들리므로 마지막 페이지에서만
+            <ImageCredit lists={[result?.items]} style={{ paddingTop: space[14] }} />
           )
         }
         // 결과가 있으면 그려지지 않으므로 로딩 · 에러 · 결과 없음만 여기서 고른다

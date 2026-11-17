@@ -52,7 +52,7 @@ export function GoodsItemGrid({ items, gachas, folders, onPressItem }: Props) {
       }}
       ListFooterComponent={
         // 내 사진이 있어도 거르지 않는다: 사진 파일을 못 읽으면 카드가 가챠 이미지로 바꿔 보여 준다 (GoodsItemCard)
-        <ImageCredit urls={items.map((item) => gachas.get(item.gachaId)?.imageUrl)} />
+        <ImageCredit lists={[items.map((item) => gachas.get(item.gachaId))]} />
       }
       columnWrapperStyle={{ gap: GAP }}
       contentContainerStyle={{ paddingHorizontal: gutter, paddingBottom: space[24], gap: GAP }}

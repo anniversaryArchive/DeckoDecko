@@ -136,10 +136,10 @@ function PopularSection() {
 
 /** 두 카드 목록의 이미지 출처를 화면 맨 아래에 한 번. 위 섹션과 같은 쿼리 키라 다시 요청하지 않는다. */
 function HomeImageCredit() {
+  // 위 섹션의 훅 · limit 을 바꾸면 여기도 같이 바꾼다 (다르면 보이는 카드와 출처가 어긋난다)
   const latest = useGachaList(HOME_LIST_LIMIT);
   const popular = usePopularGacha(HOME_LIST_LIMIT);
-  const urls = [...(latest.data ?? []), ...(popular.data ?? [])].map((gacha) => gacha.imageUrl);
-  return <ImageCredit urls={urls} style={{ paddingHorizontal: gutter }} />;
+  return <ImageCredit lists={[latest.data, popular.data]} style={{ paddingHorizontal: gutter }} />;
 }
 
 /** 섹션 = 제목(좌우 gutter) + 14 아래 내용. 내용의 좌우 여백은 내용 쪽에서 준다 (가로 스크롤은 끝까지 닿아야 해서). */

@@ -118,6 +118,9 @@ export const ko = {
     },
   },
   detail: {
+    // 상세 큰 이미지의 화면 읽기 라벨. credit 은 common.imageCredit 문구
+    heroImage: "{{name}} 이미지",
+    heroImageCredit: "{{name}} 이미지, {{credit}}",
     title: "가챠 상세",
     notFound: "없는 가챠예요 (id: {{id}})",
     collectionTitle: "이 가챠 소장률",
