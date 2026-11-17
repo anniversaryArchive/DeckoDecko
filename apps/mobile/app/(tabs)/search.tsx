@@ -5,10 +5,11 @@ import { Keyboard, ScrollView, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAddRecentSearch, usePopularGacha } from "@deckodecko/core/react";
+import { useAddRecentSearch, usePopularGacha, useRecentGacha } from "@deckodecko/core/react";
 import { gutter, space } from "@deckodecko/ui";
 import { Text } from "@deckodecko/ui/native";
 
+import { ImageCredit } from "@/components/ImageCredit";
 import { PopularGachaList } from "@/components/PopularGachaList";
 import { QueryState } from "@/components/QueryState";
 import {
@@ -110,7 +111,21 @@ function BeforeSearch({ onSelectRecent }: { onSelectRecent: (keyword: string) =>
       <RecentSearchesSection onSelect={onSelectRecent} />
       <RecentGachaSection />
       <PopularSearches />
+      <BeforeSearchImageCredit />
     </ScrollView>
+  );
+}
+
+/** 최근 본 굿즈 · 인기 카드의 이미지 출처를 맨 아래에 한 번. 위 섹션과 같은 쿼리 키라 다시 요청하지 않는다. */
+function BeforeSearchImageCredit() {
+  const recent = useRecentGacha();
+  const popular = usePopularGacha();
+  const { layout } = useRecentMotion();
+  const urls = [...(recent.data ?? []), ...(popular.data ?? [])].map((gacha) => gacha.imageUrl);
+  return (
+    <Animated.View layout={layout} style={{ paddingHorizontal: gutter }}>
+      <ImageCredit urls={urls} />
+    </Animated.View>
   );
 }
 

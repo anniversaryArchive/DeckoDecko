@@ -7,6 +7,7 @@ import type { Folder, Gacha, Item } from "@deckodecko/core";
 import { gutter, space } from "@deckodecko/ui";
 
 import { GoodsItemCard } from "@/components/GoodsItemCard";
+import { ImageCredit } from "@/components/ImageCredit";
 import { useFolderNames } from "@/hooks/useFolderNames";
 import { gachaName } from "@/lib/displayName";
 
@@ -49,6 +50,10 @@ export function GoodsItemGrid({ items, gachas, folders, onPressItem }: Props) {
           />
         );
       }}
+      ListFooterComponent={
+        // 내 사진이 있어도 거르지 않는다: 사진 파일을 못 읽으면 카드가 가챠 이미지로 바꿔 보여 준다 (GoodsItemCard)
+        <ImageCredit urls={items.map((item) => gachas.get(item.gachaId)?.imageUrl)} />
+      }
       columnWrapperStyle={{ gap: GAP }}
       contentContainerStyle={{ paddingHorizontal: gutter, paddingBottom: space[24], gap: GAP }}
       keyboardShouldPersistTaps="handled"
