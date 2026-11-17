@@ -48,11 +48,12 @@
 
 ## 목록
 
-| 번호                                   | 결정                                                    |
-| -------------------------------------- | ------------------------------------------------------- |
-| [0001](0001-bottom-sheet.md)           | 바텀 시트는 @gorhom/bottom-sheet                        |
-| [0002](0002-monorepo-boundaries.md)    | 모노레포 구조와 패키지 경계                             |
-| [0003](0003-local-first.md)            | 사용자 기록은 계정 없이 기기에만 (로컬 우선)            |
-| [0004](0004-admin-allowlist.md)        | 운영자 권한은 허용 목록 테이블 + 백오피스 서버에서 확인 |
-| [0005](0005-official-lineup-images.md) | 라인업 이미지는 공식 사이트 이미지 URL 을 그대로        |
-| [0006](0006-image-takedown.md)         | 공식 이미지는 이력을 남기는 SQL 함수로 내린다           |
+| 번호                                          | 결정                                                            |
+| --------------------------------------------- | --------------------------------------------------------------- |
+| [0001](0001-bottom-sheet.md)                  | 바텀 시트는 @gorhom/bottom-sheet                                |
+| [0002](0002-monorepo-boundaries.md)           | 모노레포 구조와 패키지 경계                                     |
+| [0003](0003-local-first.md)                   | 사용자 기록은 계정 없이 기기에만 (로컬 우선)                    |
+| [0004](0004-admin-allowlist.md)               | 운영자 권한은 허용 목록 테이블 + 백오피스 서버에서 확인         |
+| [0005](0005-official-lineup-images.md)        | 라인업 이미지는 공식 사이트 이미지 URL 을 그대로                |
+| [0006](0006-image-takedown.md)                | 공식 이미지는 이력을 남기는 SQL 함수로 내린다                   |
+| [0007](0007-reanimated-settled-props-flag.md) | Reanimated 의 FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS 를 끈다 |
