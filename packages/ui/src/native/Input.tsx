@@ -16,6 +16,8 @@ const CLEAR_SIZE = 32;
 const CLEAR_ICON_SIZE = 12;
 /** 여러 줄(메모) 입력창 최소 높이 */
 const MULTILINE_MIN_HEIGHT = 72;
+/** 여러 줄(메모) 입력창 최대 높이. 넘치면 입력창 안에서 스크롤한다 (시트가 키보드 위로 올라가도 저장 버튼이 가리지 않게) */
+const MULTILINE_MAX_HEIGHT = 96;
 
 export type InputProps = Omit<TextInputProps, "style"> & {
   /** 입력창 위 이름 ("아이템 이름") */
@@ -94,6 +96,7 @@ export function Input({
           alignItems: multiline ? "flex-start" : "center",
           gap: space[8],
           minHeight: multiline ? MULTILINE_MIN_HEIGHT : HEIGHT,
+          maxHeight: multiline ? MULTILINE_MAX_HEIGHT : undefined,
           height: multiline ? undefined : HEIGHT,
           paddingLeft: space[14],
           // 지우기 버튼이 있으면 오른쪽 여백을 줄여 버튼이 테두리 가까이 붙게 한다 (시안)
