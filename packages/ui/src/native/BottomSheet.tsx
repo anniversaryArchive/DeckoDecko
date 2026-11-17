@@ -298,7 +298,7 @@ export function BottomSheet({
       enableDynamicSizing
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
-      android_keyboardInputMode="adjustResize"
+      // android_keyboardInputMode 는 기본값(adjustPan)으로 둔다. adjustResize 면 라이브러리가 창이 줄어들기를 기다리는데, edge-to-edge 앱은 창이 줄지 않아 시트가 키보드에 가린다.
       backdropComponent={renderBackdrop}
       backgroundComponent={renderBackground}
       handleStyle={{ paddingTop: space[10], paddingBottom: 0 }}
