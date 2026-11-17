@@ -74,7 +74,7 @@ function HomeHeader() {
           icon="search"
           variant="outline"
           label={t("search.title")}
-          onPress={() => router.push("/search")}
+          onPress={() => router.navigate("/search")}
         />
         <HeaderIconButton
           icon="settings-outline"

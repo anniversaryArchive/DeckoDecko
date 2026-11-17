@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 
-// push 가 아니라 navigate 를 쓴다. 맨 위 화면과 경로 · 파라미터가 같으면 새로 쌓지 않아, Android 에서 카드를 연타해도 상세가 하나만 열린다 (expo-router 57).
+// push 가 아니라 navigate 를 쓴다. 맨 위 화면과 이름 · 경로 파라미터([id])가 같으면 새로 쌓지 않아 (쿼리 파라미터는 비교하지 않고 덮어씀), Android 에서 카드를 연타해도 상세가 하나만 열린다 (expo-router 57).
 
 /** 가챠 상세로 이동. 카드 자리(GachaCardSlot)가 쓴다. */
 export function openGacha(id: string) {
