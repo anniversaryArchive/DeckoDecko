@@ -296,9 +296,11 @@ export function BottomSheet({
       overrideReduceMotion={ReduceMotion.Never}
       enablePanDownToClose={dismissible}
       enableDynamicSizing
+      // Android(edge-to-edge)는 키보드에 밀린 시트가 상태 표시줄 밑까지 올라가서 막는다. iOS 는 막으면 시트 아래 버튼이 키보드에 가려서 두지 않는다
+      topInset={Platform.OS === "android" ? insets.top : 0}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
-      android_keyboardInputMode="adjustResize"
+      // android_keyboardInputMode 는 기본값(adjustPan)으로 둔다. adjustResize 면 라이브러리가 창이 줄어들기를 기다리는데, edge-to-edge 앱은 창이 줄지 않아 시트가 키보드에 가린다.
       backdropComponent={renderBackdrop}
       backgroundComponent={renderBackground}
       handleStyle={{ paddingTop: space[10], paddingBottom: 0 }}
