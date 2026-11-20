@@ -3,6 +3,9 @@ import { TextInput, type TextInputProps } from "react-native";
 
 import { useMergedRef } from "./useMergedRef";
 
+/** value 로 돌아오길 기다리는 글자를 몇 개까지 기억할지 */
+const MAX_SENT_TEXTS = 20;
+
 export type ComposingTextInputProps = TextInputProps & {
   /** 실제로 그릴 입력창. 기본은 TextInput, BottomSheet 안에서는 BottomSheetTextInput 을 넘긴다 */
   as?: ComponentType<TextInputProps & { ref?: Ref<TextInput> }>;
@@ -29,12 +32,21 @@ export function ComposingTextInput({
   const controlled = value !== undefined;
   // 입력창 안에 지금 있는 글자
   const shownText = useRef(value ?? defaultValue ?? "");
+  // 화면에 보냈지만 아직 value 로 돌아오지 않은 글자들 (보낸 순서)
+  const sentTexts = useRef<string[]>([]);
   // 입력창을 다시 만들 때 넣을 글자와 key
   const [seed, setSeed] = useState({ text: value ?? defaultValue ?? "", key: 0 });
 
-  // commit 과 같은 동기 구간에서 돌려, 다음 글자 이벤트가 사이에 끼어 옛 value 로 판단하는 일이 없게 한다
   useLayoutEffect(() => {
-    if (!controlled || value === shownText.current) return;
+    if (!controlled) return;
+    // 빠르게 치면 앞 글자의 value 가 뒤 글자를 친 뒤에 돌아온다. 내가 보낸 글자면 화면이 바꾼 값이 아니니 입력창을 그대로 둔다
+    const sent = sentTexts.current.indexOf(value);
+    if (sent !== -1) {
+      sentTexts.current = sentTexts.current.slice(sent + 1);
+      return;
+    }
+    sentTexts.current = [];
+    if (value === shownText.current) return;
     shownText.current = value;
     if (value === "") inputRef.current?.clear();
     else setSeed((prev) => ({ text: value, key: prev.key + 1 }));
@@ -48,6 +60,8 @@ export function ComposingTextInput({
       defaultValue={seed.text}
       onChangeText={(text) => {
         shownText.current = text;
+        // 화면이 value 를 돌려주지 않아도 끝없이 쌓이지 않게 최근 것만 둔다
+        sentTexts.current = [...sentTexts.current.slice(-(MAX_SENT_TEXTS - 1)), text];
         onChangeText?.(text);
       }}
     />
