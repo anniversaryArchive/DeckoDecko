@@ -3,7 +3,7 @@ import { TextInput, type TextInputProps } from "react-native";
 
 import { useMergedRef } from "./useMergedRef";
 
-/** value 로 돌아오길 기다리는 글자를 몇 개까지 기억할지 */
+/** 화면에 보낸 글자를 몇 개까지 기억할지 */
 const MAX_SENT_TEXTS = 20;
 
 export type ComposingTextInputProps = TextInputProps & {
@@ -16,7 +16,7 @@ export type ComposingTextInputProps = TextInputProps & {
  * 한글 · 일본어 조합이 끊기지 않는 TextInput. `value` 를 넘겨도 TextInput 에는 넘기지 않고, 친 글자는 입력창이 들고 있는다.
  * iOS 새 아키텍처는 value 가 들어오면 조합 중인 글자를 덮어써서 "가나" 가 "ㄱㅏㄴㅏ" 로 들어간다 (react-native#56082).
  * 화면이 친 글자와 다른 value 를 넣을 때만 반영한다: 빈 값은 clear(), 그 밖(다른 기록 불러오기 등)은 입력창을 다시 만든다.
- * 최근에 보내고 아직 value 로 돌아오지 않은 글자와 같은 값은 늦게 온 value 로 보고 반영하지 않는다 (한 프레임 안에 지웠다 같은 글자를 다시 친 직후 화면이 그 값을 넣는 경우는 구분하지 못한다).
+ * 최근에 보낸 글자와 같은 value 는 늦게 온 value 로 보고 반영하지 않는다. 그래서 한 프레임 안에 지웠다 같은 글자를 다시 쳤다면, 다음 글자를 칠 때까지 화면이 그 사이 글자(빈 값 등)를 넣어도 반영되지 않는다.
  * onChangeText 로 받은 글자는 그대로 value 로 돌려줘야 한다. 거절하면 입력창과 value 가 어긋나고, 바꿔 돌려주면 글자마다 다시 만들어져 키보드가 닫힌다.
  * `maxLength` 는 조합 중에도 잘라서 끝 글자가 깨질 수 있으니 길이 제한이 꼭 필요한 곳에만 쓴다.
  */
@@ -53,7 +53,7 @@ export function ComposingTextInput({
     shownText.current = value;
     if (value === "") {
       inputRef.current?.clear();
-      // 한 번도 치지 않은 입력창은 다시 그릴 때 옛 defaultValue 가 네이티브로 다시 가서 지운 글자가 돌아온다 (Android 시트)
+      // defaultValue 를 그대로 두면 다시 그릴 때 그 글자가 네이티브로 다시 가서, 손대지 않은 입력창은 지운 글자가 돌아온다 (Android 시트)
       setSeed((prev) => (prev.text === "" ? prev : { text: "", key: prev.key }));
     } else setSeed((prev) => ({ text: value, key: prev.key + 1 }));
   });
