@@ -6,6 +6,7 @@ export { BottomSheet, type BottomSheetProps } from "./BottomSheet";
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from "./Button";
 export { Card, type CardProps } from "./Card";
 export { Chip, type ChipProps } from "./Chip";
+export { ComposingTextInput, type ComposingTextInputProps } from "./ComposingTextInput";
 export { GoodsCard, type GoodsCardBadge, type GoodsCardProps } from "./GoodsCard";
 export { AlertIcon, CheckIcon, ChevronDownIcon, CloseIcon, type LineIconProps } from "./icons";
 export { IconButton, type IconButtonProps } from "./IconButton";

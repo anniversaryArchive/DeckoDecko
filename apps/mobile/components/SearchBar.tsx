@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Pressable, TextInput, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { border, fonts, radius, space, typography, useTheme } from "@deckodecko/ui";
-import { CloseIcon, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
+import { CloseIcon, ComposingTextInput, PRESSED_OPACITY, Text } from "@deckodecko/ui/native";
 
 /** 검색창 높이 */
 const HEIGHT = 52;
@@ -45,7 +45,7 @@ export function SearchBar({ value, onChangeText, onSubmit }: Props) {
       }}
     >
       <Ionicons name="search" size={SEARCH_ICON_SIZE} color={colors.accent} />
-      <TextInput
+      <ComposingTextInput
         value={value}
         onChangeText={onChangeText}
         onSubmitEditing={onSubmit}

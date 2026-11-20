@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Pressable, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { border, fonts, radius, space, typography, useTheme } from "@deckodecko/ui";
-import { CloseIcon, PRESSED_OPACITY } from "@deckodecko/ui/native";
+import { CloseIcon, ComposingTextInput, PRESSED_OPACITY } from "@deckodecko/ui/native";
 
 /** 검색창 높이. 옆의 보기 방식 버튼 묶음과 같다 */
 export const GOODS_SEARCH_HEIGHT = 40;
@@ -46,7 +46,7 @@ export function GoodsSearchField({ value, onChangeText, style }: Props) {
       ]}
     >
       <Ionicons name="search" size={SEARCH_ICON_SIZE} color={colors.textMuted} />
-      <TextInput
+      <ComposingTextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={t("goods.searchPlaceholder")}

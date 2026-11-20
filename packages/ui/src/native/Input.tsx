@@ -1,12 +1,14 @@
 import { BottomSheetTextInput, useBottomSheetInternal } from "@gorhom/bottom-sheet";
-import { useCallback, useRef, useState, type ReactNode, type Ref } from "react";
+import { useRef, useState, type ComponentType, type ReactNode, type Ref } from "react";
 import { TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from "react-native";
 
 import { useTheme } from "../theme";
 import { border, fonts, radius, space, typography } from "../tokens";
+import { ComposingTextInput } from "./ComposingTextInput";
 import { IconButton } from "./IconButton";
 import { CloseIcon } from "./icons";
 import { Text } from "./Text";
+import { useMergedRef } from "./useMergedRef";
 
 /** 한 줄 입력창 높이 */
 const HEIGHT = 48;
@@ -43,6 +45,7 @@ export type InputProps = Omit<TextInputProps, "style"> & {
  * 이름 · 메모 입력창. 입력 중일 때 테두리가 포인트 색이 된다.
  * BottomSheet 안에 넣으면 키보드가 올라올 때 시트도 같이 올라가도록 시트용 입력창으로 바꿔 그린다.
  * TextInput 은 글꼴을 하나만 쓸 수 있어서 Noto Sans KR 로 고정한다 (영어 · 숫자도 Noto Sans KR 로 보인다).
+ * 한글 조합이 끊기지 않게 ComposingTextInput 으로 그린다. onChangeText 로 받은 글자는 그대로 value 로 돌려줘야 한다.
  */
 export function Input({
   label,
@@ -61,24 +64,13 @@ export function Input({
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   const inSheet = useBottomSheetInternal(true) !== null;
-  const Field = inSheet ? BottomSheetTextInput : TextInput;
   const inputRef = useRef<TextInput>(null);
   // value 를 넘기지 않는(defaultValue 만 쓰는) 입력창도 지우기 버튼이 보이도록 글자가 있는지 따로 기억한다
   // value 를 넘기는(제어) 입력창은 글자를 칠 때마다 다시 그려지지 않게 이 상태를 바꾸지 않는다
   const controlled = rest.value !== undefined;
   const [uncontrolledText, setUncontrolledText] = useState(rest.defaultValue ?? "");
   const hasText = controlled ? (rest.value ?? "").length > 0 : uncontrolledText.length > 0;
-  // 시트용 입력창과 기본 입력창의 ref 타입이 조금 달라서(null / undefined) 둘 다 받는 함수로 넘긴다.
-  // 렌더마다 새 함수를 만들면 ref 가 매번 떼었다 붙어서 한 번만 만든다.
-  // 쓰는 쪽이 넘긴 ref 에도 같은 입력창을 연결한다.
-  const setInputRef = useCallback(
-    (el: TextInput | null | undefined) => {
-      inputRef.current = el ?? null;
-      if (typeof ref === "function") ref(el ?? null);
-      else if (ref) ref.current = el ?? null;
-    },
-    [ref]
-  );
+  const setInputRef = useMergedRef(inputRef, ref);
   const showClear = clearable && !!clearLabel && !multiline && rest.editable !== false && hasText;
 
   return (
@@ -106,7 +98,8 @@ export function Input({
         }}
       >
         {leading}
-        <Field
+        <ComposingTextInput
+          as={inSheet ? (BottomSheetTextInput as ComponentType<TextInputProps>) : TextInput}
           placeholderTextColor={colors.textPlaceholder}
           selectionColor={colors.accent}
           multiline={multiline}
